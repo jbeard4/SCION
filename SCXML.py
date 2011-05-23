@@ -24,203 +24,12 @@ Parameterized Parts of the Algorithm: Priority, Transition Consistency
 
 """
 
-from Queue import Queue		#this is a synchronized Queue. needed in the thread-safe implementation
+#TODO: add support for history
+
 from collections import deque	#this is a non-synchronized queue
-import thread
-import time
 import copy
-
-class SCXMLModel():
-	def __init__(self,initialState=None):
-		self.initial = initialState
-
-class Event():
-	def __init__(self,name="",data=None):
-		self.name = name
-		self.data = data
-class State():
-	BASIC = 0
-	COMPOSITE = 1
-	PARALLEL = 2
-	AND = 3
-	HISTORY = 4
-	INITIAL = 5
-	FINAL = 6
-
-	def __init__(self,name="",enterActions=[],exitActions=[],transitions=[],parent=None,children=[],kind=BASIC,documentOrder=0):
-		self.name = name
-		self.enterAction = enterAction 
-		self.exitAction = exitAction
-		self.transitions = transitions
-		self.parent = parent
-		self.kind = kind
-		self.children = children
-		self.documentOrder = documentOrder
-
-	def getAncestors(self):
-		ancestors = []
-
-		state = self
-		while state:
-			ancestors.append(state)
-			state = state.parent
-
-		return ancestors
-
-	def getDescendants(self):
-		descendants = [self]
-
-		for child in self.children:
-			descendants.concat(child.getDescendants())
-
-		return descendants 
-		
-	def isOrthogonalTo(self,s):
-		#Two control states are orthogonal if they are not ancestrally
-		#related, and their smallest, mutual parent is a Concurrent-state.
-		return not self.isAncestrallyRelatedTo(s) and self.getLCA(s).kind is State.AND
-
-	def isAncestrallyRelatedTo(self,s):
-		#Two control states are ancestrally related if one is child/grandchild of another.
-		return self in s.getAncestors() or s in self.getAncestors()
-
-	def getLCA(self,s):
-		commonAncestors = filter(lambda a : s in a.getDescendants(),self.getAncestors())
-		lca = None
-		if commonAncestors:
-			lca = commonAncestors[0]
-
-		return lca
-
-class Transition():
-	def __init__(self,eventName="",source=None,target=None,actions=[],documentOrder=0):
-		self.eventName = eventName 
-		self.source = source 
-		self.target = target
-		self.actions = actions
-		self.documentOrder = documentOrder
-
-	def getLCA(self):
-		return self.source.getLCA(self.target)
-
-class Action():
-	def __call__(self):
-		pass
-
-class SendAction(Action):
-	def __init__(self,eventName="",timeout=0):
-		self.eventName = eventName
-		self.timeout = timeout
-
-	def __call__(self,datamodel,eventList):
-		eventList.add(Event(self.eventName))
-
-class AssignAction(Action):
-	def __init__(self,location="",expr=""):
-		self.location = location
-		self.expr = expr
-
-	def __call__(self,datamodel,eventList):				#TODO: replace datamodel with scripting context
-		#Memory Protocols: Small-step
-		datamodel[self.location] = eval(self.expr)	#TODO: eval js code using spidermonkey bindings
-
-class ScriptAction(Action):
-	def __init__(self,code=""):
-		self.code = code
-
-	def __call__(self,datamodel,eventList):				#TODO: replace datamodel with scripting context
-		eval(self.code)					#TODO: eval js using spidermonkey bindings
-
-from lxml import etree
-
-stateTagNames = set(["initial","parallel","final","history","state"])
-
-def scxmlDocToPythonModel(tree):
-	#TODO: parse document into tree
-	nodeToObj = {}
-	idToNode = {}	#because etree doesn't give us getElementById
-
-	order = 0
-	walkAll = tree.getiterator()
-	for elt in walkAll:
-		id = elt.get("id")
-		if id:
-			idToNode[id] = elt
-
-		if elt.tag == "state":
-			p = elt.getparent()
-			if p and p.tag == "parallel":
-				nodeToObj[elt] = State(name=id,kind=State.AND,documentOrder=order)
-			elif some(lambda n : n.tag in stateTagNames, list(elt)):
-				nodeToObj[elt] = State(name=id,kind=State.COMPOSITE,documentOrder=order)
-			else:
-				nodeToObj[elt] = State(name=id,kind=State.BASIC,documentOrder=order)
-		elif elt.tag == "initial":
-			nodeToObj[elt] = State(name=id,kind=State.INITIAL,documentOrder=order)	
-		elif elt.tag == "parallel":
-			nodeToObj[elt] = State(name=id,kind=State.PARALLEL,documentOrder=order)
-		elif elt.tag == "final":
-			nodeToObj[elt] = State(name=id,kind=State.FINAL,documentOrder=order)	
-		elif elt.tag == "history":
-			nodeToObj[elt] = State(name=id,kind=State.HISTORY,documentOrder=order)
-		elif elt.tag == "transition":
-			nodeToObj[elt] = Transition(eventName=elt.get("event"),documentOrder=order)
-		elif elt.tag == "send":
-			nodeToObj[elt] = SendAction(elt.get("event"))
-		elif elt.tag == "assign":
-			nodeToObj[elt] = AssignAction(elt.get("location"),elt.get("expr"))
-		elif elt.tag == "script":
-			nodeToObj[elt] = ScriptAction(elt.text)
-		else:
-			pass
-
-		order = order + 1
-
-	#second pass
-	for elt,obj in nodeToObj.iteritems():
-		if isinstance(obj,State):
-			#link to parent
-			p = elt.getparent()
-			if p and p in nodeToObj:
-				obj.parent = p
-
-			for childNode in elt:
-				#transition children
-				if childNode in nodeToObj:
-					childObj = nodeToObj[childNode]
-					obj.children.append(childObj)
-				#entry and exit actions
-				elif childNode.tag == "onentry":
-					for actionNode in childNode:
-						if actionNode in nodeToObj:
-							elt.entryActions.append(nodeToObj[actionNode])
-				elif childNode.tag == "onexit":
-					for actionNode in childNode:
-						if actionNode in nodeToObj:
-							elt.exitActions.append(nodeToObj[actionNode])
-				else:
-					pass #unknown tag
-		elif isinstance(obj,Transition):
-			#hook up transition actions
-			for childNode in elt:
-				if childNode in nodeToObj:
-					childObj = nodeToObj[childNode]
-					obj.actions.append(childObj)
-
-			#hook up transition source
-			obj.source = nodeToObj[ elt.getparent() ]
-
-			#hook up transition target
-			obj.target = nodeToObj[idToNode[elt.get("target")]]
-		else:
-			pass	#no post-processing needed on other elements
-		
-	#hook up the initial state
-	rootNode = tree.getroot()
-	initialNode = filter(lambda n : n.tag == "initial", list(rootNode))[0]
-	
-	#instantiate and return the model
-	return SCXMLModel(initialNode) 
+from model import State
+from event import Event
 
 class SCXMLInterpreter():
 
@@ -392,7 +201,7 @@ class SCXMLInterpreter():
 	#this would also be parameterizable
 	def _selectTransitionsBasedOnPriority(self,transitionsInConflict):
 		
-		def _compareBasedOnPriority(self,(t1,t2)):
+		def compareBasedOnPriority((t1,t2)):
 			if t1.depth < t2.depth:
 				return t1
 			elif t2.depth < t1.depth:
@@ -406,57 +215,19 @@ class SCXMLInterpreter():
 		return map(compareBasedOnPriority,transitionsInConflict)	#FIXME: eliminate dups?
 
 
-
 class SimpleInterpreter(SCXMLInterpreter):
 
 	#External Event Communication: Asynchronous
-	def GEN(self,e):
+	def GEN(self,e):	#TODO: replace this with __call__ operator overloading?
 		#pass it straight through	
 		self._performBigStep(e)
-	
 
-class ThreadsafeInterpreter(SCXMLInterpreter):
-
-	def __init__(self):
-		self._externalEventQueue = Queue();
-
-		SCXMLInterpreter.__init__(self)
-
-	#External Event Communication: Asynchronous
-	def GEN(self,e):
-		#put it into a blocking queue. send event in when the queue unblocks
-		self._externalEventQueue.put(e)
-
-	def start(self):
-		self._mainEventLoop()
-		SCXMLInterpreter.start(self)
-
-class PollingThreadsafeInterpreter(ThreadsafeInterpreter):
-
-	def __init__(self):
-		self._isProcessingEvent = False;
-
-		ThreadsafeInterpreter.__init__(self)
-
-	def _mainEventLoop(self):
-		if not self._isInFinalState:
-			if not self._externalEventQueue.empty() and not self._isProcessingEvent:
-				e = self._externalEventQueue.get(False)
-
-				self._isProcessingEvent = true
-				self._performBigStep(e)
-				self._isProcessingEvent = false
-
-			#poll
-			thread.start_new_thread(lambda:(time.sleep(10),self._mainEventLoop()),())
-
-
-class QueuedThreadsafeInterpreter(ThreadsafeInterpreter):
-
-	def _mainEventLoop(self):
-		while not self._isInFinalState:
-			e = self._externalEventQueue.get(True)	#True means he will block until he receives an event
-			self._performBigStep(e)
-
-			
-
+if __name__ == "__main__":
+	import sys
+	from doc2model import scxmlFileToPythonModel
+	pathToSCXML = sys.argv[1]
+	print pathToSCXML 
+	scxmlFile = file(pathToSCXML)
+	model = scxmlFileToPythonModel(scxmlFile) 
+	interpreter = SimpleInterpreter(model) 
+	interpreter.start() 
