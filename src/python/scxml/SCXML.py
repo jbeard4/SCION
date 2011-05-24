@@ -209,11 +209,22 @@ class SCXMLInterpreter():
 	
 
 	def _makeTransitionsConsistent(self,transitions):
+		consistentTransitions = set()
+
 		(transitionsNotInConflict, transitionsPairsInConflict) = self._getTransitionsInConflict(transitions)
-		print "transitionsNotInConflict",transitionsNotInConflict
-		print "transitionsPairsInConflict",transitionsPairsInConflict
-		resolvedTransitionPairs = self._selectTransitionsBasedOnPriority(transitionsPairsInConflict)
-		consistentTransitions = transitionsNotInConflict | resolvedTransitionPairs 
+		consistentTransitions = consistentTransitions | transitionsNotInConflict 
+
+		while transitionsPairsInConflict:
+
+			transitions = self._selectTransitionsBasedOnPriority(transitionsPairsInConflict)
+
+			(transitionsNotInConflict, transitionsPairsInConflict) = self._getTransitionsInConflict(transitions)
+
+			consistentTransitions = consistentTransitions | transitionsNotInConflict 
+
+			print "transitionsNotInConflict",transitionsNotInConflict
+			print "transitionsPairsInConflict",transitionsPairsInConflict
+			
 		return consistentTransitions 
 			
 	def _getTransitionsInConflict(self,transitions):
