@@ -46,6 +46,7 @@ class SCXMLInterpreter():
 
 	def start(self):
 		#perform big step without events to take all default transitions and reach stable initial state
+		logging.info("performing initial big step")
 		self._configuration.add(self.model.initial)
 		self._performBigStep()	
 
@@ -78,58 +79,60 @@ class SCXMLInterpreter():
 
 		selectedTransitions = self._selectTransitions(eventSet)
 
-
 		logging.info("selected transitions: " + str(selectedTransitions))
 
-		# -> Concurrency: Order of transitions: Explicitly defined
-		sortedTransitions = sorted(selectedTransitions,lambda t : t.documentOrder)	#implicitly converts unordered set to ordered list
+		if selectedTransitions:
+			# -> Concurrency: Order of transitions: Explicitly defined
+			sortedTransitions = sorted(selectedTransitions,lambda t : t.documentOrder)	#implicitly converts unordered set to ordered list
 
-		logging.info("sorted transitions: "+ str(sortedTransitions))
+			logging.info("sorted transitions: "+ str(sortedTransitions))
 
-		statesExited = self._getStatesExited(sortedTransitions) 
-		basicStatesExited  = set(map(lambda s : s.source,sortedTransitions))
-		statesEntered = self._getStatesEntered(sortedTransitions) 
-		basicStatesEntered  = set(map(lambda s : s.target,sortedTransitions))
+			statesExited = self._getStatesExited(sortedTransitions) 
+			basicStatesExited  = set(map(lambda s : s.source,sortedTransitions))
+			statesEntered = self._getStatesEntered(sortedTransitions) 
+			basicStatesEntered  = set(map(lambda s : s.target,sortedTransitions))
 
-		logging.info("basicStatesExited " + str(basicStatesExited))
-		logging.info("basicStatesEntered " + str(basicStatesEntered))
+			logging.info("basicStatesExited " + str(basicStatesExited))
+			logging.info("basicStatesEntered " + str(basicStatesEntered))
+			logging.info("statesExited " + str(statesExited))
+			logging.info("statesEntered " + str(statesEntered))
 
-		eventsToAddToInnerQueue = set()
+			eventsToAddToInnerQueue = set()
 
-		#operations will be performed in the order described in Rhapsody paper
+			#operations will be performed in the order described in Rhapsody paper
 
-		logging.info("executing state exit actions")
-		for state in statesExited:
-			logging.info("exiting " + str(state))
-			for action in state.exitActions:
-				action(self._datamodel,eventsToAddToInnerQueue)
+			logging.info("executing state exit actions")
+			for state in statesExited:
+				logging.info("exiting " + str(state))
+				for action in state.exitActions:
+					action(self._datamodel,eventsToAddToInnerQueue)
 
-		# -> Concurrency: Number of transitions: Multiple
-		logging.info("executing transitition actions")
-		for transition in sortedTransitions:
-			logging.info("transitition " + str(transition))
-			for action in transition.actions:
-				action(self._datamodel,eventsToAddToInnerQueue) 		
+			# -> Concurrency: Number of transitions: Multiple
+			logging.info("executing transitition actions")
+			for transition in sortedTransitions:
+				logging.info("transitition " + str(transition))
+				for action in transition.actions:
+					action(self._datamodel,eventsToAddToInnerQueue) 		
 
-		logging.info("executing state enter actions")
-		for state in statesEntered:
-			logging.info("entering " + str(state))
-			for action in state.enterActions:
-				action(self._datamodel,eventsToAddToInnerQueue)
+			logging.info("executing state enter actions")
+			for state in statesEntered:
+				logging.info("entering " + str(state))
+				for action in state.enterActions:
+					action(self._datamodel,eventsToAddToInnerQueue)
 
-		#update configuration by removing basic states exited, and adding basic states entered
-		logging.info("updating configuration ")
-		logging.info("old configuration " + str(self._configuration))
+			#update configuration by removing basic states exited, and adding basic states entered
+			logging.info("updating configuration ")
+			logging.info("old configuration " + str(self._configuration))
 
-		self._configuration = (self._configuration - basicStatesExited) | basicStatesEntered
+			self._configuration = (self._configuration - basicStatesExited) | basicStatesEntered
 
-		logging.info("new configuration " + str(self._configuration))
-		
-		#add set of generated events to the innerEventQueue -> Event Lifelines: Next small-step
-		if eventsToAddToInnerQueue:
-			logging.info("adding triggered events to inner queue " + str(eventsToAddToInnerQueue))
+			logging.info("new configuration " + str(self._configuration))
+			
+			#add set of generated events to the innerEventQueue -> Event Lifelines: Next small-step
+			if eventsToAddToInnerQueue:
+				logging.info("adding triggered events to inner queue " + str(eventsToAddToInnerQueue))
 
-			self._innerEventQueue.append(eventsToAddToInnerQueue)
+				self._innerEventQueue.append(eventsToAddToInnerQueue)
 
 		#if selectedTransitions is empty, we have reached a stable state, and the big-step will stop, otherwise will continue -> Maximality: Take-Many
 		return selectedTransitions 	
@@ -255,10 +258,10 @@ class SCXMLInterpreter():
 	def _selectTransitionsBasedOnPriority(self,transitionsInConflict):
 		
 		def compareBasedOnPriority((t1,t2)):
-			if t1.depth < t2.depth:
-				return t1
-			elif t2.depth < t1.depth:
+			if t1.source.getDepth() < t2.source.getDepth():
 				return t2
+			elif t2.source.getDepth() < t1.source.getDepth():
+				return t1
 			else:
 				if t1.documentOrder < t2.documentOrder:
 					return t1

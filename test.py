@@ -15,7 +15,7 @@ try:
 	interpreter = SimpleInterpreter(model) 
 	interpreter.start() 
 	interpreter(Event("t"))
-	interpreter(Event("t2"))
+	#interpreter(Event("t2"))
 except:
 	e, m, tb = sys.exc_info()
 	print e

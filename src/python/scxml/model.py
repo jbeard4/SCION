@@ -39,6 +39,15 @@ class State():
 	def __repr__(self):
 		return "<" + str(self) + ">"
 
+	def getDepth(self):
+		count = 0
+		state = self.parent
+		while state:
+			count = count + 1
+			state = state.parent
+
+		return count
+
 	def getAncestors(self):
 		ancestors = []
 
