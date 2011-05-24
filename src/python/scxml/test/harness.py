@@ -9,35 +9,56 @@ testsPassed = 0
 testsFailed = 0
 testsErrored = 0
 
+class SCXMLConfigurationException(Exception):
+	def __init__(self,expected,actual):
+		self.expected = expected
+		self.actual = actual
+
+	def __str__(self):
+		return "Configuration error: expected " + str(self.expected) + ", received " + str(self.actual)
+
 for jsonTestFileName in sys.argv[1:]:
 
 	testCount = testCount + 1
 
-	f = open(jsonTestFileName)
-	test = json.load(f)
+	try:
 
-	print "running test",test["name"]
+		f = open(jsonTestFileName)
+		test = json.load(f)
 
-	jsonTestFileDir = os.path.dirname(jsonTestFileName)
-	pathToSCXML = os.path.join(jsonTestFileDir,test["scxml"])
+		print "running test",test["name"]
 
-	scxmlFile = file(pathToSCXML)
-	model = scxmlFileToPythonModel(scxmlFile) 
-	interpreter = SimpleInterpreter(model) 
+		jsonTestFileDir = os.path.dirname(jsonTestFileName)
+		pathToSCXML = os.path.join(jsonTestFileDir,test["scxml"])
 
-	interpreter.start() 
-	initialConfiguration = interpreter.getConfiguration()
+		scxmlFile = file(pathToSCXML)
+		model = scxmlFileToPythonModel(scxmlFile) 
+		interpreter = SimpleInterpreter(model) 
 
-	assert set(test["initialConfiguration"]) == initialConfiguration 
+		interpreter.start() 
+		initialConfiguration = interpreter.getConfiguration()
 
-	for eventPair in test["events"]:
-		interpreter(Event(eventPair["event"]["name"]))
-		nextConfiguration = interpreter.getConfiguration()
-		
-		assert set(eventPair["nextConfiguration"]) == nextConfiguration
+		expectedInitialConfiguration = set(test["initialConfiguration"])
 
-	print test["name"], "...passes"
-	testsPassed  = testsPassed + 1
+		if expectedInitialConfiguration != initialConfiguration:
+			raise SCXMLConfigurationException(expectedInitialConfiguration,initialConfiguration)
+
+		for eventPair in test["events"]:
+			interpreter(Event(eventPair["event"]["name"]))
+			nextConfiguration = interpreter.getConfiguration()
+			
+			expectedNextConfiguration = set(eventPair["nextConfiguration"])
+			if expectedNextConfiguration != nextConfiguration:
+				raise SCXMLConfigurationException(expectedNextConfiguration,nextConfiguration)
+
+		print test["name"], "...passes"
+		testsPassed  = testsPassed + 1
+	except SCXMLConfigurationException as inst:
+		print inst
+		testsFailed = testsFailed + 1
+	except:
+		print "Error:", sys.exc_info()[0]
+		testsErrored = testsErrored + 1
 
 print "Summary:"
 print "Tests Run:", testCount

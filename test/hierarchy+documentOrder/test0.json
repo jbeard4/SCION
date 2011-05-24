@@ -1,0 +1,15 @@
+{
+	"name" : "test0",
+	"group" : "hierarchy+documentOrder",
+	"scxml" : "test0.scxml",
+	"initialConfiguration" : ["a1"],
+	"events" : [
+		{
+			"event" : { "name" : "t" },
+			"nextConfiguration" : ["a2"]
+		}
+	]
+}
+
+
+

@@ -1,0 +1,15 @@
+{
+	"name" : "documentOrder0",
+	"group" : "documentOrder",
+	"scxml" : "documentOrder0.scxml",
+	"initialConfiguration" : ["a"],
+	"events" : [
+		{
+			"event" : { "name" : "t" },
+			"nextConfiguration" : ["b"]
+		}
+	]
+}
+
+
+
