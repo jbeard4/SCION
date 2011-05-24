@@ -51,7 +51,7 @@ class SCXMLInterpreter():
 		self._performBigStep()	
 
 	def getConfiguration(self):
-		return copy.copy(self._configuration)
+		return set(map(lambda s: s.name,self._configuration))
 
 	def _performBigStep(self,e=None):
 

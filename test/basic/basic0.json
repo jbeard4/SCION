@@ -1,0 +1,9 @@
+{
+	"name" : "basic0",
+	"group" : "basic",
+	"scxml" : "basic0.scxml",
+	"initialConfiguration" : ["a"],
+	"events" : []
+}
+
+
