@@ -36,6 +36,9 @@ class State():
 	def __str__(self):
 		return self.name
 
+	def __repr__(self):
+		return "<" + str(self) + ">"
+
 	def getAncestors(self):
 		ancestors = []
 
@@ -83,6 +86,9 @@ class Transition():
 
 	def __str__(self):
 		return self.source.name + " -> " + self.target.name
+
+	def __repr__(self):
+		return "<" + str(self) + ">"
 
 	def getLCA(self):
 		return self.source.getLCA(self.target)

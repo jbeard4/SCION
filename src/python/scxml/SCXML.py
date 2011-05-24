@@ -35,9 +35,6 @@ import pdb
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
-def pr(conf):
-	return str(map(lambda s : str(s),conf))
-
 class SCXMLInterpreter():
 
 	def __init__(self,model):
@@ -57,8 +54,8 @@ class SCXMLInterpreter():
 
 	def _performBigStep(self,e=None):
 
-		if e:
-			self._innerEventQueue.append(set(e))
+		if e: 
+			self._innerEventQueue.append(set([e]))
 
 		keepGoing = True
 
@@ -82,20 +79,20 @@ class SCXMLInterpreter():
 		selectedTransitions = self._selectTransitions(eventSet)
 
 
-		logging.info("selected transitions: " + pr(selectedTransitions))
+		logging.info("selected transitions: " + str(selectedTransitions))
 
 		# -> Concurrency: Order of transitions: Explicitly defined
 		sortedTransitions = sorted(selectedTransitions,lambda t : t.documentOrder)	#implicitly converts unordered set to ordered list
 
-		logging.info("sorted transitions: "+ pr(sortedTransitions))
+		logging.info("sorted transitions: "+ str(sortedTransitions))
 
 		statesExited = self._getStatesExited(sortedTransitions) 
 		basicStatesExited  = set(map(lambda s : s.source,sortedTransitions))
 		statesEntered = self._getStatesEntered(sortedTransitions) 
 		basicStatesEntered  = set(map(lambda s : s.target,sortedTransitions))
 
-		logging.info("basicStatesExited " + pr(basicStatesExited))
-		logging.info("basicStatesEntered " + pr(basicStatesEntered))
+		logging.info("basicStatesExited " + str(basicStatesExited))
+		logging.info("basicStatesEntered " + str(basicStatesEntered))
 
 		eventsToAddToInnerQueue = set()
 
@@ -122,16 +119,17 @@ class SCXMLInterpreter():
 
 		#update configuration by removing basic states exited, and adding basic states entered
 		logging.info("updating configuration ")
-		logging.info("old configuration " + pr(self._configuration))
+		logging.info("old configuration " + str(self._configuration))
 
 		self._configuration = (self._configuration - basicStatesExited) | basicStatesEntered
 
-		logging.info("new configuration " + pr(self._configuration))
+		logging.info("new configuration " + str(self._configuration))
 		
 		#add set of generated events to the innerEventQueue -> Event Lifelines: Next small-step
-		logging.info("adding triggered events to inner queue " + str(eventsToAddToInnerQueue))
+		if eventsToAddToInnerQueue:
+			logging.info("adding triggered events to inner queue " + str(eventsToAddToInnerQueue))
 
-		self._innerEventQueue.append(eventsToAddToInnerQueue)
+			self._innerEventQueue.append(eventsToAddToInnerQueue)
 
 		#if selectedTransitions is empty, we have reached a stable state, and the big-step will stop, otherwise will continue -> Maximality: Take-Many
 		return selectedTransitions 	
@@ -273,7 +271,8 @@ class SCXMLInterpreter():
 class SimpleInterpreter(SCXMLInterpreter):
 
 	#External Event Communication: Asynchronous
-	def GEN(self,e):	#TODO: replace this with __call__ operator overloading?
+	def __call__(self,e):	
 		#pass it straight through	
+		logging.info("received event " + str(e))
 		self._performBigStep(e)
 

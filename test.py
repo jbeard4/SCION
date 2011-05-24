@@ -14,6 +14,7 @@ try:
 	model = scxmlFileToPythonModel(scxmlFile) 
 	interpreter = SimpleInterpreter(model) 
 	interpreter.start() 
+	interpreter(Event("t"))
 except:
 	e, m, tb = sys.exc_info()
 	print e

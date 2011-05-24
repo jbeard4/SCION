@@ -11,7 +11,7 @@ class ThreadsafeInterpreter(SCXMLInterpreter):
 		SCXMLInterpreter.__init__(self)
 
 	#External Event Communication: Asynchronous
-	def GEN(self,e):
+	def __call__(self,e):
 		#put it into a blocking queue. send event in when the queue unblocks
 		self._externalEventQueue.put(e)
 
