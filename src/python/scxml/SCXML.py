@@ -30,6 +30,13 @@ from collections import deque	#this is a non-synchronized queue
 import copy
 from model import State
 from event import Event
+import logging
+import pdb
+
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
+
+def pr(conf):
+	return str(map(lambda s : str(s),conf))
 
 class SCXMLInterpreter():
 
@@ -42,7 +49,7 @@ class SCXMLInterpreter():
 
 	def start(self):
 		#perform big step without events to take all default transitions and reach stable initial state
-		self._configuration.append(self.model.initial)
+		self._configuration.add(self.model.initial)
 		self._performBigStep()	
 
 	def getConfiguration(self):
@@ -65,41 +72,65 @@ class SCXMLInterpreter():
 
 			keepGoing = self._performSmallStep(eventSet)
 
-		if every(lambda s : s.kind is State.FINAL, self._configuration):
+		if not filter(lambda s : not s.kind is State.FINAL, self._configuration):
 			self._isInFinalState = True
 
 	def _performSmallStep(self,eventSet):
 
-		selectedTransitions = self._selectTransitions(eventSet);
+		logging.info("selecting transitions with eventSet: " + str(eventSet))
+
+		selectedTransitions = self._selectTransitions(eventSet)
+
+
+		logging.info("selected transitions: " + pr(selectedTransitions))
 
 		# -> Concurrency: Order of transitions: Explicitly defined
-		sortedTransitions = sort(selectedTransitions,lambda t : t.documentOrder)	#implicitly converts unordered set to ordered list
+		sortedTransitions = sorted(selectedTransitions,lambda t : t.documentOrder)	#implicitly converts unordered set to ordered list
+
+		logging.info("sorted transitions: "+ pr(sortedTransitions))
 
 		statesExited = self._getStatesExited(sortedTransitions) 
-		basicStatesExited  = filter(lambda s : s.source,sortedTransitions)
+		basicStatesExited  = set(map(lambda s : s.source,sortedTransitions))
 		statesEntered = self._getStatesEntered(sortedTransitions) 
-		basicStatesEntered  = filter(lambda s : s.target,sortedTransitions).reverse()
+		basicStatesEntered  = set(map(lambda s : s.target,sortedTransitions))
+
+		logging.info("basicStatesExited " + pr(basicStatesExited))
+		logging.info("basicStatesEntered " + pr(basicStatesEntered))
 
 		eventsToAddToInnerQueue = set()
 
 		#operations will be performed in the order described in Rhapsody paper
 
-		#TODO: pass to actions whatever local variables will be needed
+		logging.info("executing state exit actions")
 		for state in statesExited:
-			state.exitAction(self._datamodel,eventsToAddToInnerQueue)
+			logging.info("exiting " + str(state))
+			for action in state.exitActions:
+				action(self._datamodel,eventsToAddToInnerQueue)
 
 		# -> Concurrency: Number of transitions: Multiple
+		logging.info("executing transitition actions")
 		for transition in sortedTransitions:
+			logging.info("transitition " + str(transition))
 			for action in transition.actions:
 				action(self._datamodel,eventsToAddToInnerQueue) 		
 
+		logging.info("executing state enter actions")
 		for state in statesEntered:
-			state.enterAction(self._datamodel,eventsToAddToInnerQueue)
+			logging.info("entering " + str(state))
+			for action in state.enterActions:
+				action(self._datamodel,eventsToAddToInnerQueue)
 
 		#update configuration by removing basic states exited, and adding basic states entered
+		logging.info("updating configuration ")
+		logging.info("old configuration " + pr(self._configuration))
+
 		self._configuration = (self._configuration - basicStatesExited) | basicStatesEntered
 
+		logging.info("new configuration " + pr(self._configuration))
+		
 		#add set of generated events to the innerEventQueue -> Event Lifelines: Next small-step
+		logging.info("adding triggered events to inner queue " + str(eventsToAddToInnerQueue))
+
 		self._innerEventQueue.append(eventsToAddToInnerQueue)
 
 		#if selectedTransitions is empty, we have reached a stable state, and the big-step will stop, otherwise will continue -> Maximality: Take-Many
@@ -110,7 +141,7 @@ class SCXMLInterpreter():
 		for transition in transitions:
 			lca = transition.getLCA()
 			
-			state = lca.transition
+			state = transition.source
 			while not state is lca:
 				statesExited.append(state)
 				state = state.parent
@@ -124,14 +155,17 @@ class SCXMLInterpreter():
 		for transition in transitions:
 			lca = transition.getLCA()
 			
+			state = transition.target
 			while not state is lca:
 				statesEntered.append(state)
 				state = state.parent
 
-		return statesExited.reverse()
+		statesEntered.reverse()
+		return statesEntered
 		
-	def _selectTransitions(eventSet):
+	def _selectTransitions(self,eventSet):
 		allTransitions = self._getAllActivatedTransitions(self._configuration,eventSet);
+		print "allTransitions",allTransitions 
 		consistentTransitions = self._makeTransitionsConsistent(allTransitions);
 		return consistentTransitions; 
 
@@ -158,31 +192,52 @@ class SCXMLInterpreter():
 
 
 		eventNames = map(lambda e : e.name,eventSet)
+
+		print eventNames
 		
+		#pdb.set_trace()
 		for state in statesAndParents:
-			transitions.concat( filter(lambda t : (not t.eventName or t.eventName in eventNames) and t.cond(),state.transitions))
+			print state
+			for t in state.transitions:
+				print t,t.event
+				if (t.event is None or t.event in eventNames) and t.cond():
+					print "adding transition t to selected transitions"
+					transitions.add(t)
+
+		return transitions 
 	
 
 	def _makeTransitionsConsistent(self,transitions):
-		conflictingTransitions = self._getTransitionsInConflict(transitions)
-		consistentTransitions = self._selectTransitionsBasedOnPriority(conflictingTransitions)
+		(transitionsNotInConflict, transitionsPairsInConflict) = self._getTransitionsInConflict(transitions)
+		print "transitionsNotInConflict",transitionsNotInConflict
+		print "transitionsPairsInConflict",transitionsPairsInConflict
+		resolvedTransitionPairs = self._selectTransitionsBasedOnPriority(transitionsPairsInConflict)
+		consistentTransitions = transitionsNotInConflict | resolvedTransitionPairs 
 		return consistentTransitions 
 			
 	def _getTransitionsInConflict(self,transitions):
 
-		transitionsInConflict = set() 	#set of tuples
+		allTransitionsInConflict = set() 	#set of tuples
+		transitionsPairsInConflict = set() 	#set of tuples
 
 		#better to use iterators, because not sure how to encode "order doesn't matter" to list comprehension
-		for i in range(0,transitions.length):
-			for j in range(i,transitions.length):
+		transitionList = list(transitions)
+		print "transitions",transitionList
+
+		for i in range(0,len(transitionList)):
+			for j in range(i,len(transitionList)):
 				if not i == j:		
-					t1 = transitions[i]
-					t2 = transitions[j]
+					t1 = transitionList[i]
+					t2 = transitionList[j]
 					
 					if self._conflicts(t1,t2):
-						 transitionsInConflict.add((t1,t2))
+						allTransitionsInConflict.add(t1)
+						allTransitionsInConflict.add(t2)
+						transitionsPairsInConflict.add((t1,t2))
 
-		return transitionsInConflict
+		transitionsNotInConflict = transitions - allTransitionsInConflict
+
+		return transitionsNotInConflict, transitionsPairsInConflict
 	
 
 	#this would be parameterizable
@@ -212,7 +267,7 @@ class SCXMLInterpreter():
 				else:
 					return t2
 
-		return map(compareBasedOnPriority,transitionsInConflict)	#FIXME: eliminate dups?
+		return set(map(compareBasedOnPriority,transitionsInConflict))	#FIXME: eliminate dups?
 
 
 class SimpleInterpreter(SCXMLInterpreter):
@@ -222,12 +277,3 @@ class SimpleInterpreter(SCXMLInterpreter):
 		#pass it straight through	
 		self._performBigStep(e)
 
-if __name__ == "__main__":
-	import sys
-	from doc2model import scxmlFileToPythonModel
-	pathToSCXML = sys.argv[1]
-	print pathToSCXML 
-	scxmlFile = file(pathToSCXML)
-	model = scxmlFileToPythonModel(scxmlFile) 
-	interpreter = SimpleInterpreter(model) 
-	interpreter.start() 

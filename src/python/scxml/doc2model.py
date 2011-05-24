@@ -1,11 +1,21 @@
 from lxml import etree
 from model import *
 
-stateTagNames = set(["initial","parallel","final","history","state"])
+scxmlNS = "http://www.w3.org/2005/07/scxml"
+
+#short for qualify
+def q(tag):
+	return "{" + scxmlNS + "}" + tag
+
+stateTagNames = map(q,["initial","parallel","final","history","state"])
+
+#TODO: not quite done. still need a set to lookup qualified tag names (in) as well as shorthand other stuff...
 
 def scxmlFileToPythonModel(scxmlFile):
 	return scxmlDocToPythonModel(etree.parse(scxmlFile))
 
+#TODO: normalize document using XSLT
+#right now we assume we're given a nice, normalized document
 def scxmlDocToPythonModel(tree):
 	
 	#TODO: parse document into tree
@@ -19,29 +29,34 @@ def scxmlDocToPythonModel(tree):
 		if id:
 			idToNode[id] = elt
 
-		if elt.tag == "state":
+		if elt.tag == q("state"):
 			p = elt.getparent()
-			if p and p.tag == "parallel":
-				nodeToObj[elt] = State(name=id,kind=State.AND,documentOrder=order)
-			elif some(lambda n : n.tag in stateTagNames, list(elt)):
-				nodeToObj[elt] = State(name=id,kind=State.COMPOSITE,documentOrder=order)
+			if p is not None and p.tag == q("parallel"):
+				nodeToObj[elt] = State(id,State.AND,order)
+			elif filter(lambda n : n.tag in stateTagNames, list(elt)):
+				nodeToObj[elt] = State(id,State.COMPOSITE,order)
 			else:
-				nodeToObj[elt] = State(name=id,kind=State.BASIC,documentOrder=order)
-		elif elt.tag == "initial":
-			nodeToObj[elt] = State(name=id,kind=State.INITIAL,documentOrder=order)	
-		elif elt.tag == "parallel":
-			nodeToObj[elt] = State(name=id,kind=State.PARALLEL,documentOrder=order)
-		elif elt.tag == "final":
-			nodeToObj[elt] = State(name=id,kind=State.FINAL,documentOrder=order)	
-		elif elt.tag == "history":
-			nodeToObj[elt] = State(name=id,kind=State.HISTORY,documentOrder=order)
-		elif elt.tag == "transition":
-			nodeToObj[elt] = Transition(eventName=elt.get("event"),documentOrder=order)
-		elif elt.tag == "send":
+				nodeToObj[elt] = State(id,State.BASIC,order)
+		elif elt.tag == q("scxml"):
+			nodeToObj[elt] = State(id,State.COMPOSITE,order)	
+		elif elt.tag == q("initial"):
+			nodeToObj[elt] = State(id,State.INITIAL,order)	
+		elif elt.tag == q("parallel"):
+			nodeToObj[elt] = State(id,State.PARALLEL,order)
+		elif elt.tag == q("final"):
+			nodeToObj[elt] = State(id,State.FINAL,order)	
+		elif elt.tag == q("history"):
+			nodeToObj[elt] = State(id,State.HISTORY,order)
+		elif elt.tag == q("transition"):
+			event = elt.get("event")
+			if not event:
+				event = None
+			nodeToObj[elt] = Transition(event,order)
+		elif elt.tag == q("send"):
 			nodeToObj[elt] = SendAction(elt.get("event"))
-		elif elt.tag == "assign":
+		elif elt.tag == q("assign"):
 			nodeToObj[elt] = AssignAction(elt.get("location"),elt.get("expr"))
-		elif elt.tag == "script":
+		elif elt.tag == q("script"):
 			nodeToObj[elt] = ScriptAction(elt.text)
 		else:
 			pass
@@ -49,24 +64,28 @@ def scxmlDocToPythonModel(tree):
 		order = order + 1
 
 	#second pass
+	#print "constructing model - starting second pass"
 	for elt,obj in nodeToObj.iteritems():
 		if isinstance(obj,State):
 			#link to parent
 			p = elt.getparent()
-			if p and p in nodeToObj:
-				obj.parent = p
+			if p is not None and p in nodeToObj:
+				parentObj = nodeToObj[p]
+				#print "make",parentObj,"parent of",obj
+				obj.parent = parentObj 
 
 			for childNode in elt:
 				#transition children
-				if childNode in nodeToObj:
+				if childNode.tag in stateTagNames:
 					childObj = nodeToObj[childNode]
+					#print "make",childObj,"child of",obj 
 					obj.children.append(childObj)
 				#entry and exit actions
-				elif childNode.tag == "onentry":
+				elif childNode.tag == q("onentry"):
 					for actionNode in childNode:
 						if actionNode in nodeToObj:
 							elt.entryActions.append(nodeToObj[actionNode])
-				elif childNode.tag == "onexit":
+				elif childNode.tag == q("onexit"):
 					for actionNode in childNode:
 						if actionNode in nodeToObj:
 							elt.exitActions.append(nodeToObj[actionNode])
@@ -82,14 +101,22 @@ def scxmlDocToPythonModel(tree):
 			#hook up transition source
 			obj.source = nodeToObj[ elt.getparent() ]
 
+			obj.source.transitions.append(obj)
+
 			#hook up transition target
 			obj.target = nodeToObj[idToNode[elt.get("target")]]
 		else:
 			pass	#no post-processing needed on other elements
+
+	#print "constructing model - finished second pass"
 		
 	#hook up the initial state
 	rootNode = tree.getroot()
-	initialNode = filter(lambda n : n.tag == "initial", list(rootNode))[0]
-	
+	rootState = nodeToObj[rootNode]
+	initialNode = filter(lambda n : n.tag == q("initial"), list(rootNode))[0]
+	initialState = nodeToObj[initialNode] 
+
 	#instantiate and return the model
-	return SCXMLModel(initialNode) 
+	model = SCXMLModel(initialState,rootState) 
+
+	return model

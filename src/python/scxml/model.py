@@ -1,8 +1,17 @@
 from event import Event
 
 class SCXMLModel():
-	def __init__(self,initialState=None):
+	def __init__(self,initialState=None,rootState=None):
 		self.initial = initialState
+		self.root = rootState
+
+	def __str__(self):
+		allNodes = [self.root]
+		allNodes.extend(self.root.getDescendants())
+		allNodeStrings = map(lambda n : str(n),allNodes)
+		return "\n".join(allNodeStrings) 
+
+		
 
 class State():
 	BASIC = 0
@@ -13,15 +22,19 @@ class State():
 	INITIAL = 5
 	FINAL = 6
 
-	def __init__(self,name="",enterActions=[],exitActions=[],transitions=[],parent=None,children=[],kind=BASIC,documentOrder=0):
+	def __init__(self,name="",kind=BASIC,documentOrder=0):
 		self.name = name
-		self.enterAction = enterAction 
-		self.exitAction = exitAction
-		self.transitions = transitions
-		self.parent = parent
 		self.kind = kind
-		self.children = children
 		self.documentOrder = documentOrder
+
+		self.enterActions = []
+		self.exitActions = []
+		self.transitions = []
+		self.parent = None
+		self.children = []
+
+	def __str__(self):
+		return self.name
 
 	def getAncestors(self):
 		ancestors = []
@@ -37,7 +50,7 @@ class State():
 		descendants = [self]
 
 		for child in self.children:
-			descendants.concat(child.getDescendants())
+			descendants.extend(child.getDescendants())
 
 		return descendants 
 		
@@ -59,12 +72,17 @@ class State():
 		return lca
 
 class Transition():
-	def __init__(self,eventName="",source=None,target=None,actions=[],documentOrder=0):
-		self.eventName = eventName 
-		self.source = source 
-		self.target = target
-		self.actions = actions
+	def __init__(self,event=None,documentOrder=0,cond=lambda : True):
+		self.event = event 
 		self.documentOrder = documentOrder
+		self.cond = cond
+
+		self.source = None 
+		self.target = None
+		self.actions = []
+
+	def __str__(self):
+		return self.source.name + " -> " + self.target.name
 
 	def getLCA(self):
 		return self.source.getLCA(self.target)
