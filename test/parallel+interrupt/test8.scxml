@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+no conflict here
+initial: [b1,b2]
+after t: [c1,c2]
+--> 
+<scxml
+	xmlns="http://www.w3.org/2005/07/scxml"
+	version="1.0"
+	profile="ecmascript"
+	id="root"
+	initial="a">
+
+	<state id="a" initial="b">
+		<parallel id="b">
+			<state id="b1">
+			</state>
+
+			<state id="b2">
+			</state>
+
+			<transition event="t" target="c"/>
+		</parallel>
+
+		<parallel id="c">
+			<state id="c1">
+			</state>
+
+			<state id="c2">
+			</state>
+		</parallel>
+	</state>
+
+</scxml>
+
+
+
+
+

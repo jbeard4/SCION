@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+orthogonal preemption - transition originating at inner OR state interrupts transition originating at orthogonal OR state.
+first OR state should win, as the transitions originate at the same level of hierarchy, and wins by document order
+--> 
+<scxml
+	xmlns="http://www.w3.org/2005/07/scxml"
+	version="1.0"
+	profile="ecmascript"
+	id="root"
+	initial="b">
+
+	<parallel id="b">
+		<state id="c" initial="c1">
+			<state id="c1">
+				<transition event="t" target="c2"/>
+			</state>
+
+			<state id="c2"/>
+		</state>
+
+		<state id="d" initial="d1">
+			<state id="d1">
+				<transition event="t" target="a1"/>
+			</state>
+		</state>
+
+	</parallel>
+
+	<state id="a1"/>
+</scxml>
+
