@@ -1,16 +1,18 @@
 {
-	"name" : "test11",
+	"name" : "test13",
 	"group" : "parallel+Interrupt",
-	"scxml" : "test11.scxml",
+	"scxml" : "test13.scxml",
 	"initialConfiguration" : ["b1","b2"],
 	"events" : [ 
 		{
 			"event" : { "name" : "t" },
-			"nextConfiguration" : ["d"]
+			"nextConfiguration" : ["c1","c2"]
 		}
 
 	]
 }
+
+
 
 
 
