@@ -1,0 +1,1 @@
+PYTHONPATH=:./src/python/ python src/python/scxml/test/harness.py test/basic/basic0.json test/basic/basic1.json test/basic/basic2.json test/documentOrder/documentOrder0.json test/hierarchy+documentOrder/test0.json test/hierarchy+documentOrder/test1.json test/hierarchy/hier0.json test/hierarchy/hier1.json test/hierarchy/hier2.json test/parallel/test0.json
