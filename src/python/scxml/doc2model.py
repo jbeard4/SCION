@@ -22,10 +22,21 @@ def scxmlDocToPythonModel(tree):
 	nodeToObj = {}
 	idToNode = {}	#because etree doesn't give us getElementById
 
+	#do some normalization
+
+	#normalize root id
 	root = tree.getroot()
 	if root.get("name") and not root.get("id"):
 		root.set("id",root.get("name"))
 
+	#normalize initial attributes
+	walkAll = tree.getiterator()
+	for elt in walkAll:
+		if elt.get("initial"):
+			newInitial = etree.SubElement(elt,q("initial"))
+			newTransition = etree.SubElement(newInitial,q("transition"))
+			newTransition.set("target",elt.get("initial"))
+		
 	order = 0
 	walkAll = tree.getiterator()
 	for elt in walkAll:
