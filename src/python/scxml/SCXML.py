@@ -151,8 +151,7 @@ class SCXMLInterpreter():
 					for anc in state.getAncestors(lca):
 						statesExited.add(anc)
 
-		sortedStatesExited = sorted(statesExited,key=lambda s : s.getDepth()) 
-		sortedStatesExited.reverse()
+		sortedStatesExited = sorted(statesExited,key=lambda s : s.getDepth(),reverse=True) 
 
 		return basicStatesExited,sortedStatesExited  
 
