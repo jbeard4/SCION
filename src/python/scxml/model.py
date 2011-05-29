@@ -17,7 +17,7 @@ class State():
 	BASIC = 0
 	COMPOSITE = 1
 	PARALLEL = 2
-	AND = 3
+	#AND = 3
 	HISTORY = 4
 	INITIAL = 5
 	FINAL = 6
@@ -81,7 +81,7 @@ class State():
 	def isOrthogonalTo(self,s):
 		#Two control states are orthogonal if they are not ancestrally
 		#related, and their smallest, mutual parent is a Concurrent-state.
-		return not self.isAncestrallyRelatedTo(s) and lca.kind is State.AND
+		return not self.isAncestrallyRelatedTo(s) and self.getLCA(s).kind is State.PARALLEL
 
 	def isAncestrallyRelatedTo(self,s):
 		#Two control states are ancestrally related if one is child/grandchild of another.

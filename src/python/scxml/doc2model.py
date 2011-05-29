@@ -34,10 +34,7 @@ def scxmlDocToPythonModel(tree):
 			idToNode[id] = elt
 
 		if elt.tag == q("state"):
-			p = elt.getparent()
-			if p is not None and p.tag == q("parallel"):
-				nodeToObj[elt] = State(id,State.AND,order)
-			elif filter(lambda n : n.tag in stateTagNames, list(elt)):
+			if filter(lambda n : n.tag in stateTagNames, list(elt)):
 				nodeToObj[elt] = State(id,State.COMPOSITE,order)
 			else:
 				nodeToObj[elt] = State(id,State.BASIC,order)

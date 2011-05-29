@@ -174,7 +174,7 @@ class SCXMLInterpreter():
 
 		sortedStatesEntered = sorted(statesToEnter,key=lambda s : s.getDepth()) 
 
-		return statesToEnter,sortedStatesEntered   
+		return basicStatesToEnter,sortedStatesEntered   
 
 
 	def _getChildrenOfParallelStatesWithoutDescendantsInStatesToEnter(self,statesToEnter):
@@ -218,7 +218,7 @@ class SCXMLInterpreter():
 				for child in s.children:
 					self._recursiveAddStatesToEnter(child,statesToEnter,basicStatesToEnter)
 
-			elif s.kind is State.COMPOSITE or s.kind is State.AND:
+			elif s.kind is State.COMPOSITE:
 
 				#FIXME: problem: this doesn't check cond of initial state transitions
 				#also doesn't check priority of transitions (problem in the SCXML spec?)
