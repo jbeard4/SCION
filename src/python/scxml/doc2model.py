@@ -22,6 +22,10 @@ def scxmlDocToPythonModel(tree):
 	nodeToObj = {}
 	idToNode = {}	#because etree doesn't give us getElementById
 
+	root = tree.getroot()
+	if root.get("name") and not root.get("id"):
+		root.set("id",root.get("name"))
+
 	order = 0
 	walkAll = tree.getiterator()
 	for elt in walkAll:
@@ -40,7 +44,7 @@ def scxmlDocToPythonModel(tree):
 		elif elt.tag == q("scxml"):
 			nodeToObj[elt] = State(id,State.COMPOSITE,order)	
 		elif elt.tag == q("initial"):
-			nodeToObj[elt] = State(id,State.INITIAL,order)	
+			nodeToObj[elt] = State(elt.getparent().get("id")+"_initial",State.INITIAL,order)	
 		elif elt.tag == q("parallel"):
 			nodeToObj[elt] = State(id,State.PARALLEL,order)
 		elif elt.tag == q("final"):
@@ -76,10 +80,14 @@ def scxmlDocToPythonModel(tree):
 
 			for childNode in elt:
 				#transition children
+				#may fall into the next case, for initial state
 				if childNode.tag in stateTagNames:
 					childObj = nodeToObj[childNode]
 					#print "make",childObj,"child of",obj 
 					obj.children.append(childObj)
+
+				if childNode.tag == q("initial"):
+					obj.initial = nodeToObj[childNode]
 				#entry and exit actions
 				elif childNode.tag == q("onentry"):
 					for actionNode in childNode:
@@ -104,7 +112,7 @@ def scxmlDocToPythonModel(tree):
 			obj.source.transitions.append(obj)
 
 			#hook up transition target
-			obj.target = nodeToObj[idToNode[elt.get("target")]]
+			obj.targets = [ nodeToObj[idToNode[targetId]] for targetId in elt.get("target").split() ]
 		else:
 			pass	#no post-processing needed on other elements
 
@@ -113,10 +121,8 @@ def scxmlDocToPythonModel(tree):
 	#hook up the initial state
 	rootNode = tree.getroot()
 	rootState = nodeToObj[rootNode]
-	initialNode = filter(lambda n : n.tag == q("initial"), list(rootNode))[0]
-	initialState = nodeToObj[initialNode] 
 
 	#instantiate and return the model
-	model = SCXMLModel(initialState,rootState) 
+	model = SCXMLModel(rootState) 
 
 	return model

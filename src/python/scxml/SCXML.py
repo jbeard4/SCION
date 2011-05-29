@@ -6,7 +6,7 @@ Summary of SC Semantics:
 		Order of transitions: Explicitly defined, based on document order (which defines a total order).
 
 	Transition Consistency:
-		Small-step consistency: Source/Destination Orthogonal
+		Small-step consistency: Arena Orthogonal
 
 		Interrupt Transitions and Preemption: Non-preemptive 
 
@@ -47,7 +47,7 @@ class SCXMLInterpreter():
 	def start(self):
 		#perform big step without events to take all default transitions and reach stable initial state
 		logging.info("performing initial big step")
-		self._configuration.add(self.model.initial)
+		self._configuration.add(self.model.root.initial)
 		self._performBigStep()	
 
 	def getConfiguration(self):
@@ -82,15 +82,11 @@ class SCXMLInterpreter():
 		logging.info("selected transitions: " + str(selectedTransitions))
 
 		if selectedTransitions:
-			# -> Concurrency: Order of transitions: Explicitly defined
-			sortedTransitions = sorted(selectedTransitions,lambda t : t.documentOrder)	#implicitly converts unordered set to ordered list
 
-			logging.info("sorted transitions: "+ str(sortedTransitions))
+			logging.info("sorted transitions: "+ str(selectedTransitions))
 
-			statesExited = self._getStatesExited(sortedTransitions) 
-			basicStatesExited  = set(map(lambda s : s.source,sortedTransitions))
-			statesEntered = self._getStatesEntered(sortedTransitions) 
-			basicStatesEntered  = set(map(lambda s : s.target,sortedTransitions))
+			basicStatesExited,statesExited = self._getStatesExited(selectedTransitions) 
+			basicStatesEntered,statesEntered = self._getStatesEntered(selectedTransitions) 
 
 			logging.info("basicStatesExited " + str(basicStatesExited))
 			logging.info("basicStatesEntered " + str(basicStatesEntered))
@@ -108,6 +104,9 @@ class SCXMLInterpreter():
 					action(self._datamodel,eventsToAddToInnerQueue)
 
 			# -> Concurrency: Number of transitions: Multiple
+			# -> Concurrency: Order of transitions: Explicitly defined
+			sortedTransitions = sorted(selectedTransitions,key=lambda t : t.documentOrder)	#implicitly converts unordered set to ordered list
+
 			logging.info("executing transitition actions")
 			for transition in sortedTransitions:
 				logging.info("transitition " + str(transition))
@@ -138,31 +137,101 @@ class SCXMLInterpreter():
 		return selectedTransitions 	
 
 	def _getStatesExited(self,transitions):
-		statesExited = []
+		statesExited = set()
+		basicStatesExited = set()
+
 		for transition in transitions:
 			lca = transition.getLCA()
-			
-			state = transition.source
-			while not state is lca:
-				statesExited.append(state)
-				state = state.parent
+			desc = lca.getDescendants()
+		
+			for state in self._configuration:
+				if state in desc:
+					basicStatesExited.add(state) 
+					statesExited.add(state)
+					for anc in state.getAncestors(lca):
+						statesExited.add(anc)
 
-		return statesExited
+		sortedStatesExited = sorted(statesExited,key=lambda s : s.getDepth()) 
+		sortedStatesExited.reverse()
+
+		return basicStatesExited,sortedStatesExited  
+
 
 
 	def _getStatesEntered(self,transitions):
-		statesEntered = []
+		statesToRecursivelyAdd = sum([[state for state in transition.targets] for transition in transitions],[])
+		print "statesToRecursivelyAdd :" , statesToRecursivelyAdd 
+		root = transition.getLCA() 
+		statesToEnter = set()
+		basicStatesToEnter = set()
 
-		for transition in transitions:
-			lca = transition.getLCA()
+		while statesToRecursivelyAdd: 
+
+			for state in statesToRecursivelyAdd:
+				self._recursiveAddStatesToEnter(state,statesToEnter,basicStatesToEnter)
 			
-			state = transition.target
-			while not state is lca:
-				statesEntered.append(state)
-				state = state.parent
+			statesToRecursivelyAdd = self._getChildrenOfParallelStatesWithoutDescendantsInStatesToEnter(statesToEnter)
 
-		statesEntered.reverse()
-		return statesEntered
+		sortedStatesEntered = sorted(statesToEnter,key=lambda s : s.getDepth()) 
+
+		return statesToEnter,sortedStatesEntered   
+
+
+	def _getChildrenOfParallelStatesWithoutDescendantsInStatesToEnter(self,statesToEnter):
+		childrenOfParallelStatesWithoutDescendantsInStatesToEnter = set()
+
+		#get all descendants of states to enter
+		descendantsOfStatesToEnter = set()
+		for state in statesToEnter:
+			for descendant in state.getDescendants():
+				descendantsOfStatesToEnter.add(descendant)
+
+		for state in statesToEnter:
+			if state.kind is State.PARALLEL:
+				for child in state.children:
+					if child not in descendantsOfStatesToEnter:
+						childrenOfParallelStatesWithoutDescendantsInStatesToEnter.add(child)  
+
+		return childrenOfParallelStatesWithoutDescendantsInStatesToEnter
+			
+
+	def _recursiveAddStatesToEnter(self,s,statesToEnter,basicStatesToEnter):
+		if s.kind is State.HISTORY:
+			#TODO
+			"""
+			if this._historyValue[s.id]){
+				this._historyValue[s.id].forEach(function(s0){
+					this._recursiveAddStatesToEnter(s0,root,statesToEnter,statesForDefaultEntry)
+				},this);
+			} else {
+				s.transitions.forEach(function(t){
+					t.targets.forEach(function(s0){
+						this._recursiveAddStatesToEnter(s0,root,statesToEnter,statesForDefaultEntry)
+					},this);
+				},this);
+			}
+			"""
+		else:
+			statesToEnter.add(s)
+
+			if s.kind is State.PARALLEL:
+				for child in s.children:
+					self._recursiveAddStatesToEnter(child,statesToEnter,basicStatesToEnter)
+
+			elif s.kind is State.COMPOSITE or s.kind is State.AND:
+
+				#FIXME: problem: this doesn't check cond of initial state transitions
+				#also doesn't check priority of transitions (problem in the SCXML spec?)
+				#TODO: come up with test case that shows other is broken
+				#what we need to do here: select transitions...
+				#for now, make simplifying assumption. later on check cond, then throw into the parameterized choose by priority
+				self._recursiveAddStatesToEnter(s.initial,statesToEnter,basicStatesToEnter)
+
+			elif s.kind is State.INITIAL or s.kind is State.BASIC or s.kind is State.FINAL:
+				basicStatesToEnter.add(s)
+			else:
+				pass	#error: bad model - unknown state type
+
 		
 	def _selectTransitions(self,eventSet):
 		allTransitions = self._getAllActivatedTransitions(self._configuration,eventSet);
@@ -258,11 +327,10 @@ class SCXMLInterpreter():
 	def _conflicts(self,t1,t2):
 		#here we put the conflict logic...
 		#decide on one of these... arena orthogonal, or the other.
-		return not self._isSourceDestinationOrthogonal(t1,t2) 	
+		return not self._isArenaOrthogonal(t1,t2) 	
 	
-
-	def _isSourceDestinationOrthogonal(self,t1,t2):
-		return t1.source.isOrthogonalTo(t2.source) and t1.dest.isOrthogonalTo(t2.dest) and t1.source.isOrthogonalTo(t2.dest) and t1.dest.isOrthogonalTo(t2.source)
+	def _isArenaOrthogonal(self,t1,t2):
+		return t1.getLCA().isOrthogonalTo(t2.getLCA())
 	
 	# -> Priority: Source-Child 
 	#this would also be parameterizable

@@ -1,8 +1,8 @@
 from event import Event
+from collections import deque	#this is a non-synchronized queue
 
 class SCXMLModel():
-	def __init__(self,initialState=None,rootState=None):
-		self.initial = initialState
+	def __init__(self,rootState=None):
 		self.root = rootState
 
 	def __str__(self):
@@ -31,6 +31,7 @@ class State():
 		self.exitActions = []
 		self.transitions = []
 		self.parent = None
+		self.initial = None
 		self.children = []
 
 	def __str__(self):
@@ -48,32 +49,43 @@ class State():
 
 		return count
 
-	def getAncestors(self):
+	def getAncestors(self,root = None):
 		ancestors = []
 
-		state = self
-		while state:
+		state = self.parent
+		while state is not root:
 			ancestors.append(state)
 			state = state.parent
 
 		return ancestors
 
+	def getAncestorsOrSelf(self,root=None):
+		return [self] + self.getAncestors()
+
 	def getDescendants(self):
-		descendants = [self]
+		descendants = [] 
+		queue = deque(self.children)
 
-		for child in self.children:
-			descendants.extend(child.getDescendants())
+		while queue:
+			state = queue.popleft()
+			descendants.append(state)
 
-		return descendants 
-		
+			for child in state.children:
+				queue.append(child)
+
+		return descendants
+
+	def getDescendantsOrSelf(self):
+		return [self] + self.getDescendants()
+
 	def isOrthogonalTo(self,s):
 		#Two control states are orthogonal if they are not ancestrally
 		#related, and their smallest, mutual parent is a Concurrent-state.
-		return not self.isAncestrallyRelatedTo(s) and self.getLCA(s).kind is State.AND
+		return not self.isAncestrallyRelatedTo(s) and lca.kind is State.AND
 
 	def isAncestrallyRelatedTo(self,s):
 		#Two control states are ancestrally related if one is child/grandchild of another.
-		return self in s.getAncestors() or s in self.getAncestors()
+		return self in s.getAncestorsOrSelf() or s in self.getAncestorsOrSelf()
 
 	def getLCA(self,s):
 		commonAncestors = filter(lambda a : s in a.getDescendants(),self.getAncestors())
@@ -90,17 +102,17 @@ class Transition():
 		self.cond = cond
 
 		self.source = None 
-		self.target = None
+		self.targets = None
 		self.actions = []
 
 	def __str__(self):
-		return self.source.name + " -> " + self.target.name
+		return self.source.name + " -> " + repr([target.name for target in self.targets])
 
 	def __repr__(self):
 		return "<" + str(self) + ">"
 
 	def getLCA(self):
-		return self.source.getLCA(self.target)
+		return self.source.getLCA(self.targets[0])
 
 class Action():
 	def __call__(self):

@@ -3,6 +3,8 @@ from scxml.doc2model import scxmlFileToPythonModel
 from scxml.event import Event
 from scxml.SCXML import SimpleInterpreter
 import os
+import traceback
+import pdb
 
 testCount = 0
 testsPassed = 0
@@ -57,7 +59,12 @@ for jsonTestFileName in sys.argv[1:]:
 		print inst
 		testsFailed = testsFailed + 1
 	except:
-		print "Error:", sys.exc_info()[0]
+		print "Error:"
+		e, m, tb = sys.exc_info()
+		print e
+		print m
+		traceback.print_tb(tb)
+		pdb.post_mortem(tb)
 		testsErrored = testsErrored + 1
 
 print "Summary:"
