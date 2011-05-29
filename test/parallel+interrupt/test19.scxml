@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- orthogonal preemption - two transitions originating at internal OR states are interrupted by a transition originating at outer AND state -->
+<scxml
+	xmlns="http://www.w3.org/2005/07/scxml"
+	version="1.0"
+	profile="ecmascript"
+	id="root"
+	initial="b">
+
+	<parallel id="b">
+		<state id="c" initial="c1">
+			<state id="c1">
+				<transition event="t" target="c2"/>
+			</state>
+
+			<state id="c2"/>
+		</state>
+
+		<state id="d" initial="d1">
+			<state id="d1">
+				<transition event="t" target="d2"/>
+			</state>
+
+			<state id="d2"/>
+		</state>
+
+		<transition event="t" target="a1" />
+
+	</parallel>
+
+	<state id="a1"/>
+</scxml>
+
+
+
+

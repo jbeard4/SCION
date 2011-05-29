@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- orthogonal preemptions 
+here we have multiple interrupt conflicts, originating from d and b. 
+transition from c1 will win, for same reasons listed above -->
+<scxml
+	xmlns="http://www.w3.org/2005/07/scxml"
+	version="1.0"
+	profile="ecmascript"
+	id="root"
+	initial="b">
+
+	<parallel id="b">
+		<state id="c" initial="c1">
+			<state id="c1">
+				<transition event="t" target="c2"/>
+			</state>
+
+			<state id="c2"/>
+		</state>
+
+		<state id="d">
+			<transition event="t" target="a1"/>
+		</state>
+
+		<transition event="t" target="a2"/>
+
+	</parallel>
+
+	<state id="a1"/>
+
+	<state id="a2"/>
+</scxml>
+
+
+
+

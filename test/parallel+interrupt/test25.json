@@ -1,0 +1,38 @@
+{
+	"name" : "test25",
+	"group" : "parallel+Interrupt",
+	"scxml" : "test25.scxml",
+	"initialConfiguration" : ["c1","d"],
+	"events" : [ 
+		{
+			"event" : { "name" : "t" },
+			"nextConfiguration" : ["c2","d"]
+		}
+
+	]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
