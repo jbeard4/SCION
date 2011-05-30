@@ -107,11 +107,11 @@ def scxmlDocToPythonModel(tree):
 				elif childNode.tag == q("onentry"):
 					for actionNode in childNode:
 						if actionNode in nodeToObj:
-							elt.entryActions.append(nodeToObj[actionNode])
+							obj.enterActions.append(nodeToObj[actionNode])
 				elif childNode.tag == q("onexit"):
 					for actionNode in childNode:
 						if actionNode in nodeToObj:
-							elt.exitActions.append(nodeToObj[actionNode])
+							obj.exitActions.append(nodeToObj[actionNode])
 				else:
 					pass #unknown tag
 		elif isinstance(obj,Transition):

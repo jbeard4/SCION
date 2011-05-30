@@ -1,0 +1,22 @@
+{
+	"name" : "send8",
+	"group" : "send",
+	"scxml" : "send8.scxml",
+	"initialConfiguration" : ["a"],
+	"events" : [
+		{
+			"event" : { "name" : "t" },
+			"nextConfiguration" : ["b2"]
+		}
+	]
+}
+
+
+
+
+
+
+
+
+
+

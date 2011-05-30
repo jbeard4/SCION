@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml 
+	xmlns="http://www.w3.org/2005/07/scxml"
+	version="1.0"
+	profile="ecmascript"
+	id="root">
+
+	<initial id="intitial1">
+		<transition target="a"/>
+	</initial>
+
+	<state id="a">
+		<onexit>
+			<send event="s"/>
+		</onexit>
+
+		<transition target="b" event="t">
+		</transition>
+	</state>
+
+	<state id="b">
+		<transition target="c" event="s"/>
+	</state>
+
+	<state id="c">
+	</state>
+
+</scxml>
+
+
+
+
+

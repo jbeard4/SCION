@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Illustrates one of the edge cases of these semantics. Because initial transition will be taken in its own small step, triggered event "s" will be "lost" - not availble in the next small step from b1. Will therefore end up in b3.
+     -->
+<scxml 
+	xmlns="http://www.w3.org/2005/07/scxml"
+	version="1.0"
+	profile="ecmascript"
+	id="root">
+
+	<initial id="intitial1">
+		<transition target="a"/>
+	</initial>
+
+	<state id="a">
+		<transition target="b" event="t">
+			<send event="s"/>
+		</transition>
+	</state>
+
+	<state id="b" initial="b1">
+		<state id="b1">
+			<transition event="s" target="b2"/>
+			<transition target="b3"/>
+		</state>
+
+		<state id="b2">
+		</state>
+
+		<state id="b3">
+		</state>
+	</state>
+</scxml>
+
+
+

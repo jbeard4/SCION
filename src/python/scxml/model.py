@@ -127,22 +127,11 @@ class SendAction(Action):
 		self.eventName = eventName
 		self.timeout = timeout
 
-	def __call__(self,datamodel,eventList):
-		eventList.add(Event(self.eventName))
-
 class AssignAction(Action):
 	def __init__(self,location="",expr=""):
 		self.location = location
 		self.expr = expr
 
-	def __call__(self,datamodel,eventList):				#TODO: replace datamodel with scripting context
-		#Memory Protocols: Small-step
-		datamodel[self.location] = eval(self.expr)	#TODO: eval js code using spidermonkey bindings
-
 class ScriptAction(Action):
 	def __init__(self,code=""):
 		self.code = code
-
-	def __call__(self,datamodel,eventList):				#TODO: replace datamodel with scripting context
-		eval(self.code)					#TODO: eval js using spidermonkey bindings
-

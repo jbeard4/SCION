@@ -28,7 +28,7 @@ Parameterized Parts of the Algorithm: Priority, Transition Consistency
 
 from collections import deque	#this is a non-synchronized queue
 import copy
-from model import State
+from model import State,SendAction,AssignAction,ScriptAction
 from event import Event
 import logging
 import pdb
@@ -106,7 +106,7 @@ class SCXMLInterpreter():
 
 				#peform exit actions
 				for action in state.exitActions:
-					action(self._datamodel,eventsToAddToInnerQueue)
+					self._evaluateAction(action,eventsToAddToInnerQueue)
 
 				#update history
 				if state.history:
@@ -125,13 +125,13 @@ class SCXMLInterpreter():
 			for transition in sortedTransitions:
 				logging.info("transitition " + str(transition))
 				for action in transition.actions:
-					action(self._datamodel,eventsToAddToInnerQueue) 		
+					self._evaluateAction(action,eventsToAddToInnerQueue) 		
 
 			logging.info("executing state enter actions")
 			for state in statesEntered:
 				logging.info("entering " + str(state))
 				for action in state.enterActions:
-					action(self._datamodel,eventsToAddToInnerQueue)
+					self._evaluateAction(action,eventsToAddToInnerQueue)
 
 			#update configuration by removing basic states exited, and adding basic states entered
 			logging.info("updating configuration ")
@@ -149,6 +149,15 @@ class SCXMLInterpreter():
 
 		#if selectedTransitions is empty, we have reached a stable state, and the big-step will stop, otherwise will continue -> Maximality: Take-Many
 		return selectedTransitions 	
+
+	def _evaluateAction(self,action,eventsToAddToInnerQueue):
+		if isinstance(action,SendAction):
+			#TODO: support timeout, data
+			eventsToAddToInnerQueue.add(Event(action.eventName))
+		elif isinstance(action,AssignAction):
+			pass	#not yet supported
+		elif isinstance(action,ScriptAction):
+			pass	#not yet supported
 
 	def _getStatesExited(self,transitions):
 		statesExited = set()
@@ -217,6 +226,7 @@ class SCXMLInterpreter():
 				statesToEnter.add(s)
 				basicStatesToEnter.add(s)
 		else:
+			statesToEnter.add(s)
 
 			if s.kind is State.PARALLEL:
 				for child in s.children:
