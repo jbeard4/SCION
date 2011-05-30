@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml 
+	xmlns="http://www.w3.org/2005/07/scxml"
+	version="1.0"
+	profile="ecmascript"
+	id="root"
+	initial="a">
+
+
+	<state id="a">
+		<transition target="p" event="t1"/>
+		<transition target="h" event="t4"/>
+	</state>
+
+	<parallel id="p">
+		<history id="h" type="deep"/>
+
+		<state id="b" initial="b1">
+			<state id="b1">
+				<transition target="b2" event="t2"/>
+			</state>
+
+			<state id="b2"/>
+		</state>
+
+		<state id="c" initial="c1">
+			<state id="c1">
+				<transition target="c2" event="t2"/>
+			</state>
+
+			<state id="c2"/>
+		</state>
+	
+		<transition target="a" event="t3"/>
+	</parallel>
+</scxml>
+
+
+
+
+
+
+

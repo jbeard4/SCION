@@ -220,7 +220,8 @@ class SCXMLInterpreter():
 
 			if s.kind is State.PARALLEL:
 				for child in s.children:
-					self._recursiveAddStatesToEnter(child,statesToEnter,basicStatesToEnter)
+					if not child.kind is State.HISTORY:		#don't enter history by default
+						self._recursiveAddStatesToEnter(child,statesToEnter,basicStatesToEnter)
 
 			elif s.kind is State.COMPOSITE:
 
