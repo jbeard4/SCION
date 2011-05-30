@@ -40,6 +40,7 @@ class SCXMLInterpreter():
 	def __init__(self,model):
 		self.model = model
 		self._configuration = set()	#full configuration, or basic configuration? what kind of set implementation?
+		self._historyValue = {}
 		self._innerEventQueue = deque()
 		self._isInFinalState = False
 		self._datamodel = {}
@@ -97,11 +98,24 @@ class SCXMLInterpreter():
 
 			#operations will be performed in the order described in Rhapsody paper
 
+			#update history states
+
 			logging.info("executing state exit actions")
 			for state in statesExited:
 				logging.info("exiting " + str(state))
+
+				#peform exit actions
 				for action in state.exitActions:
 					action(self._datamodel,eventsToAddToInnerQueue)
+
+				#update history
+				if state.history:
+					if state.history.isDeep:
+						f = lambda s0 : s0.kind is State.BASIC and s0 in state.getDescendants()
+					else:
+						f = lambda s0 : s0.parent is state
+					
+					self._historyValue[state.history] = filter(f,statesExited)
 
 			# -> Concurrency: Number of transitions: Multiple
 			# -> Concurrency: Order of transitions: Explicitly defined
@@ -196,22 +210,13 @@ class SCXMLInterpreter():
 
 	def _recursiveAddStatesToEnter(self,s,statesToEnter,basicStatesToEnter):
 		if s.kind is State.HISTORY:
-			#TODO
-			"""
-			if this._historyValue[s.id]){
-				this._historyValue[s.id].forEach(function(s0){
-					this._recursiveAddStatesToEnter(s0,root,statesToEnter,statesForDefaultEntry)
-				},this);
-			} else {
-				s.transitions.forEach(function(t){
-					t.targets.forEach(function(s0){
-						this._recursiveAddStatesToEnter(s0,root,statesToEnter,statesForDefaultEntry)
-					},this);
-				},this);
-			}
-			"""
+			if s in self._historyValue:
+				for historyState in self._historyValue[s]:
+					self._recursiveAddStatesToEnter(historyState,statesToEnter,basicStatesToEnter)
+			else:
+				statesToEnter.add(s)
+				basicStatesToEnter.add(s)
 		else:
-			statesToEnter.add(s)
 
 			if s.kind is State.PARALLEL:
 				for child in s.children:

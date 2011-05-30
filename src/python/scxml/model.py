@@ -22,7 +22,7 @@ class State():
 	INITIAL = 5
 	FINAL = 6
 
-	def __init__(self,name="",kind=BASIC,documentOrder=0):
+	def __init__(self,name="",kind=BASIC,documentOrder=0,isDeep=False):
 		self.name = name
 		self.kind = kind
 		self.documentOrder = documentOrder
@@ -31,8 +31,12 @@ class State():
 		self.exitActions = []
 		self.transitions = []
 		self.parent = None
-		self.initial = None
+		#FIXME: maybe subclass COMPOSITE type, as basic will not have these properties?
 		self.children = []
+		self.initial = None
+		self.history = None
+		#FIXME: maybe subclass HISTORY type, as this property is likewise not meaningful for other
+		self.isDeep = isDeep
 
 	def __str__(self):
 		return self.name

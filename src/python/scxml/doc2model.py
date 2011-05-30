@@ -58,7 +58,12 @@ def scxmlDocToPythonModel(tree):
 		elif elt.tag == q("final"):
 			nodeToObj[elt] = State(id,State.FINAL,order)	
 		elif elt.tag == q("history"):
-			nodeToObj[elt] = State(id,State.HISTORY,order)
+			if elt.get("type") == "deep":
+				isDeep = True
+			else:
+				isDeep = False
+
+			nodeToObj[elt] = State(id,State.HISTORY,order,isDeep=isDeep)
 		elif elt.tag == q("transition"):
 			event = elt.get("event")
 			if not event:
@@ -96,6 +101,8 @@ def scxmlDocToPythonModel(tree):
 
 				if childNode.tag == q("initial"):
 					obj.initial = nodeToObj[childNode]
+				elif childNode.tag == q("history"):
+					obj.history = nodeToObj[childNode]
 				#entry and exit actions
 				elif childNode.tag == q("onentry"):
 					for actionNode in childNode:
