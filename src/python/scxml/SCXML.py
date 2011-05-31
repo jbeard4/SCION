@@ -24,14 +24,13 @@ Parameterized Parts of the Algorithm: Priority, Transition Consistency
 
 """
 
-#TODO: add support for history
-
 from collections import deque	#this is a non-synchronized queue
 import copy
 from model import State,SendAction,AssignAction,ScriptAction
 from event import Event
 import logging
 import pdb
+import code #TODO: explore best ways to import this conditionally (only need it when model received has "python" profile)
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
@@ -53,6 +52,9 @@ class SCXMLInterpreter():
 
 	def getConfiguration(self):
 		return set(map(lambda s: s.name,self._configuration))
+
+	def getFullConfiguration(self):
+		return set(map(lambda s: s.name,reduce(lambda a,b : a + b, map(lambda s: [s] + s.getAncestors(),self._configuration))))
 
 	def _performBigStep(self,e=None):
 
@@ -155,9 +157,9 @@ class SCXMLInterpreter():
 			#TODO: support timeout, data
 			eventsToAddToInnerQueue.add(Event(action.eventName))
 		elif isinstance(action,AssignAction):
-			pass	#not yet supported
+			self._dataModel[location] = self._evaluateExpr(action.expr)
 		elif isinstance(action,ScriptAction):
-			pass	#not yet supported
+			self._evaluateScript(action.code)
 
 	def _getStatesExited(self,transitions):
 		statesExited = set()
@@ -178,8 +180,6 @@ class SCXMLInterpreter():
 
 		return basicStatesExited,sortedStatesExited  
 
-
-
 	def _getStatesEntered(self,transitions):
 		statesToRecursivelyAdd = sum([[state for state in transition.targets] for transition in transitions],[])
 		print "statesToRecursivelyAdd :" , statesToRecursivelyAdd 
@@ -197,7 +197,6 @@ class SCXMLInterpreter():
 		sortedStatesEntered = sorted(statesToEnter,key=lambda s : s.getDepth()) 
 
 		return basicStatesToEnter,sortedStatesEntered   
-
 
 	def _getChildrenOfParallelStatesWithoutDescendantsInStatesToEnter(self,statesToEnter):
 		childrenOfParallelStatesWithoutDescendantsInStatesToEnter = set()
@@ -285,12 +284,39 @@ class SCXMLInterpreter():
 			print state
 			for t in state.transitions:
 				print t,t.event
-				if (t.event is None or t.event in eventNames) and t.cond():
+				if (t.event is None or t.event in eventNames) and (t.cond is None or self._evaluateExpr(t.cond)):
 					print "adding transition t to selected transitions"
 					transitions.add(t)
 
 		return transitions 
-	
+
+	#FIXME: these methods will need to be made more general, to support other language bindings, e.g. ecmascript binding
+	def _evaluateExpr(self,expr):
+		interpreter,data = self._getNewInterpreter(False)
+		expr = "_ = " + expr
+		interpreter.runsource(expr)
+		result = data["_"] 
+		return result
+
+	def _evaluateScript(self,script):
+		interpreter,data = self._getNewInterpreter(True)
+		interpreter.runsource(script)
+
+	def _getNewInterpreter(self,writeData=True):
+		api = {
+			"getData" : lambda name : self._datamodel[data],
+			"In" : lambda stateName : stateName in self.getFullConfiguration()	#TODO: may want to make this a public API, rather than just for the SC
+		}
+
+		def setData(name,value):
+			self._datamodel[name] = value
+
+		if writeData:
+			api["setData"] = setData
+
+		interpreter = code.InteractiveInterpreter(api)
+
+		return interpreter,api
 
 	def _makeTransitionsConsistent(self,transitions):
 		consistentTransitions = set()

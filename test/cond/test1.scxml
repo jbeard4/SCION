@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml 
+	xmlns="http://www.w3.org/2005/07/scxml"
+	version="1.0"
+	profile="python"
+	id="root">
+
+	<initial id="intitial1">
+		<transition target="a"/>
+	</initial>
+
+	<state id="a">
+		<transition target="f" event="t" cond="False"/>
+		<transition target="b" event="t" cond="True"/>
+	</state>
+
+	<state id="b"/>
+
+	<state id="f"/>
+
+</scxml>
+
+
+
+

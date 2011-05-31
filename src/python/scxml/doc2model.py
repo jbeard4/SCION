@@ -1,5 +1,6 @@
 from lxml import etree
 from model import *
+import code 
 
 scxmlNS = "http://www.w3.org/2005/07/scxml"
 
@@ -13,6 +14,11 @@ stateTagNames = map(q,["initial","parallel","final","history","state"])
 
 def scxmlFileToPythonModel(scxmlFile):
 	return scxmlDocToPythonModel(etree.parse(scxmlFile))
+
+class UnsupportedProfileException(Exception):
+	pass
+
+supportedProfiles = ["ecmascript","python"]
 
 #TODO: normalize document using XSLT
 #right now we assume we're given a nice, normalized document
@@ -28,6 +34,10 @@ def scxmlDocToPythonModel(tree):
 	root = tree.getroot()
 	if root.get("name") and not root.get("id"):
 		root.set("id",root.get("name"))
+
+	profile = root.get("profile") or "python"
+	if profile not in supportedProfiles:
+		raise UnsupportedProfileException("Profile not supported")
 
 	#normalize initial attributes
 	walkAll = tree.getiterator()
@@ -68,7 +78,10 @@ def scxmlDocToPythonModel(tree):
 			event = elt.get("event")
 			if not event:
 				event = None
-			nodeToObj[elt] = Transition(event,order)
+
+			cond = elt.get("cond") or None
+			
+			nodeToObj[elt] = Transition(event,order,cond)
 		elif elt.tag == q("send"):
 			nodeToObj[elt] = SendAction(elt.get("event"))
 		elif elt.tag == q("assign"):
@@ -138,6 +151,6 @@ def scxmlDocToPythonModel(tree):
 	rootState = nodeToObj[rootNode]
 
 	#instantiate and return the model
-	model = SCXMLModel(rootState) 
+	model = SCXMLModel(rootState,profile) 
 
 	return model

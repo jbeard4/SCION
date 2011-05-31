@@ -1,0 +1,15 @@
+{
+	"name" : "test2",
+	"group" : "cond",
+	"scxml" : "test2.scxml",
+	"initialConfiguration" : ["a"],
+	"events" : [
+		{
+			"event" : { "name" : "t" },
+			"nextConfiguration" : ["b"]
+		}
+	]
+}
+
+
+

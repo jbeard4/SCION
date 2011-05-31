@@ -2,8 +2,9 @@ from event import Event
 from collections import deque	#this is a non-synchronized queue
 
 class SCXMLModel():
-	def __init__(self,rootState=None):
+	def __init__(self,rootState=None,profile="python"):
 		self.root = rootState
+		self.profile = profile
 
 	def __str__(self):
 		allNodes = [self.root]
@@ -100,7 +101,7 @@ class State():
 		return lca
 
 class Transition():
-	def __init__(self,event=None,documentOrder=0,cond=lambda : True):
+	def __init__(self,event=None,documentOrder=0,cond=None):
 		self.event = event 
 		self.documentOrder = documentOrder
 		self.cond = cond
