@@ -1,1 +1,1 @@
-PYTHONPATH=:./src/python/ python src/python/scxml/test/harness.py test/*/*
+PYTHONPATH=$PYTHONPATH:./src/python/:./lib/py/ python src/python/scxml/test/harness.py test/*/*.json
