@@ -13,6 +13,5 @@ class ECMAScriptEvaluator(IEvaluator):
 		return v
 
 	def evaluateScript(self,script,api):
-		rt = self.spidermonkey.Runtime()
-		cx = rt.new_context(api)
+		cx = self.rt.new_context(api)
 		cx.execute(expr)
