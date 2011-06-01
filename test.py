@@ -1,24 +1,8 @@
-import sys
-import pdb
+#set up evaluator
 
-sys.path.append("src/python/")
+moduleName = "scxml.evaluators"
+className = "PythonEvaluator"
+_tmp = __import__(moduleName,globals(),locals(),[className],-1)
+evaluator = _tmp.__dict__[className]()
 
-from scxml.doc2model import scxmlFileToPythonModel
-from scxml.event import Event
-from scxml.SCXML import SimpleInterpreter
-
-try: 
-	pathToSCXML = sys.argv[1]
-	print pathToSCXML 
-	scxmlFile = file(pathToSCXML)
-	model = scxmlFileToPythonModel(scxmlFile) 
-	interpreter = SimpleInterpreter(model) 
-	interpreter.start() 
-	interpreter(Event("t"))
-	#interpreter(Event("t2"))
-except:
-	e, m, tb = sys.exc_info()
-	print e
-	print m
-	print tb
-	pdb.post_mortem(tb)
+print evaluator 

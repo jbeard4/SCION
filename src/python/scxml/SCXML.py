@@ -30,19 +30,30 @@ from model import State,SendAction,AssignAction,ScriptAction
 from event import Event
 import logging
 import pdb
-import code #TODO: explore best ways to import this conditionally (only need it when model received has "python" profile)
+import sys
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
+#built-in evaluators. can be extended or overridden by the dev to support custom evaluators
+defaultEvaluatorDict = {
+	"python" : ("scxml.evaluators.py","PythonEvaluator"),
+	"ecmascript" : ("scxml.evaluators.es","ECMAScriptEvaluator")
+}
+
 class SCXMLInterpreter():
 
-	def __init__(self,model):
+	def __init__(self,model,evaluatorDict=defaultEvaluatorDict):
 		self.model = model
 		self._configuration = set()	#full configuration, or basic configuration? what kind of set implementation?
 		self._historyValue = {}
 		self._innerEventQueue = deque()
 		self._isInFinalState = False
 		self._datamodel = {}
+
+		#auto-configure the evaluator
+		moduleName, className = evaluatorDict[self.model.profile]
+		_tmp = __import__(moduleName,globals(),locals(),[className],-1)
+		self.evaluator = _tmp.__dict__[className]()
 
 	def start(self):
 		#perform big step without events to take all default transitions and reach stable initial state
@@ -157,9 +168,10 @@ class SCXMLInterpreter():
 			#TODO: support timeout, data
 			eventsToAddToInnerQueue.add(Event(action.eventName))
 		elif isinstance(action,AssignAction):
-			self._dataModel[location] = self._evaluateExpr(action.expr)
+			self._dataModel[location] = self.evaluator.evaluateExpr(action.expr,
+							self._getScriptingInterface(False))
 		elif isinstance(action,ScriptAction):
-			self._evaluateScript(action.code)
+			self.evaluator.evaluateScript(action.code,self._getScriptingInterface(True))
 
 	def _getStatesExited(self,transitions):
 		statesExited = set()
@@ -284,25 +296,14 @@ class SCXMLInterpreter():
 			print state
 			for t in state.transitions:
 				print t,t.event
-				if (t.event is None or t.event in eventNames) and (t.cond is None or self._evaluateExpr(t.cond)):
+				if (t.event is None or t.event in eventNames) and (t.cond is None or self.evaluator.evaluateExpr(t.cond,self._getScriptingInterface(False))):
 					print "adding transition t to selected transitions"
 					transitions.add(t)
 
 		return transitions 
 
-	#FIXME: these methods will need to be made more general, to support other language bindings, e.g. ecmascript binding
-	def _evaluateExpr(self,expr):
-		interpreter,data = self._getNewInterpreter(False)
-		expr = "_ = " + expr
-		interpreter.runsource(expr)
-		result = data["_"] 
-		return result
-
-	def _evaluateScript(self,script):
-		interpreter,data = self._getNewInterpreter(True)
-		interpreter.runsource(script)
-
-	def _getNewInterpreter(self,writeData=True):
+	def _getScriptingInterface(self,writeData=True):
+		#TODO: move this out somewhere... needs access to interpreter instance data, but...
 		api = {
 			"getData" : lambda name : self._datamodel[data],
 			"In" : lambda stateName : stateName in self.getFullConfiguration()	#TODO: may want to make this a public API, rather than just for the SC
@@ -314,9 +315,7 @@ class SCXMLInterpreter():
 		if writeData:
 			api["setData"] = setData
 
-		interpreter = code.InteractiveInterpreter(api)
-
-		return interpreter,api
+		return api
 
 	def _makeTransitionsConsistent(self,transitions):
 		consistentTransitions = set()
