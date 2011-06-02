@@ -14,4 +14,4 @@ class ECMAScriptEvaluator(IEvaluator):
 
 	def evaluateScript(self,script,api):
 		cx = self.rt.new_context(api)
-		cx.execute(expr)
+		cx.execute(script)

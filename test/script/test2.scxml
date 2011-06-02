@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml 
+	xmlns="http://www.w3.org/2005/07/scxml"
+	version="1.0"
+	profile="ecmascript"
+	id="root">
+
+	<initial id="intitial1">
+		<transition target="a"/>
+	</initial>
+
+	<state id="a">
+		<transition target="b" event="t">
+			<script>
+				setData('i',0)
+			</script>
+		</transition>
+	</state>
+
+	<state id="A">
+
+		<state id="b">
+			<transition target="c" cond="getData('i') &lt; 100">
+				<script>
+					setData('i',getData('i') + 1)
+				</script>
+			</transition>
+		</state>
+
+		<state id="c">
+			<transition target="b" cond="getData('i') &lt; 100">
+				<script>
+					setData('i',getData('i') + 1)
+				</script>
+			</transition>
+		</state>
+
+		<transition target="d" cond="getData('i') === 100">
+			<script>
+				setData('i',getData('i') * 2)
+			</script>
+		</transition>
+	</state>
+
+
+	<state id="d">
+		<transition target="e" cond="getData('i') === 200"/>
+		<transition target="f"/>
+	</state>
+
+	<state id="e"/>
+
+	<state id="f"/>
+
+</scxml>
+

@@ -164,12 +164,12 @@ class SCXMLInterpreter():
 			#update the datamodel
 			logging.info("updating datamodel for next small step :")
 			for key in self._datamodelForNextStep:
-				logging.info("key " + key) 
+				logging.info("key " + str(key)) 
 				if key in self._datamodel:
-					logging.info("old value " + self._datamodel[key])
+					logging.info("old value " + str(self._datamodel[key]))
 				else:
 					logging.info("old value is None")
-				logging.info("new value " + self._datamodelForNextStep[key]) 
+				logging.info("new value " + str(self._datamodelForNextStep[key])) 
 					
 				self._datamodel[key] = self._datamodelForNextStep[key]
 
