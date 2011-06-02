@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml 
+	xmlns="http://www.w3.org/2005/07/scxml"
+	version="1.0"
+	profile="ecmascript"
+	id="root">
+
+	<initial id="intitial1">
+		<transition target="a"/>
+	</initial>
+
+	<state id="a">
+		<transition target="b" event="t">
+			<assign location="i" expr="0"/>
+		</transition>
+	</state>
+
+	<state id="b">
+		<transition target="b" cond="getData('i') &lt; 100">
+			<assign location="i" expr="getData('i') + 1"/>
+		</transition>
+		<transition target="c" cond="getData('i') === 100"/>
+	</state>
+
+	<state id="c"/>
+
+</scxml>

@@ -1,0 +1,16 @@
+{
+	"name" : "test2",
+	"group" : "assign",
+	"scxml" : "test2.scxml",
+	"initialConfiguration" : ["a"],
+	"events" : [
+		{
+			"event" : { "name" : "t" },
+			"nextConfiguration" : ["e"]
+		}
+	]
+}
+
+
+
+

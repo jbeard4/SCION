@@ -48,7 +48,8 @@ class SCXMLInterpreter():
 		self._historyValue = {}
 		self._innerEventQueue = deque()
 		self._isInFinalState = False
-		self._datamodel = {}
+		self._datamodel = {}		#FIXME: should these be global, or declared at the level of the big step, like the eventQueue?
+		self._datamodelForNextStep = {}
 
 		#auto-configure the evaluator
 		moduleName, className = evaluatorDict[self.model.profile]
@@ -160,6 +161,21 @@ class SCXMLInterpreter():
 
 				self._innerEventQueue.append(eventsToAddToInnerQueue)
 
+			#update the datamodel
+			logging.info("updating datamodel for next small step :")
+			for key in self._datamodelForNextStep:
+				logging.info("key " + key) 
+				if key in self._datamodel:
+					logging.info("old value " + self._datamodel[key])
+				else:
+					logging.info("old value is None")
+				logging.info("new value " + self._datamodelForNextStep[key]) 
+					
+				self._datamodel[key] = self._datamodelForNextStep[key]
+
+			#clear the datamodel for the next small step
+			self._datamodelForNextStep = {}
+
 		#if selectedTransitions is empty, we have reached a stable state, and the big-step will stop, otherwise will continue -> Maximality: Take-Many
 		return selectedTransitions 	
 
@@ -168,7 +184,7 @@ class SCXMLInterpreter():
 			#TODO: support timeout, data
 			eventsToAddToInnerQueue.add(Event(action.eventName))
 		elif isinstance(action,AssignAction):
-			self._dataModel[location] = self.evaluator.evaluateExpr(action.expr,
+			self._datamodel[action.location] = self.evaluator.evaluateExpr(action.expr,
 							self._getScriptingInterface(False))
 		elif isinstance(action,ScriptAction):
 			self.evaluator.evaluateScript(action.code,self._getScriptingInterface(True))
@@ -305,12 +321,12 @@ class SCXMLInterpreter():
 	def _getScriptingInterface(self,writeData=True):
 		#TODO: move this out somewhere... needs access to interpreter instance data, but...
 		api = {
-			"getData" : lambda name : self._datamodel[data],
+			"getData" : lambda name : self._datamodel[name],
 			"In" : lambda stateName : stateName in self.getFullConfiguration()	#TODO: may want to make this a public API, rather than just for the SC
 		}
 
 		def setData(name,value):
-			self._datamodel[name] = value
+			self._datamodelForNextStep[name] = value
 
 		if writeData:
 			api["setData"] = setData
