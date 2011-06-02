@@ -1,0 +1,57 @@
+{
+	"name" : "basic",
+	"group" : "basic",
+	"scxml" : "m9.scxml",
+	"initialConfiguration" : ["A","X","t1"],
+	"events" : [
+		{
+			"after" : 125,
+			"event" : { "name" : "e1" },
+			"nextConfiguration" : ["B","X","t2"]
+		},
+		{
+			"after" : 750,
+			"event" : { "name" : "e2" },
+			"nextConfiguration" : ["A","X","t1"]
+		},
+		{
+			"after" : 125,
+			"event" : { "name" : "e1" },
+			"nextConfiguration" : ["B","X","t2"]
+		},
+		{
+			"after" : 750,
+			"event" : { "name" : "e3" },
+			"nextConfiguration" : ["C","X","t1"]
+		},
+		{
+			"after" : 125,
+			"event" : { "name" : "hist" },
+			"nextConfiguration" : ["B","X","t2"]
+		},
+		{
+			"after" : 750,
+			"event" : { "name" : "e3" },
+			"nextConfiguration" : ["C","X","t1"]
+		},
+		{
+			"after" : 125,
+			"event" : { "name" : "back" },
+			"nextConfiguration" : ["A","X","t2"]
+		},
+		{
+			"event" : { "name" : "deactivate" },
+			"nextConfiguration" : ["inactive"]
+		},
+		{
+			"event" : { "name" : "activate" },
+			"nextConfiguration" : ["A","X","t1"]
+		}
+	],
+	"finalEvent" : {
+		"event" : { "name" : "toFinal" }
+	}
+}
+
+
+

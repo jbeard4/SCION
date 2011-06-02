@@ -1,0 +1,50 @@
+{
+	"name" : "basic",
+	"group" : "basic",
+	"scxml" : "m5.scxml",
+	"initialConfiguration" : ["A","X"],
+	"events" : [
+		{
+			"after" : 750,
+			"event" : { "name" : "e1" },
+			"nextConfiguration" : ["B","Y"]
+		},
+		{
+			"after" : 1000,
+			"event" : { "name" : "e2" },
+			"nextConfiguration" : ["A","X"]
+		},
+		{
+			"after" : 500,
+			"event" : { "name" : "e1" },
+			"nextConfiguration" : ["B","Y"]
+		},
+		{
+			"after" : 1000,
+			"event" : { "name" : "e1" },
+			"nextConfiguration" : ["C","X"]
+		},
+		{
+			"after" : 500,
+			"event" : { "name" : "hist" },
+			"nextConfiguration" : ["B","Y"]
+		},
+		{
+			"after" : 1000,
+			"event" : { "name" : "e1" },
+			"nextConfiguration" : ["C","X"]
+		},
+		{
+			"after" : 500,
+			"event" : { "name" : "back" },
+			"nextConfiguration" : ["A","Y"]
+		}
+	],
+	"finalEvent" : {
+		"event" : { "name" : "toFinal" }
+	}
+}
+
+
+
+

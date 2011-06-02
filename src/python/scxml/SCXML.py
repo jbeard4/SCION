@@ -26,7 +26,7 @@ Parameterized Parts of the Algorithm: Priority, Transition Consistency
 
 from collections import deque	#this is a non-synchronized queue
 import copy
-from model import State,SendAction,AssignAction,ScriptAction
+from model import State,SendAction,AssignAction,ScriptAction,LogAction,CancelAction
 from event import Event
 import logging
 import pdb
@@ -49,7 +49,7 @@ class SCXMLInterpreter():
 		self._innerEventQueue = deque()
 		self._isInFinalState = False
 		self._datamodel = {}		#FIXME: should these be global, or declared at the level of the big step, like the eventQueue?
-		self._datamodelForNextStep = {}
+		self._timeoutMap = {}
 
 		#auto-configure the evaluator
 		moduleName, className = evaluatorDict[self.model.profile]
@@ -58,7 +58,7 @@ class SCXMLInterpreter():
 
 	def start(self):
 		#perform big step without events to take all default transitions and reach stable initial state
-		logging.info("performing initial big step")
+		logging.debug("performing initial big step")
 		self._configuration.add(self.model.root.initial)
 		self._performBigStep()	
 
@@ -86,30 +86,33 @@ class SCXMLInterpreter():
 			else:
 				eventSet = set()
 
-			keepGoing = self._performSmallStep(eventSet)
+			#create new datamodel cache for the next small step
+			datamodelForNextStep = {}
+
+			keepGoing = self._performSmallStep(eventSet,datamodelForNextStep)
 
 		if not filter(lambda s : not s.kind is State.FINAL, self._configuration):
 			self._isInFinalState = True
 
-	def _performSmallStep(self,eventSet):
+	def _performSmallStep(self,eventSet,datamodelForNextStep):
 
-		logging.info("selecting transitions with eventSet: " + str(eventSet))
+		logging.debug("selecting transitions with eventSet: " + str(eventSet))
 
-		selectedTransitions = self._selectTransitions(eventSet)
+		selectedTransitions = self._selectTransitions(eventSet,datamodelForNextStep)
 
-		logging.info("selected transitions: " + str(selectedTransitions))
+		logging.debug("selected transitions: " + str(selectedTransitions))
 
 		if selectedTransitions:
 
-			logging.info("sorted transitions: "+ str(selectedTransitions))
+			logging.debug("sorted transitions: "+ str(selectedTransitions))
 
 			basicStatesExited,statesExited = self._getStatesExited(selectedTransitions) 
 			basicStatesEntered,statesEntered = self._getStatesEntered(selectedTransitions) 
 
-			logging.info("basicStatesExited " + str(basicStatesExited))
-			logging.info("basicStatesEntered " + str(basicStatesEntered))
-			logging.info("statesExited " + str(statesExited))
-			logging.info("statesEntered " + str(statesEntered))
+			logging.debug("basicStatesExited " + str(basicStatesExited))
+			logging.debug("basicStatesEntered " + str(basicStatesEntered))
+			logging.debug("statesExited " + str(statesExited))
+			logging.debug("statesEntered " + str(statesEntered))
 
 			eventsToAddToInnerQueue = set()
 
@@ -117,13 +120,13 @@ class SCXMLInterpreter():
 
 			#update history states
 
-			logging.info("executing state exit actions")
+			logging.debug("executing state exit actions")
 			for state in statesExited:
-				logging.info("exiting " + str(state))
+				logging.debug("exiting " + str(state))
 
 				#peform exit actions
 				for action in state.exitActions:
-					self._evaluateAction(action,eventsToAddToInnerQueue)
+					self._evaluateAction(action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue)
 
 				#update history
 				if state.history:
@@ -138,59 +141,62 @@ class SCXMLInterpreter():
 			# -> Concurrency: Order of transitions: Explicitly defined
 			sortedTransitions = sorted(selectedTransitions,key=lambda t : t.documentOrder)	#implicitly converts unordered set to ordered list
 
-			logging.info("executing transitition actions")
+			logging.debug("executing transitition actions")
 			for transition in sortedTransitions:
-				logging.info("transitition " + str(transition))
+				logging.debug("transitition " + str(transition))
 				for action in transition.actions:
-					self._evaluateAction(action,eventsToAddToInnerQueue) 		
+					self._evaluateAction(action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) 		
 
-			logging.info("executing state enter actions")
+			logging.debug("executing state enter actions")
 			for state in statesEntered:
-				logging.info("entering " + str(state))
+				logging.debug("entering " + str(state))
 				for action in state.enterActions:
-					self._evaluateAction(action,eventsToAddToInnerQueue)
+					self._evaluateAction(action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue)
 
 			#update configuration by removing basic states exited, and adding basic states entered
-			logging.info("updating configuration ")
-			logging.info("old configuration " + str(self._configuration))
+			logging.debug("updating configuration ")
+			logging.debug("old configuration " + str(self._configuration))
 
 			self._configuration = (self._configuration - basicStatesExited) | basicStatesEntered
 
-			logging.info("new configuration " + str(self._configuration))
+			logging.debug("new configuration " + str(self._configuration))
 			
 			#add set of generated events to the innerEventQueue -> Event Lifelines: Next small-step
 			if eventsToAddToInnerQueue:
-				logging.info("adding triggered events to inner queue " + str(eventsToAddToInnerQueue))
+				logging.debug("adding triggered events to inner queue " + str(eventsToAddToInnerQueue))
 
 				self._innerEventQueue.append(eventsToAddToInnerQueue)
 
 			#update the datamodel
-			logging.info("updating datamodel for next small step :")
-			for key in self._datamodelForNextStep:
-				logging.info("key " + str(key)) 
+			logging.debug("updating datamodel for next small step :")
+			for key in datamodelForNextStep:
+				logging.debug("key " + str(key)) 
 				if key in self._datamodel:
-					logging.info("old value " + str(self._datamodel[key]))
+					logging.debug("old value " + str(self._datamodel[key]))
 				else:
-					logging.info("old value is None")
-				logging.info("new value " + str(self._datamodelForNextStep[key])) 
+					logging.debug("old value is None")
+				logging.debug("new value " + str(datamodelForNextStep[key])) 
 					
-				self._datamodel[key] = self._datamodelForNextStep[key]
-
-			#clear the datamodel for the next small step
-			self._datamodelForNextStep = {}
+				self._datamodel[key] = datamodelForNextStep[key]
 
 		#if selectedTransitions is empty, we have reached a stable state, and the big-step will stop, otherwise will continue -> Maximality: Take-Many
 		return selectedTransitions 	
 
-	def _evaluateAction(self,action,eventsToAddToInnerQueue):
+	def _evaluateAction(self,action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue):
 		if isinstance(action,SendAction):
-			#TODO: support timeout, data
-			eventsToAddToInnerQueue.add(Event(action.eventName))
+			data = self.evaluator.evaluateExpr(action.contentexpr,self._getScriptingInterface(eventSet,datamodelForNextStep)) if action.contentexpr else None
+
+			eventsToAddToInnerQueue.add(Event(action.eventName,data))
 		elif isinstance(action,AssignAction):
-			self._datamodelForNextStep[action.location] = self.evaluator.evaluateExpr(action.expr,
-							self._getScriptingInterface())
+			datamodelForNextStep[action.location] = self.evaluator.evaluateExpr(action.expr,
+							self._getScriptingInterface(eventSet,datamodelForNextStep))
 		elif isinstance(action,ScriptAction):
-			self.evaluator.evaluateScript(action.code,self._getScriptingInterface(True))
+			self.evaluator.evaluateScript(action.code,self._getScriptingInterface(eventSet,datamodelForNextStep,True))
+		elif isinstance(action,LogAction):
+			log = self.evaluator.evaluateExpr(action.expr,
+							self._getScriptingInterface(eventSet,datamodelForNextStep))
+
+			logging.info(str(log)) 
 
 	def _getStatesExited(self,transitions):
 		statesExited = set()
@@ -278,13 +284,13 @@ class SCXMLInterpreter():
 				pass	#error: bad model - unknown state type
 
 		
-	def _selectTransitions(self,eventSet):
-		allTransitions = self._getAllActivatedTransitions(self._configuration,eventSet);
+	def _selectTransitions(self,eventSet,datamodelForNextStep):
+		allTransitions = self._getAllActivatedTransitions(self._configuration,eventSet,datamodelForNextStep);
 		print "allTransitions",allTransitions 
 		consistentTransitions = self._makeTransitionsConsistent(allTransitions);
 		return consistentTransitions; 
 
-	def _getAllActivatedTransitions(self,configuration,eventSet):
+	def _getAllActivatedTransitions(self,configuration,eventSet,datamodelForNextStep):
 		"""
 		for all states in the configuration and their parents, select transitions
 		if cond had side effects, then the order in which these are executed would matter
@@ -315,22 +321,23 @@ class SCXMLInterpreter():
 			print state
 			for t in state.transitions:
 				print t,t.event
-				if (t.event is None or t.event in eventNames) and (t.cond is None or self.evaluator.evaluateExpr(t.cond,self._getScriptingInterface())):
+				if (t.event is None or t.event in eventNames) and (t.cond is None or self.evaluator.evaluateExpr(t.cond,self._getScriptingInterface(eventSet,datamodelForNextStep))):
 					print "adding transition t to selected transitions"
 					transitions.add(t)
 
 		return transitions 
 
-	def _getScriptingInterface(self,writeData=False):
+	def _getScriptingInterface(self,eventSet,datamodelForNextStep,writeData=False):
 		#we recreate this each time in order to enforce the semantics of the memory model (next small-step). 
 		#this clears all keys (global variables) that were set in the previous small-step
 		api = {
 			"getData" : lambda name : self._datamodel[name],
-			"In" : self.isIn
+			"In" : self.isIn,
+			"_events": list(eventSet)
 		}
 
 		def setData(name,value):
-			self._datamodelForNextStep[name] = value
+			datamodelForNextStep[name] = value
 
 		if writeData:
 			api["setData"] = setData
@@ -412,22 +419,33 @@ class SCXMLInterpreter():
 
 class SimpleInterpreter(SCXMLInterpreter):
 
-	def __init__(self,model,evaluatorDict=defaultEvaluatorDict,setTimeout=None):
+	def __init__(self,model,evaluatorDict=defaultEvaluatorDict,setTimeout=None,clearTimeout=None):
 		self.setTimeout = setTimeout
+		self.clearTimeout = clearTimeout
 		SCXMLInterpreter.__init__(self,model,evaluatorDict)
 		
-	def _evaluateAction(self,action,eventsToAddToInnerQueue):
+	def _evaluateAction(self,action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue):
 		if isinstance(action,SendAction) and action.timeout:
 			if self.setTimeout:
-				self.setTimeout(lambda : self(Event(action.eventName)),action.timeout)
+				data = self.evaluator.evaluateExpr(action.contentexpr,self._getScriptingInterface(eventSet,datamodelForNextStep)) if action.contentexpr else None
+
+				timeoutId = self.setTimeout(lambda : self(Event(action.eventName,data)),action.timeout)
+				if action.sendid:
+					self._timeoutMap[action.sendid] = timeoutId
 			else:
 				raise Exception("setTimeout function not set")
+		elif isinstance(action,CancelAction):
+			if self.clearTimeout:
+				if action.sendid in self._timeoutMap: 
+					self.clearTimeout(self._timeoutMap[action.sendid])
+			else:
+				raise Exception("clearTimeout function not set")
 		else:
-			SCXMLInterpreter._evaluateAction(self,action,eventsToAddToInnerQueue)
+			SCXMLInterpreter._evaluateAction(self,action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue)
 
 	#External Event Communication: Asynchronous
 	def __call__(self,e):	
 		#pass it straight through	
-		logging.info("received event " + str(e))
+		logging.debug("received event " + str(e))
 		self._performBigStep(e)
 

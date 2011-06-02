@@ -1,0 +1,17 @@
+{
+	"name" : "basic",
+	"group" : "basic",
+	"scxml" : "m1.scxml",
+	"initialConfiguration" : ["A"],
+	"events" : [
+		{
+			"event" : { "name" : "e1" },
+			"nextConfiguration" : ["B"]
+		},
+		{
+			"event" : { "name" : "e2" },
+			"nextConfiguration" : ["A"]
+		}
+	]
+}
+

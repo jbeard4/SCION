@@ -23,10 +23,28 @@ class SCXMLConfigurationException(Exception):
 #methods and data structures for managing timeouts in the test script and initiated by the statechart
 #FIXME: a list might actually be better... but it's up to the environment to decide how to manage this
 timeouts = set()
+timeoutCounter = -1
+countToTimeoutMap = {}
 
 def setTimeout(callback,timeout):
-	global timeouts 
-	timeouts.add((time.time(),timeout,callback))
+	global timeouts,timeoutCounter
+
+	timeoutTuple = (time.time(),timeout,callback)
+
+	timeouts.add(timeoutTuple)
+
+	timeoutCounter = timeoutCounter + 1
+	countToTimeoutMap[timeoutCounter] = timeoutTuple  
+
+	return timeoutCounter 
+
+def clearTimeout(timeoutId):
+	global timeouts
+	timeoutTuple = countToTimeoutMap[timeoutId]
+
+	if timeoutTuple in timeouts:
+		timeouts.remove(timeoutTuple)
+		del countToTimeoutMap[timeoutId]
 
 def checkTimeouts():
 	global timeouts 
@@ -54,7 +72,7 @@ for jsonTestFileName in sys.argv[1:]:
 
 		scxmlFile = file(pathToSCXML)
 		model = scxmlFileToPythonModel(scxmlFile) 
-		interpreter = SimpleInterpreter(model,setTimeout=setTimeout) 
+		interpreter = SimpleInterpreter(model,setTimeout=setTimeout,clearTimeout=clearTimeout) 
 
 		interpreter.start() 
 		initialConfiguration = interpreter.getConfiguration()

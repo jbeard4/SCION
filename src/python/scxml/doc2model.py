@@ -84,7 +84,13 @@ def scxmlDocToPythonModel(tree):
 			nodeToObj[elt] = Transition(event,order,cond)
 		elif elt.tag == q("send"):
 			delay = getDelayInMs(elt)
-			nodeToObj[elt] = SendAction(elt.get("event"),delay)
+			sendid = elt.get("sendid") or None 
+			contentExpr = elt.get("contentexpr") or None #TODO: put contentexpr into its own namespace?
+			nodeToObj[elt] = SendAction(elt.get("event"),delay,sendid,contentExpr)
+		elif elt.tag == q("log"):
+			nodeToObj[elt] = LogAction(elt.get("expr"))
+		elif elt.tag == q("cancel"):
+			nodeToObj[elt] = CancelAction(elt.get("sendid"))
 		elif elt.tag == q("assign"):
 			nodeToObj[elt] = AssignAction(elt.get("location"),elt.get("expr"))
 		elif elt.tag == q("script"):
@@ -163,10 +169,10 @@ def getDelayInMs(sendElt):
 		return 0 
 	else:
 		if delayString[-2:] == "ms":
-			return int(delayString[:-2])
+			return float(delayString[:-2])
 		elif delayString[-1:] == "s":
-			return int(delayString[:-1]) * 1000
+			return float(delayString[:-1]) * 1000
 		else:
 			#assume milliseconds
-			return int(delayString)
+			return float(delayString)
 

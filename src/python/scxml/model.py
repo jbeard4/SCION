@@ -124,9 +124,19 @@ class Action():
 		pass
 
 class SendAction(Action):
-	def __init__(self,eventName="",timeout=0):
+	def __init__(self,eventName="",timeout=0,sendid=None,contentExpr=None):
 		self.eventName = eventName
 		self.timeout = timeout
+		self.sendid = sendid
+		self.contentexpr = contentExpr
+
+class CancelAction(Action):
+	def __init__(self,sendid):
+		self.sendid = sendid
+
+class LogAction(Action):
+	def __init__(self,expr):
+		self.expr = expr
 
 class AssignAction(Action):
 	def __init__(self,location="",expr=""):
