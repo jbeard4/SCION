@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+     This test demonstrates the way the memory model semantics interact with transition order and concurrency semantics. Here, transitions originating from c1 and b1 will be taken in the same small-step, however i will not be updated until the end of that small step. The transitions actions are evaluated in document order, though, so the outcome is deterministic, so the assignment action on the transition originating from c1 will win. 
+-->
+<scxml 
+	xmlns="http://www.w3.org/2005/07/scxml"
+	version="1.0"
+	profile="ecmascript"
+	id="root">
+
+	<initial id="intitial1">
+		<transition target="a"/>
+	</initial>
+
+	<state id="a">
+		<transition target="p" event="t1">
+			<assign location="i" expr="0"/>
+		</transition>
+	</state>
+
+	<parallel id="p">
+
+		<state id="b" initial="b1">
+			<state id="b1">
+				<transition event="t2" target="b2">
+					<assign location="i" expr="getData('i') + 1"/>
+				</transition>
+			</state>
+
+			<state id="b2">
+			</state>
+		</state>
+
+		<state id="c" initial="c1">
+			<state id="c1">
+				<transition event="t2" target="c2">
+					<assign location="i" expr="getData('i') - 1"/>
+				</transition>
+			</state>
+
+			<state id="c2">
+			</state>
+		</state>
+
+		<transition event="t3" target="d" cond="getData('i') === -1"/>
+		<transition event="t3" target="f" cond="getData('i') === 1"/>
+	</parallel>
+
+
+	<state id="d"/>
+
+	<state id="f"/>
+
+</scxml>
+
+

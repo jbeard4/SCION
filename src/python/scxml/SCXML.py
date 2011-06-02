@@ -184,7 +184,7 @@ class SCXMLInterpreter():
 			#TODO: support timeout, data
 			eventsToAddToInnerQueue.add(Event(action.eventName))
 		elif isinstance(action,AssignAction):
-			self._datamodel[action.location] = self.evaluator.evaluateExpr(action.expr,
+			self._datamodelForNextStep[action.location] = self.evaluator.evaluateExpr(action.expr,
 							self._getScriptingInterface(False))
 		elif isinstance(action,ScriptAction):
 			self.evaluator.evaluateScript(action.code,self._getScriptingInterface(True))
