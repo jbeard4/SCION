@@ -83,7 +83,8 @@ def scxmlDocToPythonModel(tree):
 			
 			nodeToObj[elt] = Transition(event,order,cond)
 		elif elt.tag == q("send"):
-			nodeToObj[elt] = SendAction(elt.get("event"))
+			delay = getDelayInMs(elt)
+			nodeToObj[elt] = SendAction(elt.get("event"),delay)
 		elif elt.tag == q("assign"):
 			nodeToObj[elt] = AssignAction(elt.get("location"),elt.get("expr"))
 		elif elt.tag == q("script"):
@@ -154,3 +155,18 @@ def scxmlDocToPythonModel(tree):
 	model = SCXMLModel(rootState,profile) 
 
 	return model
+
+def getDelayInMs(sendElt):
+	delayString = sendElt.get("delay")
+
+	if not delayString:
+		return 0 
+	else:
+		if delayString[-2:] == "ms":
+			return int(delayString[:-2])
+		elif delayString[-1:] == "s":
+			return int(delayString[:-1]) * 1000
+		else:
+			#assume milliseconds
+			return int(delayString)
+

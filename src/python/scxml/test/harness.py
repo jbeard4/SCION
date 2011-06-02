@@ -5,6 +5,7 @@ from scxml.SCXML import SimpleInterpreter
 import os
 import traceback
 import pdb
+import time
 
 testCount = 0
 testsPassed = 0
@@ -18,6 +19,24 @@ class SCXMLConfigurationException(Exception):
 
 	def __str__(self):
 		return "Configuration error: expected " + str(self.expected) + ", received " + str(self.actual)
+
+#methods and data structures for managing timeouts in the test script and initiated by the statechart
+#FIXME: a list might actually be better... but it's up to the environment to decide how to manage this
+timeouts = set()
+
+def setTimeout(callback,timeout):
+	global timeouts 
+	timeouts.add((time.time(),timeout,callback))
+
+def checkTimeouts():
+	global timeouts 
+	now = time.time()
+	triggeredTimeouts = set(filter(lambda (start,timeout,callback) : ((now - start) * 1000) >= timeout, timeouts))
+
+	for (start,timeout,callback) in triggeredTimeouts:
+		callback()
+
+	timeouts = timeouts - triggeredTimeouts 
 
 for jsonTestFileName in sys.argv[1:]:
 
@@ -35,10 +54,12 @@ for jsonTestFileName in sys.argv[1:]:
 
 		scxmlFile = file(pathToSCXML)
 		model = scxmlFileToPythonModel(scxmlFile) 
-		interpreter = SimpleInterpreter(model) 
+		interpreter = SimpleInterpreter(model,setTimeout=setTimeout) 
 
 		interpreter.start() 
 		initialConfiguration = interpreter.getConfiguration()
+
+		checkTimeouts()
 
 		expectedInitialConfiguration = set(test["initialConfiguration"])
 
@@ -46,6 +67,17 @@ for jsonTestFileName in sys.argv[1:]:
 			raise SCXMLConfigurationException(expectedInitialConfiguration,initialConfiguration)
 
 		for eventPair in test["events"]:
+			timerStart = time.time()
+			timeout = eventPair["after"] if "after" in eventPair else 0
+
+			checkTimeouts()
+			now = time.time()
+
+			#busy-wait 
+			while (now - timerStart) * 1000 < timeout: 
+				checkTimeouts()
+				now = time.time()
+			
 			interpreter(Event(eventPair["event"]["name"]))
 			nextConfiguration = interpreter.getConfiguration()
 			

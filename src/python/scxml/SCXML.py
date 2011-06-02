@@ -68,6 +68,9 @@ class SCXMLInterpreter():
 	def getFullConfiguration(self):
 		return set(map(lambda s: s.name,reduce(lambda a,b : a + b, map(lambda s: [s] + s.getAncestors(),self._configuration))))
 
+	def isIn(self,stateName):
+		return stateName in self.getFullConfiguration()
+
 	def _performBigStep(self,e=None):
 
 		if e: 
@@ -185,7 +188,7 @@ class SCXMLInterpreter():
 			eventsToAddToInnerQueue.add(Event(action.eventName))
 		elif isinstance(action,AssignAction):
 			self._datamodelForNextStep[action.location] = self.evaluator.evaluateExpr(action.expr,
-							self._getScriptingInterface(False))
+							self._getScriptingInterface())
 		elif isinstance(action,ScriptAction):
 			self.evaluator.evaluateScript(action.code,self._getScriptingInterface(True))
 
@@ -312,17 +315,18 @@ class SCXMLInterpreter():
 			print state
 			for t in state.transitions:
 				print t,t.event
-				if (t.event is None or t.event in eventNames) and (t.cond is None or self.evaluator.evaluateExpr(t.cond,self._getScriptingInterface(False))):
+				if (t.event is None or t.event in eventNames) and (t.cond is None or self.evaluator.evaluateExpr(t.cond,self._getScriptingInterface())):
 					print "adding transition t to selected transitions"
 					transitions.add(t)
 
 		return transitions 
 
-	def _getScriptingInterface(self,writeData=True):
-		#TODO: move this out somewhere... needs access to interpreter instance data, but...
+	def _getScriptingInterface(self,writeData=False):
+		#we recreate this each time in order to enforce the semantics of the memory model (next small-step). 
+		#this clears all keys (global variables) that were set in the previous small-step
 		api = {
 			"getData" : lambda name : self._datamodel[name],
-			"In" : lambda stateName : stateName in self.getFullConfiguration()	#TODO: may want to make this a public API, rather than just for the SC
+			"In" : self.isIn
 		}
 
 		def setData(name,value):
@@ -407,6 +411,19 @@ class SCXMLInterpreter():
 
 
 class SimpleInterpreter(SCXMLInterpreter):
+
+	def __init__(self,model,evaluatorDict=defaultEvaluatorDict,setTimeout=None):
+		self.setTimeout = setTimeout
+		SCXMLInterpreter.__init__(self,model,evaluatorDict)
+		
+	def _evaluateAction(self,action,eventsToAddToInnerQueue):
+		if isinstance(action,SendAction) and action.timeout:
+			if self.setTimeout:
+				self.setTimeout(lambda : self(Event(action.eventName)),action.timeout)
+			else:
+				raise Exception("setTimeout function not set")
+		else:
+			SCXMLInterpreter._evaluateAction(self,action,eventsToAddToInnerQueue)
 
 	#External Event Communication: Asynchronous
 	def __call__(self,e):	
