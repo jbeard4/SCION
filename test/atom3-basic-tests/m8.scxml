@@ -50,7 +50,7 @@
       <ns0:state id="Y">
         <ns0:transition target="X" event="$timeout_0"/>
         <ns0:onentry>
-          <ns0:send delay="1s" event="$timeout_0" id="$send_0"/>
+          <ns0:send delay="2s" event="$timeout_0" id="$send_0"/>
         </ns0:onentry>
         <ns0:onexit>
           <ns0:cancel sendid="$send_0"/>
@@ -64,7 +64,7 @@
       <ns0:state id="t1">
         <ns0:transition target="t2" event="$timeout_1"/>
         <ns0:onentry>
-          <ns0:send delay="0.25s" event="$timeout_1" id="$send_1"/>
+          <ns0:send delay="0.5s" event="$timeout_1" id="$send_1"/>
         </ns0:onentry>
         <ns0:onexit>
           <ns0:cancel sendid="$send_1"/>
@@ -75,7 +75,7 @@
           <ns0:send contentexpr="[2,'hello']" event="trig1"/>
         </ns0:transition>
         <ns0:onentry>
-          <ns0:send delay="1.5s" event="$timeout_2" id="$send_2"/>
+          <ns0:send delay="3s" event="$timeout_2" id="$send_2"/>
         </ns0:onentry>
         <ns0:onexit>
           <ns0:cancel sendid="$send_2"/>

@@ -5,37 +5,37 @@
 	"initialConfiguration" : ["A","X","t1"],
 	"events" : [
 		{
-			"after" : 125,
+			"after" : 750,
 			"event" : { "name" : "e1" },
 			"nextConfiguration" : ["B","X","t2"]
 		},
 		{
-			"after" : 750,
+			"after" : 3000,
 			"event" : { "name" : "e2" },
 			"nextConfiguration" : ["A","X","t1"]
 		},
 		{
-			"after" : 125,
+			"after" : 500,
 			"event" : { "name" : "e1" },
 			"nextConfiguration" : ["B","X","t2"]
 		},
 		{
-			"after" : 750,
+			"after" : 3000,
 			"event" : { "name" : "e3" },
 			"nextConfiguration" : ["C","X","t1"]
 		},
 		{
-			"after" : 125,
+			"after" : 500,
 			"event" : { "name" : "hist" },
 			"nextConfiguration" : ["B","X","t2"]
 		},
 		{
-			"after" : 750,
+			"after" : 3000,
 			"event" : { "name" : "e3" },
 			"nextConfiguration" : ["C","X","t1"]
 		},
 		{
-			"after" : 125,
+			"after" : 500,
 			"event" : { "name" : "back" },
 			"nextConfiguration" : ["A","X","t2"]
 		},

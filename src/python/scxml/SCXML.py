@@ -40,10 +40,72 @@ defaultEvaluatorDict = {
 	"ecmascript" : ("scxml.evaluators.es","ECMAScriptEvaluator")
 }
 
+# -> Priority: Source-Child 
+def getTransitionWithHigherSourceChildPriority((t1,t2)):
+	"""
+	compare transitions based first on depth, then based on document order
+	"""
+	if t1.source.getDepth() < t2.source.getDepth():
+		return t2
+	elif t2.source.getDepth() < t1.source.getDepth():
+		return t1
+	else:
+		if t1.documentOrder < t2.documentOrder:
+			return t1
+		else:
+			return t2
+
+#we make this parameterizable, not due to varying semantics, 
+#but due to possible optimizations with respect to fast, compiled data structures, e.g. state table
+#also, possible to make further optimizations based on what we assume the Priority funciton will be
+def getAllActivatedTransitions(configuration,eventSet,evaluator,scriptingInterface):
+	"""
+	for all states in the configuration and their parents, select transitions
+	if cond had side effects, then the order in which these are executed would matter
+	otherwise, should not matter.
+	if cond has side effects, though, merely querying could change things. 
+	so, basically, cond should not have side effects... that would make this less general
+	"""
+
+	transitions = set();
+
+	statesAndParents = set();
+
+	#get full configuration, unordered
+	#this means we may select transitions from parents before children
+	for basicState in configuration:
+		statesAndParents.add(basicState)
+
+		for ancestor in basicState.getAncestors():
+			statesAndParents.add(ancestor)
+
+
+	eventNames = map(lambda e : e.name,eventSet)
+
+	print eventNames
+	
+	#pdb.set_trace()
+	for state in statesAndParents:
+		print state
+		for t in state.transitions:
+			print t,t.event
+			if (t.event is None or t.event in eventNames) and (t.cond is None or evaluator.evaluateExpr(t.cond,scriptingInterface)):
+				print "adding transition t to selected transitions"
+				transitions.add(t)
+
+	return transitions 
+
 class SCXMLInterpreter():
 
-	def __init__(self,model,evaluatorDict=defaultEvaluatorDict):
+	def __init__(self,
+			model,
+			evaluatorDict=defaultEvaluatorDict,
+			getAllActivatedTransitions=getAllActivatedTransitions,
+			priorityComparisonFn=getTransitionWithHigherSourceChildPriority):
 		self.model = model
+		self.getAllActivatedTransitions = getAllActivatedTransitions
+		self.getTransitionWithHigherPriority = priorityComparisonFn
+
 		self._configuration = set()	#full configuration, or basic configuration? what kind of set implementation?
 		self._historyValue = {}
 		self._innerEventQueue = deque()
@@ -285,47 +347,10 @@ class SCXMLInterpreter():
 
 		
 	def _selectTransitions(self,eventSet,datamodelForNextStep):
-		allTransitions = self._getAllActivatedTransitions(self._configuration,eventSet,datamodelForNextStep);
+		allTransitions = self.getAllActivatedTransitions(self._configuration,eventSet,self.evaluator,self._getScriptingInterface(eventSet,datamodelForNextStep))
 		print "allTransitions",allTransitions 
 		consistentTransitions = self._makeTransitionsConsistent(allTransitions);
 		return consistentTransitions; 
-
-	def _getAllActivatedTransitions(self,configuration,eventSet,datamodelForNextStep):
-		"""
-		for all states in the configuration and their parents, select transitions
-		if cond had side effects, then the order in which these are executed would matter
-		otherwise, should not matter.
-		if cond has side effects, though, merely querying could change things. 
-		so, basically, cond should not have side effects... that would make this less general
-		"""
-
-		transitions = set();
-
-		statesAndParents = set();
-
-		#get full configuration, unordered
-		#this means we may select transitions from parents before children
-		for basicState in configuration:
-			statesAndParents.add(basicState)
-
-			for ancestor in basicState.getAncestors():
-				statesAndParents.add(ancestor)
-
-
-		eventNames = map(lambda e : e.name,eventSet)
-
-		print eventNames
-		
-		#pdb.set_trace()
-		for state in statesAndParents:
-			print state
-			for t in state.transitions:
-				print t,t.event
-				if (t.event is None or t.event in eventNames) and (t.cond is None or self.evaluator.evaluateExpr(t.cond,self._getScriptingInterface(eventSet,datamodelForNextStep))):
-					print "adding transition t to selected transitions"
-					transitions.add(t)
-
-		return transitions 
 
 	def _getScriptingInterface(self,eventSet,datamodelForNextStep,writeData=False):
 		#we recreate this each time in order to enforce the semantics of the memory model (next small-step). 
@@ -352,7 +377,7 @@ class SCXMLInterpreter():
 
 		while transitionsPairsInConflict:
 
-			transitions = self._selectTransitionsBasedOnPriority(transitionsPairsInConflict)
+			transitions = set(map(self.getTransitionWithHigherPriority,transitionsPairsInConflict))
 
 			(transitionsNotInConflict, transitionsPairsInConflict) = self._getTransitionsInConflict(transitions)
 
@@ -398,23 +423,8 @@ class SCXMLInterpreter():
 	
 	def _isArenaOrthogonal(self,t1,t2):
 		return t1.getLCA().isOrthogonalTo(t2.getLCA())
-	
-	# -> Priority: Source-Child 
-	#this would also be parameterizable
-	def _selectTransitionsBasedOnPriority(self,transitionsInConflict):
 		
-		def compareBasedOnPriority((t1,t2)):
-			if t1.source.getDepth() < t2.source.getDepth():
-				return t2
-			elif t2.source.getDepth() < t1.source.getDepth():
-				return t1
-			else:
-				if t1.documentOrder < t2.documentOrder:
-					return t1
-				else:
-					return t2
 
-		return set(map(compareBasedOnPriority,transitionsInConflict))	#FIXME: eliminate dups?
 
 
 class SimpleInterpreter(SCXMLInterpreter):
