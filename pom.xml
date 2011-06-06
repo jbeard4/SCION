@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<name>SCION</name>
+	<groupId>scion</groupId>
+	<artifactId>scion</artifactId>
+	<version>0.1a-SNAPSHOT</version>
+	<inceptionYear>2011</inceptionYear>
+	<description>
+	SCION (StateChart Interpretation and Optimization eNgine) is a tool for executing
+	optimized statechart models, written in SCXML. 
+	</description>
+	<url>TODO</url>
+	<developers>
+		<developer>
+			<name>Jacob Beard</name>
+			<id>jbeard4</id>
+			<email>jbeard4 AT cs.mcgill.ca</email>
+			<organization>McGill University</organization>
+		</developer>
+	</developers>
+	<!--
+  	     TODO: github
+  <distributionManagement>
+  </distributionManagement>
+    	-->
+	<dependencies>
+		<dependency>
+			<groupId>commons-cli</groupId>
+			<artifactId>commons-cli</artifactId>
+			<version>1.2</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>xalan</groupId>
+			<artifactId>xalan</artifactId>
+			<version>2.7.0</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+			<version>2.9.1</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>xml-apis</groupId>
+			<artifactId>xml-apis</artifactId>
+			<version>2.0.2</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>rhino</groupId>
+			<artifactId>js</artifactId>
+			<version>1.7R2</version>
+			<scope>runtime</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>process-classes</phase>
+						<configuration>
+							<tasks>
+
+								<copy todir="${project.build.outputDirectory}">
+									<fileset dir="${basedir}/src/main/javascript"/>
+								</copy>
+								<copy todir="${project.build.outputDirectory}/lib">
+									<fileset dir="${basedir}/lib/js"/>
+								</copy>
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>com.voltvoodoo</groupId>
+				<artifactId>brew</artifactId>
+				<version>0.2.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+							<!--<goal>optimize</goal>--> <!-- TODO -->
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<!--<coffeeSourceDir>${basedir}/src/coffeescript</coffeeSourceDir>
+					<coffeeOutputDir>${basedir}/target/js</coffeeOutputDir>-->
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>org.mozilla.javascript.tools.shell.Main</mainClass>
+					<!--
+					<mainClass>org.mozilla.javascript.tools.debugger.Main</mainClass>
+					-->
+					<classpathScope>runtime</classpathScope>
+					<arguments>
+						<argument>-debug</argument>
+						<argument>${basedir}/lib/js/r.js</argument>
+						<argument>${basedir}/src/main/javascript/runner.js</argument>
+						<argument>${basedir}</argument>
+						<argument>scxml/test/rhino-harness</argument>
+						<argument>test/basic/basic2.json</argument>
+						<!--<argument>${scxmlInputArgs}</argument>-->
+					</arguments>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
