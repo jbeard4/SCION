@@ -1,4 +1,4 @@
-define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,event,evaluator) ->
+define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Event,evaluator) ->
 
 	flatten = (l) ->
 		a = []
