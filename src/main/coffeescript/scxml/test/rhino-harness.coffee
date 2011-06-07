@@ -26,7 +26,7 @@ define ["scxml/test/harness","util/xml/rhino","util/xml/dom/rhino","lib/json2"],
 
 	checkTimeouts = ->
 		now = new Date
-		triggeredTimeouts  = (timeout for timeout in timeouts when ((now - timeout[0]) * 1000) >= timeout[1])
+		triggeredTimeouts  = (timeout for timeout in timeouts when (now - timeout[0]) >= timeout[1])
 
 		for [start,timeout,callback] in triggeredTimeouts
 			callback()

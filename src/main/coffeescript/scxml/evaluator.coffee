@@ -5,5 +5,5 @@
 #we would run a sandboxed interpreter, as is done in the python implementation.
 #We could possible change the API to use a with statement, which would be more 
 #concise, but might negatively affect performance.
-define -> (code,getData,setData,In) -> eval code
+define -> (code,getData,setData,In,_events) -> eval code
 

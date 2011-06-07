@@ -17,9 +17,13 @@ define ["scxml/model","util/xml/rhino","lib/json2"],(model,xml) ->
 
 	supportedProfiles = ["ecmascript"]
 
+	localNameToPreviousCount = {}
+
 	generateNewId = (doc,element) ->
 		name = element.localName
-		count = 0
+		count = localNameToPreviousCount[name] or -1
+
+		count++
 
 		newId = name + count
 		elt = doc.getElementById(newId)
@@ -30,6 +34,8 @@ define ["scxml/model","util/xml/rhino","lib/json2"],(model,xml) ->
 			newId = name + count
 			console.log "newId",newId
 			elt = doc.getElementById(newId)
+
+		localNameToPreviousCount[name] = count
 
 		return newId
 

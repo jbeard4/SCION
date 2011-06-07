@@ -1,6 +1,6 @@
 {
-	"name" : "basic",
-	"group" : "basic",
+	"name" : "m8",
+	"group" : "atom3",
 	"scxml" : "m8.scxml",
 	"initialConfiguration" : ["A","X","t1"],
 	"events" : [

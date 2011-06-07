@@ -88,7 +88,7 @@ define ->
 		getLCA: -> @source.getLCA(@targets[0])
 
 	class SendAction
-		constructor: (@eventName="",@timeout=0,@sendid,@contentExpr) ->
+		constructor: (@eventName="",@timeout=0,@sendid,@contentexpr) ->
 
 	class CancelAction
 		constructor: (@sendid) ->

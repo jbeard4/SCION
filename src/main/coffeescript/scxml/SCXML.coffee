@@ -55,7 +55,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 		#pdb.set_trace()
 		for state in statesAndParents.iter()
 			for t in state.transitions
-				if (not t.event or t.event in eventNames) and (not t.cond or evaluator(t.cond,n.getData,n.setData,n.In))
+				if (not t.event or t.event in eventNames) and (not t.cond or evaluator(t.cond,n.getData,n.setData,n.In,n.events))
 					transitions.add(t)
 
 		return transitions
@@ -193,27 +193,29 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 
 		_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
 			if action instanceof model.SendAction
-				data = if action.contentexpr then @_eval action.contentexpr,datamodelForNextStep else null
+				console.log "sending event",action.eventName,"with content",action.contentexpr
+				data = if action.contentexpr then @_eval action.contentexpr,datamodelForNextStep,eventSet else null
 
 				eventsToAddToInnerQueue.add new Event action.eventName,data
 			else if action instanceof model.AssignAction
-				datamodelForNextStep[action.location] = @_eval action.expr,datamodelForNextStep
+				datamodelForNextStep[action.location] = @_eval action.expr,datamodelForNextStep,eventSet
 			else if action instanceof model.ScriptAction
-				@_eval action.code,datamodelForNextStep,true
+				@_eval action.code,datamodelForNextStep,eventSet,true
 			else if action instanceof model.LogAction
-				log = @_eval action.expr,datamodelForNextStep,false
+				log = @_eval action.expr,datamodelForNextStep,eventSet
 				console.log(log)
 
-		_eval : (code,datamodelForNextStep,allowWrite) ->
+		_eval : (code,datamodelForNextStep,eventSet,allowWrite) ->
 			#get the scripting interface
-			n = @_getScriptingInterface(datamodelForNextStep,allowWrite)
+			n = @_getScriptingInterface(datamodelForNextStep,eventSet,allowWrite)
 
-			evaluator(code,n.getData,n.setData,n.In)
+			evaluator(code,n.getData,n.setData,n.In,n.events)
 
-		_getScriptingInterface: (datamodelForNextStep,allowWrite=false) ->
+		_getScriptingInterface: (datamodelForNextStep,eventSet,allowWrite=false) ->
 			setData : if allowWrite then (name,value) -> datamodelForNextStep[name] = value else ->
 			getData : (name) => @_datamodel[name]
 			In : (s) => @isIn(s)
+			events : eventSet.iter()
 
 		_getStatesExited: (transitions) ->
 			statesExited = new Set()
@@ -298,7 +300,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 
 			
 		_selectTransitions: (eventSet,datamodelForNextStep) ->
-			allTransitions = @getAllActivatedTransitions(@_configuration,eventSet,@_getScriptingInterface(datamodelForNextStep))
+			allTransitions = @getAllActivatedTransitions(@_configuration,eventSet,@_getScriptingInterface(datamodelForNextStep,eventSet))
 			console.info("allTransitions",allTransitions)
 			consistentTransitions = @_makeTransitionsConsistent allTransitions
 			console.info("consistentTransitions",consistentTransitions)
@@ -373,8 +375,8 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 		_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
 			if action instanceof model.SendAction and action.timeout
 				if @setTimeout
-					console.log "sending event",action.eventName,"after timeout",action.timeout
-					data = if action.contentexpr then eval(action.contentexpr) else null
+					console.log "sending event",action.eventName,"with content",action.contentexpr,"after timeout",action.timeout
+					data = if action.contentexpr then @_eval(action.contentexpr,datamodelForNextStep,eventSet) else null
 
 					callback = => @gen new Event(action.eventName,data)
 					timeoutId = @setTimeout callback,action.timeout
