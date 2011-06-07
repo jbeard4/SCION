@@ -140,11 +140,11 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 					#update history
 					if state.history
 						if state.history.isDeep
-							f = s0 -> s0.kind is model.State.BASIC and s0 in state.getDescendants()
+							f = (s0) -> s0.kind is model.State.BASIC and s0 in state.getDescendants()
 						else
-							f = s0 -> s0.parent is state
+							f = (s0) -> s0.parent is state
 						
-						@_historyValue[state.history] = (s for s in statesExited when f(s))
+						@_historyValue[state.history.name] = (s for s in statesExited when f(s))
 
 				# -> Concurrency: Number of transitions: Multiple
 				# -> Concurrency: Order of transitions: Explicitly defined
@@ -270,8 +270,8 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 
 		_recursiveAddStatesToEnter: (s,statesToEnter,basicStatesToEnter) ->
 			if s.kind is model.State.HISTORY
-				if s in @_historyValue
-					for historyState in @_historyValue[s]
+				if s.name of @_historyValue
+					for historyState in @_historyValue[s.name]
 						@_recursiveAddStatesToEnter(historyState,statesToEnter,basicStatesToEnter)
 				else
 					statesToEnter.add(s)
@@ -373,7 +373,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 		_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
 			if action instanceof model.SendAction and action.timeout
 				if @setTimeout
-					console.log "HEREEEEEE","sending event",action.eventName,"after timeout",action.timeout
+					console.log "sending event",action.eventName,"after timeout",action.timeout
 					data = if action.contentexpr then eval(action.contentexpr) else null
 
 					callback = => @gen new Event(action.eventName,data)

@@ -10,9 +10,9 @@ define ["scxml/doc2model","scxml/event","scxml/SCXML","scxml/set","scxml/async-f
 
 	results =
 		testCount : 0
-		testsPassed : 0
-		testsFailed : 0
-		testsErrored : 0
+		testsPassed : []
+		testsFailed : []
+		testsErrored : []
 
 	interpreter = null
 
@@ -54,17 +54,17 @@ define ["scxml/doc2model","scxml/event","scxml/SCXML","scxml/set","scxml/async-f
 
 			testSuccessFullyFinished = ->
 				console.log "test",test["name"],"...passes"
-				results.testsPassed++
+				results.testsPassed.push test["name"]
 				doNextTest()
 
 			testFailBack = ->
 				console.log "test",test["name"],"...failed"
-				results.testsFailed++
+				results.testsFailed.push test["name"]
 				doNextTest()
 
 			testErrBack = (err) ->
 				console.log "test",test["name"],"...errored"
-				results.testsErrored++
+				results.testsErrored.push test["name"]
 				printError err
 				doNextTest()
 

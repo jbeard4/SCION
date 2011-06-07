@@ -51,9 +51,9 @@ define ["scxml/test/harness","util/xml/rhino","util/xml/dom/rhino","lib/json2"],
 		finish = (report) ->
 			console.log "Summary:"
 			console.log "Tests Run:",report.testCount
-			console.log "Tests Passed:",report.testsPassed
-			console.log "Tests Failed:",report.testsFailed
-			console.log "Tests Errored:",report.testsErrored
+			console.log "Tests Passed:",report.testsPassed.length,"-","[",report.testsPassed,"]"
+			console.log "Tests Failed:",report.testsFailed.length,"-","[",report.testsFailed,"]"
+			console.log "Tests Errored:",report.testsErrored.length,"-","[",report.testsErrored,"]"
 			
 			if report.testCount == report.testsPassed
 				java.lang.System.exit(0)
