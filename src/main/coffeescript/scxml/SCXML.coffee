@@ -1,4 +1,4 @@
-define ["scxml/model","scxml/set","scxml/event"],(model,Set,event) ->
+define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,event,evaluator) ->
 
 	flatten = (l) ->
 		a = []
@@ -26,7 +26,7 @@ define ["scxml/model","scxml/set","scxml/event"],(model,Set,event) ->
 	#we make this parameterizable, not due to varying semantics, 
 	#but due to possible optimizations with respect to fast, compiled data structures, e.g. state table
 	#also, possible to make further optimizations based on what we assume the Priority funciton will be
-	defaultGetAllActivatedTransitions = (configuration,eventSet,evaluator,scriptingInterface) ->
+	defaultGetAllActivatedTransitions = (configuration,eventSet,n) ->
 		"""
 		for all states in the configuration and their parents, select transitions
 		if cond had side effects, then the order in which these are executed would matter
@@ -55,7 +55,7 @@ define ["scxml/model","scxml/set","scxml/event"],(model,Set,event) ->
 		#pdb.set_trace()
 		for state in statesAndParents.iter()
 			for t in state.transitions
-				if (not t.event or t.event in eventNames) and (not t.cond or eval(t.cond))
+				if (not t.event or t.event in eventNames) and (not t.cond or evaluator(t.cond,n.getData,n.setData,n.In))
 					transitions.add(t)
 
 		return transitions
@@ -79,9 +79,9 @@ define ["scxml/model","scxml/set","scxml/event"],(model,Set,event) ->
 
 		getConfiguration: -> new Set(s.name for s in @_configuration.iter())
 
-		getFullConfiguration: -> new Set(flatten([s] + s.getAncestors() for s in @_configuration.iter()))
+		getFullConfiguration: -> new Set(s.name for s in (flatten([s].concat s.getAncestors() for s in @_configuration.iter())))
 
-		isIn: (stateName) -> @getFullConfiguration().containsKey stateName
+		isIn: (stateName) -> @getFullConfiguration().contains(stateName)
 
 		_performBigStep: (e) ->
 			if e then @_innerEventQueue.push(new Set([e]))
@@ -148,7 +148,7 @@ define ["scxml/model","scxml/set","scxml/event"],(model,Set,event) ->
 
 				# -> Concurrency: Number of transitions: Multiple
 				# -> Concurrency: Order of transitions: Explicitly defined
-				sortedTransitions = selectedTransitions.iter().sort( (t1,t2) -> t1.documentOrder < t2.documentOrder)
+				sortedTransitions = selectedTransitions.iter().sort( (t1,t2) -> t1.documentOrder > t2.documentOrder)
 
 				console.info("executing transitition actions")
 				for transition in sortedTransitions
@@ -178,7 +178,7 @@ define ["scxml/model","scxml/set","scxml/event"],(model,Set,event) ->
 
 				#update the datamodel
 				console.info("updating datamodel for next small step :")
-				for key in datamodelForNextStep
+				for own key of datamodelForNextStep
 					console.info("key " , key)
 					if key of @_datamodel
 						console.info("old value " , @_datamodel[key])
@@ -191,18 +191,29 @@ define ["scxml/model","scxml/set","scxml/event"],(model,Set,event) ->
 			#if selectedTransitions is empty, we have reached a stable state, and the big-step will stop, otherwise will continue -> Maximality: Take-Many
 			return selectedTransitions
 
-		@_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
-			if action instanceof SendAction
-				data = if action.contentexpr then eval(action.contentexpr) else null
+		_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
+			if action instanceof model.SendAction
+				data = if action.contentexpr then @_eval action.contentexpr,datamodelForNextStep else null
 
-				eventsToAddToInnerQueue.add(new Event(action.eventName,data))
-			else if action instanceof AssignAction
-				datamodelForNextStep[action.location] = eval(action.expr)
-			else if action instanceof ScriptAction
-				eval(action.code)
-			else if action instanceof LogAction
-				log = eval(action.expr)
+				eventsToAddToInnerQueue.add new Event action.eventName,data
+			else if action instanceof model.AssignAction
+				datamodelForNextStep[action.location] = @_eval action.expr,datamodelForNextStep
+			else if action instanceof model.ScriptAction
+				@_eval action.code,datamodelForNextStep,true
+			else if action instanceof model.LogAction
+				log = @_eval action.expr,datamodelForNextStep,false
 				console.log(log)
+
+		_eval : (code,datamodelForNextStep,allowWrite) ->
+			#get the scripting interface
+			n = @_getScriptingInterface(datamodelForNextStep,allowWrite)
+
+			evaluator(code,n.getData,n.setData,n.In)
+
+		_getScriptingInterface: (datamodelForNextStep,allowWrite=false) ->
+			setData : if allowWrite then (name,value) -> datamodelForNextStep[name] = value else ->
+			getData : (name) => @_datamodel[name]
+			In : (s) => @isIn(s)
 
 		_getStatesExited: (transitions) ->
 			statesExited = new Set()
@@ -287,7 +298,7 @@ define ["scxml/model","scxml/set","scxml/event"],(model,Set,event) ->
 
 			
 		_selectTransitions: (eventSet,datamodelForNextStep) ->
-			allTransitions = @getAllActivatedTransitions @_configuration,eventSet
+			allTransitions = @getAllActivatedTransitions(@_configuration,eventSet,@_getScriptingInterface(datamodelForNextStep))
 			console.info("allTransitions",allTransitions)
 			consistentTransitions = @_makeTransitionsConsistent allTransitions
 			console.info("consistentTransitions",consistentTransitions)
@@ -360,7 +371,7 @@ define ["scxml/model","scxml/set","scxml/event"],(model,Set,event) ->
 			super model
 			
 		_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
-			if action instanceof SendAction and action.timeout
+			if action instanceof model.SendAction and action.timeout
 				if @setTimeout
 					data = if action.contentexpr then eval(action.contentexpr) else null
 
@@ -372,7 +383,7 @@ define ["scxml/model","scxml/set","scxml/event"],(model,Set,event) ->
 				else
 					throw Exception("setTimeout function not set")
 
-			else if action instanceof CancelAction
+			else if action instanceof model.CancelAction
 				if @clearTimeout
 					if action.sendid of @_timeoutMap
 						@clearTimeout @_timeoutMap[action.sendid]
