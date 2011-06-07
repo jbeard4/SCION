@@ -64,7 +64,5 @@ define ["scxml/test/harness","util/xml/rhino","util/xml/dom/rhino","lib/json2"],
 
 		console.log "timeouts",timeouts
 			
-		while timeouts.length
+		while true
 			checkTimeouts()
-		
-		#when we're out of timeouts, we'll return

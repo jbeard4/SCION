@@ -27,40 +27,43 @@ define ["scxml/doc2model","scxml/event","scxml/SCXML","scxml/set","scxml/async-f
 			finish results
 
 		doCallback = (e,nextStep,errBack,failBack) ->
-			try
-				console.log "sending event",e["event"]["name"]
-				interpreter.gen(new Event(e["event"]["name"]))
-				nextConfiguration = interpreter.getConfiguration()
-				expectedNextConfiguration = new Set(e["nextConfiguration"])
+			sendEvent = ->
+				try
+					console.log "sending event",e["event"]["name"]
+					interpreter.gen(new Event(e["event"]["name"]))
+					nextConfiguration = interpreter.getConfiguration()
+					expectedNextConfiguration = new Set(e["nextConfiguration"])
 
-			catch err
-				errBack err
+				catch err
+					errBack err
 
-			if not expectedNextConfiguration.equals nextConfiguration
-				console.error("Configuration error: expected " + expectedNextConfiguration + ", received " + nextConfiguration)
+				if not expectedNextConfiguration.equals nextConfiguration
+					console.error("Configuration error: expected " + expectedNextConfiguration + ", received " + nextConfiguration)
 
-				failBack()
-			else
-				if(e.after)
-					console.log("e.after " + e.after)
-					setTimeout(nextStep,e.after)
+					failBack()
 				else
 					nextStep()
+
+			if(e.after)
+				console.log("e.after " + e.after)
+				setTimeout(sendEvent,e.after)
+			else
+				sendEvent()
 
 		startAsyncFor = (test,doNextTest) ->
 
 			testSuccessFullyFinished = ->
-				console.log test["name"], "...passes"
+				console.log "test",test["name"],"...passes"
 				results.testsPassed++
 				doNextTest()
 
 			testFailBack = ->
-				console.log test["name"], "...failed"
+				console.log "test",test["name"],"...failed"
 				results.testsFailed++
 				doNextTest()
 
 			testErrBack = (err) ->
-				console.log test["name"], "...errored"
+				console.log "test",test["name"],"...errored"
 				results.testsErrored++
 				printError err
 				doNextTest()

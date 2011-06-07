@@ -373,6 +373,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 		_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
 			if action instanceof model.SendAction and action.timeout
 				if @setTimeout
+					console.log "HEREEEEEE","sending event",action.eventName,"after timeout",action.timeout
 					data = if action.contentexpr then eval(action.contentexpr) else null
 
 					callback = => @gen new Event(action.eventName,data)
@@ -381,14 +382,14 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 					if action.sendid
 						@_timeoutMap[action.sendid] = timeoutId
 				else
-					throw Exception("setTimeout function not set")
+					throw new Error("setTimeout function not set")
 
 			else if action instanceof model.CancelAction
 				if @clearTimeout
 					if action.sendid of @_timeoutMap
 						@clearTimeout @_timeoutMap[action.sendid]
 				else
-					throw Exception("clearTimeout function not set")
+					throw new Error("clearTimeout function not set")
 			else
 				super action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue
 
