@@ -96,7 +96,7 @@ define ["scxml/model","scxml/set","scxml/event"],(model,Set,event) ->
 
 				selectedTransitions = @_performSmallStep(eventSet,datamodelForNextStep)
 
-				keepGoing = selectedTransitions.length
+				keepGoing = not selectedTransitions.isEmpty()
 
 			nonFinalStates = (s for s of @_configuration.iter() when s.kind is not model.State.FINAL)
 
@@ -226,7 +226,6 @@ define ["scxml/model","scxml/set","scxml/event"],(model,Set,event) ->
 		_getStatesEntered: (transitions) ->
 			statesToRecursivelyAdd = flatten((state for state in transition.targets) for transition in transitions.iter())
 			console.info "statesToRecursivelyAdd :",statesToRecursivelyAdd
-			root = transition.getLCA()
 			statesToEnter = new Set()
 			basicStatesToEnter = new Set()
 
@@ -271,7 +270,7 @@ define ["scxml/model","scxml/set","scxml/event"],(model,Set,event) ->
 
 				if s.kind is model.State.PARALLEL
 					for child in s.children
-						if not child.kind is model.State.HISTORY		#don't enter history by default
+						if not (child.kind is model.State.HISTORY)		#don't enter history by default
 							@_recursiveAddStatesToEnter(child,statesToEnter,basicStatesToEnter)
 
 				else if s.kind is model.State.COMPOSITE

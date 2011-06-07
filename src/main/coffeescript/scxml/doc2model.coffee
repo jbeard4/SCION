@@ -21,18 +21,15 @@ define ["scxml/model","util/xml/rhino","lib/json2"],(model,xml) ->
 		name = element.localName
 		count = 0
 
-		newId = (name + count)
+		newId = name + count
 		elt = doc.getElementById(newId)
 
 		console.log "newId",newId
-		console.log "elt",elt
 		while elt
 			count++
-			newId = (name + count)
+			newId = name + count
 			console.log "newId",newId
-			console.log "elt",elt
 			elt = doc.getElementById(newId)
-			
 
 		return newId
 
@@ -42,15 +39,11 @@ define ["scxml/model","util/xml/rhino","lib/json2"],(model,xml) ->
 		while q.length
 			do ->
 				u = q.shift()
-				console.log "u",u.node,u.localName
 				fn u,count
 				count = count + 1
 				
 				for child in u.childNodes
-					console.log "child",child
 					q.push child
-
-				console.log "q",q,q.length
 
 	attr = (node,attrName) -> String(node.getAttributeNS(null,attrName))
 
@@ -147,8 +140,6 @@ define ["scxml/model","util/xml/rhino","lib/json2"],(model,xml) ->
 
 			elt = doc.getElementById(eltId)
 
-			console.log "elt",elt
-			
 			if obj instanceof State
 				#link to parent
 				p = elt.parentNode

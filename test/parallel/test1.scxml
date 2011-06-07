@@ -5,7 +5,7 @@
 	profile="ecmascript"
 	id="root">
 
-	<initial id="intitial1">
+	<initial>
 		<transition target="p"/>
 	</initial>
 

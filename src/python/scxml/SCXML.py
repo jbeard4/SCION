@@ -282,7 +282,7 @@ class SCXMLInterpreter():
 	def _getStatesEntered(self,transitions):
 		statesToRecursivelyAdd = sum([[state for state in transition.targets] for transition in transitions],[])
 		print "statesToRecursivelyAdd :" , statesToRecursivelyAdd 
-		root = transition.getLCA() 
+		root = transition.getLCA() 	#FIXME: is this used? can be removed?
 		statesToEnter = set()
 		basicStatesToEnter = set()
 
