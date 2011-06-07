@@ -8,103 +8,91 @@ define ["scxml/doc2model","scxml/event","scxml/SCXML","scxml/set","scxml/async-f
 		console.error e.fileName
 		console.error e.lineNumber
 
-	testCount = 0
-	testsPassed = 0
-	testsFailed = 0
-	testsErrored = 0
+	results =
+		testCount : 0
+		testsPassed : 0
+		testsFailed : 0
+		testsErrored : 0
+
 	interpreter = null
-
-	class SCXMLConfigurationException extends Error
-		constructor: (@expected,@actual) ->
-			super("Configuration error: expected " + @expected + ", received " + @actual)
-
 
 	#TODO: refactor the outer loop to also be async. Right now, I believe this will only work for one test.
 	runTests = (tests,setTimeout,clearTimeout,finish) ->
 
-		testCallback = (test,nextStep) ->
+		testCallback = (test,nextStep,errBack,failBack) ->
 			#start the while loop
 			startAsyncFor test,nextStep
 
-		testErrBack = (e,nextStep) ->
-			printError e
-
-			testsErrored++
-
-			results =
-				testCount : testCount
-				testsPassed : testsPassed
-				testsFailed :testsFailed
-				testsErrored : testsErrored
-
-			finish results
-
 		testsFinishedCallback = ->
-			results =
-				testCount : testCount
-				testsPassed : testsPassed
-				testsFailed :testsFailed
-				testsErrored : testsErrored
-
 			finish results
 
-		doCallback = (e,nextStep) ->
-			console.log "sending event",e["event"]["name"]
-			interpreter.gen(new Event(e["event"]["name"]))
-			nextConfiguration = interpreter.getConfiguration()
-			expectedNextConfiguration = new Set(e["nextConfiguration"])
-
+		doCallback = (e,nextStep,errBack,failBack) ->
 			try
-				if not expectedNextConfiguration.equals nextConfiguration
-					throw new SCXMLConfigurationException(expectedNextConfiguration,nextConfiguration)
+				console.log "sending event",e["event"]["name"]
+				interpreter.gen(new Event(e["event"]["name"]))
+				nextConfiguration = interpreter.getConfiguration()
+				expectedNextConfiguration = new Set(e["nextConfiguration"])
 
 			catch err
-				printError err
-				testsFailed++
+				errBack err
 
-			if(e.after)
-				console.log("e.after " + e.after)
-				setTimeout(nextStep,e.after)
+			if not expectedNextConfiguration.equals nextConfiguration
+				console.error("Configuration error: expected " + expectedNextConfiguration + ", received " + nextConfiguration)
+
+				failBack()
 			else
-				nextStep()
-
-
-		errBack = (e,nextStep) ->
-			printError e
-			testsErrored++
-			
-			nextStep()
+				if(e.after)
+					console.log("e.after " + e.after)
+					setTimeout(nextStep,e.after)
+				else
+					nextStep()
 
 		startAsyncFor = (test,doNextTest) ->
 
-			console.log("running test",test.name)
-
-			testCount++
-
-			model = doc2model test.scxmlDoc
-			interpreter = new SimpleInterpreter model,setTimeout,clearTimeout
-
-			events = test.events.slice()
-
-			console.log "starting interpreter"
-
-			interpreter.start()
-			initialConfiguration = interpreter.getConfiguration()
-
-			console.log "initial configuration",initialConfiguration
-
-			expectedInitialConfiguration = new Set(test["initialConfiguration"])
-
-			console.log "expected configuration",expectedInitialConfiguration
-
-			if not expectedInitialConfiguration.equals(initialConfiguration)
-				throw new SCXMLConfigurationException(expectedInitialConfiguration,initialConfiguration)
-
 			testSuccessFullyFinished = ->
 				console.log test["name"], "...passes"
-				testsPassed++
+				results.testsPassed++
 				doNextTest()
 
-			asyncForEach events,doCallback,testSuccessFullyFinished,errBack
+			testFailBack = ->
+				console.log test["name"], "...failed"
+				results.testsFailed++
+				doNextTest()
 
-		asyncForEach tests,testCallback,testsFinishedCallback,testErrBack
+			testErrBack = (err) ->
+				console.log test["name"], "...errored"
+				results.testsErrored++
+				printError err
+				doNextTest()
+
+			console.log("running test",test.name)
+
+			results.testCount++
+
+			try
+				model = doc2model test.scxmlDoc
+				interpreter = new SimpleInterpreter model,setTimeout,clearTimeout
+
+				events = test.events.slice()
+
+				console.log "starting interpreter"
+
+				interpreter.start()
+				initialConfiguration = interpreter.getConfiguration()
+
+				console.log "initial configuration",initialConfiguration
+
+				expectedInitialConfiguration = new Set(test["initialConfiguration"])
+
+				console.log "expected configuration",expectedInitialConfiguration
+
+			catch err
+				testErrBack err
+
+			if not expectedInitialConfiguration.equals(initialConfiguration)
+				console.error("Configuration error: expected " + expectedInitialConfiguration + ", received " + initialConfiguration)
+				testFailBack()
+			else
+				asyncForEach events,doCallback,testSuccessFullyFinished,testErrBack,testFailBack
+
+		asyncForEach tests,testCallback,testsFinishedCallback,(->),(->)
