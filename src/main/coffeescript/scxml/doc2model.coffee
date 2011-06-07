@@ -128,7 +128,7 @@ define ["scxml/model","util/xml/rhino","lib/json2"],(model,xml) ->
 				when "assign"
 					eltIdToObj[eltId] = new AssignAction(attr(elt,"location"),attr(elt,"expr"))
 				when "script"
-					eltIdToObj[eltId] = new ScriptAction(elt.text)
+					eltIdToObj[eltId] = new ScriptAction(elt.textContent)
 
 		console.log "generating nodeToObjMap..."
 		walk root,generateNodeToObjMap

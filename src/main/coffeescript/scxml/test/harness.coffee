@@ -16,8 +16,7 @@ define ["scxml/doc2model","scxml/event","scxml/SCXML","scxml/set","scxml/async-f
 
 	class SCXMLConfigurationException extends Error
 		constructor: (@expected,@actual) ->
-
-		toString: -> "Configuration error: expected " + @expected + ", received " + @actual
+			super("Configuration error: expected " + @expected + ", received " + @actual)
 
 
 	#TODO: refactor the outer loop to also be async. Right now, I believe this will only work for one test.
@@ -57,10 +56,10 @@ define ["scxml/doc2model","scxml/event","scxml/SCXML","scxml/set","scxml/async-f
 
 			try
 				if not expectedNextConfiguration.equals nextConfiguration
-					throw SCXMLConfigurationException(expectedNextConfiguration,nextConfiguration)
+					throw new SCXMLConfigurationException(expectedNextConfiguration,nextConfiguration)
 
-			catch e
-				printError e
+			catch err
+				printError err
 				testsFailed++
 
 			if(e.after)
@@ -68,6 +67,7 @@ define ["scxml/doc2model","scxml/event","scxml/SCXML","scxml/set","scxml/async-f
 				setTimeout(nextStep,e.after)
 			else
 				nextStep()
+
 
 		errBack = (e,nextStep) ->
 			printError e

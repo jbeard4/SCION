@@ -54,6 +54,9 @@ define(["util/xml/rhino","util/xpath/rhino"],function(xml,xpath){
 			}else{
 				return null;
 			}
+		},
+		get textContent(){
+			return String(this.node.textContent)
 		}
 		
 	};
