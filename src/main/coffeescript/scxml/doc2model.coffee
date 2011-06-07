@@ -1,4 +1,4 @@
-define ["scxml/model","util/xml/rhino","lib/json2"],(model,xml) ->
+define ["scxml/model"],(model) ->
 	#local imports
 	SCXMLModel = model.SCXMLModel
 	State = model.State
@@ -19,21 +19,19 @@ define ["scxml/model","util/xml/rhino","lib/json2"],(model,xml) ->
 
 	localNameToPreviousCount = {}
 
-	generateNewId = (doc,element) ->
+	generateNewId = (idToNodeMap,element) ->
 		name = element.localName
 		count = localNameToPreviousCount[name] or -1
 
 		count++
 
 		newId = name + count
-		elt = doc.getElementById(newId)
 
-		console.log "newId",newId
-		while elt
+		console.debug "newId",newId
+		while newId of idToNodeMap
 			count++
 			newId = name + count
-			console.log "newId",newId
-			elt = doc.getElementById(newId)
+			console.debug "newId",newId
 
 		localNameToPreviousCount[name] = count
 
@@ -47,11 +45,13 @@ define ["scxml/model","util/xml/rhino","lib/json2"],(model,xml) ->
 				u = q.shift()
 				fn u,count
 				count = count + 1
-				
-				for child in u.childNodes
-					q.push child
+
+				for childNode in u.childNodes when childNode.setAttribute
+					q.push childNode
 
 	attr = (node,attrName) -> String(node.getAttributeNS(null,attrName))
+
+	id = (elt) -> attr(elt,"id")
 
 	#right now we assume we're given a nice, normalized document
 	scxmlDocToPythonModel = (doc) ->
@@ -66,6 +66,15 @@ define ["scxml/model","util/xml/rhino","lib/json2"],(model,xml) ->
 		if String(profile) not in supportedProfiles
 			throw new UnsupportedProfileException("Profile not supported")
 
+		#because doc.getElementById cannot be trusted, we keep track of id-to-element mapping ourself
+		idToNodeMap = {}
+
+		initializeIdToNodeMap = (elt) ->
+			eltId = id(elt)
+			if eltId then idToNodeMap[eltId] = elt
+
+		walk root,initializeIdToNodeMap
+
 		#normalize initial attributes
 		normalizeInitialAttributes = (elt) ->
 			if attr(elt,"initial")
@@ -75,24 +84,25 @@ define ["scxml/model","util/xml/rhino","lib/json2"],(model,xml) ->
 				newInitial.appendChild newTransition
 				elt.appendChild newInitial
 
-		console.log "normalizing initial attributes..."
+		console.debug "normalizing initial attributes..."
 		walk root,normalizeInitialAttributes
-		console.log "done"
+		console.debug "done"
 
 		normalizeIds = (elt) ->
-			if not attr(elt,"id")
-				newId = generateNewId doc,elt
-				console.log "setting new id ",newId," for elt ",elt.node
+			if not id(elt)
+				newId = generateNewId idToNodeMap,elt
+				console.debug "setting new id ",newId," for elt ",elt.node
 				elt.setAttributeNS null,"id",newId
+			#update idToNodeMap on the fly
+			idToNodeMap[id(elt)] = elt
 
-		console.log "normalizing node ids..."
+
+		console.debug "normalizing node ids..."
 		walk root,normalizeIds
-		console.log "done"
+		console.debug "done"
 
-		console.log "normalized doc"
-		console.log xml.serializeToString doc.doc
-
-		id = (elt) -> attr(elt,"id")
+		#console.debug "normalized doc"
+		#console.debug xml.serializeToString doc.doc
 
 		eltIdToObj = {}
 			
@@ -101,7 +111,7 @@ define ["scxml/model","util/xml/rhino","lib/json2"],(model,xml) ->
 
 			switch elt.localName
 				when "state"
-					if (childNode for childNode in elt.childNodes when childNode.localName in stateTagNames).length
+					if (childNode for childNode in elt.childNodes when childNode.setAttribute and childNode.localName in stateTagNames).length
 						eltIdToObj[eltId] = new State(eltId,State.COMPOSITE,order)
 					else
 						eltIdToObj[eltId] = new State(eltId,State.BASIC,order)
@@ -136,25 +146,25 @@ define ["scxml/model","util/xml/rhino","lib/json2"],(model,xml) ->
 				when "script"
 					eltIdToObj[eltId] = new ScriptAction(elt.textContent)
 
-		console.log "generating nodeToObjMap..."
+		console.debug "generating nodeToObjMap..."
 		walk root,generateNodeToObjMap
-		console.log "done..."
+		console.debug "done..."
 
 		#second pass
 		#print "constructing model - starting second pass"
 		for own eltId,obj of eltIdToObj
 
-			elt = doc.getElementById(eltId)
+			elt = idToNodeMap[eltId]
 
 			if obj instanceof State
 				#link to parent
 				p = elt.parentNode
-				if p and eltIdToObj[id(p)]
+				if p and not ( p is elt.ownerDocument ) and eltIdToObj[id(p)]
 					parentObj = eltIdToObj[id(p)]
 					#print "make",parentObj,"parent of",obj
 					obj.parent = parentObj
 
-				for childNode in elt.childNodes
+				for childNode in elt.childNodes when childNode.setAttribute
 					#transition children
 					#may fall into the next case, for initial state
 					if childNode.localName in stateTagNames
@@ -169,15 +179,15 @@ define ["scxml/model","util/xml/rhino","lib/json2"],(model,xml) ->
 							obj.history = eltIdToObj[id(childNode)]
 						#entry and exit actions
 						when "onentry"
-							for actionNode in childNode.childNodes
+							for actionNode in childNode.childNodes when actionNode.setAttribute
 								obj.enterActions.push(eltIdToObj[id(actionNode)])
 						when "onexit"
-							for actionNode in childNode.childNodes
+							for actionNode in childNode.childNodes when actionNode.setAttribute
 								obj.exitActions.push(eltIdToObj[id(actionNode)])
 
 			else if obj instanceof Transition
 				#hook up transition actions
-				for childNode in elt.childNodes
+				for childNode in elt.childNodes when childNode.setAttribute
 					childObj = eltIdToObj[id(childNode)]
 					obj.actions.push(childObj)
 
@@ -193,7 +203,7 @@ define ["scxml/model","util/xml/rhino","lib/json2"],(model,xml) ->
 			
 		#hook up the initial state
 		rootState = eltIdToObj[id(root)]
-		#console.log "rootState",rootState
+		#console.debug "rootState",rootState
 
 		#instantiate and return the model
 		model = new SCXMLModel rootState,profile

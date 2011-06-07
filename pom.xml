@@ -74,6 +74,9 @@
 								<copy todir="${project.build.outputDirectory}/lib">
 									<fileset dir="${basedir}/lib/js"/>
 								</copy>
+								<copy todir="${project.build.outputDirectory}/test">
+									<fileset dir="${basedir}/src/test"/>
+								</copy>
 							</tasks>
 						</configuration>
 						<goals>

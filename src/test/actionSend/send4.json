@@ -1,5 +1,5 @@
 {
-	"name" : "send4",
+	"name" : "actionSend4",
 	"group" : "send",
 	"scxml" : "send4.scxml",
 	"initialConfiguration" : ["a"],

@@ -10,11 +10,6 @@ define(["util/xml/rhino","util/xpath/rhino"],function(xml,xpath){
 	}
 
 	Document.prototype = {
-		getElementById : function(id){
-			var nodes = xpath("//*[@id = '"+id+"']",this.doc.documentElement);
-
-			return nodes.length ? new Node(nodes[0]) : null;
-		},
 		createElementNS : function(ns,name){
 			return new Node(this.doc.createElementNS(ns,name));
 		},
@@ -29,6 +24,9 @@ define(["util/xml/rhino","util/xpath/rhino"],function(xml,xpath){
 		getAttributeNS : function(ns,name){
 			return String(this.node.getAttributeNS(ns,name));
 		},
+		setAttribute : function(name,value){
+			this.node.setAttributeNS(name,value);
+		},
 		setAttributeNS : function(ns,name,value){
 			this.node.setAttributeNS(ns,name,value);
 		},
@@ -41,14 +39,14 @@ define(["util/xml/rhino","util/xpath/rhino"],function(xml,xpath){
 			childNodes = this.node.childNodes;
 			for(var i = 0; i < childNodes.length; i++){
 				var node = childNodes.item(i);
-				if(node.tagName){
+				if(node instanceof Packages.org.w3c.dom.Element){
 					toReturn.push(new Node(node));
 				}
 			}
 			return toReturn;
 		},
 		get parentNode(){
-			parentNode = this.node.parentNode;
+			var parentNode = this.node.parentNode;
 			if(parentNode && parentNode instanceof Packages.org.w3c.dom.Element){
 				return new Node(parentNode);
 			}else{

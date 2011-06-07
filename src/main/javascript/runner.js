@@ -18,7 +18,8 @@
 this.console = {
 	log : this.print,
 	info : this.print,
-	error : this.print
+	error : this.print,
+	debug : this.print
 };
 
 (function(){

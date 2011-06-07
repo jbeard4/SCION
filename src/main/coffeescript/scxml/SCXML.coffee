@@ -73,7 +73,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 		
 		start: ->
 			#perform big step without events to take all default transitions and reach stable initial state
-			console.info("performing initial big step")
+			console.debug("performing initial big step")
 			@_configuration.add(@model.root.initial)
 			@_performBigStep()
 
@@ -105,23 +105,23 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 
 		_performSmallStep: (eventSet,datamodelForNextStep) ->
 
-			console.info("selecting transitions with eventSet: " , eventSet)
+			console.debug("selecting transitions with eventSet: " , eventSet)
 
 			selectedTransitions = @_selectTransitions(eventSet,datamodelForNextStep)
 
-			console.info("selected transitions: " , selectedTransitions)
+			console.debug("selected transitions: " , selectedTransitions)
 
 			if selectedTransitions
 
-				console.info("sorted transitions: ", selectedTransitions)
+				console.debug("sorted transitions: ", selectedTransitions)
 
 				[basicStatesExited,statesExited] = @_getStatesExited(selectedTransitions)
 				[basicStatesEntered,statesEntered] = @_getStatesEntered(selectedTransitions)
 
-				console.info("basicStatesExited " , basicStatesExited)
-				console.info("basicStatesEntered " , basicStatesEntered)
-				console.info("statesExited " , statesExited)
-				console.info("statesEntered " , statesEntered)
+				console.debug("basicStatesExited " , basicStatesExited)
+				console.debug("basicStatesEntered " , basicStatesEntered)
+				console.debug("statesExited " , statesExited)
+				console.debug("statesEntered " , statesEntered)
 
 				eventsToAddToInnerQueue = new Set()
 
@@ -129,9 +129,9 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 
 				#update history states
 
-				console.info("executing state exit actions")
+				console.debug("executing state exit actions")
 				for state in statesExited
-					console.info("exiting " , state)
+					console.debug("exiting " , state)
 
 					#peform exit actions
 					for action in state.exitActions
@@ -150,41 +150,41 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 				# -> Concurrency: Order of transitions: Explicitly defined
 				sortedTransitions = selectedTransitions.iter().sort( (t1,t2) -> t1.documentOrder > t2.documentOrder)
 
-				console.info("executing transitition actions")
+				console.debug("executing transitition actions")
 				for transition in sortedTransitions
-					console.info("transitition " , transition)
+					console.debug("transitition " , transition)
 					for action in transition.actions
 						@_evaluateAction(action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue)
 
-				console.info("executing state enter actions")
+				console.debug("executing state enter actions")
 				for state in statesEntered
-					console.info("entering " , state)
+					console.debug("entering " , state)
 					for action in state.enterActions
 						@_evaluateAction(action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue)
 
 				#update configuration by removing basic states exited, and adding basic states entered
-				console.info("updating configuration ")
-				console.info("old configuration " , @_configuration)
+				console.debug("updating configuration ")
+				console.debug("old configuration " , @_configuration)
 
 				@_configuration = (@_configuration.difference basicStatesExited).union basicStatesEntered
 
-				console.info("new configuration " , @_configuration)
+				console.debug("new configuration " , @_configuration)
 				
 				#add set of generated events to the innerEventQueue -> Event Lifelines: Next small-step
 				if not eventsToAddToInnerQueue.isEmpty()
-					console.info("adding triggered events to inner queue " , eventsToAddToInnerQueue)
+					console.debug("adding triggered events to inner queue " , eventsToAddToInnerQueue)
 
 					@_innerEventQueue.push(eventsToAddToInnerQueue)
 
 				#update the datamodel
-				console.info("updating datamodel for next small step :")
+				console.debug("updating datamodel for next small step :")
 				for own key of datamodelForNextStep
-					console.info("key " , key)
+					console.debug("key " , key)
 					if key of @_datamodel
-						console.info("old value " , @_datamodel[key])
+						console.debug("old value " , @_datamodel[key])
 					else
-						console.info("old value is null")
-					console.info("new value " , datamodelForNextStep[key])
+						console.debug("old value is null")
+					console.debug("new value " , datamodelForNextStep[key])
 						
 					@_datamodel[key] = datamodelForNextStep[key]
 
@@ -193,7 +193,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 
 		_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
 			if action instanceof model.SendAction
-				console.log "sending event",action.eventName,"with content",action.contentexpr
+				console.debug "sending event",action.eventName,"with content",action.contentexpr
 				data = if action.contentexpr then @_eval action.contentexpr,datamodelForNextStep,eventSet else null
 
 				eventsToAddToInnerQueue.add new Event action.eventName,data
@@ -203,7 +203,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 				@_eval action.code,datamodelForNextStep,eventSet,true
 			else if action instanceof model.LogAction
 				log = @_eval action.expr,datamodelForNextStep,eventSet
-				console.log(log)
+				console.log(log)	#the one place where we use straight console.log
 
 		_eval : (code,datamodelForNextStep,eventSet,allowWrite) ->
 			#get the scripting interface
@@ -238,7 +238,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 
 		_getStatesEntered: (transitions) ->
 			statesToRecursivelyAdd = flatten((state for state in transition.targets) for transition in transitions.iter())
-			console.info "statesToRecursivelyAdd :",statesToRecursivelyAdd
+			console.debug "statesToRecursivelyAdd :",statesToRecursivelyAdd
 			statesToEnter = new Set()
 			basicStatesToEnter = new Set()
 
@@ -301,9 +301,9 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 			
 		_selectTransitions: (eventSet,datamodelForNextStep) ->
 			allTransitions = @getAllActivatedTransitions(@_configuration,eventSet,@_getScriptingInterface(datamodelForNextStep,eventSet))
-			console.info("allTransitions",allTransitions)
+			console.debug("allTransitions",allTransitions)
 			consistentTransitions = @_makeTransitionsConsistent allTransitions
-			console.info("consistentTransitions",consistentTransitions)
+			console.debug("consistentTransitions",consistentTransitions)
 			return consistentTransitions
 
 		_makeTransitionsConsistent: (transitions) ->
@@ -312,10 +312,10 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 			[transitionsNotInConflict, transitionsPairsInConflict] = @_getTransitionsInConflict transitions
 			consistentTransitions = consistentTransitions.union transitionsNotInConflict
 
-			console.log "transitions",transitions
-			console.log "transitionsNotInConflict",transitionsNotInConflict
-			console.log "transitionsPairsInConflict",transitionsPairsInConflict
-			console.log "consistentTransitions",consistentTransitions
+			console.debug "transitions",transitions
+			console.debug "transitionsNotInConflict",transitionsNotInConflict
+			console.debug "transitionsPairsInConflict",transitionsPairsInConflict
+			console.debug "consistentTransitions",consistentTransitions
 
 			while not transitionsPairsInConflict.isEmpty()
 
@@ -325,10 +325,10 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 
 				consistentTransitions = consistentTransitions.union transitionsNotInConflict
 
-				console.log "transitions",transitions
-				console.log "transitionsNotInConflict",transitionsNotInConflict
-				console.log "transitionsPairsInConflict",transitionsPairsInConflict
-				console.log "consistentTransitions",consistentTransitions
+				console.debug "transitions",transitions
+				console.debug "transitionsNotInConflict",transitionsNotInConflict
+				console.debug "transitionsPairsInConflict",transitionsPairsInConflict
+				console.debug "consistentTransitions",consistentTransitions
 
 			return consistentTransitions
 				
@@ -339,7 +339,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 
 			#better to use iterators, because not sure how to encode "order doesn't matter" to list comprehension
 			transitionList = transitions.iter()
-			console.info("transitions",transitionList)
+			console.debug("transitions",transitionList)
 
 			for i in [0...transitionList.length]
 				for j in [i+1...transitionList.length]
@@ -375,7 +375,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 		_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
 			if action instanceof model.SendAction and action.timeout
 				if @setTimeout
-					console.log "sending event",action.eventName,"with content",action.contentexpr,"after timeout",action.timeout
+					console.debug "sending event",action.eventName,"with content",action.contentexpr,"after timeout",action.timeout
 					data = if action.contentexpr then @_eval(action.contentexpr,datamodelForNextStep,eventSet) else null
 
 					callback = => @gen new Event(action.eventName,data)
@@ -398,7 +398,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 		#External Event Communication: Asynchronous
 		gen: (e) ->
 			#pass it straight through	
-			console.info("received event " + e)
+			console.debug("received event " + e)
 			@_performBigStep(e)
 
 	SCXMLInterpreter:SCXMLInterpreter

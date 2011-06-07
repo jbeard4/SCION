@@ -1,0 +1,18 @@
+<html>
+	<head>
+		<script type="text/javascript" src="/lib/js/require.js"></script>
+		<script type="text/javascript">
+		//bootstrap require.js
+		require({
+				baseUrl : "/"
+			},
+			["scxml/test/test-list","scxml/test/browser-harness"],
+			function(testList,runTests){
+				runTests(testList)
+			}
+		);
+		</script>
+	</head>
+	<body></body>
+</html>
+

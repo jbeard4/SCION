@@ -29,7 +29,7 @@ define ["scxml/doc2model","scxml/event","scxml/SCXML","scxml/set","scxml/async-f
 		doCallback = (e,nextStep,errBack,failBack) ->
 			sendEvent = ->
 				try
-					console.log "sending event",e["event"]["name"]
+					console.info "sending event",e["event"]["name"]
 					interpreter.gen(new Event(e["event"]["name"]))
 					nextConfiguration = interpreter.getConfiguration()
 					expectedNextConfiguration = new Set(e["nextConfiguration"])
@@ -45,7 +45,7 @@ define ["scxml/doc2model","scxml/event","scxml/SCXML","scxml/set","scxml/async-f
 					nextStep()
 
 			if(e.after)
-				console.log("e.after " + e.after)
+				console.info("e.after " + e.after)
 				setTimeout(sendEvent,e.after)
 			else
 				sendEvent()
@@ -53,22 +53,22 @@ define ["scxml/doc2model","scxml/event","scxml/SCXML","scxml/set","scxml/async-f
 		startAsyncFor = (test,doNextTest) ->
 
 			testSuccessFullyFinished = ->
-				console.log "test",test["name"],"...passes"
+				console.info "test",test["name"],"...passes"
 				results.testsPassed.push test["name"]
 				doNextTest()
 
 			testFailBack = ->
-				console.log "test",test["name"],"...failed"
+				console.info "test",test["name"],"...failed"
 				results.testsFailed.push test["name"]
 				doNextTest()
 
 			testErrBack = (err) ->
-				console.log "test",test["name"],"...errored"
+				console.info "test",test["name"],"...errored"
 				results.testsErrored.push test["name"]
 				printError err
 				doNextTest()
 
-			console.log("running test",test.name)
+			console.info("running test",test.name)
 
 			results.testCount++
 
@@ -78,16 +78,16 @@ define ["scxml/doc2model","scxml/event","scxml/SCXML","scxml/set","scxml/async-f
 
 				events = test.events.slice()
 
-				console.log "starting interpreter"
+				console.info "starting interpreter"
 
 				interpreter.start()
 				initialConfiguration = interpreter.getConfiguration()
 
-				console.log "initial configuration",initialConfiguration
+				console.debug "initial configuration",initialConfiguration
 
 				expectedInitialConfiguration = new Set(test["initialConfiguration"])
 
-				console.log "expected configuration",expectedInitialConfiguration
+				console.debug "expected configuration",expectedInitialConfiguration
 
 			catch err
 				testErrBack err
