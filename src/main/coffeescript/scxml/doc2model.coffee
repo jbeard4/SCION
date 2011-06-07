@@ -54,7 +54,7 @@ define ["scxml/model","util/xml/rhino","lib/json2"],(model,xml) ->
 		root = doc.documentElement
 
 		if attr(root,"name") and not attr(root,"id")
-			root.set("id",attr(root,"name"))
+			root.setAttributeNS(null,"id",attr(root,"name"))
 
 		profile = attr(root,"profile") or "python"
 		if String(profile) not in supportedProfiles
