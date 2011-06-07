@@ -123,8 +123,8 @@
 						<argument>${basedir}/src/main/javascript/runner.js</argument>
 						<argument>${basedir}</argument>
 						<argument>scxml/test/rhino-harness</argument>
-						<argument>test/basic/basic2.json</argument>
-						<!--<argument>${scxmlInputArgs}</argument>-->
+						<!--<argument>test/basic/basic2.json</argument>-->
+						<argument>${scxmlArgs}</argument>
 					</arguments>
 				</configuration>
 			</plugin>

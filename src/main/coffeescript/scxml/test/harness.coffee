@@ -2,6 +2,12 @@ define ["scxml/doc2model","scxml/event","scxml/SCXML","scxml/set","scxml/async-f
 
 	SimpleInterpreter = scxml.SimpleInterpreter
 
+	printError = (e) ->
+		console.error e.name
+		console.error e.message
+		console.error e.fileName
+		console.error e.lineNumber
+
 	testCount = 0
 	testsPassed = 0
 	testsFailed = 0
@@ -22,10 +28,7 @@ define ["scxml/doc2model","scxml/event","scxml/SCXML","scxml/set","scxml/async-f
 			startAsyncFor test,nextStep
 
 		testErrBack = (e,nextStep) ->
-			console.log e.name
-			console.log e.message
-			console.log e.fileName
-			console.log e.lineNumber
+			printError e
 
 			testsErrored++
 
@@ -57,10 +60,7 @@ define ["scxml/doc2model","scxml/event","scxml/SCXML","scxml/set","scxml/async-f
 					throw SCXMLConfigurationException(expectedNextConfiguration,nextConfiguration)
 
 			catch e
-				console.error e.name
-				console.error e.message
-				console.error e.fileName
-				console.error e.lineNumber
+				printError e
 				testsFailed++
 
 			if(e.after)
@@ -70,7 +70,7 @@ define ["scxml/doc2model","scxml/event","scxml/SCXML","scxml/set","scxml/async-f
 				nextStep()
 
 		errBack = (e,nextStep) ->
-			console.error(e)
+			printError e
 			testsErrored++
 			
 			nextStep()

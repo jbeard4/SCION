@@ -43,8 +43,7 @@ define ->
 
 			return ancestors
 
-		getAncestorsOrSelf: (root) ->
-			return [@] + @getAncestors()
+		getAncestorsOrSelf: (root) -> [@].concat @getAncestors(root)
 
 		getDescendants: ->
 			descendants = []
@@ -59,7 +58,7 @@ define ->
 
 			return descendants
 
-		getDescendantsOrSelf: -> [@] + @getDescendants()
+		getDescendantsOrSelf: -> [@].concat @getDescendants()
 
 		isOrthogonalTo: (s) ->
 			#Two control states are orthogonal if they are not ancestrally
@@ -68,7 +67,8 @@ define ->
 
 		isAncestrallyRelatedTo: (s) ->
 			#Two control states are ancestrally related if one is child/grandchild of another.
-			return this in s.getAncestorsOrSelf() or s in @getAncestorsOrSelf()
+			s.getAncestorsOrSelf()
+			return @ in s.getAncestorsOrSelf() or s in @getAncestorsOrSelf()
 
 		getLCA: (s) ->
 			commonAncestors = (a for a in @getAncestors() when s in a.getDescendants())

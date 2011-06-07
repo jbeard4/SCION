@@ -84,7 +84,6 @@ define ["scxml/model","scxml/set","scxml/event"],(model,Set,event) ->
 		isIn: (stateName) -> @getFullConfiguration().containsKey stateName
 
 		_performBigStep: (e) ->
-			debugger
 			if e then @_innerEventQueue.push(new Set([e]))
 
 			keepGoing = true
@@ -167,8 +166,7 @@ define ["scxml/model","scxml/set","scxml/event"],(model,Set,event) ->
 				console.info("updating configuration ")
 				console.info("old configuration " , @_configuration)
 
-				@_configuration.difference basicStatesExited
-				@_configuration.union basicStatesEntered
+				@_configuration = (@_configuration.difference basicStatesExited).union basicStatesEntered
 
 				console.info("new configuration " , @_configuration)
 				
@@ -300,15 +298,25 @@ define ["scxml/model","scxml/set","scxml/event"],(model,Set,event) ->
 			consistentTransitions = new Set()
 
 			[transitionsNotInConflict, transitionsPairsInConflict] = @_getTransitionsInConflict transitions
-			consistentTransitions.union transitionsNotInConflict
+			consistentTransitions = consistentTransitions.union transitionsNotInConflict
+
+			console.log "transitions",transitions
+			console.log "transitionsNotInConflict",transitionsNotInConflict
+			console.log "transitionsPairsInConflict",transitionsPairsInConflict
+			console.log "consistentTransitions",consistentTransitions
 
 			while not transitionsPairsInConflict.isEmpty()
 
-				transitions = new Set(@getTransitionWithHigherPriority t for t in transitionsPairsInConflict.iter())
+				transitions = new Set(@priorityComparisonFn t for t in transitionsPairsInConflict.iter())
 
 				[transitionsNotInConflict, transitionsPairsInConflict] = @_getTransitionsInConflict transitions
 
-				consistentTransitions.union transitionsNotInConflict
+				consistentTransitions = consistentTransitions.union transitionsNotInConflict
+
+				console.log "transitions",transitions
+				console.log "transitionsNotInConflict",transitionsNotInConflict
+				console.log "transitionsPairsInConflict",transitionsPairsInConflict
+				console.log "consistentTransitions",consistentTransitions
 
 			return consistentTransitions
 				
@@ -331,11 +339,7 @@ define ["scxml/model","scxml/set","scxml/event"],(model,Set,event) ->
 						allTransitionsInConflict.add t2
 						transitionsPairsInConflict.add [t1,t2]
 
-			transitions.difference allTransitionsInConflict
-			transitionsNotInConflict = transitions
-
-			console.log "transitionsNotInConflict",transitionsNotInConflict
-			console.log "transitionsPairsInConflict",transitionsPairsInConflict
+			transitionsNotInConflict = transitions.difference allTransitionsInConflict
 
 			return [transitionsNotInConflict,transitionsPairsInConflict]
 		

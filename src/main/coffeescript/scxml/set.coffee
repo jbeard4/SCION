@@ -2,7 +2,10 @@ define ->
 
 	class ArraySet
 		constructor: (l=[]) ->
-			@o = l
+			@o = []
+
+			for x in l
+				@add x
 
 		add: (x) ->
 			if not @contains x
@@ -17,14 +20,21 @@ define ->
 
 		union: (l) ->
 			l = if l.iter then l.iter() else l
+			s = new ArraySet(@o.slice())
 
 			for i in l
-				@add(i)
+				s.add(i)
+
+			return s
 
 		difference: (l) ->
 			l = if l.iter then l.iter() else l
+			s = new ArraySet(@o.slice())
+
 			for i in l
-				@remove(i)
+				s.remove(i)
+
+			return s
 
 		contains: (x) -> x in @o
 
