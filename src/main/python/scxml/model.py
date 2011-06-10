@@ -101,14 +101,14 @@ class State():
 		return lca
 
 class Transition():
-	def __init__(self,event=None,documentOrder=0,cond=None):
+	def __init__(self,event=None,documentOrder=0,cond=None,source=None,targets=None,actions=None):
 		self.event = event 
 		self.documentOrder = documentOrder
 		self.cond = cond
 
-		self.source = None 
-		self.targets = None
-		self.actions = []
+		self.source = source 
+		self.targets = targets
+		self.actions = actions or []
 
 	def __str__(self):
 		return self.source.name + " -> " + repr([target.name for target in self.targets])

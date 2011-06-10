@@ -18,6 +18,14 @@
 	<param name="genDepth" select="false()"/>
 	<param name="genAncestors" select="false()"/>
 
+	<!-- constants -->
+	<variable name="basic-kind" select="0"/>
+	<variable name="composite-kind" select="1"/>
+	<variable name="parallel-kind" select="2"/>
+	<variable name="history-kind" select="4"/>
+	<variable name="initial-kind" select="5"/>
+	<variable name="final-kind" select="6"/>
+
 	<template match="/">
 		<choose>
 			<when test="$JSONPCallbackName">
@@ -50,9 +58,10 @@
 					<if test="not(position() = last())">,</if>
 				</for-each>
 			},
-			"initial" : 	<call-template name="genInitial">
-						<with-param name="s" select="s:scxml"/>
-					</call-template>,
+			"root" : <call-template name="genId">
+					<with-param name="s" select="s:scxml"/>
+				 </call-template>,
+			"profile" : "<value-of select="s:scxml/@profile"/>",
 			"scripts" : [<apply-templates select="s:script"/>]
 		}
 	</template>
@@ -78,12 +87,46 @@
 			<number level="any" count="s:scxml | s:state | s:parallel | s:history | s:final | s:initial"/>
 		</variable>
 
+		<!-- select kind -->
+		<variable name="kind">
+			<choose>
+				<when test="self::s:state and (s:scxml | s:state | s:parallel | s:history | s:final | s:initial)">
+					<value-of select="$composite-kind"/>
+							
+				</when>
+				<when test="self::s:state and not (s:scxml | s:state | s:parallel | s:history | s:final | s:initial)">
+					<value-of select="$basic-kind"/>
+							
+				</when>
+				<when test="self::s:scxml">
+					<value-of select="$composite-kind"/>
+				</when>
+				<when test="self::s:initial">
+					<value-of select="$initial-kind"/>
+				</when>
+				<when test="self::s:parallel">
+					<value-of select="$parallel-kind"/>
+				</when>
+				<when test="self::s:final">
+					<value-of select="$final-kind"/>
+				</when>
+				<when test="self::s:history">
+					<value-of select="$history-kind"/>
+				</when>
+				<otherwise>
+				</otherwise>
+			</choose>
+		</variable>
+
 		{
+			<if test="s:history">
+				"history" : 	"<value-of select="s:history/@id"/>",
+			</if>
 			<if test="self::s:history">
-			"history" : 	"<value-of select="s:history/@id"/>",
+				"isDeep" : <value-of select="@type = 'deep'"/>,
 			</if>
 			<if test="@initial or s:initial">
-			"initial" : 	<call-template name="genInitial"/>,
+				"initial" : 	<call-template name="genInitial"/>,
 			</if>
 			"onexit" : 	[<for-each select="s:onexit/*">
 						<apply-templates select="."/>
@@ -97,9 +140,11 @@
 						<apply-templates select="."/>
 						<if test="not(position() = last())">,</if>
 					</for-each>],
+			<if test="not(self::s:scxml)">
 			"parent" : 	<call-template name="genId">
 						<with-param name="s" select=".."/>
 					</call-template>,
+			</if>
 			"id" : 		<call-template name="genId"/>,
 			<if test="$genAncestors">
 				"ancestors" : [<for-each select="ancestor::*">
@@ -113,9 +158,10 @@
 			</if>
 			"documentOrder" : <value-of select="$stateNum"/>,
 			"children" : [<for-each select="s:state | s:parallel | s:final | s:history | s:initial">
-						"<value-of select="@id"/>"
+						<call-template name="genId"/>
 						<if test="not(position() = last())">,</if>
-					</for-each>]
+					</for-each>],
+			"kind" : <value-of select="$kind"/>
 
 		}
 	</template>
@@ -174,6 +220,10 @@
 		</variable>
 
 		{
+			"id" : 		"<value-of select="generate-id()"/>",
+			"source" : 	<call-template name="genId">
+						<with-param name="s" select=".."/>
+					</call-template>,
 			"target" : 	"<value-of select="@target"/>",
 			"cond" : 	<call-template name="genCond"/>,
 			<if test="@event">
@@ -258,7 +308,6 @@
 	<template match="s:send">
 		{
 			"type" : "send",
-			"event" : "<value-of select="@event"/>",
 			<if test="@delay">
 			"delay" : "<value-of select="@delay"/>", <!-- TODO: parse this -->	
 			</if>
@@ -266,8 +315,9 @@
 			"id" : "<value-of select="@id"/>",
 			</if>
 			<if test="@contentexpr">
-			"contentExpr" : <value-of select="@contentexpr"/> <!-- FIXME: escape -->
+			"contentExpr" : <value-of select="@contentexpr"/>, <!-- FIXME: escape -->
 			</if>
+			"event" : "<value-of select="@event"/>"
 		}
 	</template>
 

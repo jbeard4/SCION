@@ -1,5 +1,4 @@
 import sys, json
-from scxml.doc2model import scxmlFileToPythonModel
 from scxml.event import Event
 from scxml.SCXML import SimpleInterpreter
 import os
@@ -8,9 +7,17 @@ import pdb
 import time
 
 testCount = 0
-testsPassed = 0
-testsFailed = 0
-testsErrored = 0
+testsPassed = []
+testsFailed = []
+testsErrored = []
+
+modelParserOptions = {
+	"dom" : 0,
+	"xslt+json" : 1
+}
+
+#TODO: we should accept a command-line option to allow this to be configurable. for now, we just set a global variable to allow this to be configurable
+modelParser = modelParserOptions["xslt+json"]
 
 class SCXMLConfigurationException(Exception):
 	def __init__(self,expected,actual):
@@ -60,10 +67,11 @@ for jsonTestFileName in sys.argv[1:]:
 
 	testCount = testCount + 1
 
-	try:
 
-		f = open(jsonTestFileName)
-		test = json.load(f)
+	f = open(jsonTestFileName)
+	test = json.load(f)
+
+	try:
 
 		print "running test",test["name"]
 
@@ -71,7 +79,13 @@ for jsonTestFileName in sys.argv[1:]:
 		pathToSCXML = os.path.join(jsonTestFileDir,test["scxml"])
 
 		scxmlFile = file(pathToSCXML)
-		model = scxmlFileToPythonModel(scxmlFile) 
+		if modelParser is modelParserOptions["dom"]:
+			from scxml.doc2model import scxmlFileToPythonModel
+			model = scxmlFileToPythonModel(scxmlFile) 
+		elif modelParser is modelParserOptions["xslt+json"]:
+			from scxml.json2model import scxmlFileToPythonModel
+			model = scxmlFileToPythonModel(scxmlFile) 
+
 		interpreter = SimpleInterpreter(model,setTimeout=setTimeout,clearTimeout=clearTimeout) 
 
 		interpreter.start() 
@@ -104,10 +118,10 @@ for jsonTestFileName in sys.argv[1:]:
 				raise SCXMLConfigurationException(expectedNextConfiguration,nextConfiguration)
 
 		print test["name"], "...passes"
-		testsPassed  = testsPassed + 1
+		testsPassed.append(test)
 	except SCXMLConfigurationException as inst:
 		print inst
-		testsFailed = testsFailed + 1
+		testsFailed.append(test)
 	except:
 		print "Error:"
 		e, m, tb = sys.exc_info()
@@ -115,12 +129,12 @@ for jsonTestFileName in sys.argv[1:]:
 		print m
 		traceback.print_tb(tb)
 		pdb.post_mortem(tb)
-		testsErrored = testsErrored + 1
+		testsErrored.append(test)
 
 print "Summary:"
 print "Tests Run:", testCount
-print "Tests Passed:", testsPassed
-print "Tests Failed:", testsFailed
-print "Tests Errored:", testsErrored
+print "Tests Passed:", len(testsPassed),[test["name"] for test in testsPassed]
+print "Tests Failed:", len(testsFailed),[test["name"] for test in testsFailed]
+print "Tests Errored:", len(testsErrored),[test["name"] for test in testsErrored]
 
-sys.exit(testsPassed == testCount)
+sys.exit(len(testsPassed) == testCount)

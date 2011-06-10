@@ -12,6 +12,7 @@ stateTagNames = map(q,["initial","parallel","final","history","state"])
 
 #TODO: not quite done. still need a set to lookup qualified tag names (in) as well as shorthand other stuff...
 
+#TODO:move this out
 def scxmlFileToPythonModel(scxmlFile):
 	return scxmlDocToPythonModel(etree.parse(scxmlFile))
 
