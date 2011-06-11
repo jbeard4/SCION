@@ -416,21 +416,25 @@
 		<param name="c" /> 
 		<param name="r" /> 
 
+		<!--
 		<message>
 			s:<value-of select="$s"/>
 			c:<value-of select="$c"/>
 			r:<value-of select="$r"/>
 		</message>
+		-->
 
 		<variable name="string-text" select="string($s)"/>
 
 		<choose>
 			<when test="contains($string-text,$c)">
 
+				<!--
 				<message>
 					first:<value-of select="substring-before($string-text, $c)"/>
 					remaining:<value-of select="substring-after($string-text, $c)"/>
 				</message>
+				-->
 
 				<value-of select="substring-before($string-text, $c)" />
 				<value-of select="$r"/> 

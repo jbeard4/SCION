@@ -1,7 +1,18 @@
 define({
-	parseFromString : function(){
+	parseFromString : function(s){
+		importPackage(Packages.javax.xml.parsers);
+		importPackage(Packages.java.io);
+		importClass(Packages.org.xml.sax.InputSource);
+
 		//I think this would use DocumentBuilderFactory
-		new Error("No implementation for parseFromString.");
+		var dbf = DocumentBuilderFactory.newInstance();
+		dbf.setNamespaceAware(true);
+		var db = dbf.newDocumentBuilder();
+		var is = new InputSource();
+		is.setCharacterStream(new StringReader(s));
+
+		var doc = db.parse(is);
+		return doc;
 	},
 	serializeToString : function(d){
 		var ByteArrayOutputStream = java.io.ByteArrayOutputStream;

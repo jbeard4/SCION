@@ -39,7 +39,10 @@ this.console = {
 
 		//bootstrap require.js
 		require({
-				baseUrl : absoluteScriptDir + "/target/classes/"	//FIXME: this should also be passed in as an argument
+				baseUrl : absoluteScriptDir + "/target/classes/",	//FIXME: this should also be passed in as an argument
+				paths : {
+					text : "lib/text"
+				}
 			},
 			[mainFunction],
 			function(fn){

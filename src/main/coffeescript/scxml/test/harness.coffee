@@ -1,4 +1,4 @@
-define ["scxml/doc2model","scxml/event","scxml/SCXML","scxml/set","scxml/async-for"],(doc2model,Event,scxml,Set,asyncForEach) ->
+define ["scxml/event","scxml/SCXML","scxml/set","scxml/async-for"],(Event,scxml,Set,asyncForEach) ->
 
 	SimpleInterpreter = scxml.SimpleInterpreter
 
@@ -37,12 +37,13 @@ define ["scxml/doc2model","scxml/event","scxml/SCXML","scxml/set","scxml/async-f
 				catch err
 					errBack err
 
-				if not expectedNextConfiguration.equals nextConfiguration
-					console.error("Configuration error: expected " + expectedNextConfiguration + ", received " + nextConfiguration)
+				if nextConfiguration and expectedNextConfiguration
+					if not expectedNextConfiguration.equals nextConfiguration
+						console.error("Configuration error: expected " + expectedNextConfiguration + ", received " + nextConfiguration)
 
-					failBack()
-				else
-					nextStep()
+						failBack()
+					else
+						nextStep()
 
 			if(e.after)
 				console.info("e.after " + e.after)
@@ -73,8 +74,8 @@ define ["scxml/doc2model","scxml/event","scxml/SCXML","scxml/set","scxml/async-f
 			results.testCount++
 
 			try
-				model = doc2model test.scxmlDoc
-				interpreter = new SimpleInterpreter model,setTimeout,clearTimeout
+				console.log "running test for",test.name
+				interpreter = new SimpleInterpreter test.model,setTimeout,clearTimeout
 
 				events = test.events.slice()
 
@@ -92,10 +93,11 @@ define ["scxml/doc2model","scxml/event","scxml/SCXML","scxml/set","scxml/async-f
 			catch err
 				testErrBack err
 
-			if not expectedInitialConfiguration.equals(initialConfiguration)
-				console.error("Configuration error: expected " + expectedInitialConfiguration + ", received " + initialConfiguration)
-				testFailBack()
-			else
-				asyncForEach events,doCallback,testSuccessFullyFinished,testErrBack,testFailBack
+			if expectedInitialConfiguration and initialConfiguration
+				if not expectedInitialConfiguration.equals(initialConfiguration)
+					console.error("Configuration error: expected " + expectedInitialConfiguration + ", received " + initialConfiguration)
+					testFailBack()
+				else
+					asyncForEach events,doCallback,testSuccessFullyFinished,testErrBack,testFailBack
 
 		asyncForEach tests,testCallback,testsFinishedCallback,(->),(->)

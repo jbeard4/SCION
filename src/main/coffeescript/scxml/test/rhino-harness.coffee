@@ -1,4 +1,13 @@
-define ["scxml/test/harness","util/xml/rhino","util/xml/dom/rhino","lib/json2"],(harness,xml,dom) ->
+#TODO: break up these dependencies based on modelParserOptions
+define ["scxml/doc2model","scxml/doc2json","scxml/json2model","util/xml/rhino","util/xsl/rhino","util/xml/dom/rhino","scxml/test/harness","lib/json2"],(doc2model,doc2json,json2model,xml,xsl,dom,harness) ->
+
+	modelParserOptions =
+		dom : 0
+		xsltJson : 1
+
+	
+	#TODO: we should accept a command-line option to allow this to be configurable. for now, we just set a global variable to allow this to be configurable
+	modelParser = modelParserOptions["xsltJson"]
 
 	importClass(Packages.java.io.File)
 
@@ -21,7 +30,7 @@ define ["scxml/test/harness","util/xml/rhino","util/xml/dom/rhino","lib/json2"],
 		timeoutTuple = countToTimeoutMap[timeoutId]
 
 		if timeoutTuple in timeouts
-			timeouts = (timeout for timeout in timeouts when timeout is not timeoutTuple)
+			timeouts = (timeout for timeout in timeouts when not (timeout is timeoutTuple))
 			delete countToTimeoutMap[timeoutId]
 
 	checkTimeouts = ->
@@ -38,14 +47,19 @@ define ["scxml/test/harness","util/xml/rhino","util/xml/dom/rhino","lib/json2"],
 
 		#TODO: refactor the outer loop to also be async. Right now, I believe this will only work for one test.
 		jsonTests = for jsonTestFileName in pathsToJsonTestFiles
-			console.log "running tests for",jsonTestFileName
-
 			jsonTest = JSON.parse readFile jsonTestFileName
 			jsonTestFile = new File jsonTestFileName
 			jsonTestFileDirStr = jsonTestFile.getParent()
 			pathToSCXMLFile = new File jsonTestFileDirStr,jsonTest["scxml"]
 			pathToSCXML = pathToSCXMLFile.getPath()
-			jsonTest.scxmlDoc = new dom.Document xml.parseFromPath pathToSCXML	#parse xml doc from path
+			jsonTest.model =
+				if modelParser is modelParserOptions.xsltJson
+					scxmlDoc =  xml.parseFromPath pathToSCXML	#parse xml doc from path
+					json = doc2json scxmlDoc,xml,xsl
+					json2model json
+				else
+					scxmlDoc = new dom.Document xml.parseFromPath pathToSCXML	#parse xml doc from path
+					doc2model scxmlDoc
 			jsonTest
 
 		finish = (report) ->
@@ -62,7 +76,7 @@ define ["scxml/test/harness","util/xml/rhino","util/xml/dom/rhino","lib/json2"],
 
 		harness jsonTests,setTimeout,clearTimeout,finish
 
-		console.log "timeouts",timeouts
+		#console.log "timeouts",timeouts
 			
 		while true
 			checkTimeouts()

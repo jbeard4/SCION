@@ -17,26 +17,6 @@ define ["scxml/model"],(model) ->
 
 	supportedProfiles = ["ecmascript"]
 
-	localNameToPreviousCount = {}
-
-	generateNewId = (idToNodeMap,element) ->
-		name = element.localName
-		count = localNameToPreviousCount[name] or -1
-
-		count++
-
-		newId = name + count
-
-		console.debug "newId",newId
-		while newId of idToNodeMap
-			count++
-			newId = name + count
-			console.debug "newId",newId
-
-		localNameToPreviousCount[name] = count
-
-		return newId
-
 	walk = (root,fn) ->
 		q = [root]
 		count = 0
@@ -53,7 +33,6 @@ define ["scxml/model"],(model) ->
 
 	id = (elt) -> attr(elt,"id")
 
-	#right now we assume we're given a nice, normalized document
 	scxmlDocToPythonModel = (doc) ->
 		
 		#normalize root id
@@ -87,6 +66,28 @@ define ["scxml/model"],(model) ->
 		console.debug "normalizing initial attributes..."
 		walk root,normalizeInitialAttributes
 		console.debug "done"
+
+		localNameToPreviousCount = {}
+
+		generateNewId = (idToNodeMap,element) ->
+			name = element.localName
+			count = localNameToPreviousCount[name] or -1
+
+			count++
+
+			newId = name + count
+
+			console.debug "newId",newId
+			while newId of idToNodeMap
+				count++
+				newId = name + count
+				console.debug "newId",newId
+
+			localNameToPreviousCount[name] = count
+
+			return newId
+
+
 
 		normalizeIds = (elt) ->
 			if not id(elt)
@@ -134,7 +135,7 @@ define ["scxml/model"],(model) ->
 					eltIdToObj[eltId] = new Transition(eltId,event,order,cond)
 				when "send"
 					delay = getDelayInMs(elt)
-					sendid = attr(elt,"sendid") or null
+					sendid = attr(elt,"id") or null
 					contentExpr = attr(elt,"contentexpr") or null #TODO put contentexpr into its own namespace?
 					eltIdToObj[eltId] = new SendAction(attr(elt,"event"),delay,sendid,contentExpr)
 				when "log"

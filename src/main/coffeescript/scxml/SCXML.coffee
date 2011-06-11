@@ -389,6 +389,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 			else if action instanceof model.CancelAction
 				if @clearTimeout
 					if action.sendid of @_timeoutMap
+						console.debug "cancelling ",action.sendid," with timeout id ",@_timeoutMap[action.sendid]
 						@clearTimeout @_timeoutMap[action.sendid]
 				else
 					throw new Error("clearTimeout function not set")

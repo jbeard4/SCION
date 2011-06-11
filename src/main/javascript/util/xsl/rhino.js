@@ -1,6 +1,6 @@
-require.def("src/javascript/scxml/cgf/util/xsl/rhino",
-["src/javascript/scxml/cgf/util/xml/rhino"],
-function(xmlUtil){
+define(
+["util/xml/rhino","util/reduce"],
+function(xmlUtil,reduce){
 
 	return (function(){
 		var TransformerFactory = javax.xml.transform.TransformerFactory,
@@ -34,7 +34,7 @@ function(xmlUtil){
 			var templates = transformList.map(function(t){return tFactory.newTemplates(getSource(t))})
 			var transformHandlers = templates.map(function(t){return tFactory.newTransformerHandler(t)});
 
-			transformHandlers.reduce(function(a,b){
+			reduce(transformHandlers,function(a,b){
 				a.setResult(new SAXResult(b));
 				return b;
 			});

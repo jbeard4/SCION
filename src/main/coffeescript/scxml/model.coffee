@@ -11,14 +11,7 @@ define ->
 		@INITIAL = 5
 		@FINAL = 6
 
-		constructor: (@name,@kind,@documentOrder,@isDeep) ->
-			@transitions = []
-			@children = []
-			@initial = null
-			@history = null
-			@exitActions = []
-			@enterActions = []
-
+		constructor: (@name,@kind,@documentOrder,@isDeep,@transitions = [],@children = [],@parent,@initial,@history,@exitActions = [],@enterActions = []) ->
 
 		toString: -> @name
 
@@ -75,10 +68,7 @@ define ->
 			return commonAncestors[0]
 
 	class Transition
-		constructor: (@id,@event=null,@documentOrder=0,@cond=null) ->
-			@source = null
-			@targets = null
-			@actions = []
+		constructor: (@id,@event=null,@documentOrder=0,@cond=null,@source = null,@targets = null,@actions = []) ->
 
 
 		toString: -> @source.name + " -> " + (target.name for target in @targets)
