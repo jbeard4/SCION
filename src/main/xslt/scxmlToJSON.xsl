@@ -125,7 +125,7 @@
 			<if test="self::s:history">
 				"isDeep" : <value-of select="@type = 'deep'"/>,
 			</if>
-			<if test="@initial or s:initial">
+			<if test="s:initial">
 				"initial" : 	<call-template name="genInitial"/>,
 			</if>
 			"onexit" : 	[<for-each select="s:onexit/*">
@@ -201,16 +201,6 @@
 			</choose>
 		</variable>
 
-		<choose>
-			<when test="$wrapCondInFunction">
-				function(_event,In){
-					return <value-of select="$cond"/>;
-				}
-			</when>
-			<otherwise>
-				"<value-of select="$cond"/>"	<!-- TODO: escape newline chars (js does not allow multiline strings -->
-			</otherwise>
-		</choose>
 	</template>
 
 	<template match="s:transition">
@@ -225,7 +215,20 @@
 						<with-param name="s" select=".."/>
 					</call-template>,
 			"target" : 	"<value-of select="@target"/>",
-			"cond" : 	<call-template name="genCond"/>,
+			<if test="@cond">
+			"cond" : 	<choose>
+						<when test="$wrapCondInFunction">
+							function(_event,In){
+								return <value-of select="@cond"/>;
+							}
+						</when>
+						<otherwise>
+							<call-template name="escapeJsString">
+								<with-param name="s" select="@cond"/>
+							</call-template>
+						</otherwise>
+					</choose>,
+			</if>
 			<if test="@event">
 				"event" : 	"<value-of select="@event"/>",
 			</if>
@@ -260,23 +263,24 @@
 
 	<template match="s:log">
 		{ 
-			"type" : "log",
+			"type" : "log"
 			<if test="@expr">
-				"expr" : <choose>
+				,"expr" : <choose>
 						<when test="$wrapExprInFunction">
 							function(_event,In){
 								return <value-of select="@expr"/>;
 							}
 						</when>
 						<otherwise>
-							<!-- TODO: escape newline chars (js does not allow multiline strings -->
-							"<value-of select="@expr"/>"	
+							<call-template name="escapeJsString">
+								<with-param name="s" select="@expr"/>
+							</call-template>
 						</otherwise>
-					</choose>,
+					</choose>
 			</if>
 			
 			<if test="@label">
-				"label" : "<value-of select="@label"/>"
+				,"label" : "<value-of select="@label"/>"
 			</if>
 		}
 	</template>
@@ -297,7 +301,9 @@
 							}
 						</when>
 						<otherwise>
-							"<value-of select="."/>"	<!-- TODO: escape newline chars (js does not allow multiline strings -->
+							<call-template name="escapeJsString">
+								<with-param name="s" select="text()"/>
+							</call-template>
 						</otherwise>
 					</choose>
 		}
@@ -315,7 +321,9 @@
 			"id" : "<value-of select="@id"/>",
 			</if>
 			<if test="@contentexpr">
-			"contentExpr" : <value-of select="@contentexpr"/>, <!-- FIXME: escape -->
+			"contentexpr" : <call-template name="escapeJsString">
+						<with-param name="s" select="@contentexpr"/>
+					</call-template>,
 			</if>
 			"event" : "<value-of select="@event"/>"
 		}
@@ -358,6 +366,88 @@
 	<template match="s:validate">
 	<!--TODO-->
 	</template>
+
+	<template name="escapeJsString">
+		<param name="s"/>
+
+		<variable name="escapedBackSlash">
+			<call-template name="searchReplace">
+				<with-param name="s" select="$s"/>
+				<with-param name="c" select="'\'"/>
+				<with-param name="r" select="'\\'"/>
+			</call-template>
+		</variable>
+		<variable name="escapedDoubleQuotes">
+			<call-template name="searchReplace">
+				<with-param name="s" select="$escapedBackSlash"/>
+				<with-param name="c" select="'&quot;'"/>
+				<with-param name="r" select="'\&quot;'"/>
+			</call-template>
+		</variable>
+		<variable name="escapedNewlines">
+			<call-template name="searchReplace">
+				<with-param name="s" select="$escapedDoubleQuotes"/>
+				<with-param name="c" select="'&#xA;'"/>
+				<with-param name="r" select="'\n'"/>
+			</call-template>
+		</variable>
+		<variable name="escapedTabs">
+			<call-template name="searchReplace">
+				<with-param name="s" select="$escapedNewlines"/>
+				<with-param name="c" select="'&#x9;'"/>
+				<with-param name="r" select="'\t'"/>
+			</call-template>
+		</variable>
+		<variable name="escapedCarriageReturn">
+			<call-template name="searchReplace">
+				<with-param name="s" select="$escapedTabs"/>
+				<with-param name="c" select="'&#xD;'"/>
+				<with-param name="r" select="'\n'"/>
+			</call-template>
+		</variable>
+
+
+		"<value-of select="$escapedCarriageReturn"/>"
+	</template>
+
+
+	<template name="searchReplace">
+		<param name="s" /> 
+		<param name="c" /> 
+		<param name="r" /> 
+
+		<message>
+			s:<value-of select="$s"/>
+			c:<value-of select="$c"/>
+			r:<value-of select="$r"/>
+		</message>
+
+		<variable name="string-text" select="string($s)"/>
+
+		<choose>
+			<when test="contains($string-text,$c)">
+
+				<message>
+					first:<value-of select="substring-before($string-text, $c)"/>
+					remaining:<value-of select="substring-after($string-text, $c)"/>
+				</message>
+
+				<value-of select="substring-before($string-text, $c)" />
+				<value-of select="$r"/> 
+				<call-template name="searchReplace">
+					<with-param name="s" select="substring-after($string-text, $c)" /> 
+					<with-param name="c" select="$c" /> 
+					<with-param name="r" select="$r" /> 
+				</call-template>
+			</when>
+			<otherwise>
+				<value-of select="$string-text"/>
+			</otherwise>
+		</choose>
+
+	</template>
+
+
 
 </stylesheet>
 

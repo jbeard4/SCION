@@ -11,9 +11,19 @@ def scxmlFileToPythonModel(scxmlFile):
 	#transform to json
 	#parse json
 	#call jsonDocToPythonModel
-	scxml2JsonTemplate = etree.XSLT(etree.parse(pkg_resources.resource_stream("scxml.xsl","scxmlToJSON.xsl")))
+	normalizeInitialStatesTemplate = 	etree.XSLT(etree.parse(pkg_resources.resource_stream("scxml.xsl","normalizeInitialStates.xsl")))
+	scxmlToJSONTemplate = 			etree.XSLT(etree.parse(pkg_resources.resource_stream("scxml.xsl","scxmlToJSON.xsl")))
+
 	scxmlDoc = etree.parse(scxmlFile)
-	jsonStr = str(scxml2JsonTemplate(scxmlDoc))
+
+	intermediateDoc = normalizeInitialStatesTemplate(scxmlDoc)
+	#print str(intermediateDoc) 
+
+	jsonStr = str(scxmlToJSONTemplate(intermediateDoc))
+	f=open("tmp.json","w")
+	f.write(jsonStr)
+	f.close() 
+
 	print jsonStr
 	jsonDoc = json.load(StringIO(jsonStr))
 	return jsonDocToPythonModel(jsonDoc)
@@ -46,11 +56,11 @@ def jsonDocToPythonModel(json):
 
 	for id,state in json["states"].iteritems():
 
-		mTransitions = [Transition(t["event"] if "event" in t else None,t["documentOrder"],t["cond"],t["source"],t["target"],[parseAction(a) for a in t["contents"]]) for t in state["transitions"]]
+		mTransitions = [Transition(t["event"] if "event" in t else None,t["documentOrder"],t["cond"] if "cond" in t else None,t["source"],t["target"],[parseAction(a) for a in t["contents"]]) for t in state["transitions"]]
 		mEnterActions = [parseAction(a) for a in state["onentry"]]
 		mExitActions = [parseAction(a) for a in state["onexit"]]
 
-		mState = State(state["id"],state["kind"],state["documentOrder"],state["isDeep"])
+		mState = State(state["id"],state["kind"],state["documentOrder"],state["isDeep"] if "isDeep" in state else None)
 
 		mState.transitions = mTransitions
 		mState.enterActions = mEnterActions
