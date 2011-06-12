@@ -34,12 +34,12 @@ this.console = {
 			preparedArguments = preparedArguments[0].replace(/^\s+|\s+$/g, '').split(/ +/); 
 		}
 
-		var absoluteScriptDir = args[1];
+		var basedir = args[1];
 		var mainFunction = args[2]; 
 
 		//bootstrap require.js
 		require({
-				baseUrl : absoluteScriptDir + "/target/classes/",	//FIXME: this should also be passed in as an argument
+				baseUrl : basedir,
 				paths : {
 					text : "lib/text"
 				}

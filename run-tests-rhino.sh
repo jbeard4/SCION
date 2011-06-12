@@ -98,8 +98,8 @@ exec "$JAVACMD" $JAVA_OPTS \
   org.mozilla.javascript.tools.shell.Main \
 	-debug \
 	${root}/lib/js/r.js \
-	${root}/src/main/javascript/runner.js \
-	${root} \
+	${root}/build/runner.js \
+	${root}/build \
 	scxml/test/rhino-harness \
 	"$*"
 

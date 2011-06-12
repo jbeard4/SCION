@@ -66,20 +66,16 @@
 					<execution>
 						<phase>process-classes</phase>
 						<configuration>
+							<!-- this is pretty evil: using maven to call ant to call make 
+								still, not too bad. we use maven for what it's good at: downloading java deps and managing classpath
+								then we use Make for what it's good at: being simple and extremely fast
+								-->
 							<tasks>
-
-								<copy todir="${project.build.outputDirectory}">
-									<fileset dir="${basedir}/src/main/javascript"/>
-								</copy>
-								<copy todir="${project.build.outputDirectory}/lib">
-									<fileset dir="${basedir}/lib/js"/>
-								</copy>
-								<copy todir="${project.build.outputDirectory}/test">
-									<fileset dir="${basedir}/src/test"/>
-								</copy>
-								<copy todir="${project.build.outputDirectory}">
-									<fileset dir="${basedir}/src/main/xslt"/>
-								</copy>
+								<exec executable="make">
+									<arg value="-f"/>
+									<arg value="${basedir}/Makefile"/>
+									<arg value="scion"/>
+								</exec>
 							</tasks>
 						</configuration>
 						<goals>
@@ -87,24 +83,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>com.voltvoodoo</groupId>
-				<artifactId>brew</artifactId>
-				<version>0.2.1</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>compile</goal>
-							<!--<goal>optimize</goal>--> <!-- TODO -->
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<!--<coffeeSourceDir>${basedir}/src/coffeescript</coffeeSourceDir>
-					<coffeeOutputDir>${basedir}/target/js</coffeeOutputDir>-->
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -126,8 +104,8 @@
 					<arguments>
 						<argument>-debug</argument>
 						<argument>${basedir}/lib/js/r.js</argument>
-						<argument>${basedir}/src/main/javascript/runner.js</argument>
-						<argument>${basedir}</argument>
+						<argument>${basedir}/build/runner.js</argument>
+						<argument>${basedir}/build</argument>
 						<argument>scxml/test/rhino-harness</argument>
 						<!--<argument>test/basic/basic2.json</argument>-->
 						<argument>${scxmlArgs}</argument>
