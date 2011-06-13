@@ -18,9 +18,12 @@
 #   Copyright (c) 2001-2002 The Apache Software Foundation.  All rights
 #   reserved.
 
-BASEDIR=`dirname $0`/target/appassembler/
+dn=`dirname $0`
+abspath=`cd $dn; pwd`
+
+BASEDIR=`dirname $abspath`/target/appassembler/
 BASEDIR=`(cd "$BASEDIR"; pwd)`
-root=`dirname $0`
+root=`dirname $abspath`
 
 # OS specific support.  $var _must_ be set to either true or false.
 cygwin=false;
@@ -95,7 +98,7 @@ exec "$JAVACMD" $JAVA_OPTS \
   -Dapp.pid="$$" \
   -Dapp.repo="$REPO" \
   -Dbasedir="$BASEDIR" \
-  org.mozilla.javascript.tools.shell.Main \
+  org.mozilla.javascript.tools.debugger.Main \
 	-debug \
 	${root}/lib/js/r.js \
 	${root}/build/runner.js \

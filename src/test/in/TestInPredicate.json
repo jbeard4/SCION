@@ -1,7 +1,7 @@
 {
 	"name" : "TestInPredicate",
 	"group" : "in",
-	"scxml" : "TestInPredicate.xml",
+	"scxml" : "TestInPredicate.scxml",
 	"initialConfiguration" : ["a1","a2"],
 	"events" : [
 		{
