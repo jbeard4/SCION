@@ -2,7 +2,7 @@
 
 csdir = src/main/coffeescript
 
-.PHONY : clean coffee copy-others scion
+.PHONY : clean coffee copy-others scxml-tests-to-json tests-to-json-tuples scion 
 
 clean:
 	rm -rf build
@@ -23,14 +23,9 @@ copy-others : build
 	cp -r src/main/xslt build/
 
 scxml-tests-to-json : build
-	for i in src/test/*; do \
-		x=`basename $$i`; \
-		mkdir build/test/$$x; \
-		for scxmlFile in $$i/*.scxml; do \
-			y=`basename $$scxmlFile`; \
-			echo converting $$scxmlFile to json at "build/test/$$x/$$y.js"; \
-			./bin/scxml-to-json.sh $$scxmlFile --param wrapInAsyncModuleDefinition "true()" > build/test/$$x/$$y.js; \
-		done; \
-	done
+	sh src/main/bash/build/convert-scxml-tests-to-json.sh
+
+tests-to-json-tuples : build
+	sh src/main/bash/build/generate-requirejs-json-test-tuples.sh
 
 scion : copy-others coffee
