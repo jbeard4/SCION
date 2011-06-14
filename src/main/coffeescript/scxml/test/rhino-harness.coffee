@@ -1,51 +1,17 @@
 #TODO: break up these dependencies based on modelParserOptions
-define ["scxml/doc2model","scxml/doc2json","scxml/json2model","util/xml/rhino","util/xsl/rhino","util/xml/dom/rhino","scxml/test/harness","lib/json2"],(doc2model,doc2json,json2model,xml,xsl,dom,harness) ->
+define ["scxml/doc2model","scxml/doc2json","scxml/json2model","util/xml/rhino","util/xsl/rhino","util/xml/dom/rhino","scxml/test/harness","scxml/test/report2string","scxml/test/simple-env","lib/json2"],(doc2model,doc2json,json2model,xml,xsl,dom,harness,report2string,SimpleEnv) ->
 
 	modelParserOptions =
 		dom : 0
 		xsltJson : 1
 
-	
 	#TODO: we should accept a command-line option to allow this to be configurable. for now, we just set a global variable to allow this to be configurable
 	modelParser = modelParserOptions["xsltJson"]
 
 	importClass(Packages.java.io.File)
 
-	timeouts = []
-	timeoutCounter = -1
-	countToTimeoutMap = {}
-
-	setTimeout = (callback,timeout) ->
-
-		timeoutTuple = [new Date,timeout,callback]
-
-		timeouts.push(timeoutTuple)
-
-		timeoutCounter = timeoutCounter + 1
-		countToTimeoutMap[timeoutCounter] = timeoutTuple
-
-		return timeoutCounter
-
-	clearTimeout = (timeoutId) ->
-		timeoutTuple = countToTimeoutMap[timeoutId]
-
-		if timeoutTuple in timeouts
-			timeouts = (timeout for timeout in timeouts when not (timeout is timeoutTuple))
-			delete countToTimeoutMap[timeoutId]
-
-	checkTimeouts = ->
-		now = new Date
-		triggeredTimeouts  = (timeout for timeout in timeouts when (now - timeout[0]) >= timeout[1])
-
-		for [start,timeout,callback] in triggeredTimeouts
-			callback()
-
-		timeouts = (timeout for timeout in timeouts when timeout not in triggeredTimeouts)
-
-
 	runTests = (pathsToJsonTestFiles) ->
 
-		#TODO: refactor the outer loop to also be async. Right now, I believe this will only work for one test.
 		jsonTests = for jsonTestFileName in pathsToJsonTestFiles
 			jsonTest = JSON.parse readFile jsonTestFileName
 			jsonTestFile = new File jsonTestFileName
@@ -63,20 +29,15 @@ define ["scxml/doc2model","scxml/doc2json","scxml/json2model","util/xml/rhino","
 			jsonTest
 
 		finish = (report) ->
-			console.log "Summary:"
-			console.log "Tests Run:",report.testCount
-			console.log "Tests Passed:",report.testsPassed.length,"-","[",report.testsPassed,"]"
-			console.log "Tests Failed:",report.testsFailed.length,"-","[",report.testsFailed,"]"
-			console.log "Tests Errored:",report.testsErrored.length,"-","[",report.testsErrored,"]"
+			console.info report2string report
 			
 			if report.testCount == report.testsPassed
 				java.lang.System.exit(0)
 			else
 				java.lang.System.exit(1)
 
-		harness jsonTests,setTimeout,clearTimeout,finish
+		env = new SimpleEnv()
 
-		#console.log "timeouts",timeouts
-			
-		while true
-			checkTimeouts()
+		harness jsonTests,env.setTimeout,env.clearTimeout,finish
+
+		env.mainLoop()	#give control to the environment

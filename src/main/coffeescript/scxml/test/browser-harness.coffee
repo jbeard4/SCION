@@ -1,4 +1,7 @@
-define ["scxml/test/harness","scxml/async-for","lib/jquery","lib/json2"],(harness,asyncForEach)->
+define ["scxml/test/harness","scxml/test/report2string","scxml/async-for","lib/jquery","lib/json2"],(harness,report2string,asyncForEach)->
+
+	setTimeout : (callback,timeout) -> window.setTimeout callback,timeout
+	clearTimeout : (timeoutId) -> window.clearTimeout timeoutId
 
 	runTests = (testList) ->
 
@@ -31,17 +34,13 @@ define ["scxml/test/harness","scxml/async-for","lib/jquery","lib/json2"],(harnes
 
 		finishLoad = ->
 			console.info "starting harness"
-			harness jsonTests,window.setTimeout,window.clearTimeout,finish
+			harness jsonTests,setTimeout,clearTimeout,finish
 
 		loadError = (err) ->
 			console.error(err)
 
 		finish = (report) ->
-			console.info "Summary:"
-			console.info "Tests Run:",report.testCount
-			console.info "Tests Passed:",report.testsPassed.length,"-","[",report.testsPassed,"]"
-			console.info "Tests Failed:",report.testsFailed.length,"-","[",report.testsFailed,"]"
-			console.info "Tests Errored:",report.testsErrored.length,"-","[",report.testsErrored,"]"
+			console.info report2string report
 			
 			window.success = report.testCount == report.testsPassed
 			window.report = report

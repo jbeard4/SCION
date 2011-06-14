@@ -23,12 +23,12 @@ copy-others : build
 	cp -r src/main/xslt build/
 
 scxml-tests-to-json : build
-	sh src/main/bash/build/convert-scxml-tests-to-json.sh
+	bash src/main/bash/build/convert-scxml-tests-to-json.sh
 
 tests-to-json-tuples : build
-	sh src/main/bash/build/generate-requirejs-json-test-tuples.sh
+	bash src/main/bash/build/generate-requirejs-json-test-tuples.sh
 
-generate-requirejs-test-loader-module : tests-to-json-tuples
-	sh src/main/bash/build/generate-requirejs-test-loader-module.sh
+gen-requirejs-test-loader-module : tests-to-json-tuples
+	bash src/main/bash/build/generate-requirejs-test-loader-module.sh
 
 scion : copy-others coffee

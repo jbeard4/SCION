@@ -12,17 +12,11 @@ echo "define([" > $target
 
 tests=`find $projdir/build/test/ -name "*.js"`
 
-echo $tests
-
 totalTests=`echo "$tests" | wc -l`
 numTests=0
 
-echo $totalTests
-
 for testModule in $tests; do
 	numTests=$(($numTests+1))
-
-	echo $numTests
 
 	testFileBase=`basename $testModule`; 
 	testFileWithoutExtension=${testFileBase%.*}
@@ -30,7 +24,7 @@ for testModule in $tests; do
 	testDir=`dirname $testModule`;
 	testDirBase=`basename $testDir`;
 
-	echo -n -e "\t'test/$testDirBase/$testFileWithoutExtension'" >> $target
+	echo -ne "\t'test/$testDirBase/$testFileWithoutExtension'" >> $target
 
 	if [ $numTests -ne $totalTests ]; then
 		echo , >> $target

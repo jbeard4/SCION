@@ -15,18 +15,34 @@
  * limitations under the License.
  */
 
-this.console = {
-	log : this.print,
-	info : this.print,
-	error : this.print,
-	debug : this.print
-};
-
 (function(){
-	var args = Array.prototype.slice.call(arguments);
+	var args, argOffset;
+	if(typeof process === "undefined"){
+		argOffset = 0;
 
-	if(args.length >= 3){
-		var preparedArguments = args.slice(3);
+		//we are running under rhino - arguments are passed in on "arguments"
+		args = Array.prototype.slice.call(arguments);
+
+		this.console = {
+			log : this.print,
+			info : this.print,
+			error : this.print,
+			debug : this.print
+		};
+	}else{
+		//we are running under node
+		args = process.argv;
+		argOffset = 2;
+		if(!this.console.debug){
+			this.console.debug = this.console.log;
+		}
+	}
+
+	//note: spartan shell environments cannot reliably accept command-line args, so the entry point (e.g. unit test harness) is called directly for them
+	//this is accomplished by creating a launch script, which symlinks desired entry point module to main.js in pwd
+
+	if(args.length >= 3+argOffset){
+		var preparedArguments = args.slice(3+argOffset);
 
 		//if we only have one big argument with at least one space in it, assume we're being called by ant or maven, 
 		//which, due to passing multiple args in as -D"arg1 arg2 arg3", shows up here as one big string with spaces 
@@ -34,8 +50,11 @@ this.console = {
 			preparedArguments = preparedArguments[0].replace(/^\s+|\s+$/g, '').split(/ +/); 
 		}
 
-		var basedir = args[1];
-		var mainFunction = args[2]; 
+		var basedir = args[1+argOffset];
+		var mainFunction = args[2+argOffset]; 
+
+		console.log("basedir ",basedir); 
+		console.log("mainFunction ",mainFunction ); 
 
 		//bootstrap require.js
 		require({
@@ -52,4 +71,4 @@ this.console = {
 
 	}
 
-}).apply(this,arguments);
+}).apply(this,typeof arguments === "undefined" ? [] : arguments);
