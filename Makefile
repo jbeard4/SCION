@@ -2,7 +2,7 @@
 
 csdir = src/main/coffeescript
 
-.PHONY : clean coffee copy-others scxml-tests-to-json tests-to-json-tuples scion 
+.PHONY : clean coffee copy-others scxml-tests-to-json tests-to-json-tuples scion generate-requirejs-test-loader-module
 
 clean:
 	rm -rf build
@@ -27,5 +27,8 @@ scxml-tests-to-json : build
 
 tests-to-json-tuples : build
 	sh src/main/bash/build/generate-requirejs-json-test-tuples.sh
+
+generate-requirejs-test-loader-module : tests-to-json-tuples
+	sh src/main/bash/build/generate-requirejs-test-loader-module.sh
 
 scion : copy-others coffee
