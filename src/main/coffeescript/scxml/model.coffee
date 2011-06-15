@@ -1,103 +1,57 @@
 define ->
-	class SCXMLModel
-		constructor: (@root,@profile) ->
+	BASIC : 0
+	COMPOSITE : 1
+	PARALLEL : 2
+	#AND : 3
+	HISTORY : 4
+	INITIAL : 5
+	FINAL : 6
 
-	class State
-		@BASIC = 0
-		@COMPOSITE = 1
-		@PARALLEL = 2
-		#AND = 3
-		@HISTORY = 4
-		@INITIAL = 5
-		@FINAL = 6
+	getDepth: (s) ->
+		count = 0
+		state = s.parent
+		while state
+			count = count + 1
+			state = state.parent
 
-		constructor: (@name,@kind,@documentOrder,@isDeep,@transitions = [],@children = [],@parent,@initial,@history,@exitActions = [],@enterActions = []) ->
+		return count
 
-		toString: -> @name
+	getAncestors: (s,root) ->
+		ancestors = []
 
-		hashCode: -> @name
+		state = s.parent
+		while state and not (state is root)
+			ancestors.push(state)
+			state = state.parent
 
-		getDepth: ->
-			count = 0
-			state = @parent
-			while state
-				count = count + 1
-				state = state.parent
+		return ancestors
 
-			return count
+	getAncestorsOrSelf: (s,root) -> [s].concat @getAncestors(s,root)
 
-		getAncestors: (root) ->
-			ancestors = []
+	getDescendants: (s) ->
+		descendants = []
+		queue = s.children.slice()
 
-			state = @parent
-			while state and not (state is root)
-				ancestors.push(state)
-				state = state.parent
+		while queue.length
+			state = queue.shift()
+			descendants.push(state)
 
-			return ancestors
+			for child in state.children
+				queue.push(child)
 
-		getAncestorsOrSelf: (root) -> [@].concat @getAncestors(root)
+		return descendants
 
-		getDescendants: ->
-			descendants = []
-			queue = @children.slice()
+	getDescendantsOrSelf: (s) -> [s].concat @getDescendants(s)
 
-			while queue.length
-				state = queue.shift()
-				descendants.push(state)
+	isOrthogonalTo: (s1,s2) ->
+		#Two control states are orthogonal if they are not ancestrally
+		#related, and their smallest, mutual parent is a Concurrent-state.
+		return not @isAncestrallyRelatedTo(s1,s2) and @getLCA(s1,s2).kind is @PARALLEL
 
-				for child in state.children
-					queue.push(child)
+	isAncestrallyRelatedTo: (s1,s2) ->
+		#Two control states are ancestrally related if one is child/grandchild of another.
+		return s1 in @getAncestorsOrSelf(s2) or s2 in @getAncestorsOrSelf(s1)
 
-			return descendants
-
-		getDescendantsOrSelf: -> [@].concat @getDescendants()
-
-		isOrthogonalTo: (s) ->
-			#Two control states are orthogonal if they are not ancestrally
-			#related, and their smallest, mutual parent is a Concurrent-state.
-			return not @isAncestrallyRelatedTo(s) and @getLCA(s).kind is State.PARALLEL
-
-		isAncestrallyRelatedTo: (s) ->
-			#Two control states are ancestrally related if one is child/grandchild of another.
-			s.getAncestorsOrSelf()
-			return @ in s.getAncestorsOrSelf() or s in @getAncestorsOrSelf()
-
-		getLCA: (s) ->
-			commonAncestors = (a for a in @getAncestors() when s in a.getDescendants())
-			return commonAncestors[0]
-
-	class Transition
-		constructor: (@id,@event=null,@documentOrder=0,@cond=null,@source = null,@targets = null,@actions = []) ->
-
-
-		toString: -> @source.name + " -> " + (target.name for target in @targets)
-
-		hashCode: -> @id
-
-		getLCA: -> @source.getLCA(@targets[0])
-
-	class SendAction
-		constructor: (@eventName="",@timeout=0,@sendid,@contentexpr) ->
-
-	class CancelAction
-		constructor: (@sendid) ->
-
-	class LogAction
-		constructor: (@expr) ->
-
-	class AssignAction
-		constructor: (@location="",@expr="") ->
-
-	class ScriptAction
-		constructor: (@code="") ->
-
-	#return the interface to this module
-	SCXMLModel : SCXMLModel
-	State : State
-	Transition : Transition
-	SendAction : SendAction
-	CancelAction : CancelAction
-	LogAction : LogAction
-	AssignAction : AssignAction
-	ScriptAction : ScriptAction
+	getLCA: (s1,s2) ->
+		commonAncestors = (a for a in @getAncestors(s1) when s2 in @getDescendants(a))
+		return commonAncestors[0]

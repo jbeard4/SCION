@@ -54,7 +54,7 @@ def jsonDocToPythonModel(json):
 	
 	mStates = {}
 
-	for id,state in json["states"].iteritems():
+	for state in json["states"]:
 
 		mTransitions = [Transition(t["event"] if "event" in t else None,t["documentOrder"],t["cond"] if "cond" in t else None,t["source"],t["target"],[parseAction(a) for a in t["contents"]]) for t in state["transitions"]]
 		mEnterActions = [parseAction(a) for a in state["onentry"]]

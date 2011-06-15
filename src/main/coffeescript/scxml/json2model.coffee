@@ -22,51 +22,30 @@ define ["scxml/model"],(model) ->
 				#assume milliseconds
 				return parseFloat(delayString)
 
-	parseAction = (a) ->
-		switch a.type
-			when "assign"
-				new AssignAction a.location,a.expr
-			when "cancel"
-				new CancelAction a.sendid
-			when "send"
-				new SendAction a.event,getDelayInMs(a.delay),a.id,a.contentexpr
-			when "script"
-				new ScriptAction a.script
-			when "log"
-				new LogAction a.expr
-
 	jsonToModel = (json) ->
-		mStates = {}
+		for own id,state of json.states
+			state.transitions = (json.transitions[transitionNum] for transitionNum in state.transitions)
 
-		for own stateId,state of json.states
+			#TODO: move this block out, make it cleaner
+			actions = state.onentry.concat state.onexit
+			for transition in state.transitions
+				for action in transition.actions
+					actions.push action
 
-			mTransitions = (new Transition t.id,t.event,t.documentOrder,t.cond,t.source,t.target,(parseAction a for a in t.contents) for t in state.transitions)
+			for action in actions when action.type is "send" and action.delay
+				action.delay = getDelayInMs action.delay
 
+			state.initial = json.states[state.initial]
+			state.history = json.states[state.history]
 
-			mEnterActions = (parseAction a for a in state.onentry)
-			mExitActions = (parseAction a for a in state.onexit)
+			state.children = (json.states[stateId] for stateId in state.children)
 
+			state.parent = json.states[state.parent]
 
-			mState = new State state.id,state.kind,state.documentOrder,state.isDeep,mTransitions,state.children,state.parent,state.initial,state.history,mExitActions,mEnterActions
+			for t in state.transitions
+				t.source = json.states[t.source]
+				t.targets = (json.states[stateId] for stateId in t.targets.split(" "))
 
+		json.root = json.states[json.root]
 
-			mStates[state.id] = mState
-
-		#second pass to hook up references
-		for own id,mState of mStates
-			mState.initial = mStates[mState.initial]
-			mState.history = mStates[mState.history]
-
-			mState.children = (mStates[stateId] for stateId in mState.children)
-
-			mState.parent = mStates[mState.parent]
-
-			for t in mState.transitions
-				t.source = mStates[t.source]
-				t.targets = (mStates[stateId] for stateId in t.targets.split(" "))
-
-		rootState = mStates[json.root]
-
-		model = new SCXMLModel rootState,json.profile
-
-		return model
+		return json

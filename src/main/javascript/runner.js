@@ -53,8 +53,8 @@
 		var basedir = args[1+argOffset];
 		var mainFunction = args[2+argOffset]; 
 
-		console.log("basedir ",basedir); 
-		console.log("mainFunction ",mainFunction ); 
+		//console.log("basedir ",basedir); 
+		//console.log("mainFunction ",mainFunction ); 
 
 		//bootstrap require.js
 		require({

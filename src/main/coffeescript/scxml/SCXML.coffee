@@ -1,4 +1,5 @@
 define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Event,evaluator) ->
+	#imports
 
 	flatten = (l) ->
 		a = []
@@ -12,9 +13,9 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 		"""
 		compare transitions based first on depth, then based on document order
 		"""
-		if t1.source.getDepth() < t2.source.getDepth()
+		if model.getDepth(t1.source) < model.getDepth(t2.source)
 			return t2
-		else if t2.source.getDepth() < t1.source.getDepth()
+		else if model.getDepth(t2.source) < model.getDepth(t1.source)
 			return t1
 		else
 			if t1.documentOrder < t2.documentOrder
@@ -44,7 +45,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 		for basicState in configuration.iter()
 			statesAndParents.add(basicState)
 
-			for ancestor in basicState.getAncestors()
+			for ancestor in model.getAncestors(basicState)
 				statesAndParents.add(ancestor)
 
 
@@ -77,9 +78,9 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 			@_configuration.add(@model.root.initial)
 			@_performBigStep()
 
-		getConfiguration: -> new Set(s.name for s in @_configuration.iter())
+		getConfiguration: -> new Set(s.id for s in @_configuration.iter())
 
-		getFullConfiguration: -> new Set(s.name for s in (flatten([s].concat s.getAncestors() for s in @_configuration.iter())))
+		getFullConfiguration: -> new Set(s.id for s in (flatten([s].concat model.getAncestors(s) for s in @_configuration.iter())))
 
 		isIn: (stateName) -> @getFullConfiguration().contains(stateName)
 
@@ -98,7 +99,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 
 				keepGoing = not selectedTransitions.isEmpty()
 
-			nonFinalStates = (s for s of @_configuration.iter() when s.kind is not model.State.FINAL)
+			nonFinalStates = (s for s of @_configuration.iter() when s.kind is not model.FINAL)
 
 			if nonFinalStates.length is 0
 				@_isInFinalState = true
@@ -134,17 +135,17 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 					console.debug("exiting " , state)
 
 					#peform exit actions
-					for action in state.exitActions
+					for action in state.onexit
 						@_evaluateAction(action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue)
 
 					#update history
 					if state.history
 						if state.history.isDeep
-							f = (s0) -> s0.kind is model.State.BASIC and s0 in state.getDescendants()
+							f = (s0) -> s0.kind is model.BASIC and s0 in model.getDescendants(state)
 						else
 							f = (s0) -> s0.parent is state
 						
-						@_historyValue[state.history.name] = (s for s in statesExited when f(s))
+						@_historyValue[state.history.id] = (s for s in statesExited when f(s))
 
 				# -> Concurrency: Number of transitions: Multiple
 				# -> Concurrency: Order of transitions: Explicitly defined
@@ -159,7 +160,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 				console.debug("executing state enter actions")
 				for state in statesEntered
 					console.debug("entering " , state)
-					for action in state.enterActions
+					for action in state.onentry
 						@_evaluateAction(action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue)
 
 				#update configuration by removing basic states exited, and adding basic states entered
@@ -192,18 +193,19 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 			return selectedTransitions
 
 		_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
-			if action instanceof model.SendAction
-				console.debug "sending event",action.eventName,"with content",action.contentexpr
-				data = if action.contentexpr then @_eval action.contentexpr,datamodelForNextStep,eventSet else null
+			switch action.type
+				when "send"
+					console.debug "sending event",action.event,"with content",action.contentexpr
+					data = if action.contentexpr then @_eval action.contentexpr,datamodelForNextStep,eventSet else null
 
-				eventsToAddToInnerQueue.add new Event action.eventName,data
-			else if action instanceof model.AssignAction
-				datamodelForNextStep[action.location] = @_eval action.expr,datamodelForNextStep,eventSet
-			else if action instanceof model.ScriptAction
-				@_eval action.code,datamodelForNextStep,eventSet,true
-			else if action instanceof model.LogAction
-				log = @_eval action.expr,datamodelForNextStep,eventSet
-				console.log(log)	#the one place where we use straight console.log
+					eventsToAddToInnerQueue.add new Event action.event,data
+				when "assign"
+					datamodelForNextStep[action.location] = @_eval action.expr,datamodelForNextStep,eventSet
+				when "script"
+					@_eval action.script,datamodelForNextStep,eventSet,true
+				when "log"
+					log = @_eval action.expr,datamodelForNextStep,eventSet
+					console.log(log)	#the one place where we use straight console.log
 
 		_eval : (code,datamodelForNextStep,eventSet,allowWrite) ->
 			#get the scripting interface
@@ -222,17 +224,17 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 			basicStatesExited = new Set()
 
 			for transition in transitions.iter()
-				lca = transition.getLCA()
-				desc = lca.getDescendants()
+				lca = model.getLCA(transition.source,transition.targets[0])
+				desc = model.getDescendants(lca)
 			
 				for state in @_configuration.iter()
 					if state in desc
 						basicStatesExited.add(state)
 						statesExited.add(state)
-						for anc in state.getAncestors(lca)
+						for anc in model.getAncestors(state,lca)
 							statesExited.add(anc)
 
-			sortedStatesExited = statesExited.iter().sort((s1,s2) -> s1.getDepth() < s2.getDepth())
+			sortedStatesExited = statesExited.iter().sort((s1,s2) -> model.getDepth(s1) < model.getDepth(s2))
 
 			return [basicStatesExited,sortedStatesExited]
 
@@ -248,7 +250,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 				
 				statesToRecursivelyAdd = @_getChildrenOfParallelStatesWithoutDescendantsInStatesToEnter(statesToEnter)
 
-			sortedStatesEntered = statesToEnter.iter().sort((s1,s2) -> s1.getDepth() > s2.getDepth())
+			sortedStatesEntered = statesToEnter.iter().sort((s1,s2) -> model.getDepth(s1) > model.getDepth(s2))
 
 			return [basicStatesToEnter,sortedStatesEntered]
 
@@ -258,22 +260,22 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 			#get all descendants of states to enter
 			descendantsOfStatesToEnter = new Set()
 			for state in statesToEnter.iter()
-				for descendant in state.getDescendants()
+				for descendant in model.getDescendants(state)
 					descendantsOfStatesToEnter.add(descendant)
 
 			for state in statesToEnter.iter()
-				if state.kind is model.State.PARALLEL
+				if state.kind is model.PARALLEL
 					for child in state.children
-						if child not in descendantsOfStatesToEnter
+						if not descendantsOfStatesToEnter.contains(child)
 							childrenOfParallelStatesWithoutDescendantsInStatesToEnter.add(child)
 
 			return childrenOfParallelStatesWithoutDescendantsInStatesToEnter
 				
 
 		_recursiveAddStatesToEnter: (s,statesToEnter,basicStatesToEnter) ->
-			if s.kind is model.State.HISTORY
-				if s.name of @_historyValue
-					for historyState in @_historyValue[s.name]
+			if s.kind is model.HISTORY
+				if s.id of @_historyValue
+					for historyState in @_historyValue[s.id]
 						@_recursiveAddStatesToEnter(historyState,statesToEnter,basicStatesToEnter)
 				else
 					statesToEnter.add(s)
@@ -281,12 +283,12 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 			else
 				statesToEnter.add(s)
 
-				if s.kind is model.State.PARALLEL
+				if s.kind is model.PARALLEL
 					for child in s.children
-						if not (child.kind is model.State.HISTORY)		#don't enter history by default
+						if not (child.kind is model.HISTORY)		#don't enter history by default
 							@_recursiveAddStatesToEnter(child,statesToEnter,basicStatesToEnter)
 
-				else if s.kind is model.State.COMPOSITE
+				else if s.kind is model.COMPOSITE
 
 					#FIXME: problem: this doesn't check cond of initial state transitions
 					#also doesn't check priority of transitions (problem in the SCXML spec?)
@@ -295,7 +297,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 					#for now, make simplifying assumption. later on check cond, then throw into the parameterized choose by priority
 					@_recursiveAddStatesToEnter(s.initial,statesToEnter,basicStatesToEnter)
 
-				else if s.kind is model.State.INITIAL or s.kind is model.State.BASIC or s.kind is model.State.FINAL
+				else if s.kind is model.INITIAL or s.kind is model.BASIC or s.kind is model.FINAL
 					basicStatesToEnter.add(s)
 
 			
@@ -361,8 +363,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 		# -> Interrupt Transitions and Preemption: Non-preemptive 
 		_conflicts: (t1,t2) -> not @_isArenaOrthogonal(t1,t2)
 		
-		_isArenaOrthogonal: (t1,t2) ->
-			t1.getLCA().isOrthogonalTo t2.getLCA()
+		_isArenaOrthogonal: (t1,t2) -> model.isOrthogonalTo(model.getLCA(t1.source,t1.targets[0]),model.getLCA(t2.source,t2.targets[0]))
 
 
 	class SimpleInterpreter extends SCXMLInterpreter
@@ -373,24 +374,24 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 			super model
 			
 		_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
-			if action instanceof model.SendAction and action.timeout
+			if action.type is "send" and action.delay
 				if @setTimeout
-					console.debug "sending event",action.eventName,"with content",action.contentexpr,"after timeout",action.timeout
+					console.debug "sending event",action.event,"with content",action.contentexpr,"after delay",action.delay
 					data = if action.contentexpr then @_eval(action.contentexpr,datamodelForNextStep,eventSet) else null
 
-					callback = => @gen new Event(action.eventName,data)
-					timeoutId = @setTimeout callback,action.timeout
+					callback = => @gen new Event(action.event,data)
+					timeoutId = @setTimeout callback,action.delay
 
-					if action.sendid
-						@_timeoutMap[action.sendid] = timeoutId
+					if action.id
+						@_timeoutMap[action.id] = timeoutId
 				else
 					throw new Error("setTimeout function not set")
 
-			else if action instanceof model.CancelAction
+			else if action.type is "cancel"
 				if @clearTimeout
 					if action.sendid of @_timeoutMap
-						console.debug "cancelling ",action.sendid," with timeout id ",@_timeoutMap[action.sendid]
-						@clearTimeout @_timeoutMap[action.sendid]
+						console.debug "cancelling ",action.id," with timeout id ",@_timeoutMap[action.id]
+						@clearTimeout @_timeoutMap[action.id]
 				else
 					throw new Error("clearTimeout function not set")
 			else

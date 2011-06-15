@@ -58,11 +58,18 @@
 					<if test="not(position() = last())">,</if>
 				</for-each>
 			},
+			"transitions" : [
+				<for-each select=".//s:transition">
+					<apply-templates select="."/>
+					<if test="not(position() = last())">,</if>
+				</for-each>
+			],
 			"root" : <call-template name="genId">
 					<with-param name="s" select="s:scxml"/>
 				 </call-template>,
 			"profile" : "<value-of select="s:scxml/@profile"/>",
-			"scripts" : [<apply-templates select="s:script"/>]
+			"scripts" : [<apply-templates select="s:script"/>],
+			"events" : <call-template name="genEventsEnum"/>
 		}
 	</template>
 
@@ -137,7 +144,10 @@
 						<if test="not(position() = last())">,</if>
 					</for-each>],
 			"transitions" : [<for-each select="s:transition">
-						<apply-templates select="."/>
+						<variable name="transitionNum">
+							<number level="any" count="s:transition"/>
+						</variable>
+						<value-of select="$transitionNum - 1"/>
 						<if test="not(position() = last())">,</if>
 					</for-each>],
 			<if test="not(self::s:scxml)">
@@ -156,7 +166,7 @@
 			<if test="$genDepth">
 				"depth" : <value-of select="count(ancestor::*)"/>,
 			</if>
-			"documentOrder" : <value-of select="$stateNum"/>,
+			"documentOrder" : <value-of select="$stateNum - 1"/>,
 			"children" : [<for-each select="s:state | s:parallel | s:final | s:history | s:initial">
 						<call-template name="genId"/>
 						<if test="not(position() = last())">,</if>
@@ -208,13 +218,14 @@
 		<variable name="transitionNum">
 			<number level="any" count="s:transition"/>
 		</variable>
-
+		<!-- transition id is same as document order. we have it here twice for clarity -->
 		{
-			"id" : 		"<value-of select="generate-id()"/>",
+			"id" : 		<value-of select="$transitionNum - 1"/>,
+			"documentOrder" : <value-of select="$transitionNum - 1"/>,
 			"source" : 	<call-template name="genId">
 						<with-param name="s" select=".."/>
 					</call-template>,
-			"target" : 	"<value-of select="@target"/>",
+			"targets" : 	"<value-of select="@target"/>",
 			<if test="@cond">
 			"cond" : 	<choose>
 						<when test="$wrapCondInFunction">
@@ -232,8 +243,7 @@
 			<if test="@event">
 				"event" : 	"<value-of select="@event"/>",
 			</if>
-			"contents" : 	[<call-template name="genContent"/>],
-			"documentOrder" : <value-of select="$transitionNum"/>
+			"actions" : 	[<call-template name="genContent"/>]
 		}
 	</template>
 
@@ -242,7 +252,7 @@
 		{ 
 			"type" : "if",
 			"cond" : <call-template name="genCond"/>,
-			"contents" : [<call-template name="genContent"/>] 
+			"actions" : [<call-template name="genContent"/>] 
 		}
 	</template>
 
@@ -250,14 +260,14 @@
 		{ 
 			"type" : "elseif",
 			"cond" : <call-template name="genCond"/>,
-			"contents" : [<call-template name="genContent"/>] 
+			"actions" : [<call-template name="genContent"/>] 
 		}
 	</template>
 
 	<template match="s:else">
 		{ 
 			"type" : "else",
-			"contents" : [<call-template name="genContent"/>] 
+			"actions" : [<call-template name="genContent"/>] 
 		}
 	</template>
 
@@ -315,7 +325,7 @@
 		{
 			"type" : "send",
 			<if test="@delay">
-			"delay" : "<value-of select="@delay"/>", <!-- TODO: parse this -->	
+			"delay" : "<value-of select="@delay"/>",
 			</if>
 			<if test="@id">
 			"id" : "<value-of select="@id"/>",
@@ -451,7 +461,21 @@
 
 	</template>
 
+	<key name="allEvents" match="s:transition | s:send" use="@event"/>	<!-- used for generating unique list -->
 
+	<template name="genEventsEnum">
+		<variable name="uniqueEvents" select="//*[(self::s:transition or self::s:send)][generate-id(.)=generate-id(key('allEvents',@event)[1])]/@event"/>
+
+		[
+		<for-each select="$uniqueEvents">
+			{
+				"name" : "<value-of select="."/>",
+				"documentOrder" : <value-of select="position() - 1"/>
+			}
+			<if test="not(position() = last())">,</if>
+		</for-each>	
+		]
+	</template>
 
 </stylesheet>
 
