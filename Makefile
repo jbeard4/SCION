@@ -14,6 +14,7 @@ coffee : build
 	#fixme: is there a smarter way to do this than iterating over each directory?
 	#something like `find $(csdir) -name *.coffee`, and then map the names
 	coffee -o build/scxml $(csdir)/scxml/*.coffee
+	coffee -o build/scxml/optimization $(csdir)/scxml/optimization/*.coffee
 	coffee -o build/scxml/test $(csdir)/scxml/test/*.coffee
 	
 
