@@ -1,35 +1,58 @@
-#todo: requirejs build script as well
-
+build = build
 csdir = src/main/coffeescript
+coffee := $(shell find $(csdir) -name "*.coffee")
+coffeejs = $(patsubst $(csdir)/%.coffee,$(build)/%.js, $(coffee))
 
-.PHONY : clean coffee copy-others scxml-tests-to-json tests-to-json-tuples scion generate-requirejs-test-loader-module
+testdir = src/test
+buildtestdir = $(build)/test
+scxmltests := $(shell find $(testdir) -name "*.scxml")
+scxmljson = $(patsubst $(testdir)/%.scxml,$(buildtestdir)/%.scxml.json, $(scxmltests))
+
+scxmljsontuple = $(patsubst $(testdir)/%.scxml,$(buildtestdir)/%.js, $(scxmltests))
+
+spartanLoader = $(build)/spartanLoaderForAllTests.js
+
+#paths to some scripts
+scxmltojson = src/main/bash/util/scxml-to-json.sh
+generatetesttuple = src/main/bash/build/generate-requirejs-json-test-tuples.sh
+generatetestloadermodule = src/main/bash/build/generate-requirejs-test-loader-module.sh
+
+
+.PHONY: clean coffee scxml2json copy-others combine-json-and-scxml-tests spartanLoader
 
 clean:
-	rm -rf build
+	rm -rf $(build)
 
-build :
-	if [ ! -d build/scxml/test/ ]; then mkdir -p build/scxml/test/; mkdir -p build/test; fi;
+build:
+	mkdir $(build)
 
-coffee : build 
-	#fixme: is there a smarter way to do this than iterating over each directory?
-	#something like `find $(csdir) -name *.coffee`, and then map the names
-	coffee -o build/scxml $(csdir)/scxml/*.coffee
-	coffee -o build/scxml/optimization $(csdir)/scxml/optimization/*.coffee
-	coffee -o build/scxml/test $(csdir)/scxml/test/*.coffee
-	
+coffee : $(coffeejs)
+
+$(build)/%.js : $(csdir)/%.coffee
+	coffee -o $(dir $@) $<
+
+scxml2json : $(scxmljson)
+
+$(buildtestdir)/%.scxml.json : $(testdir)/%.scxml
+	mkdir -p $(dir $@)
+	$(scxmltojson) $< > $@
 
 copy-others : build
-	cp -r lib/js/ build/lib/
-	cp -r src/main/javascript/* build/
-	cp -r src/main/xslt build/
+	cp -r lib/js/ $(build)/lib/
+	cp -r src/main/javascript/* $(build)
+	cp -r src/main/xslt $(build)
 
-scxml-tests-to-json : build
-	bash src/main/bash/build/convert-scxml-tests-to-json.sh
+combine-json-and-scxml-tests : $(scxmljsontuple) 
 
-tests-to-json-tuples : build
-	bash src/main/bash/build/generate-requirejs-json-test-tuples.sh
+$(buildtestdir)/%.js : $(buildtestdir)/%.scxml.json $(testdir)/%.json
+	$(generatetesttuple) $^ > $@
 
-gen-requirejs-test-loader-module : tests-to-json-tuples
-	bash src/main/bash/build/generate-requirejs-test-loader-module.sh
+spartan-loader : $(spartanLoader)
 
-scion : copy-others coffee
+$(spartanLoader) : $(scxmljsontuple)
+	$(generatetestloadermodule) $@ $^
+
+all : copy-others coffee
+
+all-tests : spartan-loader
+

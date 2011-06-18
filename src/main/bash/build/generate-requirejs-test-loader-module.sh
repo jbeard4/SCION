@@ -1,18 +1,13 @@
 #!/bin/bash
-#this script packages tests into a form that can be easily consumed by spartan shell environments running RequireJS
-dn=`dirname $0`
-abspath=`cd $dn; pwd`
-basedir=`dirname $abspath`
-projdir=`cd $dn/../../../../; pwd`
-utildir=`cd $dn/../util/; pwd`
+target=$1
 
-target=$projdir/build/spartanLoaderForAllTests.js
+shift
+
+tests="$*"
 
 echo "define([" > $target
 
-tests=`find $projdir/build/test/ -name "*.js"`
-
-totalTests=`echo "$tests" | wc -l`
+totalTests=$#
 numTests=0
 
 for testModule in $tests; do
