@@ -8,8 +8,14 @@ require ["scxml/json2model","scxml/test/harness","scxml/test/report2string","scx
 		debug : this.print
 
 	jsonTests = for testTuple in testTuples
-		testTuple.testScript.model = json2model(testTuple.scxmlJson)
-		testTuple.testScript
+		model = json2model(testTuple.scxmlJson)
+
+		{
+			name : testTuple.testScript.name
+			model : model
+			testScript : testTuple.testScript
+			optimizations : []
+		}
 
 	finish = (report) ->
 		console.info report2string report

@@ -10,6 +10,14 @@ scxmljson = $(patsubst $(testdir)/%.scxml,$(buildtestdir)/%.scxml.json, $(scxmlt
 
 scxmljsontuple = $(patsubst $(testdir)/%.scxml,$(buildtestdir)/%.js, $(scxmltests))
 
+#optimization variables
+buildopt = $(build)/opt
+tsel = $(buildopt)/transition-selection
+
+tsel_class = $(patsubst $(buildtestdir)/%.scxml.json,$(tsel)/%.class.js, $(scxmljson))
+tsel_switch = $(patsubst $(buildtestdir)/%.scxml.json,$(tsel)/%.switch.js, $(scxmljson))
+tsel_table = $(patsubst $(buildtestdir)/%.scxml.json,$(tsel)/%.table.js, $(scxmljson))
+
 spartanLoader = $(build)/spartanLoaderForAllTests.js
 
 #paths to some scripts
@@ -18,7 +26,7 @@ generatetesttuple = src/main/bash/build/generate-requirejs-json-test-tuples.sh
 generatetestloadermodule = src/main/bash/build/generate-requirejs-test-loader-module.sh
 
 
-.PHONY: clean coffee scxml2json copy-others combine-json-and-scxml-tests spartanLoader
+.PHONY: clean coffee scxml2json copy-others combine-json-and-scxml-tests gen-spartan-loader gen-class-transition-lookup-optimization gen-table-transition-lookup-optimization gen-switch-transition-lookup-optimization gen-transition-lookup-optimization gen-state-configuration-set-optimization gen-transition-configuration-set-optimization gen-model-caching-optimization gen-transformed-statecharts gen-ahead-of-time-optimizations gen-top-level-optimized-requirejs-modules 
 
 clean:
 	rm -rf $(build)
@@ -47,12 +55,62 @@ combine-json-and-scxml-tests : $(scxmljsontuple)
 $(buildtestdir)/%.js : $(buildtestdir)/%.scxml.json $(testdir)/%.json
 	$(generatetesttuple) $^ > $@
 
-spartan-loader : $(spartanLoader)
+gen-spartan-loader : $(spartanLoader)
 
-$(spartanLoader) : $(scxmljsontuple)
-	$(generatetestloadermodule) $@ $^
+$(spartanLoader) : 
+	$(generatetestloadermodule) $@ $(scxmljsontuple)
 
-all : copy-others coffee
 
-all-tests : spartan-loader
+$(tsel)/%.class.js : $(buildtestdir)/%.scxml.json coffee copy-others
+	mkdir -p $(dir $@)
+	./bin/run-module-node.sh scxml/optimization/transition-optimizer $< class true true > $@
 
+$(tsel)/%.switch.js : $(buildtestdir)/%.scxml.json coffee copy-others
+	mkdir -p $(dir $@)
+	./bin/run-module-node.sh scxml/optimization/transition-optimizer $< switch true true > $@
+
+$(tsel)/%.table.js : $(buildtestdir)/%.scxml.json coffee copy-others
+	mkdir -p $(dir $@)
+	./bin/run-module-node.sh scxml/optimization/transition-optimizer $< table true true > $@
+
+gen-class-transition-lookup-optimization : $(tsel_class)
+gen-table-transition-lookup-optimization : $(tsel_table)
+gen-switch-transition-lookup-optimization : $(tsel_switch)
+
+$(build)/class-transition-lookup-optimization-loader.js : 
+	$(generatetestloadermodule) $@ $(tsel_class)
+	
+$(build)/table-transition-lookup-optimization-loader.js : 
+	$(generatetestloadermodule) $@ $(tsel_table)
+
+$(build)/switch-transition-lookup-optimization-loader.js : 
+	$(generatetestloadermodule) $@ $(tsel_switch)
+
+gen-optimization-loaders : $(build)/class-transition-lookup-optimization-loader.js $(build)/table-transition-lookup-optimization-loader.js $(build)/switch-transition-lookup-optimization-loader.js
+
+gen-transition-lookup-optimization : gen-class-transition-lookup-optimization gen-table-transition-lookup-optimization gen-switch-transition-lookup-optimization
+
+gen-state-configuration-set-optimization : 
+	#bit-vector-set
+	#binary-array-set
+
+gen-transition-configuration-set-optimization : 
+	#bit-vector-set
+	#binary-array-set
+
+gen-model-caching-optimization : 
+
+gen-transformed-statecharts : 
+	#flatten transitions
+	#flatten orthogonal states
+
+gen-ahead-of-time-optimizations : gen-transformed-statecharts gen-model-caching-optimization gen-transition-configuration-set-optimization gen-transition-lookup-optimization
+
+gen-top-level-optimized-requirejs-modules : gen-ahead-of-time-optimizations
+	#call script to make the module
+
+scion : copy-others coffee
+
+all-tests : $(scxmljsontuple)
+
+all : all-tests scion gen-top-level-optimized-requirejs-modules gen-transition-lookup-optimization gen-optimization-loaders gen-spartan-loader

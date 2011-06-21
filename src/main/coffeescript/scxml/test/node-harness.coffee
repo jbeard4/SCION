@@ -3,11 +3,17 @@
 #or, possibly use node's process support to make a system call to a command-line xslt process (e.g. xsltproc).
 define ["scxml/json2model","scxml/test/harness","scxml/test/report2string","scxml/async-for","spartanLoaderForAllTests"],(json2model,harness,report2string,asyncForEach,testTuples)->
 
-	runTests = (testList) ->
+	runTests = ->
 
 		jsonTests = for testTuple in testTuples
-			testTuple.testScript.model = json2model(testTuple.scxmlJson)
-			testTuple.testScript
+			model = json2model testTuple.scxmlJson
+
+			{
+				name : testTuple.testScript.name
+				model : model
+				testScript : testTuple.testScript
+				optimizations : []
+			}
 
 
 		loadError = (err) ->

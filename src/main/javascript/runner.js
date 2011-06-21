@@ -36,6 +36,13 @@
 		if(!this.console.debug){
 			this.console.debug = this.console.log;
 		}
+
+		var fs = require("fs");
+
+		//also, add a synchronous API for reading files
+		this.readFile = function(fileName){
+			return fs.readFileSync(fileName,"utf8");
+		};
 	}
 
 	//note: spartan shell environments cannot reliably accept command-line args, so the entry point (e.g. unit test harness) is called directly for them
@@ -65,7 +72,7 @@
 			},
 			[mainFunction],
 			function(fn){
-				fn(preparedArguments);
+				fn.apply(this,preparedArguments);
 			}
 		);
 

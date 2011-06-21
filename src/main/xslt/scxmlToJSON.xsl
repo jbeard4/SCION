@@ -466,15 +466,15 @@
 	<template name="genEventsEnum">
 		<variable name="uniqueEvents" select="//*[(self::s:transition or self::s:send)][generate-id(.)=generate-id(key('allEvents',@event)[1])]/@event"/>
 
-		[
+		{
 		<for-each select="$uniqueEvents">
-			{
+			"<value-of select="."/>" : {
 				"name" : "<value-of select="."/>",
 				"documentOrder" : <value-of select="position() - 1"/>
 			}
 			<if test="not(position() = last())">,</if>
 		</for-each>	
-		]
+		}
 	</template>
 
 </stylesheet>

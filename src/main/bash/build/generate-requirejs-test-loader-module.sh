@@ -13,13 +13,10 @@ numTests=0
 for testModule in $tests; do
 	numTests=$(($numTests+1))
 
-	testFileBase=`basename $testModule`; 
-	testFileWithoutExtension=${testFileBase%.*}
+	truncatedTestModule=`echo $testModule | sed -e "s/.*build\///"`
+	truncatedTestModuleWithoutExtension=${truncatedTestModule%.*}
 
-	testDir=`dirname $testModule`;
-	testDirBase=`basename $testDir`;
-
-	echo -ne "\t'test/$testDirBase/$testFileWithoutExtension'" >> $target
+	echo -ne "\t'$truncatedTestModuleWithoutExtension'" >> $target
 
 	if [ $numTests -ne $totalTests ]; then
 		echo , >> $target

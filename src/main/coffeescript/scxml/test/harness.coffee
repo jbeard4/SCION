@@ -54,18 +54,18 @@ define ["scxml/event","scxml/SCXML","scxml/set","scxml/async-for"],(Event,scxml,
 		startAsyncFor = (test,doNextTest) ->
 
 			testSuccessFullyFinished = ->
-				console.info "test",test["name"],"...passes"
-				results.testsPassed.push test["name"]
+				console.info "test",test.name,"...passes"
+				results.testsPassed.push test.name
 				doNextTest()
 
 			testFailBack = ->
-				console.info "test",test["name"],"...failed"
-				results.testsFailed.push test["name"]
+				console.info "test",test.name,"...failed"
+				results.testsFailed.push test.name
 				doNextTest()
 
 			testErrBack = (err) ->
-				console.info "test",test["name"],"...errored"
-				results.testsErrored.push test["name"]
+				console.info "test",test.name,"...errored"
+				results.testsErrored.push test.name
 				printError err
 				doNextTest()
 
@@ -75,9 +75,12 @@ define ["scxml/event","scxml/SCXML","scxml/set","scxml/async-for"],(Event,scxml,
 
 			try
 				console.log "running test for",test.name
-				interpreter = new SimpleInterpreter test.model,setTimeout,clearTimeout
+				#TODO: other optimizations go here
+				#this is safe because js does not throw array out of bounds exceptions. 
+				#instead gives "undefined", so default args kick in in the SCXML constructor
+				interpreter = new SimpleInterpreter test.model,setTimeout,clearTimeout,test.optimizations[0],test.optimizations[1]
 
-				events = test.events.slice()
+				events = test.testScript.events.slice()
 
 				console.info "starting interpreter"
 
@@ -86,7 +89,7 @@ define ["scxml/event","scxml/SCXML","scxml/set","scxml/async-for"],(Event,scxml,
 
 				console.debug "initial configuration",initialConfiguration
 
-				expectedInitialConfiguration = new Set(test["initialConfiguration"])
+				expectedInitialConfiguration = new Set test.testScript.initialConfiguration
 
 				console.debug "expected configuration",expectedInitialConfiguration
 

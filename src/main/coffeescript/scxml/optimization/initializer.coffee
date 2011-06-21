@@ -3,7 +3,7 @@ define ->
 
 	genOuterInitializerStr : (scxmlJson,innerFnStr) ->
 		toReturn = 	"""
-				function(transitions){
+				function(transitions,eventMap){
 					var 
 				"""
 
@@ -16,6 +16,18 @@ define ->
 					#{innerFnStr}
 				}
 				"""
+
+	transitionFilterString :  	"""
+					//filter transitions based on condition
+					var toReturn = [];
+					for(var i=0; i < transitions.length; i++){
+						var transition = transitions[i];
+						if(!transition.cond || evaluator(transition.cond)){
+							toReturn.push(transition);
+						}
+					}
+					return toReturn;
+					"""
 
 	arrayToIdentifierListString : (transitions) ->
 		toReturn = "["
