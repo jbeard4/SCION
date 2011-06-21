@@ -52,12 +52,12 @@
 	<template name="genRoot">
 		<!-- context here is / -->
 		{
-			"states" : {
+			"states" : [
 				<for-each select=".//s:scxml | .//s:state | .//s:parallel | .//s:history | .//s:final | .//s:initial">
-					<call-template name="genId"/> : <apply-templates select="."/>
+					<apply-templates select="."/>
 					<if test="not(position() = last())">,</if>
 				</for-each>
-			},
+			],
 			"transitions" : [
 				<for-each select=".//s:transition">
 					<apply-templates select="."/>

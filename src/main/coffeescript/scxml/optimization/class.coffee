@@ -64,9 +64,9 @@ define ["scxml/optimization/initializer","lib/beautify"],(initializer)->
 
 		toReturn = ""
 
-		stateClassStrings = (generateStateClassString(state) for own stateId,state of scxmlJson.states)
+		stateClassStrings = (generateStateClassString(state) for state in scxmlJson.states)
 		
-		stateClassNameList = ("instances['#{stateId}']" for own stateId of scxmlJson.states)
+		stateClassNameList = ("instances['#{state.id}']" for state in scxmlJson.states)
 
 		toReturn += "var instances = {};\n"
 		toReturn += stateClassStrings.join("\n")

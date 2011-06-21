@@ -15,7 +15,7 @@ define ["scxml/optimization/initializer","lib/beautify"],(initializer)->
 								switch(state.id){
 				"""
 
-		for own stateId,state of scxmlJson.states when state.transitions.length
+		for state in scxmlJson.states when state.transitions.length
 			toReturn += 	"""
 									case "#{state.id}":
 										switch(event.name){\n
@@ -43,7 +43,7 @@ define ["scxml/optimization/initializer","lib/beautify"],(initializer)->
 							//default events
 							switch(state.id){
 				"""
-		for own stateId,state of scxmlJson.states when state.transitions.length
+		for state in scxmlJson.states when state.transitions.length
 			defaultTransitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event)
 			if defaultTransitionsForEvent.length
 				toReturn += 	"""

@@ -23,7 +23,12 @@ define ["scxml/model"],(model) ->
 				return parseFloat(delayString)
 
 	jsonToModel = (json) ->
-		for own id,state of json.states
+		#build up map of state ids to state objects
+		idToStateMap = {}
+		for state in json.states
+			idToStateMap[state.id] = state
+
+		for state in json.states
 			state.transitions = (json.transitions[transitionNum] for transitionNum in state.transitions)
 
 			#TODO: move this block out, make it cleaner
@@ -35,17 +40,17 @@ define ["scxml/model"],(model) ->
 			for action in actions when action.type is "send" and action.delay
 				action.delay = getDelayInMs action.delay
 
-			state.initial = json.states[state.initial]
-			state.history = json.states[state.history]
+			state.initial = idToStateMap[state.initial]
+			state.history = idToStateMap[state.history]
 
-			state.children = (json.states[stateId] for stateId in state.children)
+			state.children = (idToStateMap[stateId] for stateId in state.children)
 
-			state.parent = json.states[state.parent]
+			state.parent = idToStateMap[state.parent]
 
 			for t in state.transitions
-				t.source = json.states[t.source]
-				t.targets = (json.states[stateId] for stateId in t.targets.split(" "))
+				t.source = idToStateMap[t.source]
+				t.targets = (idToStateMap[stateId] for stateId in t.targets.split(" "))
 
-		json.root = json.states[json.root]
+		json.root = idToStateMap[json.root]
 
 		return json

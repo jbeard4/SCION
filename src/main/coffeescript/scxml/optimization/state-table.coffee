@@ -55,8 +55,8 @@ define ["scxml/optimization/initializer","lib/beautify"],(initializer)->
 		return toReturn
 		
 	(scxmlJson,beautify=true,asyncModuleDef=true) ->
-		stateTransitionTable = (((initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event or transition.event == event.name) for eventName,event of scxmlJson.events ) for own stateId,state of scxmlJson.states)
-		defaultTransitionsForStates = ((initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event) for own stateId,state of scxmlJson.states)
+		stateTransitionTable = (((initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event or transition.event == event.name) for eventName,event of scxmlJson.events ) for state in scxmlJson.states)
+		defaultTransitionsForStates = ((initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event) for state in scxmlJson.states)
 		toReturn = initializer.genOuterInitializerStr scxmlJson,"""
 		var stateTransitionTable = #{tableToString stateTransitionTable};
 		var defaultTransitionTable = #{defaultTableToString defaultTransitionsForStates};
