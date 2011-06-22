@@ -1,4 +1,4 @@
-define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Event,evaluator) ->
+define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(model,ArraySet,Event,evaluator) ->
 	#imports
 
 	flatten = (l) ->
@@ -40,8 +40,8 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 
 	class SCXMLInterpreter
 
-		constructor : (@model,@transitionSelector=defaultTransitionSelector,@onlySelectFromBasicStates=false,@priorityComparisonFn=getTransitionWithHigherSourceChildPriority,@printTrace=false) ->
-			@_configuration = new Set()	#full configuration, or basic configuration? what kind of set implementation?
+		constructor : (@model,@transitionSelector=defaultTransitionSelector,@onlySelectFromBasicStates=false,@TransitionSet,@StateSet,@BasicStateSet,@StateIdSet=ArraySet,@EventSet=ArraySet,@TransitionPairSet=ArraySet,@priorityComparisonFn=getTransitionWithHigherSourceChildPriority,@printTrace=false) ->
+			@_configuration = new @BasicStateSet()	#full configuration, or basic configuration? what kind of set implementation?
 			@_historyValue = {}
 			@_innerEventQueue = []
 			@_isInFinalState = false
@@ -55,19 +55,19 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 			@_configuration.add(@model.root.initial)
 			@_performBigStep()
 
-		getConfiguration: -> new Set(s.id for s in @_configuration.iter())
+		getConfiguration: -> new @StateIdSet(s.id for s in @_configuration.iter())
 
-		getFullConfiguration: -> new Set(s.id for s in (flatten([s].concat model.getAncestors(s) for s in @_configuration.iter())))
+		getFullConfiguration: -> new @StateIdSet(s.id for s in (flatten([s].concat model.getAncestors(s) for s in @_configuration.iter())))
 
 		isIn: (stateName) -> @getFullConfiguration().contains(stateName)
 
 		_performBigStep: (e) ->
-			if e then @_innerEventQueue.push(new Set([e]))
+			if e then @_innerEventQueue.push(new @EventSet([e]))
 
 			keepGoing = true
 
 			while keepGoing
-				eventSet = if @_innerEventQueue.length then @_innerEventQueue.shift() else new Set()
+				eventSet = if @_innerEventQueue.length then @_innerEventQueue.shift() else new @EventSet()
 
 				#create new datamodel cache for the next small step
 				datamodelForNextStep = {}
@@ -101,7 +101,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 				if @printTrace then console.debug("statesExited " , statesExited)
 				if @printTrace then console.debug("statesEntered " , statesEntered)
 
-				eventsToAddToInnerQueue = new Set()
+				eventsToAddToInnerQueue = new @EventSet()
 
 				#operations will be performed in the order described in Rhapsody paper
 
@@ -144,7 +144,8 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 				if @printTrace then console.debug("updating configuration ")
 				if @printTrace then console.debug("old configuration " , @_configuration)
 
-				@_configuration = (@_configuration.difference basicStatesExited).union basicStatesEntered
+				@_configuration.difference basicStatesExited
+				@_configuration.union basicStatesEntered
 
 				if @printTrace then console.debug("new configuration " , @_configuration)
 				
@@ -198,8 +199,8 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 			events : eventSet.iter()
 
 		_getStatesExited: (transitions) ->
-			statesExited = new Set()
-			basicStatesExited = new Set()
+			statesExited = new @StateSet()
+			basicStatesExited = new @BasicStateSet()
 
 			for transition in transitions.iter()
 				lca = model.getLCA(transition.source,transition.targets[0])
@@ -219,8 +220,8 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 		_getStatesEntered: (transitions) ->
 			statesToRecursivelyAdd = flatten((state for state in transition.targets) for transition in transitions.iter())
 			if @printTrace then console.debug "statesToRecursivelyAdd :",statesToRecursivelyAdd
-			statesToEnter = new Set()
-			basicStatesToEnter = new Set()
+			statesToEnter = new @StateSet()
+			basicStatesToEnter = new @BasicStateSet()
 
 			while statesToRecursivelyAdd.length
 				for state in statesToRecursivelyAdd
@@ -233,10 +234,10 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 			return [basicStatesToEnter,sortedStatesEntered]
 
 		_getChildrenOfParallelStatesWithoutDescendantsInStatesToEnter: (statesToEnter) ->
-			childrenOfParallelStatesWithoutDescendantsInStatesToEnter = new Set()
+			childrenOfParallelStatesWithoutDescendantsInStatesToEnter = new @StateSet()
 
 			#get all descendants of states to enter
-			descendantsOfStatesToEnter = new Set()
+			descendantsOfStatesToEnter = new @StateSet()
 			for state in statesToEnter.iter()
 				for descendant in model.getDescendants(state)
 					descendantsOfStatesToEnter.add(descendant)
@@ -284,7 +285,7 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 			if @onlySelectFromBasicStates
 				states = @_configuration.iter()
 			else
-				statesAndParents = new Set
+				statesAndParents = new @StateSet
 
 				#get full configuration, unordered
 				#this means we may select transitions from parents before children
@@ -301,7 +302,8 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 
 			events = eventSet.iter()
 
-			allTransitions = new Set @transitionSelector states,events,e
+			#debugger
+			allTransitions = new @TransitionSet @transitionSelector states,events,e
 
 			if @printTrace then console.debug("allTransitions",allTransitions)
 			consistentTransitions = @_makeTransitionsConsistent allTransitions
@@ -309,10 +311,10 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 			return consistentTransitions
 
 		_makeTransitionsConsistent: (transitions) ->
-			consistentTransitions = new Set()
+			consistentTransitions = new @TransitionSet()
 
 			[transitionsNotInConflict, transitionsPairsInConflict] = @_getTransitionsInConflict transitions
-			consistentTransitions = consistentTransitions.union transitionsNotInConflict
+			consistentTransitions.union transitionsNotInConflict
 
 			if @printTrace then console.debug "transitions",transitions
 			if @printTrace then console.debug "transitionsNotInConflict",transitionsNotInConflict
@@ -321,11 +323,11 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 
 			while not transitionsPairsInConflict.isEmpty()
 
-				transitions = new Set(@priorityComparisonFn t for t in transitionsPairsInConflict.iter())
+				transitions = new @TransitionSet(@priorityComparisonFn t for t in transitionsPairsInConflict.iter())
 
 				[transitionsNotInConflict, transitionsPairsInConflict] = @_getTransitionsInConflict transitions
 
-				consistentTransitions = consistentTransitions.union transitionsNotInConflict
+				consistentTransitions.union transitionsNotInConflict
 
 				if @printTrace then console.debug "transitions",transitions
 				if @printTrace then console.debug "transitionsNotInConflict",transitionsNotInConflict
@@ -336,8 +338,8 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 				
 		_getTransitionsInConflict: (transitions) ->
 
-			allTransitionsInConflict = new Set() 	#set of tuples
-			transitionsPairsInConflict = new Set() 	#set of tuples
+			allTransitionsInConflict = new @TransitionSet()
+			transitionsPairsInConflict = new @TransitionPairSet() 	#set of tuples
 
 			#better to use iterators, because not sure how to encode "order doesn't matter" to list comprehension
 			transitionList = transitions.iter()
@@ -368,8 +370,10 @@ define ["scxml/model","scxml/set","scxml/event","scxml/evaluator"],(model,Set,Ev
 
 	class SimpleInterpreter extends SCXMLInterpreter
 
-		constructor: (model,@setTimeout,@clearTimeout,transitionSelector,onlySelectFromBasicStates,priorityComparisonFn,printTrace) ->
-			super model,transitionSelector,onlySelectFromBasicStates,priorityComparisonFn,printTrace
+		constructor: (model,@setTimeout,@clearTimeout,transitionSelector,onlySelectFromBasicStates,TransitionSet,StateSet,BasicStateSet,StateIdSet,EventSet,TransitionPairSet,priorityComparisonFn,printTrace) ->
+
+			#FIXME: is there a way to clean some of this up?
+			super model,transitionSelector,onlySelectFromBasicStates,TransitionSet,StateSet,BasicStateSet,StateIdSet,EventSet,TransitionPairSet,priorityComparisonFn,printTrace
 			
 		_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
 			if action.type is "send" and action.delay

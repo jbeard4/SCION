@@ -7,4 +7,6 @@ if [ ! -e $basedir/build/spartanLoaderForAllTests.js ]; then
 	exit 1
 fi;
 
-node $basedir/lib/js/r.js $basedir/src/main/javascript/runner.js $basedir/build/ scxml/test/node-optimization-harness
+#these tests are highly recursive, so we increase the size of the nodejs stack. 
+#same thing is done with the rhino tests running under the JVM
+node --stack_size=4096 $basedir/lib/js/r.js $basedir/src/main/javascript/runner.js $basedir/build/ scxml/test/node-optimization-harness

@@ -94,6 +94,10 @@
 			<number level="any" count="s:scxml | s:state | s:parallel | s:history | s:final | s:initial"/>
 		</variable>
 
+		<variable name="basicStateNum">
+			<number level="any" count="s:*[self::s:state | self::s:history | self::s:final | self::s:initial][not (s:state | s:parallel | s:history | s:final | s:initial)]"/>
+		</variable>
+
 		<!-- select kind -->
 		<variable name="kind">
 			<choose>
@@ -101,7 +105,7 @@
 					<value-of select="$composite-kind"/>
 							
 				</when>
-				<when test="self::s:state and not (s:scxml | s:state | s:parallel | s:history | s:final | s:initial)">
+				<when test="self::s:state and not (s:state | s:parallel | s:history | s:final | s:initial)">
 					<value-of select="$basic-kind"/>
 							
 				</when>
@@ -167,6 +171,9 @@
 				"depth" : <value-of select="count(ancestor::*)"/>,
 			</if>
 			"documentOrder" : <value-of select="$stateNum - 1"/>,
+			<if test="$kind = $basic-kind or $kind = $initial-kind or $kind = $history-kind">
+			"basicDocumentOrder" : <value-of select="$basicStateNum - 1"/>,
+			</if>
 			"children" : [<for-each select="s:state | s:parallel | s:final | s:history | s:initial">
 						<call-template name="genId"/>
 						<if test="not(position() = last())">,</if>

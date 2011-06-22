@@ -1,4 +1,4 @@
-define ["scxml/event","scxml/SCXML","scxml/set","scxml/async-for"],(Event,scxml,Set,asyncForEach) ->
+define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for"],(Event,scxml,Set,asyncForEach) ->
 
 	SimpleInterpreter = scxml.SimpleInterpreter
 
@@ -78,7 +78,7 @@ define ["scxml/event","scxml/SCXML","scxml/set","scxml/async-for"],(Event,scxml,
 				#TODO: other optimizations go here
 				#this is safe because js does not throw array out of bounds exceptions. 
 				#instead gives "undefined", so default args kick in in the SCXML constructor
-				interpreter = new SimpleInterpreter test.model,setTimeout,clearTimeout,test.optimizations[0],test.optimizations[1]
+				interpreter = new SimpleInterpreter test.model,setTimeout,clearTimeout,test.optimizations[0],test.optimizations[1],test.optimizations[2],test.optimizations[3],test.optimizations[4]
 
 				events = test.testScript.events.slice()
 

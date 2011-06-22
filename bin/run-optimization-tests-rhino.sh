@@ -80,7 +80,7 @@ then
 fi
 
 CLASSPATH=$CLASSPATH_PREFIX:"$REPO"/rhino/js/1.7R2/js-1.7R2.jar
-EXTRA_JVM_ARGUMENTS="-Xss1m"	#increase max heap size so we don't stackoverflow
+EXTRA_JVM_ARGUMENTS="-Xss10m"	#increase max heap size so we don't stackoverflow
 
 # For Cygwin, switch paths to Windows format before running java
 if $cygwin; then
