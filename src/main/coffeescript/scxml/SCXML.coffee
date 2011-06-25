@@ -40,8 +40,20 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 
 	class SCXMLInterpreter
 
-		constructor : (@model,@transitionSelector=defaultTransitionSelector,@onlySelectFromBasicStates=false,@TransitionSet,@StateSet,@BasicStateSet,@StateIdSet=ArraySet,@EventSet=ArraySet,@TransitionPairSet=ArraySet,@priorityComparisonFn=getTransitionWithHigherSourceChildPriority,@printTrace=false) ->
-			@_configuration = new @BasicStateSet()	#full configuration, or basic configuration? what kind of set implementation?
+		constructor : (@model,@opts={}) ->
+			#default args
+			@opts.transitionSelector=defaultTransitionSelector
+			@opts.onlySelectFromBasicStates=false
+			#@opts.TransitionSet
+			#@opts.StateSet
+			#@opts.BasicStateSet
+			@opts.StateIdSet=ArraySet
+			@opts.EventSet=ArraySet
+			@opts.TransitionPairSet=ArraySet
+			@opts.priorityComparisonFn=getTransitionWithHigherSourceChildPriority
+			@opts.printTrace=false
+
+			@_configuration = new @opts.BasicStateSet()	#full configuration, or basic configuration? what kind of set implementation?
 			@_historyValue = {}
 			@_innerEventQueue = []
 			@_isInFinalState = false
@@ -51,23 +63,23 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 		
 		start: ->
 			#perform big step without events to take all default transitions and reach stable initial state
-			if @printTrace then console.debug("performing initial big step")
+			if @opts.printTrace then console.debug("performing initial big step")
 			@_configuration.add(@model.root.initial)
 			@_performBigStep()
 
-		getConfiguration: -> new @StateIdSet(s.id for s in @_configuration.iter())
+		getConfiguration: -> new @opts.StateIdSet(s.id for s in @_configuration.iter())
 
-		getFullConfiguration: -> new @StateIdSet(s.id for s in (flatten([s].concat model.getAncestors(s) for s in @_configuration.iter())))
+		getFullConfiguration: -> new @opts.StateIdSet(s.id for s in (flatten([s].concat model.getAncestors(s) for s in @_configuration.iter())))
 
 		isIn: (stateName) -> @getFullConfiguration().contains(stateName)
 
 		_performBigStep: (e) ->
-			if e then @_innerEventQueue.push(new @EventSet([e]))
+			if e then @_innerEventQueue.push(new @opts.EventSet([e]))
 
 			keepGoing = true
 
 			while keepGoing
-				eventSet = if @_innerEventQueue.length then @_innerEventQueue.shift() else new @EventSet()
+				eventSet = if @_innerEventQueue.length then @_innerEventQueue.shift() else new @opts.EventSet()
 
 				#create new datamodel cache for the next small step
 				datamodelForNextStep = {}
@@ -83,33 +95,33 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 
 		_performSmallStep: (eventSet,datamodelForNextStep) ->
 
-			if @printTrace then console.debug("selecting transitions with eventSet: " , eventSet)
+			if @opts.printTrace then console.debug("selecting transitions with eventSet: " , eventSet)
 
 			selectedTransitions = @_selectTransitions(eventSet,datamodelForNextStep)
 
-			if @printTrace then console.debug("selected transitions: " , selectedTransitions)
+			if @opts.printTrace then console.debug("selected transitions: " , selectedTransitions)
 
 			if selectedTransitions
 
-				if @printTrace then console.debug("sorted transitions: ", selectedTransitions)
+				if @opts.printTrace then console.debug("sorted transitions: ", selectedTransitions)
 
 				[basicStatesExited,statesExited] = @_getStatesExited(selectedTransitions)
 				[basicStatesEntered,statesEntered] = @_getStatesEntered(selectedTransitions)
 
-				if @printTrace then console.debug("basicStatesExited " , basicStatesExited)
-				if @printTrace then console.debug("basicStatesEntered " , basicStatesEntered)
-				if @printTrace then console.debug("statesExited " , statesExited)
-				if @printTrace then console.debug("statesEntered " , statesEntered)
+				if @opts.printTrace then console.debug("basicStatesExited " , basicStatesExited)
+				if @opts.printTrace then console.debug("basicStatesEntered " , basicStatesEntered)
+				if @opts.printTrace then console.debug("statesExited " , statesExited)
+				if @opts.printTrace then console.debug("statesEntered " , statesEntered)
 
-				eventsToAddToInnerQueue = new @EventSet()
+				eventsToAddToInnerQueue = new @opts.EventSet()
 
 				#operations will be performed in the order described in Rhapsody paper
 
 				#update history states
 
-				if @printTrace then console.debug("executing state exit actions")
+				if @opts.printTrace then console.debug("executing state exit actions")
 				for state in statesExited
-					if @printTrace then console.debug("exiting " , state)
+					if @opts.printTrace then console.debug("exiting " , state)
 
 					#peform exit actions
 					for action in state.onexit
@@ -128,42 +140,42 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 				# -> Concurrency: Order of transitions: Explicitly defined
 				sortedTransitions = selectedTransitions.iter().sort( (t1,t2) -> t1.documentOrder > t2.documentOrder)
 
-				if @printTrace then console.debug("executing transitition actions")
+				if @opts.printTrace then console.debug("executing transitition actions")
 				for transition in sortedTransitions
-					if @printTrace then console.debug("transitition " , transition)
+					if @opts.printTrace then console.debug("transitition " , transition)
 					for action in transition.actions
 						@_evaluateAction(action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue)
 
-				if @printTrace then console.debug("executing state enter actions")
+				if @opts.printTrace then console.debug("executing state enter actions")
 				for state in statesEntered
-					if @printTrace then console.debug("entering " , state)
+					if @opts.printTrace then console.debug("entering " , state)
 					for action in state.onentry
 						@_evaluateAction(action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue)
 
 				#update configuration by removing basic states exited, and adding basic states entered
-				if @printTrace then console.debug("updating configuration ")
-				if @printTrace then console.debug("old configuration " , @_configuration)
+				if @opts.printTrace then console.debug("updating configuration ")
+				if @opts.printTrace then console.debug("old configuration " , @_configuration)
 
 				@_configuration.difference basicStatesExited
 				@_configuration.union basicStatesEntered
 
-				if @printTrace then console.debug("new configuration " , @_configuration)
+				if @opts.printTrace then console.debug("new configuration " , @_configuration)
 				
 				#add set of generated events to the innerEventQueue -> Event Lifelines: Next small-step
 				if not eventsToAddToInnerQueue.isEmpty()
-					if @printTrace then console.debug("adding triggered events to inner queue " , eventsToAddToInnerQueue)
+					if @opts.printTrace then console.debug("adding triggered events to inner queue " , eventsToAddToInnerQueue)
 
 					@_innerEventQueue.push(eventsToAddToInnerQueue)
 
 				#update the datamodel
-				if @printTrace then console.debug("updating datamodel for next small step :")
+				if @opts.printTrace then console.debug("updating datamodel for next small step :")
 				for own key of datamodelForNextStep
-					if @printTrace then console.debug("key " , key)
+					if @opts.printTrace then console.debug("key " , key)
 					if key of @_datamodel
-						if @printTrace then console.debug("old value " , @_datamodel[key])
+						if @opts.printTrace then console.debug("old value " , @_datamodel[key])
 					else
-						if @printTrace then console.debug("old value is null")
-					if @printTrace then console.debug("new value " , datamodelForNextStep[key])
+						if @opts.printTrace then console.debug("old value is null")
+					if @opts.printTrace then console.debug("new value " , datamodelForNextStep[key])
 						
 					@_datamodel[key] = datamodelForNextStep[key]
 
@@ -174,7 +186,7 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 		_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
 			switch action.type
 				when "send"
-					if @printTrace then console.debug "sending event",action.event,"with content",action.contentexpr
+					if @opts.printTrace then console.debug "sending event",action.event,"with content",action.contentexpr
 					data = if action.contentexpr then @_eval action.contentexpr,datamodelForNextStep,eventSet else null
 
 					eventsToAddToInnerQueue.add new Event action.event,data
@@ -184,7 +196,7 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 					@_eval action.script,datamodelForNextStep,eventSet,true
 				when "log"
 					log = @_eval action.expr,datamodelForNextStep,eventSet
-					if @printTrace then console.log(log)	#the one place where we use straight console.log
+					if @opts.printTrace then console.log(log)	#the one place where we use straight console.log
 
 		_eval : (code,datamodelForNextStep,eventSet,allowWrite) ->
 			#get the scripting interface
@@ -199,8 +211,8 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 			events : eventSet.iter()
 
 		_getStatesExited: (transitions) ->
-			statesExited = new @StateSet()
-			basicStatesExited = new @BasicStateSet()
+			statesExited = new @opts.StateSet()
+			basicStatesExited = new @opts.BasicStateSet()
 
 			for transition in transitions.iter()
 				lca = model.getLCA(transition.source,transition.targets[0])
@@ -219,9 +231,9 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 
 		_getStatesEntered: (transitions) ->
 			statesToRecursivelyAdd = flatten((state for state in transition.targets) for transition in transitions.iter())
-			if @printTrace then console.debug "statesToRecursivelyAdd :",statesToRecursivelyAdd
-			statesToEnter = new @StateSet()
-			basicStatesToEnter = new @BasicStateSet()
+			if @opts.printTrace then console.debug "statesToRecursivelyAdd :",statesToRecursivelyAdd
+			statesToEnter = new @opts.StateSet()
+			basicStatesToEnter = new @opts.BasicStateSet()
 
 			while statesToRecursivelyAdd.length
 				for state in statesToRecursivelyAdd
@@ -234,10 +246,10 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 			return [basicStatesToEnter,sortedStatesEntered]
 
 		_getChildrenOfParallelStatesWithoutDescendantsInStatesToEnter: (statesToEnter) ->
-			childrenOfParallelStatesWithoutDescendantsInStatesToEnter = new @StateSet()
+			childrenOfParallelStatesWithoutDescendantsInStatesToEnter = new @opts.StateSet()
 
 			#get all descendants of states to enter
-			descendantsOfStatesToEnter = new @StateSet()
+			descendantsOfStatesToEnter = new @opts.StateSet()
 			for state in statesToEnter.iter()
 				for descendant in model.getDescendants(state)
 					descendantsOfStatesToEnter.add(descendant)
@@ -282,10 +294,10 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 			
 		_selectTransitions: (eventSet,datamodelForNextStep) ->
 
-			if @onlySelectFromBasicStates
+			if @opts.onlySelectFromBasicStates
 				states = @_configuration.iter()
 			else
-				statesAndParents = new @StateSet
+				statesAndParents = new @opts.StateSet
 
 				#get full configuration, unordered
 				#this means we may select transitions from parents before children
@@ -303,47 +315,47 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 			events = eventSet.iter()
 
 			#debugger
-			allTransitions = new @TransitionSet @transitionSelector states,events,e
+			allTransitions = new @opts.TransitionSet @opts.transitionSelector states,events,e
 
-			if @printTrace then console.debug("allTransitions",allTransitions)
+			if @opts.printTrace then console.debug("allTransitions",allTransitions)
 			consistentTransitions = @_makeTransitionsConsistent allTransitions
-			if @printTrace then console.debug("consistentTransitions",consistentTransitions)
+			if @opts.printTrace then console.debug("consistentTransitions",consistentTransitions)
 			return consistentTransitions
 
 		_makeTransitionsConsistent: (transitions) ->
-			consistentTransitions = new @TransitionSet()
+			consistentTransitions = new @opts.TransitionSet()
 
 			[transitionsNotInConflict, transitionsPairsInConflict] = @_getTransitionsInConflict transitions
 			consistentTransitions.union transitionsNotInConflict
 
-			if @printTrace then console.debug "transitions",transitions
-			if @printTrace then console.debug "transitionsNotInConflict",transitionsNotInConflict
-			if @printTrace then console.debug "transitionsPairsInConflict",transitionsPairsInConflict
-			if @printTrace then console.debug "consistentTransitions",consistentTransitions
+			if @opts.printTrace then console.debug "transitions",transitions
+			if @opts.printTrace then console.debug "transitionsNotInConflict",transitionsNotInConflict
+			if @opts.printTrace then console.debug "transitionsPairsInConflict",transitionsPairsInConflict
+			if @opts.printTrace then console.debug "consistentTransitions",consistentTransitions
 
 			while not transitionsPairsInConflict.isEmpty()
 
-				transitions = new @TransitionSet(@priorityComparisonFn t for t in transitionsPairsInConflict.iter())
+				transitions = new @opts.TransitionSet(@opts.priorityComparisonFn t for t in transitionsPairsInConflict.iter())
 
 				[transitionsNotInConflict, transitionsPairsInConflict] = @_getTransitionsInConflict transitions
 
 				consistentTransitions.union transitionsNotInConflict
 
-				if @printTrace then console.debug "transitions",transitions
-				if @printTrace then console.debug "transitionsNotInConflict",transitionsNotInConflict
-				if @printTrace then console.debug "transitionsPairsInConflict",transitionsPairsInConflict
-				if @printTrace then console.debug "consistentTransitions",consistentTransitions
+				if @opts.printTrace then console.debug "transitions",transitions
+				if @opts.printTrace then console.debug "transitionsNotInConflict",transitionsNotInConflict
+				if @opts.printTrace then console.debug "transitionsPairsInConflict",transitionsPairsInConflict
+				if @opts.printTrace then console.debug "consistentTransitions",consistentTransitions
 
 			return consistentTransitions
 				
 		_getTransitionsInConflict: (transitions) ->
 
-			allTransitionsInConflict = new @TransitionSet()
-			transitionsPairsInConflict = new @TransitionPairSet() 	#set of tuples
+			allTransitionsInConflict = new @opts.TransitionSet()
+			transitionsPairsInConflict = new @opts.TransitionPairSet() 	#set of tuples
 
 			#better to use iterators, because not sure how to encode "order doesn't matter" to list comprehension
 			transitionList = transitions.iter()
-			if @printTrace then console.debug("transitions",transitionList)
+			if @opts.printTrace then console.debug("transitions",transitionList)
 
 			for i in [0...transitionList.length]
 				for j in [i+1...transitionList.length]
@@ -370,15 +382,15 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 
 	class SimpleInterpreter extends SCXMLInterpreter
 
-		constructor: (model,@setTimeout,@clearTimeout,transitionSelector,onlySelectFromBasicStates,TransitionSet,StateSet,BasicStateSet,StateIdSet,EventSet,TransitionPairSet,priorityComparisonFn,printTrace) ->
+		constructor: (model,@setTimeout,@clearTimeout,opts) ->
 
 			#FIXME: is there a way to clean some of this up?
-			super model,transitionSelector,onlySelectFromBasicStates,TransitionSet,StateSet,BasicStateSet,StateIdSet,EventSet,TransitionPairSet,priorityComparisonFn,printTrace
+			super model,opts
 			
 		_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
 			if action.type is "send" and action.delay
 				if @setTimeout
-					if @printTrace then console.debug "sending event",action.event,"with content",action.contentexpr,"after delay",action.delay
+					if @opts.printTrace then console.debug "sending event",action.event,"with content",action.contentexpr,"after delay",action.delay
 					data = if action.contentexpr then @_eval(action.contentexpr,datamodelForNextStep,eventSet) else null
 
 					callback = => @gen new Event(action.event,data)
@@ -392,7 +404,7 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 			else if action.type is "cancel"
 				if @clearTimeout
 					if action.sendid of @_timeoutMap
-						if @printTrace then console.debug "cancelling ",action.id," with timeout id ",@_timeoutMap[action.id]
+						if @opts.printTrace then console.debug "cancelling ",action.id," with timeout id ",@_timeoutMap[action.id]
 						@clearTimeout @_timeoutMap[action.id]
 				else
 					throw new Error("clearTimeout function not set")
@@ -402,7 +414,7 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 		#External Event Communication: Asynchronous
 		gen: (e) ->
 			#pass it straight through	
-			if @printTrace then console.debug("received event " + e)
+			if @opts.printTrace then console.debug("received event " + e)
 			@_performBigStep(e)
 
 	SCXMLInterpreter:SCXMLInterpreter

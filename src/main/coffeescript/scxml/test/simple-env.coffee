@@ -30,6 +30,6 @@ define ->
 
 			@timeouts = (timeout for timeout in @timeouts when timeout not in triggeredTimeouts)
 
-		mainLoop : ->
+		mainLoop : =>
 			while true
 				@_checkTimeouts()
