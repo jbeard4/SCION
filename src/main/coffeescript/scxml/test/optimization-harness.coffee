@@ -1,4 +1,4 @@
-define ["scxml/json2model", "scxml/test/harness", "scxml/async-for","util/set/ArraySet","util/set/BitVector","util/set/BooleanArray","util/set/ObjectSet", "spartanLoaderForAllTests", "class-transition-lookup-optimization-loader", "switch-transition-lookup-optimization-loader", "table-transition-lookup-optimization-loader"],(json2model,harness,asyncForEach,ArraySet,BitVectorInitializer,BooleanArrayInitializer,ObjectSetInitializer,testTuples,classTransitionOpts,switchTransitionOpts,tableTransitionOpts) ->
+define ["scxml/json2model","scxml/json2extra-model", "scxml/test/harness", "scxml/async-for","util/set/ArraySet","util/set/BitVector","util/set/BooleanArray","util/set/ObjectSet", "spartanLoaderForAllTests", "class-transition-lookup-optimization-loader", "switch-transition-lookup-optimization-loader", "table-transition-lookup-optimization-loader","scxml/model","scxml/extra-model"],(json2model,json2ExtraModel,harness,asyncForEach,ArraySet,BitVectorInitializer,BooleanArrayInitializer,ObjectSetInitializer,testTuples,classTransitionOpts,switchTransitionOpts,tableTransitionOpts,m,extraModel) ->
 
 	runTests = (setTimeout,clearTimeout,finish,mainloop) ->
 		
@@ -11,6 +11,7 @@ define ["scxml/json2model", "scxml/test/harness", "scxml/async-for","util/set/Ar
 
 			#parse scxmlJson model
 			model = json2model scxmlJson
+			
 
 			#initialize opts			
 			classTransOpt = classTransitionOpts[i] model.transitions,model.events
@@ -18,7 +19,7 @@ define ["scxml/json2model", "scxml/test/harness", "scxml/async-for","util/set/Ar
 			tableTransOpt = tableTransitionOpts[i] model.transitions,model.events
 
 			optArgs =	{
-						" " : {}
+						"default transition lookup" : {}
 						"class-transition-lookup" : {transitionSelector:classTransOpt,onlySelectFromBasicStates:true}
 						"switch-transition-lookup" : {transitionSelector:switchTransOpt}
 						"table-transition-lookup" : {transitionSelector:tableTransOpt}
@@ -60,20 +61,30 @@ define ["scxml/json2model", "scxml/test/harness", "scxml/async-for","util/set/Ar
 							when "arraySet"
 								setType
 
-				
+			extraInfo =
+				"default model info" :
+					"model" : m
+					"jsonModel" : model
+				"extra model info" :
+					"model" : extraModel
+					"jsonModel" : json2ExtraModel model
+
 			#set up our test object
 			for own optName,optArg of optArgs
 				for setName of setTypes
+					for extraInfoName,extraInfoObj of extraInfo
 
-					optArg.TransitionSet = setPurposes.transitions.initializedSetClasses[setName]
-					optArg.StateSet = setPurposes.states.initializedSetClasses[setName]
-					optArg.BasicStateSet = setPurposes.basicStates.initializedSetClasses[setName]
+						optArg.TransitionSet = setPurposes.transitions.initializedSetClasses[setName]
+						optArg.StateSet = setPurposes.states.initializedSetClasses[setName]
+						optArg.BasicStateSet = setPurposes.basicStates.initializedSetClasses[setName]
 
-					jsonTests.push
-						name : "#{testTuple.testScript.name} (#{optName},#{setName})"
-						model : model
-						testScript : testTuple.testScript
-						optimizations : optArg
+						optArg.model = extraInfoObj.model
+
+						jsonTests.push
+							name : "#{testTuple.testScript.name} (#{optName},#{setName},#{extraInfoName})"
+							model : model
+							testScript : testTuple.testScript
+							optimizations : optArg
 
 
 		harness jsonTests,setTimeout,clearTimeout,finish

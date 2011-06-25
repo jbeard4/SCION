@@ -3,6 +3,9 @@ csdir = src/main/coffeescript
 coffee := $(shell find $(csdir) -name "*.coffee")
 coffeejs = $(patsubst $(csdir)/%.coffee,$(build)/%.js, $(coffee))
 
+#TODO: generate these conditionally so we can compare the overhead induced by this version
+extraModelXSLArgs = --param genDepth "true()" --param genAncestors "true()" --param genDescendants "true()" --param genLCA "true()"
+
 testdir = src/test
 buildtestdir = $(build)/test
 scxmltests := $(shell find $(testdir) -name "*.scxml")
@@ -43,7 +46,7 @@ scxml2json : $(scxmljson)
 
 $(buildtestdir)/%.scxml.json : $(testdir)/%.scxml
 	mkdir -p $(dir $@)
-	$(scxmltojson) $< > $@
+	$(scxmltojson) $< $(extraModelXSLArgs) > $@
 
 copy-others : build
 	cp -r lib/js/ $(build)/lib/

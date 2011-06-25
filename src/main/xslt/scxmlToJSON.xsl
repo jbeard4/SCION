@@ -17,6 +17,8 @@
 	<!-- extra stuff we can add in to allow some possible optimizations at runtime -->
 	<param name="genDepth" select="false()"/>
 	<param name="genAncestors" select="false()"/>
+	<param name="genDescendants" select="false()"/>
+	<param name="genLCA" select="false()"/>
 
 	<!-- constants -->
 	<variable name="basic-kind" select="0"/>
@@ -160,6 +162,13 @@
 					</call-template>,
 			</if>
 			"id" : 		<call-template name="genId"/>,
+			<if test="$genDescendants">
+				"descendants" : [<for-each select=".//s:state | .//s:initial | .//s:final | .//s:history | .//s:parallel">
+							<sort select="position()" data-type="number" order="descending"/>	
+							<call-template name="genId"/>
+							<if test="not(position() = last())">,</if>
+						</for-each>],
+			</if>
 			<if test="$genAncestors">
 				"ancestors" : [<for-each select="ancestor::*">
 							<sort select="position()" data-type="number" order="descending"/>	
@@ -249,6 +258,50 @@
 			</if>
 			<if test="@event">
 				"event" : 	"<value-of select="@event"/>",
+			</if>
+			<if test="$genLCA">
+				<variable name="targetBeforeSpace" select="substring-before(@target,' ')"/>
+
+				<!-- I wish there were a cleaner way to express the notion of default value -->
+				<variable name="firstTargetStateId">
+					<choose>
+						<when test="$targetBeforeSpace">
+							<value-of select="$targetBeforeSpace"/>
+						</when>
+						<otherwise>
+							<value-of select="@target"/>
+						</otherwise>
+					</choose>
+				</variable>
+
+				<variable name="firstTargetState" select="//s:*[self::s:state or self::s:history or self::s:final or self::s:parallel][@id = $firstTargetStateId]"/>
+
+				<!-- compute the least common ancestor using the Kaysian method for intersection-->
+				<!-- http://stackoverflow.com/questions/538293/find-common-parent-using-xpath -->
+				<variable name="lca" 
+					select="../ancestor::* [count(. | $firstTargetState/ancestor::*) = count($firstTargetState/ancestor::*) ] [1]" />
+
+				<!--
+				<message>
+					<text>START&#10;</text>
+					<text>@target: </text>
+					<value-of select="@target"/>
+					<text>&#10;</text>
+					<text>firstTargetStateId: </text>
+					<value-of select="$firstTargetStateId"/>
+					<text>&#10;</text>
+					<text>firstTargetState: </text>
+					<value-of select="$firstTargetState/@id"/>
+					<text>&#10;</text>
+					<text>lca: </text>
+					<value-of select="$lca/@id"/>
+					<text>&#10;</text>
+				</message>
+				-->
+
+				"lca" : <call-template name="genId">
+						<with-param name="s" select="$lca"/>
+					</call-template>,
 			</if>
 			"actions" : 	[<call-template name="genContent"/>]
 		}

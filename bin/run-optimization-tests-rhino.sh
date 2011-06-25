@@ -99,6 +99,7 @@ exec "$JAVACMD" $JAVA_OPTS \
   -Dapp.repo="$REPO" \
   -Dbasedir="$BASEDIR" \
   org.mozilla.javascript.tools.shell.Main \
+	-debug \
 	${root}/lib/js/r.js \
 	${root}/build/runner.js \
 	${root}/build \

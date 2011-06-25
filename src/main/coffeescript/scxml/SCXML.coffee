@@ -1,4 +1,4 @@
-define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(model,ArraySet,Event,evaluator) ->
+define ["util/set/ArraySet","scxml/event","scxml/evaluator"],(ArraySet,Event,evaluator) ->
 	#imports
 
 	flatten = (l) ->
@@ -9,19 +9,20 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 		return a
 
 	# -> Priority: Source-Child 
-	getTransitionWithHigherSourceChildPriority = ([t1,t2]) ->
-		"""
-		compare transitions based first on depth, then based on document order
-		"""
-		if model.getDepth(t1.source) < model.getDepth(t2.source)
-			return t2
-		else if model.getDepth(t2.source) < model.getDepth(t1.source)
-			return t1
-		else
-			if t1.documentOrder < t2.documentOrder
+	getTransitionWithHigherSourceChildPriority = (model) ->
+		([t1,t2]) ->
+			"""
+			compare transitions based first on depth, then based on document order
+			"""
+			if model.getDepth(t1.source) < model.getDepth(t2.source)
+				return t2
+			else if model.getDepth(t2.source) < model.getDepth(t1.source)
 				return t1
 			else
-				return t2
+				if t1.documentOrder < t2.documentOrder
+					return t1
+				else
+					return t2
 
 	#we make this parameterizable, not due to varying semantics, 
 	#but due to possible optimizations with respect to fast, compiled data structures, e.g. state table
@@ -50,7 +51,7 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 			@opts.StateIdSet=ArraySet
 			@opts.EventSet=ArraySet
 			@opts.TransitionPairSet=ArraySet
-			@opts.priorityComparisonFn=getTransitionWithHigherSourceChildPriority
+			@opts.priorityComparisonFn=getTransitionWithHigherSourceChildPriority(@opts.model)
 			@opts.printTrace=false
 
 			@_configuration = new @opts.BasicStateSet()	#full configuration, or basic configuration? what kind of set implementation?
@@ -69,7 +70,7 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 
 		getConfiguration: -> new @opts.StateIdSet(s.id for s in @_configuration.iter())
 
-		getFullConfiguration: -> new @opts.StateIdSet(s.id for s in (flatten([s].concat model.getAncestors(s) for s in @_configuration.iter())))
+		getFullConfiguration: -> new @opts.StateIdSet(s.id for s in (flatten([s].concat @opts.model.getAncestors(s) for s in @_configuration.iter())))
 
 		isIn: (stateName) -> @getFullConfiguration().contains(stateName)
 
@@ -88,7 +89,7 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 
 				keepGoing = not selectedTransitions.isEmpty()
 
-			nonFinalStates = (s for s of @_configuration.iter() when s.kind is not model.FINAL)
+			nonFinalStates = (s for s of @_configuration.iter() when s.kind is not @opts.model.FINAL)
 
 			if nonFinalStates.length is 0
 				@_isInFinalState = true
@@ -130,7 +131,7 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 					#update history
 					if state.history
 						if state.history.isDeep
-							f = (s0) -> s0.kind is model.BASIC and s0 in model.getDescendants(state)
+							f = (s0) => s0.kind is @opts.model.BASIC and s0 in @opts.model.getDescendants(state)
 						else
 							f = (s0) -> s0.parent is state
 						
@@ -215,17 +216,17 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 			basicStatesExited = new @opts.BasicStateSet()
 
 			for transition in transitions.iter()
-				lca = model.getLCA(transition.source,transition.targets[0])
-				desc = model.getDescendants(lca)
+				lca = @opts.model.getLCA(transition)
+				desc = @opts.model.getDescendants(lca)
 			
 				for state in @_configuration.iter()
 					if state in desc
 						basicStatesExited.add(state)
 						statesExited.add(state)
-						for anc in model.getAncestors(state,lca)
+						for anc in @opts.model.getAncestors(state,lca)
 							statesExited.add(anc)
 
-			sortedStatesExited = statesExited.iter().sort((s1,s2) -> model.getDepth(s1) < model.getDepth(s2))
+			sortedStatesExited = statesExited.iter().sort((s1,s2) => @opts.model.getDepth(s1) < @opts.model.getDepth(s2))
 
 			return [basicStatesExited,sortedStatesExited]
 
@@ -241,7 +242,7 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 				
 				statesToRecursivelyAdd = @_getChildrenOfParallelStatesWithoutDescendantsInStatesToEnter(statesToEnter)
 
-			sortedStatesEntered = statesToEnter.iter().sort((s1,s2) -> model.getDepth(s1) > model.getDepth(s2))
+			sortedStatesEntered = statesToEnter.iter().sort((s1,s2) => @opts.model.getDepth(s1) > @opts.model.getDepth(s2))
 
 			return [basicStatesToEnter,sortedStatesEntered]
 
@@ -251,11 +252,11 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 			#get all descendants of states to enter
 			descendantsOfStatesToEnter = new @opts.StateSet()
 			for state in statesToEnter.iter()
-				for descendant in model.getDescendants(state)
+				for descendant in @opts.model.getDescendants(state)
 					descendantsOfStatesToEnter.add(descendant)
 
 			for state in statesToEnter.iter()
-				if state.kind is model.PARALLEL
+				if state.kind is @opts.model.PARALLEL
 					for child in state.children
 						if not descendantsOfStatesToEnter.contains(child)
 							childrenOfParallelStatesWithoutDescendantsInStatesToEnter.add(child)
@@ -264,7 +265,7 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 				
 
 		_recursiveAddStatesToEnter: (s,statesToEnter,basicStatesToEnter) ->
-			if s.kind is model.HISTORY
+			if s.kind is @opts.model.HISTORY
 				if s.id of @_historyValue
 					for historyState in @_historyValue[s.id]
 						@_recursiveAddStatesToEnter(historyState,statesToEnter,basicStatesToEnter)
@@ -274,12 +275,12 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 			else
 				statesToEnter.add(s)
 
-				if s.kind is model.PARALLEL
+				if s.kind is @opts.model.PARALLEL
 					for child in s.children
-						if not (child.kind is model.HISTORY)		#don't enter history by default
+						if not (child.kind is @opts.model.HISTORY)		#don't enter history by default
 							@_recursiveAddStatesToEnter(child,statesToEnter,basicStatesToEnter)
 
-				else if s.kind is model.COMPOSITE
+				else if s.kind is @opts.model.COMPOSITE
 
 					#FIXME: problem: this doesn't check cond of initial state transitions
 					#also doesn't check priority of transitions (problem in the SCXML spec?)
@@ -288,7 +289,7 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 					#for now, make simplifying assumption. later on check cond, then throw into the parameterized choose by priority
 					@_recursiveAddStatesToEnter(s.initial,statesToEnter,basicStatesToEnter)
 
-				else if s.kind is model.INITIAL or s.kind is model.BASIC or s.kind is model.FINAL
+				else if s.kind is @opts.model.INITIAL or s.kind is @opts.model.BASIC or s.kind is @opts.model.FINAL
 					basicStatesToEnter.add(s)
 
 			
@@ -304,7 +305,7 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 				for basicState in @_configuration.iter()
 					statesAndParents.add(basicState)
 
-					for ancestor in model.getAncestors(basicState)
+					for ancestor in @opts.model.getAncestors(basicState)
 						statesAndParents.add(ancestor)
 
 				states = statesAndParents.iter()
@@ -377,14 +378,12 @@ define ["scxml/model","util/set/ArraySet","scxml/event","scxml/evaluator"],(mode
 		# -> Interrupt Transitions and Preemption: Non-preemptive 
 		_conflicts: (t1,t2) -> not @_isArenaOrthogonal(t1,t2)
 		
-		_isArenaOrthogonal: (t1,t2) -> model.isOrthogonalTo(model.getLCA(t1.source,t1.targets[0]),model.getLCA(t2.source,t2.targets[0]))
+		_isArenaOrthogonal: (t1,t2) -> @opts.model.isOrthogonalTo(@opts.model.getLCA(t1),@opts.model.getLCA(t2))
 
 
 	class SimpleInterpreter extends SCXMLInterpreter
 
 		constructor: (model,@setTimeout,@clearTimeout,opts) ->
-
-			#FIXME: is there a way to clean some of this up?
 			super model,opts
 			
 		_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
