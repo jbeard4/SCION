@@ -69,10 +69,15 @@ define ["scxml/json2model","scxml/json2extra-model", "scxml/test/harness", "scxm
 					"model" : extraModel
 					"jsonModel" : json2ExtraModel model
 
+			flattenedTransitionsRE = /\.flattened-transitions$/
+
 			#set up our test object
 			for own optName,optArg of optArgs
 				for setName of setTypes
 					for extraInfoName,extraInfoObj of extraInfo
+
+						if testTuple.name.match flattenedTransitionsRE
+							optArg.onlySelectFromBasicStates=true
 
 						optArg.TransitionSet = setPurposes.transitions.initializedSetClasses[setName]
 						optArg.StateSet = setPurposes.states.initializedSetClasses[setName]
