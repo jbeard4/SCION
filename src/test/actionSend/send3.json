@@ -1,7 +1,4 @@
 {
-	"name" : "actionSend3",
-	"group" : "send",
-	"scxml" : "send3.scxml",
 	"initialConfiguration" : ["a"],
 	"events" : [
 		{

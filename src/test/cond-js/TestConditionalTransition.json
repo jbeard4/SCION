@@ -1,7 +1,4 @@
 {
-	"name" : "TestConditionalTransition",
-	"group" : "cond",
-	"scxml" : "TestConditionalTransition.scxml",
 	"initialConfiguration" : ["b"],
 	"events" : [
 		{

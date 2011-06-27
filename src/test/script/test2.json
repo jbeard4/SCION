@@ -1,7 +1,4 @@
 {
-	"name" : "test2",
-	"group" : "script",
-	"scxml" : "test2.scxml",
 	"initialConfiguration" : ["a"],
 	"events" : [
 		{

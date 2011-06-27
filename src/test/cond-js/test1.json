@@ -1,7 +1,4 @@
 {
-	"name" : "test1",
-	"group" : "cond",
-	"scxml" : "test1.scxml",
 	"initialConfiguration" : ["a"],
 	"events" : [
 		{

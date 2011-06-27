@@ -22,13 +22,22 @@ define ["scxml/model"],(model) ->
 				#assume milliseconds
 				return parseFloat(delayString)
 
+	stateToString = -> @id
+
+	transitionToString = -> "#{@source.id} -> [#{target.id for target in @targets}]"
+
 	jsonToModel = (json) ->
 		#build up map of state ids to state objects
 		idToStateMap = {}
 		for state in json.states
 			idToStateMap[state.id] = state
 
+		for transition in json.transitions
+			transition.toString = transitionToString 	#tag him with a toString method for more readable trace
+
 		for state in json.states
+			state.toString = stateToString 	#tag him with a toString method for more readable trace
+
 			state.transitions = (json.transitions[transitionNum] for transitionNum in state.transitions)
 
 			#TODO: move this block out, make it cleaner

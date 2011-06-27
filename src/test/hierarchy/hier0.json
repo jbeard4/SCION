@@ -1,7 +1,4 @@
 {
-	"name" : "hier0",
-	"group" : "hierarchy",
-	"scxml" : "hier0.scxml",
 	"initialConfiguration" : ["a1"],
 	"events" : [
 		{

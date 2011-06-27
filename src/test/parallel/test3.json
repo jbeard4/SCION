@@ -1,7 +1,4 @@
 {
-	"name" : "test3",
-	"group" : "parallel",
-	"scxml" : "test3.scxml",
 	"initialConfiguration" : ["s3.1","s4","s7","s8"],
 	"events" : [ 
 		{

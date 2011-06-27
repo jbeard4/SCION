@@ -1,7 +1,4 @@
 {
-	"name" : "test17",
-	"group" : "parallel+Interrupt",
-	"scxml" : "test17.scxml",
 	"initialConfiguration" : ["c","d"],
 	"events" : [ 
 		{

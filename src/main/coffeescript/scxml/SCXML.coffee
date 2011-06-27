@@ -1,4 +1,5 @@
-define ["util/set/ArraySet","scxml/event","scxml/evaluator"],(ArraySet,Event,evaluator) ->
+define ["util/set/ArraySet","scxml/model","scxml/event","scxml/evaluator","util/reduce"],(ArraySet,m,Event,evaluator,reduce) ->
+
 	#imports
 
 	flatten = (l) ->
@@ -27,15 +28,12 @@ define ["util/set/ArraySet","scxml/event","scxml/evaluator"],(ArraySet,Event,eva
 	#we make this parameterizable, not due to varying semantics, 
 	#but due to possible optimizations with respect to fast, compiled data structures, e.g. state table
 	#also, possible to make further optimizations based on what we assume the Priority funciton will be
-	defaultTransitionSelector = (states,events,evaluator) ->
+	defaultTransitionSelector = (state,eventNames,evaluator) ->
 		transitions = []
 
-		eventNames = (e.name for e in events)
-
-		for state in states
-			for t in state.transitions
-				if (not t.event or t.event in eventNames) and (not t.cond or evaluator(t.cond))
-					transitions.push t
+		for t in state.transitions
+			if (not t.event or t.event in eventNames) and (not t.cond or evaluator(t.cond))
+				transitions.push t
 
 		return transitions
 
@@ -43,16 +41,17 @@ define ["util/set/ArraySet","scxml/event","scxml/evaluator"],(ArraySet,Event,eva
 
 		constructor : (@model,@opts={}) ->
 			#default args
-			@opts.transitionSelector=defaultTransitionSelector
-			@opts.onlySelectFromBasicStates=false
-			#@opts.TransitionSet
-			#@opts.StateSet
-			#@opts.BasicStateSet
-			@opts.StateIdSet=ArraySet
-			@opts.EventSet=ArraySet
-			@opts.TransitionPairSet=ArraySet
-			@opts.priorityComparisonFn=getTransitionWithHigherSourceChildPriority(@opts.model)
-			@opts.printTrace=false
+			@opts.transitionSelector = @opts.transitionSelector or defaultTransitionSelector
+			@opts.onlySelectFromBasicStates = @opts.onlySelectFromBasicStates or false
+			@opts.TransitionSet = @opts.TransitionSet or ArraySet
+			@opts.StateSet = @opts.StateSet or ArraySet
+			@opts.BasicStateSet = @opts.BasicStateSet or ArraySet
+			@opts.StateIdSet = @opts.StateIdSet or ArraySet
+			@opts.EventSet = @opts.EventSet or ArraySet
+			@opts.TransitionPairSet = @opts.TransitionPairSet or ArraySet
+			@opts.model  = @opts.model or m
+			@opts.priorityComparisonFn = @opts.priorityComparisonFn or getTransitionWithHigherSourceChildPriority(@opts.model)
+			@opts.printTrace = @opts.printTrace or false
 
 			@_configuration = new @opts.BasicStateSet()	#full configuration, or basic configuration? what kind of set implementation?
 			@_historyValue = {}
@@ -313,13 +312,13 @@ define ["util/set/ArraySet","scxml/event","scxml/evaluator"],(ArraySet,Event,eva
 			n = @_getScriptingInterface(datamodelForNextStep,eventSet)
 			e = (cond) -> evaluator(cond,n.getData,n.setData,n.In,n.events)
 
-			events = eventSet.iter()
+			eventNames = eventNames = (event.name for event in eventSet.iter())
 
 			#debugger
-			allTransitions = new @opts.TransitionSet @opts.transitionSelector states,events,e
+			allTransitionsForEachState = (new @opts.TransitionSet @opts.transitionSelector state,eventNames,e for state in states)
 
-			if @opts.printTrace then console.debug("allTransitions",allTransitions)
-			consistentTransitions = @_makeTransitionsConsistent allTransitions
+			if @opts.printTrace then console.debug("allTransitionsForEachState",allTransitionsForEachState)
+			consistentTransitions = @_makeTransitionsConsistent reduce((@_makeTransitionsConsistent transitionSet for transitionSet in allTransitionsForEachState),((a,b) -> a.union b), new @opts.TransitionSet)
 			if @opts.printTrace then console.debug("consistentTransitions",consistentTransitions)
 			return consistentTransitions
 

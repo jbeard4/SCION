@@ -1,7 +1,4 @@
 {
-	"name" : "m1",
-	"group" : "atom3",
-	"scxml" : "m1.scxml",
 	"initialConfiguration" : ["A"],
 	"events" : [
 		{

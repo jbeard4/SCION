@@ -9,9 +9,18 @@ extraModelXSLArgs = --param genDepth "true()" --param genAncestors "true()" --pa
 testdir = src/test
 buildtestdir = $(build)/test
 scxmltests := $(shell find $(testdir) -name "*.scxml")
-scxmljson = $(patsubst $(testdir)/%.scxml,$(buildtestdir)/%.scxml.json, $(scxmltests))
+nonTransformedScxmlJson = $(patsubst $(testdir)/%.scxml,$(buildtestdir)/%.scxml.json, $(scxmltests))
 
-scxmljsontuple = $(patsubst $(testdir)/%.scxml,$(buildtestdir)/%.js, $(scxmltests))
+buildtransformdir = $(build)/transform
+buildFlattenedTransitionsDir = $(buildtransformdir)/flattened-transitions
+flattenedSCXMLTests = $(patsubst $(testdir)/%.scxml,$(buildFlattenedTransitionsDir)/%.scxml, $(scxmltests))
+
+flattenedTransitionsSCXMLJson = $(patsubst $(buildFlattenedTransitionsDir)/%.scxml,$(buildtestdir)/%.flattened-transitions.scxml.json, $(flattenedSCXMLTests))
+
+#all scxmljson files (both flattened and non-flattened)
+scxmljson = $(sort $(nonTransformedScxmlJson)  $(flattenedTransitionsSCXMLJson)) 
+
+scxmljsontuple = $(patsubst $(buildtestdir)/%.scxml.json,$(buildtestdir)/%.js, $(scxmljson))
 
 #optimization variables
 buildopt = $(build)/opt
@@ -42,9 +51,19 @@ coffee : $(coffeejs)
 $(build)/%.js : $(csdir)/%.coffee
 	coffee -o $(dir $@) $<
 
+flatten-transitions-scxml-tests: $(flattenedSCXMLTests)
+
+$(buildFlattenedTransitionsDir)/%.scxml : $(testdir)/%.scxml
+	mkdir -p $(dir $@)
+	xsltproc src/main/xslt/flattenTransitions.xsl $< > $@
+
 scxml2json : $(scxmljson)
 
-$(buildtestdir)/%.scxml.json : $(testdir)/%.scxml
+$(buildtestdir)/%.flattened-transitions.scxml.json : $(buildFlattenedTransitionsDir)/%.scxml 
+	mkdir -p $(dir $@)
+	$(scxmltojson) $< $(extraModelXSLArgs) > $@
+
+$(buildtestdir)/%.scxml.json : $(testdir)/%.scxml 
 	mkdir -p $(dir $@)
 	$(scxmltojson) $< $(extraModelXSLArgs) > $@
 
@@ -55,8 +74,11 @@ copy-others : build
 
 combine-json-and-scxml-tests : $(scxmljsontuple) 
 
+$(buildtestdir)/%.flattened-transitions.js : $(buildtestdir)/%.flattened-transitions.scxml.json $(testdir)/%.json
+	$(generatetesttuple) $^ "$(basename $(basename $(notdir $<)))" "$(shell basename $(shell dirname $<))" > $@
+
 $(buildtestdir)/%.js : $(buildtestdir)/%.scxml.json $(testdir)/%.json
-	$(generatetesttuple) $^ > $@
+	$(generatetesttuple) $^ "$(basename $(basename $(notdir $<)))" "$(shell basename $(shell dirname $<))" > $@
 
 gen-spartan-loader : $(spartanLoader)
 

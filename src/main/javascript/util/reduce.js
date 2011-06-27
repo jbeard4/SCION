@@ -1,10 +1,10 @@
 //adapted from https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/Reduce
 require.def(function(){
-	return function(arr,fun/*,initial*/){
+	return function(arr,fun,initial){
 		if(arr.reduce){
-			arr.reduce(fun);
+			return initial ? arr.reduce(fun,initial) : arr.reduce(fun);
 		}else{
-			var len = arr.length >>> 0;
+			var len = arr.length;
 			if (typeof fun != "function")
 				throw new TypeError();
 

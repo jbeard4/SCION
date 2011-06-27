@@ -9,10 +9,10 @@ define ["scxml/json2model","scxml/test/harness","scxml/test/report2string","scxm
 			model = json2model testTuple.scxmlJson
 
 			{
-				name : testTuple.testScript.name
+				name : testTuple.name
+				group : testTuple.group
 				model : model
 				testScript : testTuple.testScript
-				optimizations : []
 			}
 
 

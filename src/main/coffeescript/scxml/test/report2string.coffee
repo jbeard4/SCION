@@ -1,5 +1,5 @@
 define ->
-	truncate = (list) -> if list.length > 100 then list[0...100] + "..." else list
+	truncate = (list) -> if list.length > 100 then list[0...50] + "..." else list
 
 	(report) ->
 		"""Summary:

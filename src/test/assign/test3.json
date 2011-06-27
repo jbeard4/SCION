@@ -1,7 +1,4 @@
 {
-	"name" : "test3",
-	"group" : "assign",
-	"scxml" : "test3.scxml",
 	"initialConfiguration" : ["a"],
 	"events" : [
 		{

@@ -1,7 +1,4 @@
 {
-	"name" : "history3",
-	"group" : "history",
-	"scxml" : "history3.scxml",
 	"initialConfiguration" : ["a"],
 	"events" : [
 		{

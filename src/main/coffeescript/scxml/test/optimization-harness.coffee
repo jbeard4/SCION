@@ -81,7 +81,8 @@ define ["scxml/json2model","scxml/json2extra-model", "scxml/test/harness", "scxm
 						optArg.model = extraInfoObj.model
 
 						jsonTests.push
-							name : "#{testTuple.testScript.name} (#{optName},#{setName},#{extraInfoName})"
+							name : "#{testTuple.name} (#{optName},#{setName},#{extraInfoName})"
+							group : testTuple.group
 							model : model
 							testScript : testTuple.testScript
 							optimizations : optArg

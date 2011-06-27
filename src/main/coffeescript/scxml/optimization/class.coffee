@@ -72,24 +72,21 @@ define ["scxml/optimization/initializer","lib/beautify"],(initializer)->
 		toReturn += stateClassStrings.join("\n")
 		toReturn += "var stateClassNameList = #{initializer.arrayToIdentifierListString stateClassNameList};"
 		toReturn += 	"""
-				return function(states,events,evaluator){
+				return function(state,eventNames,evaluator){
 					var toReturn = [];
-					for(var i = 0; i < states.length; i++){
-						var state = states[i];
 
-						if(events.length){
-							for(var j = 0; j < events.length; j++){
-								var event = events[j];
+					if(eventNames.length){
+						for(var j = 0; j < eventNames.length; j++){
+							var eventName = eventNames[j];
 
-								var transitions = stateClassNameList[state.documentOrder][event.name](evaluator);
-								if(transitions){
-									toReturn = toReturn.concat(transitions);
-								} 
-							}
-						}else{
-							//default events
-							toReturn = toReturn.concat(stateClassNameList[state.documentOrder]['#{DEFAULT_EVENT_NAME}'](evaluator) || []);
+							var transitions = stateClassNameList[state.documentOrder][eventName](evaluator);
+							if(transitions){
+								toReturn = toReturn.concat(transitions);
+							} 
 						}
+					}else{
+						//default events
+						toReturn = toReturn.concat(stateClassNameList[state.documentOrder]['#{DEFAULT_EVENT_NAME}'](evaluator) || []);
 					}
 					return toReturn;
 				}

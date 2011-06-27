@@ -1,7 +1,4 @@
 {
-	"name" : "delaySend1",
-	"group" : "send",
-	"scxml" : "send3.scxml",
 	"initialConfiguration" : ["a"],
 	"events" : [
 		{

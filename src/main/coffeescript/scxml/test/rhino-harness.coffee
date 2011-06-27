@@ -1,7 +1,8 @@
-#TODO: break up these dependencies based on modelParserOptions
 define ["scxml/doc2json","scxml/json2model","util/xml/rhino","util/xsl/rhino","scxml/test/harness","scxml/test/report2string","scxml/test/simple-env","lib/json2"],(doc2json,json2model,xml,xsl,harness,report2string,SimpleEnv) ->
 
 	importClass(Packages.java.io.File)
+
+	basename = (name) -> name.split(".").slice(0,-1).join(".")
 
 	runTests = ->
 		pathsToJsonTestFiles = Array.prototype.slice.call(arguments)
@@ -10,7 +11,9 @@ define ["scxml/doc2json","scxml/json2model","util/xml/rhino","util/xsl/rhino","s
 			jsonTest = JSON.parse readFile jsonTestFileName
 			jsonTestFile = new File jsonTestFileName
 			jsonTestFileDirStr = jsonTestFile.getParent()
-			pathToSCXMLFile = new File jsonTestFileDirStr,jsonTest["scxml"]
+			groupName = jsonTestFile.parentFile.name
+			jsonBasename = basename(String(jsonTestFile.name))
+			pathToSCXMLFile = new File jsonTestFileDirStr,(jsonBasename + ".scxml")
 			pathToSCXML = pathToSCXMLFile.getPath()
 
 			scxmlDoc =  xml.parseFromPath pathToSCXML	#parse xml doc from path
@@ -18,10 +21,10 @@ define ["scxml/doc2json","scxml/json2model","util/xml/rhino","util/xsl/rhino","s
 			model = json2model json
 
 			{
-				name : jsonTest.name
+				name : jsonBasename
+				group : groupName
 				model : model
 				testScript : jsonTest
-				optimizations : []
 			}
 
 		finish = (report) ->

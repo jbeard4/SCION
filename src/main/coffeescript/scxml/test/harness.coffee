@@ -2,11 +2,18 @@ define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for"],(Even
 
 	SimpleInterpreter = scxml.SimpleInterpreter
 
+	nameGroup = (n,g) -> "#{n} (#{g})"
+
 	printError = (e) ->
-		console.error e.name
-		console.error e.message
-		console.error e.fileName
-		console.error e.lineNumber
+		if e.stack
+			#v8
+			console.error e.stack
+		else
+			#rhino/spidermonkey
+			console.error e.name
+			console.error e.message
+			console.error e.fileName
+			console.error e.lineNumber
 
 	results =
 		testCount : 0
@@ -54,18 +61,18 @@ define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for"],(Even
 		startAsyncFor = (test,doNextTest) ->
 
 			testSuccessFullyFinished = ->
-				console.info "test",test.name,"...passes"
-				results.testsPassed.push test.name
+				console.info "test",nameGroup(test.name,test.group),"...passes"
+				results.testsPassed.push nameGroup(test.name,test.group)
 				doNextTest()
 
 			testFailBack = ->
-				console.info "test",test.name,"...failed"
-				results.testsFailed.push test.name
+				console.info "test",nameGroup(test.name,test.group),"...failed"
+				results.testsFailed.push nameGroup(test.name,test.group)
 				doNextTest()
 
 			testErrBack = (err) ->
-				console.info "test",test.name,"...errored"
-				results.testsErrored.push test.name
+				console.info "test",nameGroup(test.name,test.group),"...errored"
+				results.testsErrored.push nameGroup(test.name,test.group)
 				printError err
 				doNextTest()
 
@@ -74,7 +81,7 @@ define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for"],(Even
 			results.testCount++
 
 			try
-				console.log "running test for",test.name
+				console.log "running test for",test.name,test.group
 				#TODO: other optimizations go here
 				#this is safe because js does not throw array out of bounds exceptions. 
 				#instead gives "undefined", so default args kick in in the SCXML constructor

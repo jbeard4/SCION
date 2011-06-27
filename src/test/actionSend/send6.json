@@ -1,7 +1,4 @@
 {
-	"name" : "actionSend6",
-	"group" : "send",
-	"scxml" : "send6.scxml",
 	"initialConfiguration" : ["a"],
 	"events" : [
 		{

@@ -60,24 +60,20 @@ define ["scxml/optimization/initializer","lib/beautify"],(initializer)->
 		toReturn = initializer.genOuterInitializerStr scxmlJson,"""
 		var stateTransitionTable = #{tableToString stateTransitionTable};
 		var defaultTransitionTable = #{defaultTableToString defaultTransitionsForStates};
-		return function(states,events,evaluator){
+		return function(state,eventNames,evaluator){
 			var transitions = [];
-			for(var i = 0; i < states.length; i++){
-				var state = states[i];
 
-				if(events.length){
-					for(var j = 0; j < events.length; j++){
-						var event = events[j];
-						var enumeratedEvent = eventMap[event.name];
-						var eventId = enumeratedEvent.documentOrder; 
+			if(eventNames.length){
+				for(var j = 0; j < eventNames.length; j++){
+					var eventName = eventNames[j];
+					var enumeratedEvent = eventMap[eventName];
+					var eventId = enumeratedEvent.documentOrder; 
 
-						transitions = transitions.concat(stateTransitionTable[state.documentOrder][eventId] || []);
-					}
-				}else{
-					//default events
-					transitions = transitions.concat(defaultTransitionTable[state.documentOrder] || []);
+					transitions = transitions.concat(stateTransitionTable[state.documentOrder][eventId] || []);
 				}
-
+			}else{
+				//default events
+				transitions = transitions.concat(defaultTransitionTable[state.documentOrder] || []);
 			}
 
 			#{initializer.transitionFilterString}
