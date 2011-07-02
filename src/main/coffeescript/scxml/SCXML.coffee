@@ -1,4 +1,6 @@
-define ["util/set/ArraySet","scxml/model","scxml/event","scxml/evaluator","util/reduce"],(ArraySet,m,Event,evaluator,reduce) ->
+define ["scxml/default-transition-selector","util/set/ArraySet","scxml/model","scxml/event","scxml/evaluator","util/reduce"],(defaultTransitionSelector,ArraySet,m,Event,evaluator,reduce) ->
+
+
 
 	#imports
 
@@ -25,23 +27,12 @@ define ["util/set/ArraySet","scxml/model","scxml/event","scxml/evaluator","util/
 				else
 					return t2
 
-	#we make this parameterizable, not due to varying semantics, 
-	#but due to possible optimizations with respect to fast, compiled data structures, e.g. state table
-	#also, possible to make further optimizations based on what we assume the Priority funciton will be
-	defaultTransitionSelector = (state,eventNames,evaluator) ->
-		transitions = []
-
-		for t in state.transitions
-			if (not t.event or t.event in eventNames) and (not t.cond or evaluator(t.cond))
-				transitions.push t
-
-		return transitions
-
 	class SCXMLInterpreter
 
 		constructor : (@model,@opts={}) ->
 			#default args
-			@opts.transitionSelector = @opts.transitionSelector or defaultTransitionSelector
+			
+			@opts.transitionSelector = @opts.transitionSelector or defaultTransitionSelector()
 			@opts.onlySelectFromBasicStates = @opts.onlySelectFromBasicStates or false
 			@opts.TransitionSet = @opts.TransitionSet or ArraySet
 			@opts.StateSet = @opts.StateSet or ArraySet
@@ -138,7 +129,7 @@ define ["util/set/ArraySet","scxml/model","scxml/event","scxml/evaluator","util/
 
 				# -> Concurrency: Number of transitions: Multiple
 				# -> Concurrency: Order of transitions: Explicitly defined
-				sortedTransitions = selectedTransitions.iter().sort( (t1,t2) -> t1.documentOrder > t2.documentOrder)
+				sortedTransitions = selectedTransitions.iter().sort( (t1,t2) -> t1.documentOrder - t2.documentOrder)
 
 				if @opts.printTrace then console.debug("executing transitition actions")
 				for transition in sortedTransitions
@@ -225,7 +216,7 @@ define ["util/set/ArraySet","scxml/model","scxml/event","scxml/evaluator","util/
 						for anc in @opts.model.getAncestors(state,lca)
 							statesExited.add(anc)
 
-			sortedStatesExited = statesExited.iter().sort((s1,s2) => @opts.model.getDepth(s1) < @opts.model.getDepth(s2))
+			sortedStatesExited = statesExited.iter().sort((s1,s2) =>  @opts.model.getDepth(s2) - @opts.model.getDepth(s1))
 
 			return [basicStatesExited,sortedStatesExited]
 
@@ -241,7 +232,7 @@ define ["util/set/ArraySet","scxml/model","scxml/event","scxml/evaluator","util/
 				
 				statesToRecursivelyAdd = @_getChildrenOfParallelStatesWithoutDescendantsInStatesToEnter(statesToEnter)
 
-			sortedStatesEntered = statesToEnter.iter().sort((s1,s2) => @opts.model.getDepth(s1) > @opts.model.getDepth(s2))
+			sortedStatesEntered = statesToEnter.iter().sort((s1,s2) => @opts.model.getDepth(s1) - @opts.model.getDepth(s2))
 
 			return [basicStatesToEnter,sortedStatesEntered]
 
