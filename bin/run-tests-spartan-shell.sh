@@ -9,14 +9,15 @@ fi;
 	
 defaultShell=spidermonkey-js
 shell=${1-$defaultShell}
-echo $shell
+defaultEntryPoint=scxml/test/spartan-shell-harness.js
+entryPoint=${2-$defaultEntryPoint}
 
-pushd $basedir/build
+pushd $basedir/build > /dev/null
 if [ -e main.js ]; then
 	mv main.js /tmp/
 fi;
 
-ln -s scxml/test/spartan-shell-harness.js main.js
+ln -s $entryPoint main.js
 
 $shell $basedir/lib/js/r.js 
 
@@ -26,4 +27,4 @@ if [ -e /tmp/main.js ]; then
 	mv /tmp/main.js .
 fi;
 
-popd
+popd > /dev/null

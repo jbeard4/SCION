@@ -3,7 +3,6 @@ define ["scxml/test/optimization-harness","scxml/test/simple-env","scxml/test/re
 	runTests = ->
 
 		finish = (report) ->
-			debugger
 			console.info report2string report
 			
 			if report.testCount == report.testsPassed

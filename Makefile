@@ -36,6 +36,7 @@ spartanLoader = $(build)/spartanLoaderForAllTests.js
 scxmltojson = src/main/bash/util/scxml-to-json.sh
 generatetesttuple = src/main/bash/build/generate-requirejs-json-test-tuples.sh
 generatetestloadermodule = src/main/bash/build/generate-requirejs-test-loader-module.sh
+generateArrayTestLoaderModule = src/main/bash/build/generate-requirejs-array-test-loader-module.sh
 
 
 .PHONY: clean coffee scxml2json copy-others combine-json-and-scxml-tests gen-spartan-loader gen-class-transition-lookup-optimization gen-table-transition-lookup-optimization gen-switch-transition-lookup-optimization gen-transition-lookup-optimization gen-state-configuration-set-optimization gen-transition-configuration-set-optimization gen-model-caching-optimization gen-transformed-statecharts gen-ahead-of-time-optimizations gen-top-level-optimized-requirejs-modules 
@@ -111,6 +112,17 @@ $(build)/table-transition-lookup-optimization-loader.js :
 $(build)/switch-transition-lookup-optimization-loader.js : 
 	$(generatetestloadermodule) $@ $(tsel_switch)
 
+$(build)/class-transition-lookup-optimization-array-loader.js : 
+	$(generateArrayTestLoaderModule) $@ $(tsel_class)
+	
+$(build)/table-transition-lookup-optimization-array-loader.js : 
+	$(generateArrayTestLoaderModule) $@ $(tsel_table)
+
+$(build)/switch-transition-lookup-optimization-array-loader.js : 
+	$(generateArrayTestLoaderModule) $@ $(tsel_switch)
+
+gen-optimization-array-loaders : $(build)/switch-transition-lookup-optimization-array-loader.js $(build)/table-transition-lookup-optimization-array-loader.js  $(build)/class-transition-lookup-optimization-array-loader.js 
+
 gen-optimization-loaders : $(build)/class-transition-lookup-optimization-loader.js $(build)/table-transition-lookup-optimization-loader.js $(build)/switch-transition-lookup-optimization-loader.js
 
 gen-transition-lookup-optimization : gen-class-transition-lookup-optimization gen-table-transition-lookup-optimization gen-switch-transition-lookup-optimization
@@ -138,4 +150,4 @@ scion : copy-others coffee
 
 all-tests : $(scxmljsontuple)
 
-all : all-tests scion gen-top-level-optimized-requirejs-modules gen-transition-lookup-optimization gen-optimization-loaders gen-spartan-loader
+all : all-tests scion gen-top-level-optimized-requirejs-modules gen-transition-lookup-optimization gen-optimization-loaders gen-optimization-array-loaders gen-spartan-loader
