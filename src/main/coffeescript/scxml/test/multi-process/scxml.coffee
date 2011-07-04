@@ -74,7 +74,7 @@ require ["scxml/SCXML","scxml/json2model","scxml/json2extra-model"],(scxml,json2
 					StateSet : setPurposes.states.initializedSetClass
 					BasicStateSet : setPurposes.basicStates.initializedSetClass
 
-				return if testJson.extraModelInfo then [m,model,optimizations] else [extraModel,json2ExtraModel(model),optimizations]
+				return if testJson.extraModelInfo then [m,model,optimizations] else [m,json2ExtraModel(model),optimizations]
 
 			printConfiguration = (configuration) -> print JSON.stringify {method : "getConfiguration", configuration : configuration}
 
