@@ -6,7 +6,7 @@ define ["scxml/json2model","scxml/json2extra-model"],(json2model,json2ExtraModel
 
 		console.log "requiring",mPath,testJson.set.setType,testJson.transitionSelector.selector
 
-		require [mPath,testJson.set.setType,testJson.transitionSelector.selector],(m,set,transitionSelector) ->
+		require [mPath,testJson.set.setType,testJson.transitionSelector.selector],(m,setConstructor,transitionSelector) ->
 
 			console.log "imported depenedent modules"
 
@@ -38,15 +38,15 @@ define ["scxml/json2model","scxml/json2extra-model"],(json2model,json2ExtraModel
 
 			for purpose,info of setPurposes
 				info.initializedSetClass =
-					switch set
+					switch testJson.set.setTypeKey
 						when "bitVector"
-							set info.keyProp,info.keyValueMap
+							setConstructor info.keyProp,info.keyValueMap
 						when "boolArray"
-							set info.keyProp,info.keyValueMap.length
+							setConstructor info.keyProp,info.keyValueMap.length
 						when "objectSet"
-							set info.keyProp
+							setConstructor info.keyProp
 						when "arraySet"
-							set
+							setConstructor
 
 
 			optimizations =
