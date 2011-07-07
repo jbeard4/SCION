@@ -1,16 +1,42 @@
-define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet','child_process','promise','http','url','path','util','fs'],(jsonTests,Set,child_process,promiseModule,http,urlModule,pathModule,util,fs) ->
+define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml/test/report2string",'child_process','promise','http','url','path','util','fs'],(jsonTests,Set,report2string,child_process,promiseModule,http,urlModule,pathModule,util,fs) ->
+
+	clone = (o) ->
+		toReturn = {}
+		toReturn[k]=v for own k,v of o
+		return toReturn
 
 	->
+		browser = "firefox"
+
+		display = ":1"
+		xnestProcessEnv = clone process.env
+		xnestProcessEnv.DISPLAY = display
+		console.log xnestProcessEnv
+		xnestProcessOpts =
+			cwd: undefined
+			env: xnestProcessEnv
+			customFds: [-1, -1, -1]
+			setsid: false
+
+		trim = (s) -> s.replace(/^\s+|\s+$/g, '')
+
+		testName = (test) -> "#{test.name} (#{test.group})"
 
 		spawn = child_process.spawn
 
 		Promise = promiseModule.Promise
 
+		results =
+			testCount : 0
+			testsPassed : []
+			testsFailed : []
+			testsErrored : []
+
 		xdt = "xdotool"
 		xdotool =
 			search : (promise,s,option="class") ->
 				console.log "searching window with params:",xdt,["search","--"+option,s]
-				p = spawn xdt,["search","--"+option,s]
+				p = spawn xdt,["search","--"+option,s],xnestProcessOpts
 				data = ""
 				p.stdout.setEncoding("utf8")
 				p.stdout.on "data",(chunk) ->
@@ -19,31 +45,23 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet','child
 			
 				p.stdout.on "end",->
 					console.log "resolving promise"
-					promise.resolve(data.split('\n')[0])
+					ids = if data.length then data.split('\n') else []
+					promise.resolve(ids)
 					
-			move : (id,x,y) -> spawn xdt,["windowmove",id,x,y]
-			resize : (id,width,height) -> spawn xdt,["windowsize",id,width,height]
-			focus : (id) -> spawn xdt,["windowfocus",id]
-			type : (id,s) ->
-				@focus id	#first bring him in focus
-				spawn xdt,["type",id,s]
+			move : (ids,x,y) -> spawn xdt,["windowmove",id,x,y],xnestProcessOpts for id in ids
+			resize : (ids,width,height) -> spawn xdt,["windowsize",id,width,height],xnestProcessOpts  for id in ids
+			focus : (ids) -> spawn xdt,["windowfocus",id],xnestProcessOpts  for id in ids
+			type : (s) -> spawn xdt,["type",s],xnestProcessOpts
+			key : (s) -> spawn xdt,["key",s],xnestProcessOpts
 
 		port = "8888"
 		serverUrl = "http://localhost:#{port}/runner"
 
 		startBrowser = (promise,browser,url=serverUrl) ->
 			console.log "spawning browser process"
-			p = spawn browser,[url]
+			browserProcess = spawn browser,[url],xnestProcessOpts
 			#wait a second for him to open
 			setTimeout (-> xdotool.search(promise,browser)),10000
-
-		sendEventsToBrowser = (id,events) ->
-			e = events.shift()
-			if e
-				console.log "sending event",e.name
-				xdotool.type id,e.name
-				#TODO: parameterize event density
-				setTimeout (-> sendEventsToBrowser(id,events)),100
 
 		getContentType = (path) ->
 			splitPath = path.split('.')
@@ -51,22 +69,62 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet','child
 			switch path
 				when "js"
 					"text/javascript"
+				when "html"
+					"text/html"
 				else
 					"text/plain"
 			
 		p = new Promise()
 		p2 = new Promise()
-		xdotool.search(p,"chromium-browser")
+		p3 = new Promise()
+		xephyrProcess = null
+		browserProcess = null
+		xdotool.search(p,"Xephyr")
+		p.then (ids) ->
+			console.log "Xephyr window ids",ids
+			f = ->
+				spawn "metacity",[],xnestProcessOpts
+				xdotool.search(p2,"firefox")
 
-		p.then (id) -> if not id then startBrowser p2,"chromium-browser" else p2.resolve(id)
+			if not ids.length
+				xephyrProcess = spawn "Xephyr",[display,"-screen","800x600"]
+				setTimeout f,1000
+			else
+				f()
+			
 
-		p2.then (id) ->
-			console.log "moving and resizing window with id",id
-			#xdotool.move id,0,0
-			#xdotool.resize id,500,500
-			xdotool.focus id
+		#TODO: start Xephyr as well
+
+		p2.then (ids) -> if not ids.length then startBrowser p3,"firefox" else p3.resolve(ids)
+
+		p3.then (ids) ->
+			console.log "moving and resizing window with id",ids
+			#xdotool.move ids,0,0
+			#xdotool.resize ids,500,500
+			#xdotool.focus ids
+			xdotool.key "ctrl+r"
 
 			fileServerRoot = "/home/jacob/workspace/scion/build"	#TODO: customize this
+
+			state = "before-dom-ready"
+
+			sendEventsToBrowser = (events) ->
+				if state is "checking-configurations-and-sending-events"
+					e = events.shift()
+					if e
+						console.log "sending event",e.name
+						xdotool.focus ids
+						xdotool.key e.name
+						#TODO: parameterize event density
+						setTimeout (-> sendEventsToBrowser(events)),100
+					else
+						transitionToBeforeSendingTestState()
+
+			transitionToBeforeSendingTestState = ->
+				state = "before-sending-test"
+				console.log "updating state to #{state}"
+				#xdotool.focus ids
+				xdotool.key "grave"
 
 			currentTest = null
 			expectedConfigurations = null
@@ -93,50 +151,115 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet','child
 						</html>
 						"""
 						response.end()
-					when "/test"
-						response.writeHead 200,{"Content-Type":"text/json"}
-						currentTest = jsonTests.pop()
-						expectedConfigurations =
-							[new Set currentTest.testScript.initialConfiguration].concat(
-								(new Set eventTuple.nextConfiguration for eventTuple in currentTest.testScript.events))
 
-						response.write JSON.stringify currentTest
-						response.end()
-					when "/statechart-initialized"
-						response.writeHead 200,{"Content-Type":"text/plain"}
-						response.write "Sending events to browser"
-						response.end()
-						sendEventsToBrowser id,(eventTuple.event for eventTuple in currentTest.testScript.events)
-					when "/check-configuration"
-						expectedConfiguration = expectedConfigurations.shift()
-
-						jsonData = ""
-						request.on "data",(data) ->
-							jsonData += data
-
-						request.on "end",->
-							console.log "finished reading json data",jsonData
-							try
-								configuration =  new Set JSON.parse(jsonData)
-							
-								if expectedConfiguration.equals configuration
-									response.writeHead 200,{"Content-Type":"text/plain"}
-									#TODO: decide what to send back to client
-									response.write "Matched expected configuration."
-								else
-									response.writeHead 500,{"Content-Type":"text/plain"}
-									response.write "Did not match expected configuration. Received: #{JSON.stringify(configuration)}. Expected:#{JSON.stringify(expectedConfiguration)}."
-							catch e
-								console.error e.message
-								console.error e.type
-								console.error e.stack
-								response.writeHead 500
-
+					when "/dom-ready"
+						if state is "before-dom-ready"
+							response.writeHead 200,{"Content-Type":"text/plain"}
+							response.write "Success"
 							response.end()
+							
+							#trying to send some UI events
+							#setTimeout (-> xdotool.key "`"),2000
+							#xdotool.type "hello world"
+							#xdotool.key "grave"
+							transitionToBeforeSendingTestState()
+						else
+							response.writeHead 500
+							#response.write "received #{url.pathname} when in state #{state}"
+							response.end()
+							console.error "received #{url.pathname} when in state #{state}"
+					when "/test"
+						if state is "before-sending-test"
+							response.writeHead 200,{"Content-Type":"text/json"}
+
+							if currentTest and not (currentTest in results.testsFailed)
+								#we're back here, as we've passed last test
+								results.testsPassed.push currentTest
+
+							currentTest = jsonTests.pop()
+							if currentTest
+								console.log "starting test #{currentTest.name} (#{currentTest.group})"
+								results.testCount++
+
+								expectedConfigurations =
+									[new Set currentTest.testScript.initialConfiguration].concat(
+										(new Set eventTuple.nextConfiguration for eventTuple in currentTest.testScript.events))
+
+								response.write JSON.stringify currentTest
+								response.end()
+
+								state = "before-statechart-ready"
+								console.log "updating state to #{state}"
+							else
+								report =
+									testsPassed : testName result for result in results.testsPassed
+									testsFailed : testName result for result in results.testsFailed
+									testsErrored : testName result for result in results.testsErrored
+
+
+								console.info report2string report
+								#kill processes, then exit
+								browserProcess?.kill()
+								xephyrProcss?.kill()
+								process.exit results.testCount == results.testsPassed
+						else
+							response.writeHead 500
+							response.end()
+							console.error "received #{url.pathname} when in state #{state}"
+
+
+					when "/statechart-initialized"
+						if state is "before-statechart-ready"
+							response.writeHead 200,{"Content-Type":"text/plain"}
+							response.write "Sending events to browser"
+							response.end()
+
+							state = "checking-configurations-and-sending-events"
+							sendEventsToBrowser (eventTuple.event for eventTuple in currentTest.testScript.events)
+							console.log "updating state to #{state}"
+						else
+							response.writeHead 500
+							response.end()
+							console.error "received #{url.pathname} when in state #{state}"
+
+					when "/check-configuration"
+						if state is "checking-configurations-and-sending-events"
+							expectedConfiguration = expectedConfigurations.shift()
+
+							jsonData = ""
+							request.on "data",(data) ->
+								jsonData += data
+
+							request.on "end",->
+								console.log "finished reading json data",jsonData
+								try
+									configuration =  new Set JSON.parse(jsonData)
 								
-					when "/test-complete"
-						"TODO: compare to expected configuration"
-						response.end()
+									if expectedConfiguration.equals configuration
+										response.writeHead 200,{"Content-Type":"text/plain"}
+										#TODO: decide what to send back to client
+										response.write "Matched expected configuration."
+										response.end()
+									else
+										response.writeHead 500,{"Content-Type":"text/plain"}
+										response.write "Did not match expected configuration. Received: #{JSON.stringify(configuration)}. Expected:#{JSON.stringify(expectedConfiguration)}."
+										response.end()
+
+										results.testsFailed.push currentTest
+
+										transitionToBeforeSendingTestState()
+								catch e
+									console.error e.message
+									console.error e.type
+									console.error e.stack
+									response.writeHead 500
+									response.end()
+									transitionToBeforeSendingTestState()
+						else
+							response.writeHead 500
+							response.end()
+							console.error "received #{url.pathname} when in state #{state}"
+								
 					else
 						#read and return file
 
@@ -160,3 +283,4 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet','child
 
 
 			server.listen(8888)
+			console.log "server started"
