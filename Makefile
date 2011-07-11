@@ -41,6 +41,8 @@ generateArrayTestLoaderModule = src/main/bash/build/generate-requirejs-array-tes
 
 .PHONY: clean coffee scxml2json copy-others combine-json-and-scxml-tests gen-spartan-loader gen-class-transition-lookup-optimization gen-table-transition-lookup-optimization gen-switch-transition-lookup-optimization gen-transition-lookup-optimization gen-state-configuration-set-optimization gen-transition-configuration-set-optimization gen-model-caching-optimization gen-transformed-statecharts gen-ahead-of-time-optimizations gen-top-level-optimized-requirejs-modules 
 
+coffee : $(coffeejs)
+
 all : all-tests scion gen-top-level-optimized-requirejs-modules gen-transition-lookup-optimization gen-optimization-loaders gen-optimization-array-loaders gen-spartan-loader
 
 clean:
@@ -49,7 +51,6 @@ clean:
 build:
 	mkdir $(build)
 
-coffee : $(coffeejs)
 
 $(build)/%.js : $(csdir)/%.coffee
 	coffee -o $(dir $@) $<
