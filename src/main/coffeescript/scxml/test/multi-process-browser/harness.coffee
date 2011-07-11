@@ -7,11 +7,12 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 
 	->
 		browser = "firefox"
+		#browser = "chromium-browser"
 
 		display = ":1"
 		xnestProcessEnv = clone process.env
 		xnestProcessEnv.DISPLAY = display
-		console.log xnestProcessEnv
+		console.error xnestProcessEnv
 		xnestProcessOpts =
 			cwd: undefined
 			env: xnestProcessEnv
@@ -20,7 +21,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 
 		trim = (s) -> s.replace(/^\s+|\s+$/g, '')
 
-		testName = (test) -> "#{test.name} (#{test.group})"
+		testName = (test) -> "(#{test.name}/#{test.group}[#{test.transitionSelector.selectorKey};#{test.set.setTypeKey};#{test.extraModelInfo}])"
 
 		spawn = child_process.spawn
 
@@ -35,16 +36,16 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 		xdt = "xdotool"
 		xdotool =
 			search : (promise,s,option="class") ->
-				console.log "searching window with params:",xdt,["search","--"+option,s]
+				console.error "searching window with params:",xdt,["search","--"+option,s]
 				p = spawn xdt,["search","--"+option,s],xnestProcessOpts
 				data = ""
 				p.stdout.setEncoding("utf8")
 				p.stdout.on "data",(chunk) ->
-					console.log "received chunk",chunk
+					console.error "received chunk",chunk
 					data += chunk
 			
 				p.stdout.on "end",->
-					console.log "resolving promise"
+					console.error "resolving promise"
 					ids = if data.length then data.split('\n') else []
 					promise.resolve(ids)
 					
@@ -58,7 +59,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 		serverUrl = "http://localhost:#{port}/runner"
 
 		startBrowser = (promise,browser,url=serverUrl) ->
-			console.log "spawning browser process"
+			console.error "spawning browser process"
 			browserProcess = spawn browser,[url],xnestProcessOpts
 			#wait a second for him to open
 			setTimeout (-> xdotool.search(promise,browser)),10000
@@ -81,10 +82,10 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 		browserProcess = null
 		xdotool.search(p,"Xephyr")
 		p.then (ids) ->
-			console.log "Xephyr window ids",ids
+			console.error "Xephyr window ids",ids
 			f = ->
 				spawn "metacity",[],xnestProcessOpts
-				xdotool.search(p2,"firefox")
+				xdotool.search(p2,browser)
 
 			if not ids.length
 				xephyrProcess = spawn "Xephyr",[display,"-screen","800x600"]
@@ -95,10 +96,10 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 
 		#TODO: start Xephyr as well
 
-		p2.then (ids) -> if not ids.length then startBrowser p3,"firefox" else p3.resolve(ids)
+		p2.then (ids) -> if not ids.length then startBrowser p3,browser else p3.resolve(ids)
 
 		p3.then (ids) ->
-			console.log "moving and resizing window with id",ids
+			console.error "moving and resizing window with id",ids
 			#xdotool.move ids,0,0
 			#xdotool.resize ids,500,500
 			#xdotool.focus ids
@@ -112,28 +113,26 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 				if state is "checking-configurations-and-sending-events"
 					e = events.shift()
 					if e
-						console.log "sending event",e.name
-						xdotool.focus ids
+						console.error "sending event",e.name
+						#xdotool.focus ids
 						xdotool.key e.name
 						#TODO: parameterize event density
 						setTimeout (-> sendEventsToBrowser(events)),100
-					else
-						transitionToBeforeSendingTestState()
 
 			transitionToBeforeSendingTestState = ->
 				state = "before-sending-test"
-				console.log "updating state to #{state}"
+				console.error "updating state to #{state}"
 				#xdotool.focus ids
 				xdotool.key "grave"
 
 			currentTest = null
 			expectedConfigurations = null
 
-			console.log "starting server"
+			console.error "starting server"
 			server = http.createServer (request,response) ->
 				url = urlModule.parse request.url
 
-				console.log "received request for #{url.pathname}"
+				console.error "received request for #{url.pathname}"
 
 				switch url.pathname
 					when "/runner"
@@ -178,26 +177,30 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 
 							currentTest = jsonTests.pop()
 							if currentTest
-								console.log "starting test #{currentTest.name} (#{currentTest.group})"
+								console.error "starting test #{testName currentTest})"
+
 								results.testCount++
 
 								expectedConfigurations =
 									[new Set currentTest.testScript.initialConfiguration].concat(
 										(new Set eventTuple.nextConfiguration for eventTuple in currentTest.testScript.events))
 
+								console.debug "New expected configurations:",expectedConfigurations
+
 								response.write JSON.stringify currentTest
 								response.end()
 
 								state = "before-statechart-ready"
-								console.log "updating state to #{state}"
+								console.error "updating state to #{state}"
 							else
 								report =
+									testCount : results.testCount
 									testsPassed : testName result for result in results.testsPassed
 									testsFailed : testName result for result in results.testsFailed
 									testsErrored : testName result for result in results.testsErrored
 
 
-								console.info report2string report
+								console.error report2string report
 								#kill processes, then exit
 								browserProcess?.kill()
 								xephyrProcss?.kill()
@@ -215,8 +218,9 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 							response.end()
 
 							state = "checking-configurations-and-sending-events"
-							sendEventsToBrowser (eventTuple.event for eventTuple in currentTest.testScript.events)
-							console.log "updating state to #{state}"
+							events = (eventTuple.event for eventTuple in currentTest.testScript.events)
+							sendEventsToBrowser events
+							console.error "updating state to #{state}"
 						else
 							response.writeHead 500
 							response.end()
@@ -224,26 +228,34 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 
 					when "/check-configuration"
 						if state is "checking-configurations-and-sending-events"
-							expectedConfiguration = expectedConfigurations.shift()
-
 							jsonData = ""
 							request.on "data",(data) ->
 								jsonData += data
 
 							request.on "end",->
-								console.log "finished reading json data",jsonData
+								console.error "finished reading json data",jsonData
+
+								expectedConfiguration = expectedConfigurations.shift()
+								console.error "Expected configuration",expectedConfiguration
+								console.error "Remaining expected configurations",expectedConfigurations
 								try
 									configuration =  new Set JSON.parse(jsonData)
 								
 									if expectedConfiguration.equals configuration
 										response.writeHead 200,{"Content-Type":"text/plain"}
 										#TODO: decide what to send back to client
-										response.write "Matched expected configuration."
+										console.error "Matched expected configuration."
 										response.end()
+										
+										if not expectedConfigurations.length
+											transitionToBeforeSendingTestState()
 									else
 										response.writeHead 500,{"Content-Type":"text/plain"}
-										response.write "Did not match expected configuration. Received: #{JSON.stringify(configuration)}. Expected:#{JSON.stringify(expectedConfiguration)}."
+										errMsg = "Did not match expected configuration. Received: #{JSON.stringify(configuration)}. Expected:#{JSON.stringify(expectedConfiguration)}."
+										response.write errMsg
 										response.end()
+
+										console.error errMsg
 
 										results.testsFailed.push currentTest
 
@@ -259,7 +271,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 							response.writeHead 500
 							response.end()
 							console.error "received #{url.pathname} when in state #{state}"
-								
+									
 					else
 						#read and return file
 
@@ -267,7 +279,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 
 						pathModule.exists path,(exists) ->
 							if exists
-								console.log path
+								#console.log path
 								stat = fs.statSync(path)
 
 								response.writeHead(200, {
@@ -283,4 +295,4 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 
 
 			server.listen(8888)
-			console.log "server started"
+			console.error "server started"
