@@ -1,11 +1,20 @@
 #listen to document ready first, as we might miss it later
 require ["scxml/SCXML","scxml/test/multi-process-browser/initialize-json-test-descriptor","scxml/event"],(scxml,initializeJsonTest,Event) ->
 
+	#fake console api if necessary
+	window.console ?=
+		log : ->
+		debug : ->
+		error : ->
+		info : ->
+		warn : ->
+
 	setTimeout = (cb,time) -> this.setTimeout cb,time
 	clearTimeout = (cb,time) -> this.clearTimeout cb,time
 
 	interpreter = null
 	p = null
+	buffer = ""
  
 	initializeStatechart = ->
 		$.getJSON "test",(testJson) ->
@@ -31,17 +40,30 @@ require ["scxml/SCXML","scxml/test/multi-process-browser/initialize-json-test-de
 
 			document.body.textContent += scEvent	#easy to debug
 
-			if scEvent is '`'
-				console.log "received '`' keypress event. resetting statechart"
-				initializeStatechart()
-			else
-				console.log "received event",scEvent
-				p.then ->
-					console.log "sending event",scEvent
-					
-					interpreter.gen new Event scEvent
-					configuration = interpreter.getConfiguration()
-					console.log "configuration after event",scEvent,configuration.iter()
-					$.post "/check-configuration",JSON.stringify(configuration.iter())
+			console.log "received event",scEvent
+
+			switch scEvent
+				when '`'
+					#clear the buffer (just in case), init new statechart
+					buffer = ""
+					console.log "received '`' keypress event. resetting statechart"
+					initializeStatechart()
+				when '-'
+					#clear the buffer, send the event
+					b = buffer
+					buffer = ""
+
+					p.then ->
+						console.log "sending event",b
+						
+						interpreter.gen new Event b
+						configuration = interpreter.getConfiguration()
+						console.log "configuration after event",scEvent,configuration.iter()
+						$.post "/check-configuration",JSON.stringify(configuration.iter())
+
+				else
+					#append char to buffer
+					buffer += scEvent
+
 
 	$.post "/dom-ready"

@@ -30,8 +30,10 @@ define ["scxml/default-transition-selector","util/set/ArraySet","scxml/model","s
 	class SCXMLInterpreter
 
 		constructor : (@model,@opts={}) ->
+
+			console.debug "initializing SCXML interpreter with opts",opts
+
 			#default args
-			
 			@opts.transitionSelector = @opts.transitionSelector or defaultTransitionSelector()
 			@opts.onlySelectFromBasicStates = @opts.onlySelectFromBasicStates or false
 			@opts.TransitionSet = @opts.TransitionSet or ArraySet

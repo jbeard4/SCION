@@ -8,7 +8,7 @@ define ["scxml/json2model","scxml/json2extra-model"],(json2model,json2ExtraModel
 
 		require [mPath,testJson.set.setType,testJson.transitionSelector.selector],(m,setConstructor,transitionSelector) ->
 
-			console.log "imported depenedent modules"
+			console.log "imported depenedent modules",m,setConstructor,transitionSelector
 
 			#parse scxmlJson model
 			model = json2model testJson.scxmlJson
@@ -54,5 +54,7 @@ define ["scxml/json2model","scxml/json2extra-model"],(json2model,json2ExtraModel
 				TransitionSet : setPurposes.transitions.initializedSetClass
 				StateSet : setPurposes.states.initializedSetClass
 				BasicStateSet : setPurposes.basicStates.initializedSetClass
+				transitionSelector : transitionSelector
+				model : m
 
 			callback if testJson.extraModelInfo then [m,model,optimizations] else [m,json2ExtraModel(model),optimizations]
