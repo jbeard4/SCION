@@ -6,7 +6,7 @@
 			"nextConfiguration" : ["b"]
 		},
 		{
-			"after" : 10,
+			"after" : 100,
 			"event" : { "name" : "t2" },
 			"nextConfiguration" : ["d"]
 		}
