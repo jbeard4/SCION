@@ -9,8 +9,8 @@ require ["scxml/SCXML","scxml/test/multi-process-browser/initialize-json-test-de
 		info : ->
 		warn : ->
 
-	setTimeout = (cb,time) -> this.setTimeout cb,time
-	clearTimeout = (cb,time) -> this.clearTimeout cb,time
+	setTimeout = (cb,time) -> window.setTimeout cb,time
+	clearTimeout = (cb,time) -> window.clearTimeout cb,time
 
 	interpreter = null
 	p = null
