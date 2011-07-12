@@ -79,9 +79,9 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 			if state is "checking-configurations-and-sending-events"
 				e = events.shift()
 				if e
-					console.error "sending event",e.name
+					console.error "sending event",e.event.name
 
-					step = -> xdotool.type (e.name + "-"),-> setTimeout (-> sendEventsToBrowser(events)),eventDensity
+					step = -> xdotool.type (e.event.name + "-"),-> setTimeout (-> sendEventsToBrowser(events)),eventDensity
 
 					if e.after then setTimeout step,e.after else step()
 
@@ -179,7 +179,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 
 							#kill processes, then exit
 							browserProcess?.kill()
-							xephyrProcss?.kill()
+							xServerProcess?.kill()
 							process.exit results.testCount == results.testsPassed
 					else
 						response.writeHead 500
@@ -194,8 +194,8 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 						response.end()
 
 						state = "checking-configurations-and-sending-events"
-						events = (eventTuple.event for eventTuple in currentTest.testScript.events)
-						sendEventsToBrowser events
+
+						sendEventsToBrowser currentTest.testScript.events.slice()
 						console.error "updating state to #{state}"
 					else
 						response.writeHead 500
@@ -276,7 +276,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 		p = new Promise()
 		p2 = new Promise()
 		p3 = new Promise()
-		xephyrProcess = null
+		xServerProcess = null
 		browserProcess = null
 		xdotool.search(p,"Xephyr")
 		p.then (ids) ->
@@ -286,7 +286,8 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 				xdotool.search(p2,browser)
 
 			if not ids.length
-				xephyrProcess = spawn "Xephyr",[display,"-screen","800x600"]
+				#xServerProcess = spawn "Xephyr",[display,"-screen","800x600"]
+				xServerProcess = spawn "Xvfb",[display,"-fbdir","/var/tmp"]
 				setTimeout f,1000
 			else
 				f()
