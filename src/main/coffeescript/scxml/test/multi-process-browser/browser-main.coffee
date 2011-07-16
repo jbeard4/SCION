@@ -13,23 +13,37 @@ require ["scxml/SCXML","scxml/test/multi-process-browser/initialize-json-test-de
 	clearTimeout = (cb,time) -> window.clearTimeout cb,time
 
 	interpreter = null
+	currentTestId = null
 	p = null
 	buffer = ""
  
 	initializeStatechart = ->
 		$.getJSON "test",(testJson) ->
-			initializeJsonTest testJson,([m,model,optimizations]) ->
+			if testJson.done	#server says we're out of tests
+				$(document.documentElement).unbind()	#unbind event listeners
+			else
+				currentTestId = testJson.id
 
-				dfd = new jQuery.Deferred()
-				p = dfd.promise()
+				initializeJsonTest testJson,([m,model,optimizations]) ->
 
-				interpreter = new scxml.SimpleInterpreter model,setTimeout,clearTimeout,optimizations
-				interpreter.start()
-				initialConfiguration = interpreter.getConfiguration()
-				console.log "initialConfiguration",initialConfiguration.iter()
-				$.post "/statechart-initialized",(l) ->
-					console.log l
-					$.post "/check-configuration",JSON.stringify(initialConfiguration.iter()),(-> dfd.resolve())
+					dfd = new jQuery.Deferred()
+					p = dfd.promise()
+
+					interpreter = new scxml.SimpleInterpreter model,setTimeout,clearTimeout,optimizations
+					interpreter.start()
+					initialConfiguration = interpreter.getConfiguration()
+					console.log "initialConfiguration",initialConfiguration.iter()
+
+					data = JSON.stringify {id : currentTestId}
+
+					$.post "/statechart-initialized",data,(l) ->
+						console.log l
+
+						data = JSON.stringify
+							id : currentTestId
+							configuration : initialConfiguration.iter()
+
+						$.post "/check-configuration",data,(-> dfd.resolve())
 
 	$(document.documentElement).keypress (e) ->
 		#send it to statechart instance
@@ -59,11 +73,14 @@ require ["scxml/SCXML","scxml/test/multi-process-browser/initialize-json-test-de
 						interpreter.gen new Event b
 						configuration = interpreter.getConfiguration()
 						console.log "configuration after event",scEvent,configuration.iter()
-						$.post "/check-configuration",JSON.stringify(configuration.iter())
+						data = JSON.stringify
+							id : currentTestId
+							configuration : configuration.iter()
+
+						$.post "/check-configuration",data
 
 				else
 					#append char to buffer
 					buffer += scEvent
 
-
-	$.post "/dom-ready"
+	initializeStatechart()

@@ -1,27 +1,39 @@
-define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml/test/report2string",'child_process','promise','http','url','path','util','fs'],(jsonTests,Set,report2string,child_process,promiseModule,http,urlModule,pathModule,util,fs) ->
+define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml/test/report2string",'scxml/test/multi-process-browser/server-client-comm','child_process','promise','http','url','path','util','fs','argsparser'],(jsonTests,Set,report2string,serverClientComm,child_process,promiseModule,http,urlModule,pathModule,util,fs,argsparser) ->
 
 	clone = (o) ->
 		toReturn = {}
 		toReturn[k]=v for own k,v of o
 		return toReturn
 
-	(browser="firefox",eventDensity=10)->
+	->
+		args = argsparser.parse Array.prototype.slice.call arguments
 
-		display = ":1"
-		xnestProcessEnv = clone process.env
-		xnestProcessEnv.DISPLAY = display
-		console.error xnestProcessEnv
-		xnestProcessOpts =
-			cwd: undefined
-			env: xnestProcessEnv
-			customFds: [-1, -1, -1]
-			setsid: false
+		browser = args['-browser'] or 'firefox'
+		eventDensity = args['-eventDensity'] or 10
+		clientAddresses = args['-clientAddresses'] or ['localhost']
+		hostServerHostName = args['-hostServerHostName'] or 'localhost'
+		hostServerPort = args['-hostServerPort'] or '8888'
+		xserver = args['-xserver'] or 'Xephyr'
+		windowManager = args['-windowManager'] or 'metacity'
+		forwardX11 = args['-forwardX11'] or (xserver is 'Xephyr')
+		projectSrcDir = args['-projectSrcDir'] or '/home/jacob/workspace/scion'
+
+		console.log "received args",args
+
+		console.log "config:"
+		console.log "browser",browser
+		console.log "eventDensity",eventDensity
+		console.log "clientAddresses",clientAddresses
+		console.log "hostServerHostName",hostServerHostName
+		console.log "hostServerPort",hostServerPort
+		console.log "xserver",xserver
+		console.log "windowManager",windowManager
+		console.log "forwardX11",forwardX11
+		console.log "projectSrcDir",projectSrcDir
+
+		serverTestRunnerUrl = "http://#{hostServerHostName}:#{hostServerPort}/runner"
 
 		trim = (s) -> s.replace(/^\s+|\s+$/g, '')
-
-		testName = (test) -> "(#{test.name}/#{test.group}[#{test.transitionSelector.selectorKey};#{test.set.setTypeKey};#{test.extraModelInfo}])"
-
-		spawn = child_process.spawn
 
 		Promise = promiseModule.Promise
 
@@ -30,39 +42,6 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 			testsPassed : []
 			testsFailed : []
 			testsErrored : []
-
-		xdt = "xdotool"
-		xdotool =
-			search : (promise,s,option="class") ->
-				console.error "searching window with params:",xdt,["search","--"+option,s]
-				p = spawn xdt,["search","--"+option,s],xnestProcessOpts
-				data = ""
-				p.stdout.setEncoding("utf8")
-				p.stdout.on "data",(chunk) ->
-					console.error "received chunk",chunk
-					data += chunk
-			
-				p.stdout.on "end",->
-					console.error "resolving promise"
-					ids = if data.length then data.split('\n') else []
-					promise.resolve(ids)
-					
-			move : (ids,x,y) -> spawn xdt,["windowmove",id,x,y],xnestProcessOpts for id in ids
-			resize : (ids,width,height) -> spawn xdt,["windowsize",id,width,height],xnestProcessOpts  for id in ids
-			focus : (ids) -> spawn xdt,["windowfocus",id],xnestProcessOpts  for id in ids
-			type : (s,cb) ->
-				typeProcess = spawn xdt,["type",s],xnestProcessOpts
-				typeProcess.stdout.on "end",cb
-			key : (s) -> spawn xdt,["key",s],xnestProcessOpts
-
-		port = "8888"
-		serverUrl = "http://localhost:#{port}/runner"
-
-		startBrowser = (promise,browser,url=serverUrl) ->
-			console.error "spawning browser process"
-			browserProcess = spawn browser,[url],xnestProcessOpts
-			#wait a second for him to open
-			setTimeout (-> xdotool.search(promise,browser)),10000
 
 		getContentType = (path) ->
 			splitPath = path.split('.')
@@ -75,32 +54,16 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 				else
 					"text/plain"
 
-		sendEventsToBrowser = (events) ->
-			if state is "checking-configurations-and-sending-events"
-				e = events.shift()
-				if e
-					console.error "sending event",e.event.name
-
-					step = -> xdotool.type (e.event.name + "-"),-> setTimeout (-> sendEventsToBrowser(events)),eventDensity
-
-					if e.after then setTimeout step,e.after else step()
-
-		currentTest = null
-		expectedConfigurations = null
-
 		fileServerRoot = "/home/jacob/workspace/scion/build"	#TODO: customize this
-
-		state = "before-dom-ready"
 
 		#browserWindowIds = null
 
-		transitionToBeforeSendingTestState = ->
-			state = "before-sending-test"
-			console.error "updating state to #{state}"
-			xdotool.key "grave"
-
 		startTime = null
 		endTime = null
+
+		testMap = {}
+
+		finishedClients = []
 
 		console.error "starting server"
 		server = http.createServer (request,response) ->
@@ -125,50 +88,55 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 					"""
 					response.end()
 
-				when "/dom-ready"
-					if state is "before-dom-ready"
-						response.writeHead 200,{"Content-Type":"text/plain"}
-						response.write "Success"
-						response.end()
-
-						startTime = new Date()
-
-						transitionToBeforeSendingTestState()
-					else
-						response.writeHead 500
-						response.end()
-						console.error "received #{url.pathname} when in state #{state}"
 				when "/test"
-					if state is "before-sending-test"
-						response.writeHead 200,{"Content-Type":"text/json"}
 
-						if currentTest and not (currentTest in results.testsFailed)
-							#we're back here, as we've passed last test
-							results.testsPassed.push currentTest
+					#capture the start time on first request
+					startTime = startTime or new Date()
 
-						currentTest = jsonTests.pop()
-						if currentTest
-							console.error "starting test #{testName currentTest})"
+					response.writeHead 200,{"Content-Type":"text/json"}
 
-							results.testCount++
+					currentTest = jsonTests.pop()
 
-							expectedConfigurations =
+					if currentTest
+						#there are still tests left, so start a test
+						
+						console.error "starting test #{currentTest.id})"
+
+						#put the current test in the testmap
+						#the important stateful variable is the list of expected configurations
+						testMap[currentTest.id] =
+							test : currentTest
+							sourceAddress : request.connection.remoteAddress
+							expectedConfigurations :
 								[new Set currentTest.testScript.initialConfiguration].concat(
 									(new Set eventTuple.nextConfiguration for eventTuple in currentTest.testScript.events))
 
-							console.error "New expected configurations:",expectedConfigurations
+						results.testCount++
 
-							response.write JSON.stringify currentTest
-							response.end()
+						response.write JSON.stringify currentTest
+						response.end()
 
-							state = "before-statechart-ready"
-							console.error "updating state to #{state}"
-						else
+					else
+						#there are no more tests left, so tell the client he's done
+						console.error "No more tests. Adding #{request.connection.remoteAddress} to finishedClients"
+
+						finishedClients.push request.connection.remoteAddress
+
+						console.error "#{finishedClients.length} clients finished"
+
+						response.write JSON.stringify {"done":true}
+						response.end()
+
+						#once all clients are finished, then we're finished
+						#print report and exit
+						if finishedClients.length == clientAddresses.length
+							console.error "All clients finished. Wrapping up."
+
 							report =
 								testCount : results.testCount
-								testsPassed : testName result for result in results.testsPassed
-								testsFailed : testName result for result in results.testsFailed
-								testsErrored : testName result for result in results.testsErrored
+								testsPassed : result.id for result in results.testsPassed
+								testsFailed : result.id for result in results.testsFailed
+								testsErrored : result.id for result in results.testsErrored
 
 
 							console.error report2string report
@@ -177,54 +145,68 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 
 							console.error "Running time: #{(endTime - startTime)/1000} seconds"
 
-							#kill processes, then exit
-							browserProcess?.kill()
-							xServerProcess?.kill()
+							#TODO: kill processes, then exit
+							#serverClientComm.killClientProcesses()
+
 							process.exit results.testCount == results.testsPassed
-					else
-						response.writeHead 500
-						response.end()
-						console.error "received #{url.pathname} when in state #{state}"
 
 
 				when "/statechart-initialized"
-					if state is "before-statechart-ready"
-						response.writeHead 200,{"Content-Type":"text/plain"}
-						response.write "Sending events to browser"
-						response.end()
-
-						state = "checking-configurations-and-sending-events"
-
-						sendEventsToBrowser currentTest.testScript.events.slice()
-						console.error "updating state to #{state}"
-					else
-						response.writeHead 500
-						response.end()
-						console.error "received #{url.pathname} when in state #{state}"
-
-				when "/check-configuration"
-					if state is "checking-configurations-and-sending-events"
+					#signal recieved when a statechart is initialized
+					#we can start sending events
+					do ->
 						jsonData = ""
 						request.on "data",(data) ->
 							jsonData += data
 
 						request.on "end",->
-							console.error "finished reading json data",jsonData
+							o = JSON.parse(jsonData)
+							
+							response.writeHead 200,{"Content-Type":"text/plain"}
+							response.write "Sending events to browser"
+							response.end()
 
-							expectedConfiguration = expectedConfigurations.shift()
-							console.error "Expected configuration",expectedConfiguration
-							console.error "Remaining expected configurations",expectedConfigurations
+							#use the testid to look up the test
+							testData = testMap[o.id]
+
+							if not testData
+								console.error "Cannot find testData with id #{o.id}"
+
+							#send the events to the browser, via a proxy
+							serverClientComm.sendEventsToBrowser testData.sourceAddress,testData.test.testScript.events.slice(),projectSrcDir
+
+				when "/check-configuration"
+					do ->
+						jsonData = ""
+						request.on "data",(data) ->
+							jsonData += data
+
+						request.on "end",->
 							try
-								configuration =  new Set JSON.parse(jsonData)
+								o = JSON.parse(jsonData)
+
+								console.error "finished reading json data",jsonData
+
+								testData = testMap[o.id]
+
+								if not testData
+									console.error "Cannot find testData with id #{o.id}"
+								
+								expectedConfiguration = testData.expectedConfigurations.shift()
+
+
+								configuration =  new Set o.configuration
+
+								console.error "Expected configuration",expectedConfiguration
+								console.error "Remaining expected configurations",testData.expectedConfigurations
 							
 								if expectedConfiguration.equals configuration
 									response.writeHead 200,{"Content-Type":"text/plain"}
-									#TODO: decide what to send back to client
 									console.error "Matched expected configuration."
 									response.end()
 									
-									if not expectedConfigurations.length
-										transitionToBeforeSendingTestState()
+									if not testData.expectedConfigurations.length
+										serverClientComm.sendResetEventToClient testData.sourceAddress
 								else
 									response.writeHead 500,{"Content-Type":"text/plain"}
 									errMsg = "Did not match expected configuration. Received: #{JSON.stringify(configuration)}. Expected:#{JSON.stringify(expectedConfiguration)}."
@@ -235,18 +217,15 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 
 									results.testsFailed.push currentTest
 
-									transitionToBeforeSendingTestState()
+									serverClientComm.sendResetEventToClient testData.sourceAddress
 							catch e
 								console.error e.message
 								console.error e.type
 								console.error e.stack
 								response.writeHead 500
 								response.end()
-								transitionToBeforeSendingTestState()
-					else
-						response.writeHead 500
-						response.end()
-						console.error "received #{url.pathname} when in state #{state}"
+
+								serverClientComm.sendResetEventToClient testData.sourceAddress
 								
 				else
 					#read and return file
@@ -270,32 +249,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 							response.end()
 
 
-		server.listen(8888)
+		server.listen hostServerPort
 		console.error "server started"
 			
-		p = new Promise()
-		p2 = new Promise()
-		p3 = new Promise()
-		xServerProcess = null
-		browserProcess = null
-		xdotool.search(p,"Xephyr")
-		p.then (ids) ->
-			console.error "Xephyr window ids",ids
-			f = ->
-				spawn "metacity",[],xnestProcessOpts
-				xdotool.search(p2,browser)
-
-			if not ids.length
-				#xServerProcess = spawn "Xephyr",[display,"-screen","800x600"]
-				xServerProcess = spawn "Xvfb",[display,"-fbdir","/var/tmp"]
-				setTimeout f,1000
-			else
-				f()
-			
-
-		#TODO: start Xephyr as well
-
-		p2.then (ids) -> if not ids.length then startBrowser p3,browser else p3.resolve(ids)
-
-		#p3.then (ids) -> browserWindowIds = ids
-
+		serverClientComm.startClient forwardX11,address,serverTestRunnerUrl,xserver,windowManager,browser  for address in clientAddresses

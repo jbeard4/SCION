@@ -5,6 +5,8 @@ define ["spartanLoaderForAllTests", "class-transition-lookup-optimization-array-
 			to[k] = v
 		return to
 
+	testName = (test) -> "(#{test.name}/#{test.group}[#{test.transitionSelector.selectorKey};#{test.set.setTypeKey};#{test.extraModelInfo}])"
+
 	#set up optimizations
 	#TODO: when we have other optimizations, this is where their initialization will also go
 	jsonTests = []
@@ -29,14 +31,18 @@ define ["spartanLoaderForAllTests", "class-transition-lookup-optimization-array-
 		for selectorKey,selector of transitionSelectors
 			for setTypeKey,setTypeVal of setTypes
 				for info in extraModelInfo
-					jsonTests.push(merge(testTuples[i],{
-						transitionSelector :
-							selectorKey : selectorKey
-							selector : selector
-						set :
-							setTypeKey : setTypeKey
-							setType : setTypeVal
-						extraModelInfo : info
-					}))
+					test =
+						merge testTuples[i],
+							transitionSelector :
+								selectorKey : selectorKey
+								selector : selector
+							set :
+								setTypeKey : setTypeKey
+								setType : setTypeVal
+							extraModelInfo : info
+
+					test.id = testName test
+
+					jsonTests.push test
 					
 	return jsonTests
