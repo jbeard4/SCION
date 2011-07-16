@@ -17,6 +17,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 		windowManager = args['-windowManager'] or 'metacity'
 		forwardX11 = args['-forwardX11'] or (xserver is 'Xephyr')
 		projectSrcDir = args['-projectSrcDir'] or '/home/jacob/workspace/scion'
+		fileServerRoot = args['-fileServerRoot'] or "#{projectSrcDir}/build"
 
 		console.log "received args",args
 
@@ -30,6 +31,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 		console.log "windowManager",windowManager
 		console.log "forwardX11",forwardX11
 		console.log "projectSrcDir",projectSrcDir
+		console.log "fileServerRoot",fileServerRoot
 
 		serverTestRunnerUrl = "http://#{hostServerHostName}:#{hostServerPort}/runner"
 
@@ -54,7 +56,6 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 				else
 					"text/plain"
 
-		fileServerRoot = "/home/jacob/workspace/scion/build"	#TODO: customize this
 
 		#browserWindowIds = null
 
