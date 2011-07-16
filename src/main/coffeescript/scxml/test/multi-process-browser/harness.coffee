@@ -205,8 +205,12 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 									response.writeHead 200,{"Content-Type":"text/plain"}
 									console.error "Matched expected configuration."
 									response.end()
-									
+
+										
+									#if there are no more expected configurations, mark test as succeeded, send the reset event
 									if not testData.expectedConfigurations.length
+										results.testsPassed.push testData.test
+
 										serverClientComm.sendResetEventToClient testData.sourceAddress
 								else
 									response.writeHead 500,{"Content-Type":"text/plain"}
@@ -216,8 +220,9 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 
 									console.error errMsg
 
-									results.testsFailed.push currentTest
+									results.testsFailed.push testData.test
 
+									#test has failed, so we send reset event
 									serverClientComm.sendResetEventToClient testData.sourceAddress
 							catch e
 								console.error e.message
