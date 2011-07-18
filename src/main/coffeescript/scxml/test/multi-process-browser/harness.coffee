@@ -18,6 +18,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 		forwardX11 = args['-forwardX11'] or (xserver is 'Xephyr')
 		projectSrcDir = args['-projectSrcDir'] or '/home/jacob/workspace/scion'
 		fileServerRoot = args['-fileServerRoot'] or "#{projectSrcDir}/build"
+		stopOnFail = args['-stopOnFail']
 
 		console.log "received args",args
 
@@ -32,6 +33,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 		console.log "forwardX11",forwardX11
 		console.log "projectSrcDir",projectSrcDir
 		console.log "fileServerRoot",fileServerRoot
+		console.log "stopOnFail",stopOnFail
 
 		serverTestRunnerUrl = "http://#{hostServerHostName}:#{hostServerPort}/runner"
 
@@ -65,6 +67,27 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 		testMap = {}
 
 		finishedClients = []
+
+		finish = ->
+			console.error "All clients finished. Wrapping up."
+
+			report =
+				testCount : results.testCount
+				testsPassed : result.id for result in results.testsPassed
+				testsFailed : result.id for result in results.testsFailed
+				testsErrored : result.id for result in results.testsErrored
+
+
+			console.error report2string report
+
+			endTime = new Date()
+
+			console.error "Running time: #{(endTime - startTime)/1000} seconds"
+
+			#TODO: kill processes, then exit
+			#serverClientComm.killClientProcesses()
+
+			process.exit results.testCount == results.testsPassed
 
 		console.error "starting server"
 		server = http.createServer (request,response) ->
@@ -130,27 +153,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 
 						#once all clients are finished, then we're finished
 						#print report and exit
-						if finishedClients.length == clientAddresses.length
-							console.error "All clients finished. Wrapping up."
-
-							report =
-								testCount : results.testCount
-								testsPassed : result.id for result in results.testsPassed
-								testsFailed : result.id for result in results.testsFailed
-								testsErrored : result.id for result in results.testsErrored
-
-
-							console.error report2string report
-
-							endTime = new Date()
-
-							console.error "Running time: #{(endTime - startTime)/1000} seconds"
-
-							#TODO: kill processes, then exit
-							#serverClientComm.killClientProcesses()
-
-							process.exit results.testCount == results.testsPassed
-
+						if finishedClients.length == clientAddresses.length then finish()
 
 				when "/statechart-initialized"
 					#signal recieved when a statechart is initialized
@@ -174,7 +177,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 								console.error "Cannot find testData with id #{o.id}"
 
 							#send the events to the browser, via a proxy
-							serverClientComm.sendEventsToBrowser testData.sourceAddress,testData.test.testScript.events.slice(),projectSrcDir
+							testData.sendEventProcess = serverClientComm.sendEventsToBrowser testData.sourceAddress,testData.test.testScript.events.slice(),projectSrcDir
 
 				when "/check-configuration"
 					do ->
@@ -213,6 +216,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 
 										serverClientComm.sendResetEventToClient testData.sourceAddress
 								else
+									#test has failed
 									response.writeHead 500,{"Content-Type":"text/plain"}
 									errMsg = "Did not match expected configuration. Received: #{JSON.stringify(configuration)}. Expected:#{JSON.stringify(expectedConfiguration)}."
 									response.write errMsg
@@ -222,8 +226,23 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 
 									results.testsFailed.push testData.test
 
-									#test has failed, so we send reset event
-									serverClientComm.sendResetEventToClient testData.sourceAddress
+									#if stopOnFail is set, then wrap up
+									if stopOnFail
+										console.error "Test #{testData.test.id} failed and stopOnFail is set. Wrapping up..."
+										finish()
+									else
+										#if the event sending process is still active
+										if testData.sendEventProcess.pid
+											#wait for exit event
+											testData.sendEventProcess.on "exit", ->
+												serverClientComm.sendResetEventToClient testData.sourceAddress
+
+											#kill the event process
+											testData.sendEventProcess.kill()
+										else
+											#otherwise just wait for the reset event
+											serverClientComm.sendResetEventToClient testData.sourceAddress
+
 							catch e
 								console.error e.message
 								console.error e.type
