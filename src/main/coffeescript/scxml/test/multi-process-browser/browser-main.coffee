@@ -16,8 +16,15 @@ require ["scxml/SCXML","scxml/test/multi-process-browser/initialize-json-test-de
 	currentTestId = null
 	p = null
 	buffer = ""
+
+	currentRequest = null
+	queuedRequests = null
  
 	initializeStatechart = ->
+
+		currentRequest = null
+		queuedRequests = []
+
 		$.getJSON "test",(testJson) ->
 			if testJson.done	#server says we're out of tests
 				$(document.documentElement).unbind()	#unbind event listeners
@@ -77,7 +84,17 @@ require ["scxml/SCXML","scxml/test/multi-process-browser/initialize-json-test-de
 							id : currentTestId
 							configuration : configuration.iter()
 
-						$.post "/check-configuration",data
+						r = ->
+							$.post "/check-configuration",data,->
+								currentRequest = queuedRequests.shift()
+								if currentRequest then currentRequest()
+
+						if not currentRequest
+							currentRequest = r
+							currentRequest()
+						else
+							queuedRequests.push r
+							
 
 				else
 					#append char to buffer
