@@ -10,7 +10,6 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 
 		browser = args['-browser'] or 'firefox'
 		eventDensity = args['-eventDensity'] or 10
-		clientAddresses = args['-clientAddresses'] or ['localhost']
 		hostServerHostName = args['-hostServerHostName'] or 'localhost'
 		hostServerPort = args['-hostServerPort'] or '8888'
 		xserver = args['-xserver'] or 'Xephyr'
@@ -19,6 +18,12 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 		projectSrcDir = args['-projectSrcDir'] or '/home/jacob/workspace/scion'
 		fileServerRoot = args['-fileServerRoot'] or "#{projectSrcDir}/build"
 		stopOnFail = args['-stopOnFail']
+
+		clientAddresses =
+			switch typeof args['-clientAddresses']
+				when 'undefined' then ['localhost']
+				when 'string' then [args['-clientAddresses']]
+				else args['-clientAddresses']
 
 		console.log "received args",args
 
