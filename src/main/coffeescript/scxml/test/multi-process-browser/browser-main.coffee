@@ -25,32 +25,36 @@ require ["scxml/SCXML","scxml/test/multi-process-browser/initialize-json-test-de
 		currentRequest = null
 		queuedRequests = []
 
-		$.getJSON "test",(testJson) ->
-			if testJson.done	#server says we're out of tests
-				$(document.documentElement).unbind()	#unbind event listeners
-			else
-				currentTestId = testJson.id
+		$.ajax
+			url : 'test'
+			dataType : 'json'
+			cache : false
+			success : (testJson) ->
+				if testJson.done	#server says we're out of tests
+					$(document.documentElement).unbind()	#unbind event listeners
+				else
+					currentTestId = testJson.id
 
-				initializeJsonTest testJson,([m,model,optimizations]) ->
+					initializeJsonTest testJson,([m,model,optimizations]) ->
 
-					dfd = new jQuery.Deferred()
-					p = dfd.promise()
+						dfd = new jQuery.Deferred()
+						p = dfd.promise()
 
-					interpreter = new scxml.SimpleInterpreter model,setTimeout,clearTimeout,optimizations
-					interpreter.start()
-					initialConfiguration = interpreter.getConfiguration()
-					console.log "initialConfiguration",initialConfiguration.iter()
+						interpreter = new scxml.SimpleInterpreter model,setTimeout,clearTimeout,optimizations
+						interpreter.start()
+						initialConfiguration = interpreter.getConfiguration()
+						console.log "initialConfiguration",initialConfiguration.iter()
 
-					data = JSON.stringify {id : currentTestId}
+						data = JSON.stringify {id : currentTestId}
 
-					$.post "/statechart-initialized",data,(l) ->
-						console.log l
+						$.post "/statechart-initialized",data,(l) ->
+							console.log l
 
-						data = JSON.stringify
-							id : currentTestId
-							configuration : initialConfiguration.iter()
+							data = JSON.stringify
+								id : currentTestId
+								configuration : initialConfiguration.iter()
 
-						$.post "/check-configuration",data,(-> dfd.resolve())
+							$.post "/check-configuration",data,(-> dfd.resolve())
 
 	$(document.documentElement).keypress (e) ->
 		#send it to statechart instance

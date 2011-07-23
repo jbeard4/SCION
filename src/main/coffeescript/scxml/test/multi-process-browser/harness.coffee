@@ -182,7 +182,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 								console.error "Cannot find testData with id #{o.id}"
 
 							#send the events to the browser, via a proxy
-							testData.sendEventProcess = serverClientComm.sendEventsToBrowser testData.sourceAddress,testData.test.testScript.events.slice(),projectSrcDir
+							serverClientComm.sendEventsToBrowser testData.sourceAddress,testData.test.testScript.events.slice(),projectSrcDir
 
 				when "/check-configuration"
 					do ->
@@ -219,7 +219,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 									if not testData.expectedConfigurations.length
 										results.testsPassed.push testData.test
 
-										serverClientComm.sendResetEventToClient testData.sourceAddress
+										serverClientComm.sendResetEventToClient testData.sourceAddress,projectSrcDir
 								else
 									#test has failed
 									response.writeHead 500,{"Content-Type":"text/plain"}
@@ -236,17 +236,8 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 										console.error "Test #{testData.test.id} failed and stopOnFail is set. Wrapping up..."
 										finish()
 									else
-										#if the event sending process is still active
-										if testData.sendEventProcess.pid
-											#wait for exit event
-											testData.sendEventProcess.on "exit", ->
-												serverClientComm.sendResetEventToClient testData.sourceAddress
-
-											#kill the event process
-											testData.sendEventProcess.kill()
-										else
-											#otherwise just wait for the reset event
-											serverClientComm.sendResetEventToClient testData.sourceAddress
+										#otherwise send the reset event
+										serverClientComm.sendResetEventToClient testData.sourceAddress,projectSrcDir
 
 							catch e
 								console.error e.message
@@ -255,7 +246,8 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 								response.writeHead 500
 								response.end()
 
-								serverClientComm.sendResetEventToClient testData.sourceAddress
+								#serverClientComm.sendResetEventToClient testData.sourceAddress,projectSrcDir
+								finish()
 								
 				else
 					#read and return file
