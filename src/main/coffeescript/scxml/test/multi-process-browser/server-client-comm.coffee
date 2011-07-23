@@ -7,6 +7,8 @@ define ['child_process'],(child_process) ->
 
 	defaultDisplayNum = ":1"
 
+	sshEventPipeCache = {}
+
 	runSshCmd = (commandOpt) ->
 		console.error "issuing command:"
 		console.error "ssh",commandOpt
@@ -23,18 +25,17 @@ define ['child_process'],(child_process) ->
 
 		return p
 
-	sendEventsToBrowser : (address,events,projectSrcDir,displayNum=defaultDisplayNum) ->
-		p = runSshCmd [address,"DISPLAY=#{displayNum}","coffee","#{projectSrcDir}/src/main/coffeescript/scxml/test/multi-process-browser/send-events.coffee"]
+	sendCommandThroughCachedPipe = (o,address,projectSrcDir,displayNum) ->
+		sshEventPipe =
+			(sshEventPipeCache[address] ?=
+				runSshCmd [address,"DISPLAY=#{displayNum}","coffee","#{projectSrcDir}/src/main/coffeescript/scxml/test/multi-process-browser/send-events.coffee"])
 
-		p.stdin.write JSON.stringify events
-		p.stdin.end()
+		sshEventPipe.stdin.write ((JSON.stringify o) + '\n')	#write the newline character, because the buffer is line-oriented
 
-		return p
 
-	sendKeyToClient : (address,keysym,displayNum=defaultDisplayNum) ->
-		runSshCmd [address,"DISPLAY=#{displayNum}",'xdotool','key',keysym]
+	sendEventsToBrowser : (address,events,projectSrcDir,displayNum=defaultDisplayNum) -> sendCommandThroughCachedPipe {method:"send-events",events:events},address,projectSrcDir,displayNum
 
-	sendResetEventToClient : (address,displayNum=defaultDisplayNum) -> @sendKeyToClient address,resetEvent,displayNum
+	sendResetEventToClient : (address,projectSrcDir,displayNum=defaultDisplayNum) -> sendCommandThroughCachedPipe {method:"reset"},address,projectSrcDir,displayNum
 
 	startClient : (forwardX11,address,serverUrl,xserver,windowManager,browser,displayNum=defaultDisplayNum) ->
 		sshOpts = if forwardX11 then ['-X','-Y','-C'] else []
@@ -53,4 +54,7 @@ define ['child_process'],(child_process) ->
 			),1000
 		),1000
 
-	killClientProcesses : -> p.kill() while p = clientProcesses.pop()
+	killClientProcesses : ->
+		p.kill() while p = clientProcesses.pop()
+		pipe.stdin.end() for address,pipe of sshEventPipeCache
+
