@@ -152,4 +152,3 @@ gen-top-level-optimized-requirejs-modules : gen-ahead-of-time-optimizations
 scion : copy-others coffee
 
 all-tests : $(scxmljsontuple)
-

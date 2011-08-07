@@ -1,4 +1,4 @@
-require ["scxml/test/optimization-harness","scxml/test/report2string","scxml/test/simple-env"],(optimizationHarness,report2string,SimpleEnv) ->
+require ["scxml/test/optimization-harness","scxml/test/simple-env","scxml/test/report2string"],(optimizationHarness,SimpleEnv,report2string) ->
 
 	this.console =
 		log : this.print
@@ -14,6 +14,4 @@ require ["scxml/test/optimization-harness","scxml/test/report2string","scxml/tes
 
 	env = new SimpleEnv()
 
-	optimizationHarness env.setTimeout,env.clearTimeout,finish
-
-	env.mainLoop()
+	optimizationHarness env.setTimeout,env.clearTimeout,finish,env.mainLoop
