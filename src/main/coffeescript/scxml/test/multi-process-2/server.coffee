@@ -32,6 +32,15 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 		console.log 'clientAddresses',clientAddresses
 		console.log 'interpreters',interpreters
 
+		#add interpreters
+		tmp = []
+		for interpreter in interpreters
+			for test in jsonTests
+				tmp.push {
+					interpreter : interpreter
+					test : test
+				}
+		jsonTests = tmp
 
 		#open up file for logging
 		if logFile and not (logFile is '-')
@@ -54,11 +63,11 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 			if currentTest
 				#there are still tests left, so start a test
 				
-				console.error "starting test #{currentTest.id})"
+				console.log "starting test {#{currentTest.interpreter}}#{currentTest.test.id})"
 
 				#put the current test in the testmap
 				#the important stateful variable is the list of expected configurations
-				testMap[currentTest.id] =
+				testMap[currentTest.test.id] =
 					test : currentTest
 					sourceProcess : p
 
@@ -68,28 +77,29 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 
 			else
 				#there are no more tests left, so tell the client he's done
-				console.error "No more tests. Wrapping up."
+				console.log "No more tests. Wrapping up."
 
 				finish()
 
 		finish = ->
-			console.error "All clients finished. Wrapping up."
+			console.log "All clients finished. Wrapping up."
+
+			summary = (results) -> "{#{result.interpreter}}#{result.test.id}" for result in results
 
 			report =
 				testCount : results.testCount
-				testsPassed : result.id for result in results.testsPassed
-				testsFailed : result.id for result in results.testsFailed
-				testsErrored : result.id for result in results.testsErrored
+				testsPassed : summary results.testsPassed
+				testsFailed : summary results.testsFailed
+				testsErrored : summary results.testsErrored
 
-
-			console.error report2string report
+			console.log report2string report
 
 			endTime = new Date()
 
 			#terminate all client processes
 			p.stdin.end() for p in clientProcesses
 
-			console.error "Running time: #{(endTime - startTime)/1000} seconds"
+			console.log "Running time: #{(endTime - startTime)/1000} seconds"
 
 			if log then log.end()
 
@@ -102,11 +112,11 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 			else
 				results.testsFailed.push testMap[jsonResults.testId].test
 
-				console.error jsonResults.results.msg
+				console.log jsonResults.results.msg
 
 				#if stopOnFail is set, then wrap up
 				if stopOnFail
-					console.error "Test #{testId} failed and stopOnFail is set. Wrapping up..."
+					console.log "Test #{testId} failed and stopOnFail is set. Wrapping up..."
 					finish()
 
 			#send next test
@@ -141,12 +151,12 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 		clientAddresses = if runLocal then [0...numLocalProcesses] else clientAddresses
 			
 		#start clients
-		console.error "starting clients"
+		console.log "starting clients"
 		clientProcesses = (startClient address for address in clientAddresses)
 
 		startTime = startTime or new Date()
 
-		console.error "start time",startTime
+		console.log "start time",startTime
 
 		#send initial tests to clients
 		for p in clientProcesses

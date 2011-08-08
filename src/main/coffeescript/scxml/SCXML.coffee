@@ -31,10 +31,11 @@ define ["scxml/default-transition-selector","util/set/ArraySet","scxml/model","s
 
 		constructor : (@model,@opts={}) ->
 
-			console.debug "initializing SCXML interpreter with opts:"
-			for own k,v of opts
-				v = if typeof v is "function" then v.toString() else v
-				console.debug k,v
+			if @opts.printTrace
+				console.debug "initializing SCXML interpreter with opts:"
+				for own k,v of opts
+					v = if typeof v is "function" then v.toString() else v
+					console.debug k,v
 
 			#default args
 			#@opts.onlySelectFromBasicStates

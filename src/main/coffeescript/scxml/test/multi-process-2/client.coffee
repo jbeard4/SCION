@@ -21,16 +21,15 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process",'
 
 		runTest = (jsonTest) ->
 			#hook up state variables
-			currentTest = jsonTest
+			currentTest = jsonTest.test
 			expectedConfigurations =
-				[new Set jsonTest.testScript.initialConfiguration].concat(
+				[new Set currentTest.testScript.initialConfiguration].concat(
 					(new Set eventTuple.nextConfiguration for eventTuple in currentTest.testScript.events))
 
 			console.error "received test #{currentTest.id}"
 			
 			#start up a new statechart process
-			#TODO: use jsonTest.interpreter
-			currentScxmlProcess = child_process.spawn "bash",['bin/run-tests-spartan-shell.sh','spidermonkey-js','scxml/test/multi-process-2/scxml.js']
+			currentScxmlProcess = child_process.spawn "bash",['bin/run-tests-spartan-shell.sh',jsonTest.interpreter,'scxml/test/multi-process-2/scxml.js']
 
 			scxmlWL = utils.wrapLine currentScxmlProcess.stdin.write,currentScxmlProcess.stdin
 
@@ -42,7 +41,7 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process",'
 			currentScxmlProcess.stderr.on 'data',(s) ->
 				console.error 'from statechart stderr',s
 
-			scxmlWL jsonTest
+			scxmlWL currentTest
 				
 		sendEvents = ->
 			e = eventsToSend.shift()

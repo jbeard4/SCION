@@ -4,11 +4,11 @@ define ["scxml/json2model","scxml/json2extra-model"],(json2model,json2ExtraModel
 
 		mPath = if testJson.extraModelInfo then "scxml/model" else "scxml/extra-model"
 
-		console.debug "requiring",mPath,testJson.set.setType,testJson.transitionSelector.selector
+		#console.debug "requiring",mPath,testJson.set.setType,testJson.transitionSelector.selector
 
 		require [mPath,testJson.set.setType,testJson.transitionSelector.selector],(m,setConstructor,transitionSelector) ->
 
-			console.debug "imported depenedent modules",m.toString(),setConstructor.toString(),transitionSelector.toString()
+			#console.debug "imported depenedent modules",m.toString(),setConstructor.toString(),transitionSelector.toString()
 
 			#parse scxmlJson model
 			model = json2model testJson.scxmlJson
