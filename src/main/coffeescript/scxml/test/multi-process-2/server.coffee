@@ -1,9 +1,4 @@
-define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet','util/BufferedStream',"scxml/test/report2string",'scxml/test/multi-process-browser/server-client-comm','child_process','promise','http','url','path','util','fs','argsparser'],(jsonTests,Set,BufferedStream,report2string,serverClientComm,child_process,promiseModule,http,urlModule,pathModule,util,fs,argsparser) ->
-
-	clone = (o) ->
-		toReturn = {}
-		toReturn[k]=v for own k,v of o
-		return toReturn
+define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scxml/test/report2string",'child_process','argsparser','fs','util'],(jsonTests,BufferedStream,report2string,child_process,argsparser,fs,util) ->
 
 	->
 		args = argsparser.parse Array.prototype.slice.call arguments
@@ -15,6 +10,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet','util/
 		runLocal = args['-runLocal']
 		numLocalProcesses = args['-numLocalProcesses'] or 1
 		verbose = args['-verbose']
+		logFile = args['-logFile']
 
 		clientAddresses =
 			switch typeof args['-clientAddresses']
@@ -30,6 +26,12 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet','util/
 		console.log "clientModulePath",clientModulePath
 		console.log "runLocal",runLocal
 		console.log "numLocalProcesses",numLocalProcesses
+		console.log 'logFile',logFile
+
+
+		#open up file for logging
+		if logFile and not (logFile is '-')
+			log = fs.createWriteStream(logFile, {'flags': 'a'})
 
 		results =
 			testCount : 0
@@ -58,7 +60,6 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet','util/
 
 				results.testCount++
 
-				fs.writeFileSync('jsonTest.json',JSON.stringify currentTest)
 				p.stdin.write "#{JSON.stringify currentTest}\n"
 
 			else
@@ -85,6 +86,8 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet','util/
 			p.stdin.end() for p in clientProcesses
 
 			console.error "Running time: #{(endTime - startTime)/1000} seconds"
+
+			if log then log.end()
 
 			process.exit results.testCount == results.testsPassed
 
@@ -113,10 +116,15 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet','util/
 				jsonResults = JSON.parse line
 				processMessage jsonResults
 
+			#if verbose flag is set, log output of running processes
 			if verbose
 				p.stderr.setEncoding 'utf8'
 				p.stderr.on "data",(s) ->
-					console.error "From process #{p.pid} stderr: #{s}"
+					l = "From process #{p.pid}: #{s}"
+						if log
+							log.write l
+						else
+							console.log l
 			
 		CLIENT_MODULE = "scxml/test/multi-process-2/client"
 
@@ -140,3 +148,5 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet','util/
 		for p in clientProcesses
 			hookUpEventHandling p
 			sendTest p
+		
+

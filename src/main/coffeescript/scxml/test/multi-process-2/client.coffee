@@ -3,7 +3,7 @@
 #start scxml test client
 #run through test script
 #when we're done, send results to server, and request new test
-define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process"],(BufferedStream,Set,utils,child_process) ->
+define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process",'fs','util'],(BufferedStream,Set,utils,child_process,fs,util) ->
 
 	->
 		eventDensity = 10	#TODO: parameterize this
