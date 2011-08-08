@@ -1,6 +1,12 @@
 define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scxml/test/report2string",'child_process','argsparser','fs','util'],(jsonTests,BufferedStream,report2string,child_process,argsparser,fs,util) ->
 
 	->
+		optionToArray = (args,option,defaultValue) ->
+			switch typeof args["-#{option}"]
+				when 'undefined' then [defaultValue]
+				when 'string' then [args["-#{option}"]]
+				else args["-#{option}"]
+	
 		args = argsparser.parse Array.prototype.slice.call arguments
 
 		eventDensity = args['-eventDensity'] or 10
@@ -11,12 +17,8 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 		numLocalProcesses = args['-numLocalProcesses'] or 1
 		verbose = args['-verbose']
 		logFile = args['-logFile']
-
-		clientAddresses =
-			switch typeof args['-clientAddresses']
-				when 'undefined' then ['localhost']
-				when 'string' then [args['-clientAddresses']]
-				else args['-clientAddresses']
+		clientAddresses = optionToArray args,'clientAddresses','localhost'
+		interpreters = optionToArray args,'interpreters','spidermonkey-js'
 
 		console.log "received args",args
 
@@ -27,6 +29,8 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 		console.log "runLocal",runLocal
 		console.log "numLocalProcesses",numLocalProcesses
 		console.log 'logFile',logFile
+		console.log 'clientAddresses',clientAddresses
+		console.log 'interpreters',interpreters
 
 
 		#open up file for logging
@@ -121,10 +125,10 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 				p.stderr.setEncoding 'utf8'
 				p.stderr.on "data",(s) ->
 					l = "From process #{p.pid}: #{s}"
-						if log
-							log.write l
-						else
-							console.log l
+					if log
+						log.write l
+					else
+						console.log l
 			
 		CLIENT_MODULE = "scxml/test/multi-process-2/client"
 
