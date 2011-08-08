@@ -3,101 +3,120 @@
 #start scxml test client
 #run through test script
 #when we're done, send results to server, and request new test
-require ["util/BufferedStream","util/set/ArraySet","util/utils","child_process"],(BufferedStream,ArraySet,utils,child_process) ->
+define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process"],(BufferedStream,Set,utils,child_process) ->
 
-	eventDensity = 10	#TODO: parameterize this
+	->
+		eventDensity = 10	#TODO: parameterize this
 
-	wl = utils.wrapLine process.stdout.write
+		wl = utils.wrapLine process.stdout.write,process.stdout
 
-	comm =
-		getTest : -> wl {method:"get-test"}
-		postTestResults : (testId,results) -> wl {method:"post-results",results:results,testId:testId}
+		postTestResults = (testId,results) -> wl {method:"post-results",results:results,testId:testId}
 
-	#state variables
-	currentJsonTest = null
-	currentScxmlProcess = null
-	expectedConfigurations = null
-	eventsToSend = null
-	scxmlWL = null
+		#state variables
+		currentTest = null
+		currentScxmlProcess = null
+		expectedConfigurations = null
+		eventsToSend = null
+		scxmlWL = null
 
-	runTest = (jsonTest) ->
-		#hook up state variables
-		currentJsonTest = jsonTest
-		expectedConfigurations =
-			[new Set jsonTest.testScript.initialConfiguration].concat(
-				(new Set eventTuple.nextConfiguration for eventTuple in currentTest.testScript.events))
-		
-		#start up a new statechart process
-		currentScxmlProcess = child_process.spawn "bash",['bin/run-tests-spartan-shell.sh',jsonTest.interpreter,'scxml/test/multi-process-2/scxml.js']
+		runTest = (jsonTest) ->
+			#hook up state variables
+			currentTest = jsonTest
+			expectedConfigurations =
+				[new Set jsonTest.testScript.initialConfiguration].concat(
+					(new Set eventTuple.nextConfiguration for eventTuple in currentTest.testScript.events))
 
-		scxmlWL = utils.wrapLine currentScxmlProcess.stdin.write
-
-		#hook up messaging
-		scOutStream = new BufferedStream currentScxmlProcess.stdout
-		scOutStream.on "line",(l) -> processClientMessage JSON.parse l
-
-		scxmlWL jsonTest
+			console.error "received test #{currentTest.id}"
 			
-	sendEvents = ->
-		e = eventsToSend.shift()
-		if e
-			console.error "sending event",(e.event?.name or e)
+			#start up a new statechart process
+			#TODO: use jsonTest.interpreter
+			currentScxmlProcess = child_process.spawn "bash",['bin/run-tests-spartan-shell.sh','spidermonkey-js','scxml/test/multi-process-2/scxml.js']
 
-			step = ->
-				scxmlWL e.name
-				setTimeout (-> sendEvents(events)),eventDensity
+			scxmlWL = utils.wrapLine currentScxmlProcess.stdin.write,currentScxmlProcess.stdin
 
-			if e.after then setTimeout step,e.after else step()
+			#hook up messaging
+			scOutStream = new BufferedStream currentScxmlProcess.stdout
+			scOutStream.on "line",(l) -> processClientMessage JSON.parse l
 
-	#server sends tests only
-	processServerMessage = (jsonTest) -> runTest jsonTest
+			currentScxmlProcess.stderr.setEncoding 'utf8'
+			currentScxmlProcess.stderr.on 'data',(s) ->
+				console.error 'from statechart stderr',s
 
-	processClientMessage = (jsonMessage) ->
-		switch jsonMessage.method
-			when "statechart-initialized"
-				#start to send events into sc process
-				eventsToSend = test.testScript.events.slice()
-				sendEvents()
+			scxmlWL jsonTest
+				
+		sendEvents = ->
+			e = eventsToSend.shift()
+			if e
+				console.error "sending event",e.event.name
 
-			when "check-configuration"
-				expectedConfiguration = expectedConfigurations.shift()
+				step = ->
+					currentScxmlProcess.stdin.write "#{e.event.name}\n"
+					setTimeout sendEvents,eventDensity
 
-				configuration =  new Set jsonMessage.configuration
+				if e.after then setTimeout step,e.after else step()
 
-				console.error "Expected configuration",expectedConfiguration
-				console.error "Remaining expected configurations",testData.expectedConfigurations
-					
-				if expectedConfiguration.equals configuration
-					process.stderr.write "Matched expected configuration."
+		#server sends tests only
+		processServerMessage = (jsonTest) -> runTest jsonTest
 
-					#if we're out of tests, then we're done and we report that we succeeded
-					if not expectedConfigurations.length
-						comm.postTestResults test.id, {pass : true}
+		processClientMessage = (jsonMessage) ->
+			switch jsonMessage.method
+				when "statechart-initialized"
+					#start to send events into sc process
+					eventsToSend = currentTest.testScript.events.slice()
+
+					console.error 'statechart in child process initialized.'
+					console.error "sending events #{JSON.stringify eventsToSend}"
+					sendEvents()
+
+				when "check-configuration"
+					console.error "received request to check configuration"
+
+					expectedConfiguration = expectedConfigurations.shift()
+
+					configuration =  new Set jsonMessage.configuration
+
+					console.error "Expected configuration",expectedConfiguration
+					console.error "Received configuration",configuration
+					console.error "Remaining expected configurations",expectedConfigurations
+						
+					if expectedConfiguration.equals configuration
+						process.stderr.write "Matched expected configuration."
+
+						#if we're out of tests, then we're done and we report that we succeeded
+						if not expectedConfigurations.length
+							#we're done, post results and send signal to fetch next test
+							postTestResults currentTest.id, {pass : true}
+							currentScxmlProcess.removeAllListeners()
+							currentScxmlProcess.stdin.write "$quit"
+							currentScxmlProcess.stdin.end()
+							
+					else
+						#test has failed
+						pass = false
+						msg = "Did not match expected configuration. Received: #{JSON.stringify(configuration)}. Expected:#{JSON.stringify(expectedConfiguration)}."
+
+						#prevent sending further events
+						eventsToSend = []
+
+						#clear event listeners
 						currentScxmlProcess.removeAllListeners()
 						currentScxmlProcess.stdin.write "$quit"
 						currentScxmlProcess.stdin.end()
-						
+
+						#report failed test
+						postTestResults currentTest.id,{pass : pass, msg : msg}
+
+				when "set-timeout"
+					setTimeout (-> scxmlWL jsonMessage.event),jsonMessage.timeout
+				when "log"
+					console.error "from statechart process:",jsonMessage.args
+				when "debug"
+					console.error "from statechart process:",jsonMessage.args
 				else
-					#test has failed
-					pass = false
-					msg = "Did not match expected configuration. Received: #{JSON.stringify(configuration)}. Expected:#{JSON.stringify(expectedConfiguration)}."
+					console.error "received unknown method:",jsonMessage.method
+					
 
-					#prevent sending further events
-					eventsToSend = []
+		inStream = new BufferedStream process.stdin
+		inStream.on "line",(l) -> processServerMessage JSON.parse l
 
-					#clear event listeners
-					currentScxmlProcess.removeAllListeners()
-					currentScxmlProcess.stdin.write "$quit"
-					currentScxmlProcess.stdin.end()
-
-					#report failed test
-					comm.postTestResults test.id,{pass : pass, msg : msg}
-
-			when "set-timeout"
-				setTimeout (-> scxmlWL jsonMessage.event),jsonMessage.timeout
-			when "log"
-				console.error "from statechart process:",jsonMessage.args
-				
-
-	inStream = new BufferedStream process.stdin
-	inStream.on "line",(l) -> processServerMessage JSON.parse l
+		process.stdin.resume()

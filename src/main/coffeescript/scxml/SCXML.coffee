@@ -31,20 +31,23 @@ define ["scxml/default-transition-selector","util/set/ArraySet","scxml/model","s
 
 		constructor : (@model,@opts={}) ->
 
-			console.debug "initializing SCXML interpreter with opts",opts
+			console.debug "initializing SCXML interpreter with opts:"
+			for own k,v of opts
+				v = if typeof v is "function" then v.toString() else v
+				console.debug k,v
 
 			#default args
-			@opts.transitionSelector = @opts.transitionSelector or defaultTransitionSelector()
-			@opts.onlySelectFromBasicStates = @opts.onlySelectFromBasicStates or false
-			@opts.TransitionSet = @opts.TransitionSet or ArraySet
-			@opts.StateSet = @opts.StateSet or ArraySet
-			@opts.BasicStateSet = @opts.BasicStateSet or ArraySet
+			#@opts.onlySelectFromBasicStates
+			#@opts.printTrace = true
+			@opts.transitionSelector = @opts.transitionSelector #or defaultTransitionSelector()
+			@opts.model  = @opts.model #or m
+			@opts.TransitionSet = @opts.TransitionSet #or ArraySet
+			@opts.StateSet = @opts.StateSet #or ArraySet
+			@opts.BasicStateSet = @opts.BasicStateSet #or ArraySet
 			@opts.StateIdSet = @opts.StateIdSet or ArraySet
 			@opts.EventSet = @opts.EventSet or ArraySet
 			@opts.TransitionPairSet = @opts.TransitionPairSet or ArraySet
-			@opts.model  = @opts.model or m
 			@opts.priorityComparisonFn = @opts.priorityComparisonFn or getTransitionWithHigherSourceChildPriority(@opts.model)
-			@opts.printTrace = @opts.printTrace or false
 
 			@_configuration = new @opts.BasicStateSet()	#full configuration, or basic configuration? what kind of set implementation?
 			@_historyValue = {}

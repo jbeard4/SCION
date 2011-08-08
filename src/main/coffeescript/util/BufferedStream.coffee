@@ -8,13 +8,16 @@ define ['events'],(events) ->
 			data = ""
 
 			emitter.on ev,(s) =>
-				console.log "received string: #{s}"
+				#console.error "received string #{s}"
 				data += s
+
+				#console.error "new data #{data}"
 
 				lineOrientedData = data.split delimiter
 				lines = lineOrientedData[0...-1]
 				data = lineOrientedData.pop()
 
-				console.log "lines",lines
+				#console.error "lines #{JSON.stringify lines}"
+				#console.error "updated data #{data}"
 
 				@emit "line",line for line in lines

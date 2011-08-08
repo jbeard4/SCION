@@ -26,7 +26,7 @@ define ["spartanLoaderForAllTests", "class-transition-lookup-optimization-array-
 			arraySet : "util/set/ArraySet"
 
 		
-		extraModelInfo = [true,false]
+		extraModelInfo = [false]
 
 		for selectorKey,selector of transitionSelectors
 			for setTypeKey,setTypeVal of setTypes

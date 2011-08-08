@@ -1,4 +1,4 @@
-define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml/test/report2string",'scxml/test/multi-process-browser/server-client-comm','child_process','promise','http','url','path','util','fs','argsparser'],(jsonTests,Set,report2string,serverClientComm,child_process,promiseModule,http,urlModule,pathModule,util,fs,argsparser) ->
+define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet','util/BufferedStream',"scxml/test/report2string",'scxml/test/multi-process-browser/server-client-comm','child_process','promise','http','url','path','util','fs','argsparser'],(jsonTests,Set,BufferedStream,report2string,serverClientComm,child_process,promiseModule,http,urlModule,pathModule,util,fs,argsparser) ->
 
 	clone = (o) ->
 		toReturn = {}
@@ -13,7 +13,8 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 		projectDir = args['-projectDir'] or '/home/jacob/workspace/scion/'
 		clientModulePath = args['-clientModulePath'] or '/home/jacob/workspace/scion/src/main/coffeescript/scxml/test/multi-process-2/client.coffee'
 		runLocal = args['-runLocal']
-		numLocalProcesses = args['-numLocalProcesses'] or 0
+		numLocalProcesses = args['-numLocalProcesses'] or 1
+		verbose = args['-verbose']
 
 		clientAddresses =
 			switch typeof args['-clientAddresses']
@@ -28,7 +29,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 		console.log "stopOnFail",stopOnFail
 		console.log "clientModulePath",clientModulePath
 		console.log "runLocal",runLocal
-		console.log "runLocalProcesses",runLocalProcesses
+		console.log "numLocalProcesses",numLocalProcesses
 
 		results =
 			testCount : 0
@@ -41,7 +42,30 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 
 		testMap = {}
 
-		finishedClients = []
+		sendTest = (p) ->
+			currentTest = jsonTests.pop()
+
+			if currentTest
+				#there are still tests left, so start a test
+				
+				console.error "starting test #{currentTest.id})"
+
+				#put the current test in the testmap
+				#the important stateful variable is the list of expected configurations
+				testMap[currentTest.id] =
+					test : currentTest
+					sourceProcess : p
+
+				results.testCount++
+
+				fs.writeFileSync('jsonTest.json',JSON.stringify currentTest)
+				p.stdin.write "#{JSON.stringify currentTest}\n"
+
+			else
+				#there are no more tests left, so tell the client he's done
+				console.error "No more tests. Wrapping up."
+
+				finish()
 
 		finish = ->
 			console.error "All clients finished. Wrapping up."
@@ -57,84 +81,62 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 
 			endTime = new Date()
 
+			#terminate all client processes
+			p.stdin.end() for p in clientProcesses
+
 			console.error "Running time: #{(endTime - startTime)/1000} seconds"
 
 			process.exit results.testCount == results.testsPassed
 
-		console.error "starting server"
-		processMessage = (p,jsonMessage) ->
+		processMessage = (jsonResults) ->
 
-			switch jsonMessage.method
-				when "get-test"
+			if jsonResults.results.pass
+				results.testsPassed.push testMap[jsonResults.testId].test
+			else
+				results.testsFailed.push testMap[jsonResults.testId].test
 
-					#capture the start time on first request
-					startTime = startTime or new Date()
+				console.error jsonResults.results.msg
 
-					response.writeHead 200,{"Content-Type":"text/json"}
+				#if stopOnFail is set, then wrap up
+				if stopOnFail
+					console.error "Test #{testId} failed and stopOnFail is set. Wrapping up..."
+					finish()
 
-					currentTest = jsonTests.pop()
-
-					if currentTest
-						#there are still tests left, so start a test
-						
-						console.error "starting test #{currentTest.id})"
-
-						#put the current test in the testmap
-						#the important stateful variable is the list of expected configurations
-						testMap[currentTest.id] =
-							test : currentTest
-							sourceProcess : p
-
-						results.testCount++
-
-						p.write "#{JSON.stringify currentTest}\n"
-
-					else
-						#there are no more tests left, so tell the client he's done
-						console.error "No more tests. Adding #{request.connection.remoteAddress} to finishedClients"
-
-						finishedClients.push p
-						p.stdin.end()
-
-						console.error "#{finishedClients.length} clients finished"
-
-						#once all clients are finished, then we're finished
-						#print report and exit
-						if finishedClients.length == clientAddresses.length then finish()
-
-				when "post-results"
-					if jsonMessage.results.pass
-						results.testsPassed.push jsonMessage.testId
-					else
-						results.testsFailed.push jsonMessage.testId
-
-						console.error jsonMessage.results.msg
-
-						#if stopOnFail is set, then wrap up
-						if stopOnFail
-							console.error "Test #{testId} failed and stopOnFail is set. Wrapping up..."
-							finish()
-				else
-					console.error "Received unknown message"
-					process.exit()
+			#send next test
+			p = clientProcesses.shift()
+			clientProcesses.push p	#push this process at the end of the list, so we do a round-robin
+			sendTest p
 
 		hookUpEventHandling = (p) ->
 			buff = new BufferedStream p.stdout
 			buff.on "line",(line) ->
-				jsonMessage = JSON.parse line
-				processMessage p,jsonMessage
+				jsonResults = JSON.parse line
+				processMessage jsonResults
 
-			p.stderr.setEncoding 'utf8'
-			p.stderr.on "data",(s) ->
-				console.error "From process #{p.id} stderr: #{s}"
+			if verbose
+				p.stderr.setEncoding 'utf8'
+				p.stderr.on "data",(s) ->
+					console.error "From process #{p.pid} stderr: #{s}"
 			
+		CLIENT_MODULE = "scxml/test/multi-process-2/client"
+
 		startClient =
 			if runLocal
-				-> child_process.spawn "bash",["#{projectDir}/bin/run-module-node.sh","src/main/coffeescript/scxml/test/multi-process-2/client.coffee"]
+				-> child_process.spawn "bash",["#{projectDir}/bin/run-module-node.sh",CLIENT_MODULE]
 			else
-				(address) -> child_process.spawn "ssh",[address,"bash","#{projectDir}/bin/run-module-node.sh","src/main/coffeescript/scxml/test/multi-process-2/client.coffee"]
+				(address) -> child_process.spawn "ssh",[address,"bash","#{projectDir}/bin/run-module-node.sh",CLIENT_MODULE]
 
 		clientAddresses = if runLocal then [0...numLocalProcesses] else clientAddresses
 			
 		#start clients
-		hookUpEventHandling startClient address for address in clientAddresses
+		console.error "starting clients"
+		clientProcesses = (startClient address for address in clientAddresses)
+
+		startTime = startTime or new Date()
+
+		console.error "start time",startTime
+
+		#send initial tests to clients
+		for p in clientProcesses
+			hookUpEventHandling p
+			sendTest p

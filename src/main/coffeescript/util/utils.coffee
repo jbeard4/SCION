@@ -1,2 +1,2 @@
 define
-	wrapLine : (p) -> (o) -> p "#{JSON.stringify o}\n"
+	wrapLine : (p,self=this,appendNewline=true) -> (o) -> p.call self,"#{JSON.stringify o}#{if appendNewline then '\n' else ''}"

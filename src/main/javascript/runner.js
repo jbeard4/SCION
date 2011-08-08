@@ -72,7 +72,12 @@
 			},
 			[mainFunction],
 			function(fn){
-				fn.apply(this,preparedArguments);
+				if(!fn){
+					console.error("Unable to find module",mainFunction);
+					return 1;
+				}else{
+					return fn.apply(this,preparedArguments);
+				}
 			}
 		);
 

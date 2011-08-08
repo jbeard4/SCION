@@ -1,8 +1,8 @@
 #require ["scxml/SCXML","scxml/json2model","scxml/json2extra-model"],(scxml,json2model,json2ExtraModel) ->
-require ["scxml/SCXML","scxml/test/multi-process-browser/initialize-json-test-descriptor","scxml/event",,"util/utils"],(scxml,initializeJsonTest,Event,utils) ->
+require ["scxml/SCXML","scxml/test/multi-process-browser/initialize-json-test-descriptor","scxml/event","util/utils"],(scxml,initializeJsonTest,Event,utils) ->
 	#set up communication stuff
 
-	wl = utils.wrapLine print
+	wl = utils.wrapLine print,this,false
 
 	this.console =
 		log : -> wl {method:"log",args:Array.prototype.slice.call(arguments)}
@@ -22,14 +22,28 @@ require ["scxml/SCXML","scxml/test/multi-process-browser/initialize-json-test-de
 
 	initializeJsonTest testJson,([m,model,optimizations]) ->
 
-		interpreter = new scxml.SimpleInterpreter model,comm.setTimeout,clearTimeout,optimizations
+		console.log "instantiating interpreter"
+		interpreter = new scxml.SimpleInterpreter model,comm.setTimeout,comm.clearTimeout,optimizations
+
+		console.log "statechart instantiated"
+
 		interpreter.start()
+
+		console.log "statechart initialized"
+
 		initialConfiguration = interpreter.getConfiguration()
+		
+		console.log 'sending initialization event'
 
 		comm.statechartInitialized()
 		comm.checkConfiguration initialConfiguration.iter()
 		
 		#mainloop
 		while event = readline()
-			console.log "received chunk",chunk
-			if event is "$quit" then quit(true) else interpreter.gen new Event event
+			console.log "received event",event
+			if event is "$quit"
+				quit(true)
+			else
+				#perform big step, check the configuration
+				interpreter.gen new Event event
+				comm.checkConfiguration interpreter.getConfiguration().iter()
