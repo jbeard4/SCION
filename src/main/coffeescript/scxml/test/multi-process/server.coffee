@@ -1,4 +1,4 @@
-define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scxml/test/report2string",'child_process','argsparser','fs','util'],(jsonTests,BufferedStream,report2string,child_process,argsparser,fs,util) ->
+define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scxml/test/report2string",'util/utils','child_process','argsparser','fs','util'],(jsonTests,BufferedStream,report2string,utils,child_process,argsparser,fs,util) ->
 
 	->
 		optionToArray = (args,option,defaultValue) ->
@@ -13,7 +13,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 		stopOnFail = args['-stopOnFail']
 		projectDir = args['-projectDir'] or '/home/jacob/workspace/scion/'
 		clientModulePath = args['-clientModulePath'] or '/home/jacob/workspace/scion/src/main/coffeescript/scxml/test/multi-process/client.coffee'
-		runLocal = args['-runLocal']
+		local = args['-local']
 		numLocalProcesses = args['-numLocalProcesses'] or 1
 		verbose = args['-verbose']
 		logFile = args['-logFile']
@@ -26,7 +26,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 		console.log "eventDensity",eventDensity
 		console.log "stopOnFail",stopOnFail
 		console.log "clientModulePath",clientModulePath
-		console.log "runLocal",runLocal
+		console.log "local",local
 		console.log "numLocalProcesses",numLocalProcesses
 		console.log 'logFile',logFile
 		console.log 'clientAddresses',clientAddresses
@@ -36,15 +36,12 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 		tmp = []
 		for interpreter in interpreters
 			for test in jsonTests
-				tmp.push {
-					interpreter : interpreter
-					test : test
-				}
+				tmp.push utils.merge test,{interpreter : interpreter}
 		jsonTests = tmp
 
 		#open up file for logging
 		if logFile and not (logFile is '-')
-			log = fs.createWriteStream(logFile, {'flags': 'a'})
+			log = fs.createWriteStream(logFile, {'flags': 'w'})
 
 		results =
 			testCount : 0
@@ -63,15 +60,22 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 			if currentTest
 				#there are still tests left, so start a test
 				
-				console.log "starting test {#{currentTest.interpreter}}#{currentTest.test.id})"
+				console.log "starting test {#{currentTest.interpreter}}#{currentTest.id})"
 
 				#put the current test in the testmap
 				#the important stateful variable is the list of expected configurations
-				testMap[currentTest.test.id] =
+				testMap[currentTest.id] =
 					test : currentTest
 					sourceProcess : p
 
 				results.testCount++
+
+				#diagnositcs. TODO: remove this later
+				s = "#{JSON.stringify currentTest}\n"
+				for e in currentTest.testScript.events
+					s += "#{e.event.name}\n"
+				fs.writeFileSync 'jsonTest.json',s
+				
 
 				p.stdin.write "#{JSON.stringify currentTest}\n"
 
@@ -84,7 +88,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 		finish = ->
 			console.log "All clients finished. Wrapping up."
 
-			summary = (results) -> "{#{result.interpreter}}#{result.test.id}" for result in results
+			summary = (results) -> "{#{result.interpreter}}#{result.id}" for result in results
 
 			report =
 				testCount : results.testCount
@@ -143,12 +147,12 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 		CLIENT_MODULE = "scxml/test/multi-process/client"
 
 		startClient =
-			if runLocal
+			if local
 				-> child_process.spawn "bash",["#{projectDir}/bin/run-module-node.sh",CLIENT_MODULE]
 			else
 				(address) -> child_process.spawn "ssh",[address,"bash","#{projectDir}/bin/run-module-node.sh",CLIENT_MODULE]
 
-		clientAddresses = if runLocal then [0...numLocalProcesses] else clientAddresses
+		clientAddresses = if local then [0...numLocalProcesses] else clientAddresses
 			
 		#start clients
 		console.log "starting clients"

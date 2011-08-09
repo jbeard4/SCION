@@ -1,9 +1,5 @@
-define ["spartanLoaderForAllTests", "class-transition-lookup-optimization-array-loader", "switch-transition-lookup-optimization-array-loader", "table-transition-lookup-optimization-array-loader"],(testTuples,classTransitionOpts,switchTransitionOpts,tableTransitionOpts) ->
+define ["spartanLoaderForAllTests", "class-transition-lookup-optimization-array-loader", "switch-transition-lookup-optimization-array-loader", "table-transition-lookup-optimization-array-loader",'util/utils'],(testTuples,classTransitionOpts,switchTransitionOpts,tableTransitionOpts,utils) ->
 
-	merge = (from,to) ->
-		for k,v of from
-			to[k] = v
-		return to
 
 	testName = (test) -> "(#{test.name}/#{test.group}[#{test.transitionSelector.selectorKey};#{test.set.setTypeKey};#{test.extraModelInfo}])"
 
@@ -32,7 +28,7 @@ define ["spartanLoaderForAllTests", "class-transition-lookup-optimization-array-
 			for setTypeKey,setTypeVal of setTypes
 				for info in extraModelInfo
 					test =
-						merge testTuples[i],
+						utils.merge testTuples[i],
 							transitionSelector :
 								selectorKey : selectorKey
 								selector : selector

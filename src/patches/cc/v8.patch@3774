@@ -1,0 +1,61 @@
+Index: samples/shell.cc
+===================================================================
+--- samples/shell.cc	(revision 8209)
++++ samples/shell.cc	(working copy)
+@@ -43,6 +43,7 @@
+ v8::Handle<v8::Value> Quit(const v8::Arguments& args);
+ v8::Handle<v8::Value> Version(const v8::Arguments& args);
+ v8::Handle<v8::String> ReadFile(const char* name);
++v8::Handle<v8::Value> ReadLine(const v8::Arguments& args);
+ void ReportException(v8::TryCatch* handler);
+ 
+ 
+@@ -61,6 +62,8 @@
+   global->Set(v8::String::New("quit"), v8::FunctionTemplate::New(Quit));
+   // Bind the 'version' function
+   global->Set(v8::String::New("version"), v8::FunctionTemplate::New(Version));
++  // Bind the 'readline' function
++  global->Set(v8::String::New("readline"), v8::FunctionTemplate::New(ReadLine)); 
+   // Create a new execution environment containing the built-in
+   // functions
+   v8::Handle<v8::Context> context = v8::Context::New(NULL, global);
+@@ -195,6 +198,26 @@
+ }
+ 
+ 
++// Reads a line from stdin
++v8::Handle<v8::Value> ReadLine(const v8::Arguments& args) {
++
++	char str [10000];
++	char c;
++	int i;
++
++	i=0;
++	while(c = getchar()){
++		if ( c == '\n' || c == EOF ) break;
++
++		str[i] = c;
++		i++;	
++	}
++	str[i] = '\0';
++
++	return v8::String::New(str, i);
++}
++
++
+ // Reads a file into a v8 string.
+ v8::Handle<v8::String> ReadFile(const char* name) {
+   FILE* file = fopen(name, "rb");
+Index: SConstruct
+===================================================================
+--- SConstruct	(revision 8209)
++++ SConstruct	(working copy)
+@@ -47,7 +47,7 @@
+ # on linux we need these compiler flags to avoid crashes in the v8 test suite
+ # and avoid dtoa.c strict aliasing issues
+ if os.environ.get('GCC_VERSION') == '44':
+-    GCC_EXTRA_CCFLAGS = ['-fno-tree-vrp']
++    GCC_EXTRA_CCFLAGS = ['-fno-tree-vrp', '-fno-strict-aliasing']
+     GCC_DTOA_EXTRA_CCFLAGS = ['-fno-strict-aliasing']
+ else:
+     GCC_EXTRA_CCFLAGS = []

@@ -21,7 +21,7 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process",'
 
 		runTest = (jsonTest) ->
 			#hook up state variables
-			currentTest = jsonTest.test
+			currentTest = jsonTest
 			expectedConfigurations =
 				[new Set currentTest.testScript.initialConfiguration].concat(
 					(new Set eventTuple.nextConfiguration for eventTuple in currentTest.testScript.events))
@@ -29,7 +29,7 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process",'
 			console.error "received test #{currentTest.id}"
 			
 			#start up a new statechart process
-			currentScxmlProcess = child_process.spawn "bash",['bin/run-tests-spartan-shell.sh',jsonTest.interpreter,'scxml/test/multi-process/scxml.js']
+			currentScxmlProcess = child_process.spawn "bash",['bin/run-tests-spartan-shell.sh',currentTest.interpreter,'scxml/test/multi-process/scxml.js']
 
 			scxmlWL = utils.wrapLine currentScxmlProcess.stdin.write,currentScxmlProcess.stdin
 
@@ -54,9 +54,6 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process",'
 
 				if e.after then setTimeout step,e.after else step()
 
-		#server sends tests only
-		processServerMessage = (jsonTest) -> runTest jsonTest
-
 		processClientMessage = (jsonMessage) ->
 			switch jsonMessage.method
 				when "statechart-initialized"
@@ -79,7 +76,7 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process",'
 					console.error "Remaining expected configurations",expectedConfigurations
 						
 					if expectedConfiguration.equals configuration
-						process.stderr.write "Matched expected configuration."
+						console.error "Matched expected configuration."
 
 						#if we're out of tests, then we're done and we report that we succeeded
 						if not expectedConfigurations.length
@@ -116,6 +113,6 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process",'
 					
 
 		inStream = new BufferedStream process.stdin
-		inStream.on "line",(l) -> processServerMessage JSON.parse l
+		inStream.on "line",(l) -> runTest JSON.parse l
 
 		process.stdin.resume()
