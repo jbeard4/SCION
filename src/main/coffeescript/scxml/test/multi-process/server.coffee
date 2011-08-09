@@ -12,7 +12,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 		eventDensity = args['-eventDensity'] or 10
 		stopOnFail = args['-stopOnFail']
 		projectDir = args['-projectDir'] or '/home/jacob/workspace/scion/'
-		clientModulePath = args['-clientModulePath'] or '/home/jacob/workspace/scion/src/main/coffeescript/scxml/test/multi-process-2/client.coffee'
+		clientModulePath = args['-clientModulePath'] or '/home/jacob/workspace/scion/src/main/coffeescript/scxml/test/multi-process/client.coffee'
 		runLocal = args['-runLocal']
 		numLocalProcesses = args['-numLocalProcesses'] or 1
 		verbose = args['-verbose']
@@ -140,7 +140,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 					else
 						console.log l
 			
-		CLIENT_MODULE = "scxml/test/multi-process-2/client"
+		CLIENT_MODULE = "scxml/test/multi-process/client"
 
 		startClient =
 			if runLocal

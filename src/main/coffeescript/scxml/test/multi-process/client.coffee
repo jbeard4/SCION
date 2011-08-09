@@ -29,7 +29,7 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process",'
 			console.error "received test #{currentTest.id}"
 			
 			#start up a new statechart process
-			currentScxmlProcess = child_process.spawn "bash",['bin/run-tests-spartan-shell.sh',jsonTest.interpreter,'scxml/test/multi-process-2/scxml.js']
+			currentScxmlProcess = child_process.spawn "bash",['bin/run-tests-spartan-shell.sh',jsonTest.interpreter,'scxml/test/multi-process/scxml.js']
 
 			scxmlWL = utils.wrapLine currentScxmlProcess.stdin.write,currentScxmlProcess.stdin
 
