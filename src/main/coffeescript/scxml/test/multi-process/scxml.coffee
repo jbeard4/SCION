@@ -41,9 +41,6 @@ require ["scxml/SCXML","scxml/test/multi-process-browser/initialize-json-test-de
 		#mainloop
 		while event = readline()
 			console.log "received event",event
-			if event is "$quit"
-				quit(true)
-			else
-				#perform big step, check the configuration
-				interpreter.gen new Event event
-				comm.checkConfiguration interpreter.getConfiguration().iter()
+			#perform big step, check the configuration
+			interpreter.gen new Event event
+			comm.checkConfiguration interpreter.getConfiguration().iter()

@@ -81,9 +81,10 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process",'
 						#if we're out of tests, then we're done and we report that we succeeded
 						if not expectedConfigurations.length
 							#we're done, post results and send signal to fetch next test
-							postTestResults currentTest.id, {pass : true}
-							currentScxmlProcess.removeAllListeners()
-							currentScxmlProcess.stdin.write "$quit"
+							currentScxmlProcess.on 'exit',->
+								currentScxmlProcess.removeAllListeners()
+								postTestResults currentTest.id, {pass : true}
+							#close the pipe, which will terminate the process
 							currentScxmlProcess.stdin.end()
 							
 					else
@@ -94,13 +95,15 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process",'
 						#prevent sending further events
 						eventsToSend = []
 
-						#clear event listeners
-						currentScxmlProcess.removeAllListeners()
-						currentScxmlProcess.stdin.write "$quit"
+						currentScxmlProcess.on 'exit',->
+							#clear event listeners
+							currentScxmlProcess.removeAllListeners()
+							#report failed test
+							postTestResults currentTest.id,{pass : pass, msg : msg}
+
+						#close the pipe, which will terminate the process
 						currentScxmlProcess.stdin.end()
 
-						#report failed test
-						postTestResults currentTest.id,{pass : pass, msg : msg}
 
 				when "set-timeout"
 					setTimeout (-> scxmlWL jsonMessage.event),jsonMessage.timeout
