@@ -109,7 +109,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 
 			process.exit results.testCount == results.testsPassed
 
-		processMessage = (jsonResults) ->
+		processMessage = (jsonResults,p) ->
 
 			if jsonResults.results.pass
 				results.testsPassed.push testMap[jsonResults.testId].test
@@ -124,15 +124,13 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 					finish()
 
 			#send next test
-			p = clientProcesses.shift()
-			clientProcesses.push p	#push this process at the end of the list, so we do a round-robin
 			sendTest p
 
 		hookUpEventHandling = (p) ->
 			buff = new BufferedStream p.stdout
 			buff.on "line",(line) ->
 				jsonResults = JSON.parse line
-				processMessage jsonResults
+				processMessage jsonResults,p
 
 			#if verbose flag is set, log output of running processes
 			if verbose
@@ -158,6 +156,8 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 		console.log "starting clients"
 		clientProcesses = (startClient address for address in clientAddresses)
 
+		console.log "spawned client processes",(p.pid for p in clientProcesses)
+
 		startTime = startTime or new Date()
 
 		console.log "start time",startTime
@@ -167,4 +167,3 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 			hookUpEventHandling p
 			sendTest p
 		
-
