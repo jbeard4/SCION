@@ -79,13 +79,14 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 			if currentTest
 				#there are still tests left, so start a test
 				
-				console.log "starting test {#{currentTest.interpreter}}#{currentTest.id})"
+				console.log "starting test {#{currentTest.interpreter}}#{currentTest.id}) on process #{p.pid}"
 
 				#put the current test in the testmap
 				#the important stateful variable is the list of expected configurations
 				testMap[currentTest.id] =
 					test : currentTest
 					sourceProcess : p
+					finished : false
 
 				results.testCount++
 
@@ -100,12 +101,21 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 
 			else
 				#there are no more tests left, so tell the client he's done
-				console.log "No more tests. Wrapping up."
+				console.log "No more tests. Ending client process #{p.pid}."
 
-				finish()
+				p.removeAllListeners 'exit'
+				p.stdin.end()
+				clientProcesses.splice(clientProcesses.indexOf(p),1)
+
+				#all client processes have finished, then we can end
+				if not clientProcesses.length then finish()
 
 		finish = ->
 			console.log "All clients finished. Wrapping up."
+
+			console.log "The following tests did not receive results:"
+			for own k,v of testMap when not v.finished
+				console.log k
 
 			summary = (results) -> "{#{result.interpreter}}#{result.id}" for result in results
 
@@ -119,9 +129,6 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 
 			endTime = new Date()
 
-			#terminate all client processes
-			p.stdin.end() for p in clientProcesses
-
 			console.log "Running time: #{(endTime - startTime)/1000} seconds"
 
 			if log then log.end()
@@ -129,6 +136,10 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 			process.exit results.testCount == results.testsPassed
 
 		processMessage = (jsonResults,p) ->
+
+			#console.log "Received results back for #{jsonResults.testId} from process #{p.pid}"
+
+			testMap[jsonResults.testId].finished = true
 
 			if jsonResults.results.pass
 				results.testsPassed.push testMap[jsonResults.testId].test
@@ -160,6 +171,10 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 						log.write l
 					else
 						console.log l
+
+		onPrematureExit = (p) ->
+			console.error "Process #{p.pid} ended unexpectedly"
+			if stopOnFail then process.exit 1
 			
 		CLIENT_MODULE = "scxml/test/multi-process/client"
 
@@ -183,6 +198,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 
 		#send initial tests to clients
 		for p in clientProcesses
+			p.on "exit",onPrematureExit
 			hookUpEventHandling p
 			sendTest p
 		
