@@ -44,6 +44,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 		console.log "config:"
 		console.log "eventDensity",eventDensity
 		console.log "stopOnFail",stopOnFail
+		console.log "projectDir",projectDir
 		console.log "clientModulePath",clientModulePath
 		console.log "local",local
 		console.log "numLocalProcesses",numLocalProcesses
@@ -180,9 +181,9 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 
 		startClient =
 			if local
-				-> child_process.spawn "bash",["#{projectDir}/bin/run-module.sh",CLIENT_MODULE,"node"]
+				-> child_process.spawn "bash",["#{projectDir}/bin/run-module.sh",CLIENT_MODULE,"node",eventDensity,projectDir]
 			else
-				(address) -> child_process.spawn "ssh",[address,"bash","#{projectDir}/bin/run-module.sh",CLIENT_MODULE,"node"]
+				(address) -> child_process.spawn "ssh",[address,"bash","#{projectDir}/bin/run-module.sh",CLIENT_MODULE,"node",eventDensity,projectDir]
 
 		clientAddresses = if local then [0...numLocalProcesses] else clientAddresses
 			
