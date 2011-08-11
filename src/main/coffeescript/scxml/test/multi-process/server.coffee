@@ -18,7 +18,26 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 		verbose = args['-verbose']
 		logFile = args['-logFile']
 		clientAddresses = optionToArray args,'clientAddresses','localhost'
-		interpreters = optionToArray args,'interpreters','spidermonkey-js'
+		interpreters = optionToArray args,'interpreters','spidermonkey'
+
+		if args['-help']
+			console.log """
+				Usage:
+				./bin/run-multi-process-testing-framework.sh [options]
+
+				Available options:
+				-eventDensity
+				-stopOnFail
+				-projectDir
+				-clientModulePath
+				-local
+				-numLocalProcesses
+				-verbose
+				-logFile
+				-clientAddresses
+				-interpreters
+			"""
+			return true
 
 		console.log "received args",args
 
@@ -146,9 +165,9 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 
 		startClient =
 			if local
-				-> child_process.spawn "bash",["#{projectDir}/bin/run-module-node.sh",CLIENT_MODULE]
+				-> child_process.spawn "bash",["#{projectDir}/bin/run-module.sh",CLIENT_MODULE,"node"]
 			else
-				(address) -> child_process.spawn "ssh",[address,"bash","#{projectDir}/bin/run-module-node.sh",CLIENT_MODULE]
+				(address) -> child_process.spawn "ssh",[address,"bash","#{projectDir}/bin/run-module.sh",CLIENT_MODULE,"node"]
 
 		clientAddresses = if local then [0...numLocalProcesses] else clientAddresses
 			

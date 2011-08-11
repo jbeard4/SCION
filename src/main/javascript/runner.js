@@ -45,9 +45,6 @@
 		};
 	}
 
-	//note: spartan shell environments cannot reliably accept command-line args, so the entry point (e.g. unit test harness) is called directly for them
-	//this is accomplished by creating a launch script, which symlinks desired entry point module to main.js in pwd
-
 	if(args.length >= 3+argOffset){
 		var preparedArguments = args.slice(3+argOffset);
 

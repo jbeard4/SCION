@@ -6,6 +6,8 @@
 define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process",'fs','util'],(BufferedStream,Set,utils,child_process,fs,util) ->
 
 	->
+		SCXML_MODULE = "scxml/test/multi-process/scxml"
+
 		eventDensity = 10	#TODO: parameterize this
 
 		wl = utils.wrapLine process.stdout.write,process.stdout
@@ -29,7 +31,7 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process",'
 			console.error "received test #{currentTest.id}"
 			
 			#start up a new statechart process
-			currentScxmlProcess = child_process.spawn "bash",['bin/run-tests-spartan-shell.sh',currentTest.interpreter,'scxml/test/multi-process/scxml.js']
+			currentScxmlProcess = child_process.spawn "bash",["bin/run-module.sh",SCXML_MODULE,currentTest.interpreter]
 
 			scxmlWL = utils.wrapLine currentScxmlProcess.stdin.write,currentScxmlProcess.stdin
 
