@@ -1,5 +1,8 @@
 #require ["scxml/SCXML","scxml/json2model","scxml/json2extra-model"],(scxml,json2model,json2ExtraModel) ->
-define ["scxml/SCXML","scxml/test/multi-process-browser/initialize-json-test-descriptor","scxml/event","util/utils"],(scxml,initializeJsonTest,Event,utils) ->
+define ["scxml/SCXML","scxml/test/multi-process-browser/initialize-json-test-descriptor","scxml/event","util/utils","util/readline","lib/json2"],(scxml,initializeJsonTest,Event,utils,readline) ->
+
+	#a little compatibility layer for fn readline for rhino
+
 	->
 		#set up communication stuff
 
