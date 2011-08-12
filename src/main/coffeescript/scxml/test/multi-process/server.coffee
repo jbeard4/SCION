@@ -17,6 +17,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 		numLocalProcesses = args['-numLocalProcesses'] or 1
 		verbose = args['-verbose']
 		logFile = args['-logFile']
+		resultFile = args['-resultFile'] or 'results.txt'
 		clientAddresses = optionToArray args,'clientAddresses','localhost'
 		interpreters = optionToArray args,'interpreters','spidermonkey'
 
@@ -87,7 +88,6 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 				testMap[currentTest.id] =
 					test : currentTest
 					sourceProcess : p
-					finished : false
 
 				results.testCount++
 
@@ -115,7 +115,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 			console.log "All clients finished. Wrapping up."
 
 			console.log "The following tests did not receive results:"
-			for own k,v of testMap when not v.finished
+			for own k,v of testMap when not v.results
 				console.log k
 
 			summary = (results) -> "{#{result.interpreter}}#{result.id}" for result in results
@@ -132,6 +132,13 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 
 			console.log "Running time: #{(endTime - startTime)/1000} seconds"
 
+			#dump the results
+			r = {}
+			for k,v of testMap
+				r[k] = v.results
+	
+			fs.writeFileSync resultFile,(JSON.stringify r)
+
 			if log then log.end()
 
 			process.exit results.testCount == results.testsPassed
@@ -140,7 +147,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 
 			#console.log "Received results back for #{jsonResults.testId} from process #{p.pid}"
 
-			testMap[jsonResults.testId].finished = true
+			testMap[jsonResults.testId].results = jsonResults.results
 
 			if jsonResults.results.pass
 				results.testsPassed.push testMap[jsonResults.testId].test

@@ -3,7 +3,7 @@
 #start scxml test client
 #run through test script
 #when we're done, send results to server, and request new test
-define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process",'fs','util'],(BufferedStream,Set,utils,child_process,fs,util) ->
+define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory',"child_process",'fs','util'],(BufferedStream,Set,utils,memoryUtil,child_process,fs,util) ->
 
 	(eventDensity,projectDir) ->
 		SCXML_MODULE = "scxml/test/multi-process/scxml"
@@ -12,14 +12,29 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process",'
 
 		wl = utils.wrapLine process.stdout.write,process.stdout
 
-		postTestResults = (testId,results) -> wl {method:"post-results",results:results,testId:testId}
-
 		#state variables
 		currentTest = null
 		currentScxmlProcess = null
 		expectedConfigurations = null
 		eventsToSend = null
 		scxmlWL = null
+		memory = null
+		startTime = null
+		initializationTime = null
+		finishTime = null
+
+		postTestResults = (testId,passOrFail,msg) ->
+			wl(
+				method:"post-results"
+				testId:testId
+				results:
+					pass : passOrFail
+					msg : msg
+					initializationTime : initializationTime - startTime
+					elapsedTime : finishTime - initializationTime
+					totalElapsedTime : finishTime - startTime	#for convenience
+					memory : memory
+			)
 
 		runTest = (jsonTest) ->
 			#hook up state variables
@@ -34,6 +49,9 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process",'
 			currentScxmlProcess = child_process.spawn "bash",["#{projectDir}/bin/run-module.sh",SCXML_MODULE,currentTest.interpreter]
 
 			scxmlWL = utils.wrapLine currentScxmlProcess.stdin.write,currentScxmlProcess.stdin
+
+			startTime = new Date()
+			memory = []
 
 			#hook up messaging
 			scOutStream = new BufferedStream currentScxmlProcess.stdout
@@ -59,6 +77,10 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process",'
 		processClientMessage = (jsonMessage) ->
 			switch jsonMessage.method
 				when "statechart-initialized"
+					memory.push memoryUtil.getMemory currentScxmlProcess.pid
+
+					initializationTime = new Date()
+
 					#start to send events into sc process
 					eventsToSend = currentTest.testScript.events.slice()
 
@@ -82,26 +104,34 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils","child_process",'
 
 						#if we're out of tests, then we're done and we report that we succeeded
 						if not expectedConfigurations.length
+							#check memory usage
+							memory.push memoryUtil.getMemory currentScxmlProcess.pid
+							finishTime = new Date()
+
 							#we're done, post results and send signal to fetch next test
 							currentScxmlProcess.on 'exit',->
 								currentScxmlProcess.removeAllListeners()
-								postTestResults currentTest.id, {pass : true}
+								postTestResults currentTest.id,true
+
 							#close the pipe, which will terminate the process
 							currentScxmlProcess.stdin.end()
 							
 					else
 						#test has failed
-						pass = false
 						msg = "Did not match expected configuration. Received: #{JSON.stringify(configuration)}. Expected:#{JSON.stringify(expectedConfiguration)}."
-
+						
 						#prevent sending further events
 						eventsToSend = []
+
+						#check memory usage
+						memory.push memoryUtil.getMemory currentScxmlProcess.pid
+						finishTime = new Date()
 
 						currentScxmlProcess.on 'exit',->
 							#clear event listeners
 							currentScxmlProcess.removeAllListeners()
 							#report failed test
-							postTestResults currentTest.id,{pass : pass, msg : msg}
+							postTestResults currentTest.id,false,msg
 
 						#close the pipe, which will terminate the process
 						currentScxmlProcess.stdin.end()
