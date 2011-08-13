@@ -5,17 +5,19 @@
 #when we're done, send results to server, and request new test
 define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','scxml/async-for',"child_process",'fs','util'],(BufferedStream,Set,utils,memoryUtil,asyncForEach,child_process,fs,util) ->
 
-	(eventDensity,projectDir,numberOfIterationsPerTest) ->
+	(eventDensity,projectDir,numberOfIterationsPerTest,performanceTestMode,numberOfEventsToSendInPerformanceTestMode) ->
 		SCXML_MODULE = "scxml/test/multi-process/scxml"
 
+		eventDensity = parseInt eventDensity
 		numberOfIterationsPerTest = parseInt numberOfIterationsPerTest
+		performanceTestMode = performanceTestMode == 'true'
+		numberOfEventsToSendInPerformanceTestMode = parseInt numberOfEventsToSendInPerformanceTestMode
 
 		console.error "Starting client. Received args eventDensity #{eventDensity}, projectDir #{projectDir}, numberOfIterationsPerTest #{numberOfIterationsPerTest}."
 
 		wl = utils.wrapLine process.stdout.write,process.stdout
 
-		#state variables
-		currentTest = null
+		#state variables for each individual test
 		currentScxmlProcess = null
 		expectedConfigurations = null
 		eventsToSend = null
@@ -24,9 +26,17 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 		startTime = null
 		initializationTime = null
 		finishTime = null
+		unexpectedExitListener = null
 
+		#state variables for each individual test, specifically pertaining to performance testing
+		randomEventCounter = null
+		receivedConfigurationCounter = null
+		
+		#state variables for each set of tests
+		currentTest = null
 		aggregateStats = null
 		nextStep = errBack = failBack = null
+		eventSet = null
 
 		postTestResults = (testId,passOrFail) ->
 			wl(
@@ -47,19 +57,25 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 
 		runTest = (jsonTest) ->
 			#hook up state variables
-			expectedConfigurations =
-				[new Set currentTest.testScript.initialConfiguration].concat(
-					(new Set eventTuple.nextConfiguration for eventTuple in currentTest.testScript.events))
+			
+			if not performanceTestMode
+				expectedConfigurations =
+					[new Set currentTest.testScript.initialConfiguration].concat(
+						(new Set eventTuple.nextConfiguration for eventTuple in currentTest.testScript.events))
 
 			console.error "received test #{currentTest.id}"
 			
 			#start up a new statechart process
 			currentScxmlProcess = child_process.spawn "bash",["#{projectDir}/bin/run-module.sh",SCXML_MODULE,currentTest.interpreter]
 
+			unexpectedExitListener = -> console.error "statechart process ended unexpectedly"
+			currentScxmlProcess.on "exit",unexpectedExitListener
+
 			scxmlWL = utils.wrapLine currentScxmlProcess.stdin.write,currentScxmlProcess.stdin
 
 			startTime = new Date()
 			memory = []
+			receivedConfigurationCounter = 0
 
 			#hook up messaging
 			scOutStream = new BufferedStream currentScxmlProcess.stdout
@@ -82,72 +98,98 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 
 				if e.after then setTimeout step,e.after else step()
 
+		sendRandomEvents = ->
+			if randomEventCounter < numberOfEventsToSendInPerformanceTestMode
+				#increment counter
+				randomEventCounter++
+				
+				#choose a random event
+				#FIXME: do we want to keep the same sequence of random events?
+				randomEvent = eventSet[Math.floor(Math.random()*eventSet.length)]
+				console.error "sending random event #{randomEvent}"
+
+				#send it in
+				currentScxmlProcess.stdin.write "#{randomEvent}\n"
+
+				#set timeout to do it again
+				setTimeout sendRandomEvents,eventDensity
+
+		finishTest = (pass,msg) ->
+			ns = if pass then nextStep else failBack
+
+			#prevent sending further events
+			if not pass then eventsToSend = []
+
+			#check memory usage
+			memory.push memoryUtil.getMemory currentScxmlProcess.pid
+			finishTime = new Date()
+
+			pushAggregateStats pass,msg
+
+			#remove the unexpected exit listener
+			currentScxmlProcess.removeListener 'exit',unexpectedExitListener
+
+			#we're done, post results and send signal to fetch next test
+			currentScxmlProcess.on 'exit',->
+				#remove all other event listeners
+				currentScxmlProcess.removeAllListeners()
+				#call next step or failBack
+				ns()
+
+			#close the pipe, which will terminate the process
+			currentScxmlProcess.stdin.end()
+
 		processClientMessage = (jsonMessage) ->
 			switch jsonMessage.method
 				when "statechart-initialized"
-					memory.push memoryUtil.getMemory currentScxmlProcess.pid
+					console.error 'statechart in child process initialized.'
 
+					#log memory and time
+					memory.push memoryUtil.getMemory currentScxmlProcess.pid
 					initializationTime = new Date()
 
 					#start to send events into sc process
-					eventsToSend = currentTest.testScript.events.slice()
+					if performanceTestMode
+						#reset the random event counter
+						randomEventCounter = 0
+						sendRandomEvents()
+					else
+						console.error "sending events #{JSON.stringify eventsToSend}"
+						eventsToSend = currentTest.testScript.events.slice()
+						sendEvents()
 
-					console.error 'statechart in child process initialized.'
-					console.error "sending events #{JSON.stringify eventsToSend}"
-					sendEvents()
 
 				when "check-configuration"
 					console.error "received request to check configuration"
 
-					expectedConfiguration = expectedConfigurations.shift()
-
 					configuration =  new Set jsonMessage.configuration
-
-					console.error "Expected configuration",expectedConfiguration
 					console.error "Received configuration",configuration
-					console.error "Remaining expected configurations",expectedConfigurations
-						
-					if expectedConfiguration.equals configuration
-						console.error "Matched expected configuration."
 
-						#if we're out of tests, then we're done and we report that we succeeded
-						if not expectedConfigurations.length
+					if performanceTestMode
+						receivedConfigurationCounter++
 
-							#check memory usage
-							memory.push memoryUtil.getMemory currentScxmlProcess.pid
-							finishTime = new Date()
-
-							pushAggregateStats true
-
-							#we're done, post results and send signal to fetch next test
-							currentScxmlProcess.on 'exit',->
-								currentScxmlProcess.removeAllListeners()
-								nextStep()
-
-							#close the pipe, which will terminate the process
-							currentScxmlProcess.stdin.end()
-							
+						#statechart has executed all events, so wrap up
+						#+1 because we will receive initial configuration as well
+						if receivedConfigurationCounter == (numberOfEventsToSendInPerformanceTestMode+1)
+							finishTest true
 					else
-						#test has failed
-						msg = "Did not match expected configuration. Received: #{JSON.stringify(configuration)}. Expected:#{JSON.stringify(expectedConfiguration)}."
-						
-						#prevent sending further events
-						eventsToSend = []
+						expectedConfiguration = expectedConfigurations.shift()
 
-						#check memory usage
-						memory.push memoryUtil.getMemory currentScxmlProcess.pid
-						finishTime = new Date()
+						console.error "Expected configuration",expectedConfiguration
+						console.error "Remaining expected configurations",expectedConfigurations
 
-						pushAggregateStats false,msg
+						if expectedConfiguration.equals configuration
+							console.error "Matched expected configuration."
 
-						currentScxmlProcess.on 'exit',->
-							#clear event listeners
-							currentScxmlProcess.removeAllListeners()
-							#report failed test
-							failBack()
+							#if we're out of tests, then we're done and we report that we succeeded
+							if not expectedConfigurations.length then finishTest true
+								
+								
+						else
+							#test has failed
+							msg = "Did not match expected configuration. Received: #{JSON.stringify(configuration)}. Expected:#{JSON.stringify(expectedConfiguration)}."
 
-						#close the pipe, which will terminate the process
-						currentScxmlProcess.stdin.end()
+							finishTest false,msg
 
 
 				when "set-timeout"
@@ -165,12 +207,16 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 			currentTest = JSON.parse l
 			aggregateStats = []
 
-			testIterations = [0...numberOfIterationsPerTest]
-			console.error "starting test #{currentTest.id} with iterations:",testIterations
+			if performanceTestMode
+				eventSet = (k for own k of currentTest.scxmlJson.events)
+				if not eventSet.length
+					console.error "No need to run performance test on statechart that does not have transitions other than default transitions. Posting results as trivial success."
+					postTestResults currentTest.id,true
+					return
 
 			#TODO: accumulate aggregate results in some data structure so we can post them here
 			asyncForEach(
-				testIterations,
+				[0...numberOfIterationsPerTest],
 				( (l,ns,eb,fb) ->
 					nextStep = ns
 					errBack = eb

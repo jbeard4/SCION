@@ -21,6 +21,8 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 		clientAddresses = optionToArray args,'clientAddresses','localhost'
 		interpreters = optionToArray args,'interpreters','spidermonkey'
 		numberOfIterationsPerTest = args['-numberOfIterationsPerTest'] or 1
+		performanceTestMode = args['-performanceTestMode']
+		numberOfEventsToSendInPerformanceTestMode = args['-numberOfEventsToSendInPerformanceTestMode'] or 10
 
 		if args['-help']
 			console.log """
@@ -40,6 +42,8 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 				-interpreters
 				-statsFile 
 				-numberOfIterationsPerTest
+				-performanceTestMode
+				-numberOfEventsToSendInPerformanceTestMode
 			"""
 			return true
 
@@ -57,6 +61,8 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 		console.log 'interpreters',interpreters
 		console.log 'statsFile',statsFile
 		console.log 'numberOfIterationsPerTest',numberOfIterationsPerTest
+		console.log 'performanceTestMode',performanceTestMode
+		console.log 'numberOfEventsToSendInPerformanceTestMode',numberOfEventsToSendInPerformanceTestMode
 
 		#add interpreters
 		tmp = []
@@ -194,9 +200,9 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 
 		startClient =
 			if local
-				-> child_process.spawn "bash",["#{projectDir}/bin/run-module.sh",CLIENT_MODULE,"node",eventDensity,projectDir,numberOfIterationsPerTest]
+				-> child_process.spawn "bash",["#{projectDir}/bin/run-module.sh",CLIENT_MODULE,"node",eventDensity,projectDir,numberOfIterationsPerTest,performanceTestMode,numberOfEventsToSendInPerformanceTestMode]
 			else
-				(address) -> child_process.spawn "ssh",[address,"bash","#{projectDir}/bin/run-module.sh",CLIENT_MODULE,"node",eventDensity,projectDir,numberOfIterationsPerTest]
+				(address) -> child_process.spawn "ssh",[address,"bash","#{projectDir}/bin/run-module.sh",CLIENT_MODULE,"node",eventDensity,projectDir,numberOfIterationsPerTest,performanceTestMode,numberOfEventsToSendInPerformanceTestMode]
 
 		clientAddresses = if local then [0...numLocalProcesses] else clientAddresses
 			
