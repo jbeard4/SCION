@@ -17,9 +17,10 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 		numLocalProcesses = args['-numLocalProcesses'] or 1
 		verbose = args['-verbose']
 		logFile = args['-logFile']
-		resultFile = args['-resultFile'] or 'results.txt'
+		statsFile = args['-statsFile'] or 'stats.json'
 		clientAddresses = optionToArray args,'clientAddresses','localhost'
 		interpreters = optionToArray args,'interpreters','spidermonkey'
+		numberOfIterationsPerTest = args['-numberOfIterationsPerTest'] or 1
 
 		if args['-help']
 			console.log """
@@ -37,6 +38,8 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 				-logFile
 				-clientAddresses
 				-interpreters
+				-statsFile 
+				-numberOfIterationsPerTest
 			"""
 			return true
 
@@ -52,6 +55,8 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 		console.log 'logFile',logFile
 		console.log 'clientAddresses',clientAddresses
 		console.log 'interpreters',interpreters
+		console.log 'statsFile',statsFile
+		console.log 'numberOfIterationsPerTest',numberOfIterationsPerTest
 
 		#add interpreters
 		tmp = []
@@ -115,7 +120,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 			console.log "All clients finished. Wrapping up."
 
 			console.log "The following tests did not receive results:"
-			for own k,v of testMap when not v.results
+			for own k,v of testMap when not v.stats
 				console.log k
 
 			summary = (results) -> "{#{result.interpreter}}#{result.id}" for result in results
@@ -132,12 +137,12 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 
 			console.log "Running time: #{(endTime - startTime)/1000} seconds"
 
-			#dump the results
+			#dump the stats
 			r = {}
 			for k,v of testMap
-				r[k] = v.results
+				r[k] = v.stats
 	
-			fs.writeFileSync resultFile,(JSON.stringify r)
+			fs.writeFileSync statsFile,(JSON.stringify r)
 
 			if log then log.end()
 
@@ -147,14 +152,15 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 
 			#console.log "Received results back for #{jsonResults.testId} from process #{p.pid}"
 
-			testMap[jsonResults.testId].results = jsonResults.results
+			testMap[jsonResults.testId].stats = jsonResults.stats
 
-			if jsonResults.results.pass
+			if jsonResults.pass
 				results.testsPassed.push testMap[jsonResults.testId].test
 			else
 				results.testsFailed.push testMap[jsonResults.testId].test
 
-				console.log jsonResults.results.msg
+				#error message will be in there somewhere. TODO: maybe filter it?
+				console.log jsonResults.stats
 
 				#if stopOnFail is set, then wrap up
 				if stopOnFail
@@ -188,9 +194,9 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 
 		startClient =
 			if local
-				-> child_process.spawn "bash",["#{projectDir}/bin/run-module.sh",CLIENT_MODULE,"node",eventDensity,projectDir]
+				-> child_process.spawn "bash",["#{projectDir}/bin/run-module.sh",CLIENT_MODULE,"node",eventDensity,projectDir,numberOfIterationsPerTest]
 			else
-				(address) -> child_process.spawn "ssh",[address,"bash","#{projectDir}/bin/run-module.sh",CLIENT_MODULE,"node",eventDensity,projectDir]
+				(address) -> child_process.spawn "ssh",[address,"bash","#{projectDir}/bin/run-module.sh",CLIENT_MODULE,"node",eventDensity,projectDir,numberOfIterationsPerTest]
 
 		clientAddresses = if local then [0...numLocalProcesses] else clientAddresses
 			

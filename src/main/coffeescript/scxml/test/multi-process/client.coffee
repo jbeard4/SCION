@@ -3,12 +3,14 @@
 #start scxml test client
 #run through test script
 #when we're done, send results to server, and request new test
-define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory',"child_process",'fs','util'],(BufferedStream,Set,utils,memoryUtil,child_process,fs,util) ->
+define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','scxml/async-for',"child_process",'fs','util'],(BufferedStream,Set,utils,memoryUtil,asyncForEach,child_process,fs,util) ->
 
-	(eventDensity,projectDir) ->
+	(eventDensity,projectDir,numberOfIterationsPerTest) ->
 		SCXML_MODULE = "scxml/test/multi-process/scxml"
 
-		console.error "Starting client. Received args eventDensity #{eventDensity}, projectDir #{projectDir}."
+		numberOfIterationsPerTest = parseInt numberOfIterationsPerTest
+
+		console.error "Starting client. Received args eventDensity #{eventDensity}, projectDir #{projectDir}, numberOfIterationsPerTest #{numberOfIterationsPerTest}."
 
 		wl = utils.wrapLine process.stdout.write,process.stdout
 
@@ -23,22 +25,28 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory',"ch
 		initializationTime = null
 		finishTime = null
 
-		postTestResults = (testId,passOrFail,msg) ->
+		aggregateStats = null
+		nextStep = errBack = failBack = null
+
+		postTestResults = (testId,passOrFail) ->
 			wl(
 				method:"post-results"
 				testId:testId
-				results:
-					pass : passOrFail
-					msg : msg
-					initializationTime : initializationTime - startTime
-					elapsedTime : finishTime - initializationTime
-					totalElapsedTime : finishTime - startTime	#for convenience
-					memory : memory
+				stats:aggregateStats
+				pass : passOrFail	#aggregate pass or fail
 			)
+
+		pushAggregateStats = (passOrFail,msg) ->
+			aggregateStats.push
+				pass : passOrFail
+				msg : msg
+				initializationTime : initializationTime - startTime
+				elapsedTime : finishTime - initializationTime
+				totalElapsedTime : finishTime - startTime	#for convenience
+				memory : memory
 
 		runTest = (jsonTest) ->
 			#hook up state variables
-			currentTest = jsonTest
 			expectedConfigurations =
 				[new Set currentTest.testScript.initialConfiguration].concat(
 					(new Set eventTuple.nextConfiguration for eventTuple in currentTest.testScript.events))
@@ -104,14 +112,17 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory',"ch
 
 						#if we're out of tests, then we're done and we report that we succeeded
 						if not expectedConfigurations.length
+
 							#check memory usage
 							memory.push memoryUtil.getMemory currentScxmlProcess.pid
 							finishTime = new Date()
 
+							pushAggregateStats true
+
 							#we're done, post results and send signal to fetch next test
 							currentScxmlProcess.on 'exit',->
 								currentScxmlProcess.removeAllListeners()
-								postTestResults currentTest.id,true
+								nextStep()
 
 							#close the pipe, which will terminate the process
 							currentScxmlProcess.stdin.end()
@@ -127,11 +138,13 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory',"ch
 						memory.push memoryUtil.getMemory currentScxmlProcess.pid
 						finishTime = new Date()
 
+						pushAggregateStats false,msg
+
 						currentScxmlProcess.on 'exit',->
 							#clear event listeners
 							currentScxmlProcess.removeAllListeners()
 							#report failed test
-							postTestResults currentTest.id,false,msg
+							failBack()
 
 						#close the pipe, which will terminate the process
 						currentScxmlProcess.stdin.end()
@@ -148,6 +161,27 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory',"ch
 					
 
 		inStream = new BufferedStream process.stdin
-		inStream.on "line",(l) -> runTest JSON.parse l
+		inStream.on "line",(l) ->
+			currentTest = JSON.parse l
+			aggregateStats = []
+
+			testIterations = [0...numberOfIterationsPerTest]
+			console.error "starting test #{currentTest.id} with iterations:",testIterations
+
+			#TODO: accumulate aggregate results in some data structure so we can post them here
+			asyncForEach(
+				testIterations,
+				( (l,ns,eb,fb) ->
+					nextStep = ns
+					errBack = eb
+					failBack = fb
+					runTest currentTest
+				),
+				(->
+					console.error "Done. Posting results."
+					postTestResults currentTest.id,true),
+				(->),
+				(-> postTestResults currentTest.id,false)
+			)
 
 		process.stdin.resume()
