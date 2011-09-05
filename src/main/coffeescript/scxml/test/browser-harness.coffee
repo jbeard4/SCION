@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 require ["scxml/test/harness","scxml/test/report2string","scxml/async-for","lib/jquery","lib/json2"],(harness,report2string,asyncForEach)->
 
 	setTimeout : (callback,timeout) -> window.setTimeout callback,timeout

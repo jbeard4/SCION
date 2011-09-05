@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 define ->
 	if ((typeof readline) is 'undefined') and not ((typeof Packages) is 'undefined')
 		do ->

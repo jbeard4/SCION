@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 define ["scxml/json2model","scxml/json2extra-model"],(json2model,json2ExtraModel) ->
 
 	(testJson,callback) ->

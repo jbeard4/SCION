@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml/test/report2string",'scxml/test/multi-process-browser/server-client-comm','child_process','promise','http','url','path','util','fs','argsparser'],(jsonTests,Set,report2string,serverClientComm,child_process,promiseModule,http,urlModule,pathModule,util,fs,argsparser) ->
 
 	clone = (o) ->

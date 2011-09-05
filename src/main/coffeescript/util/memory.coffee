@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 define ['fs'],(fs) ->
 	getMemory : (pid) ->
 		s = fs.readFileSync("/proc/#{pid}/status",'utf8')

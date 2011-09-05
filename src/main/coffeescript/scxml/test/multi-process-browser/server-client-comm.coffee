@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 define ['child_process'],(child_process) ->
 	spawn = child_process.spawn
 

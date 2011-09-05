@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 import code #TODO: explore best ways to import this conditionally (only need it when model received has "python" profile)
 
 from scxml.evaluators.interface import IEvaluator

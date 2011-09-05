@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 define ["scxml/default-transition-selector","util/set/ArraySet","scxml/model","scxml/event","scxml/evaluator","util/reduce"],(defaultTransitionSelector,ArraySet,m,Event,evaluator,reduce) ->
 
 

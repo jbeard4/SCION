@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 #spartanLoaderForAllTests is built by make
 require ["scxml/json2model","scxml/test/harness","scxml/test/report2string","scxml/test/simple-env","spartanLoaderForAllTests"],(json2model,harness,report2string,SimpleEnv,testTuples) ->
 

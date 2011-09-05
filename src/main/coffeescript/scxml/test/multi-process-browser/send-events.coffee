@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 #this module meant to be run standalone. called like:
 #ssh jbeard4@<sourceSourceAddress> DISPLAY=<DISPLAY> coffee src/main/coffeescript/scxml/test/multi-process-browser/send-events.coffee
 

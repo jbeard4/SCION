@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 define ->
 	truncate = (list) -> if list.length > 100 then list[0...50] + "..." else list
 

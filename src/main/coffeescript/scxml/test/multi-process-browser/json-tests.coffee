@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 define ["spartanLoaderForAllTests", "class-transition-lookup-optimization-array-loader", "switch-transition-lookup-optimization-array-loader", "table-transition-lookup-optimization-array-loader",'util/utils'],(testTuples,classTransitionOpts,switchTransitionOpts,tableTransitionOpts,utils) ->
 
 

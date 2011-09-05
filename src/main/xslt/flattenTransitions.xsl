@@ -1,4 +1,8 @@
 <?xml version="1.0"?>
+<!--
+Copyright (C) 2011 Jacob Beard
+Released under GNU LGPL, read the file 'COPYING' for more information
+-->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
 	xmlns:s="http://www.w3.org/2005/07/scxml"
 	xmlns="http://www.w3.org/2005/07/scxml"

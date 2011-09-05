@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 #this module relies on extra information being compiled into the json in order to speed certain methods
 #here, we just overwrite methods on model
 define ->

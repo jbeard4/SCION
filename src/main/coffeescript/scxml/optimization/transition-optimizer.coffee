@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 define ["scxml/json2model","scxml/optimization/class","scxml/optimization/state-table","scxml/optimization/switch","lib/json2"],(json2model,classOpt,tableOpt,switchOpt) ->
 
 	(pathToSCXMLJson,optimizerName="table",beautify,asyncModuleDef) ->

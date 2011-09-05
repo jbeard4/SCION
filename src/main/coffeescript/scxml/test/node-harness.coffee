@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 #spartanLoaderForAllTests is built by make
 #we use spartanLoaderForAllTests due to lack of decent XML support in node.js, as we would at least need to convert scxml tests to json ahead of time
 #or, possibly use node's process support to make a system call to a command-line xslt process (e.g. xsltproc).

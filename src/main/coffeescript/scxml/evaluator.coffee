@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 #this module exists to provde a restricted environment for evaluating ecmascript
 #code in a js module. we want to restrict the API as much as possible. 
 #Unforuntately, it would still be be possible for the evaling code to set

@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 #listen to document ready first, as we might miss it later
 require ["scxml/SCXML","scxml/test/multi-process-browser/initialize-json-test-descriptor","scxml/event"],(scxml,initializeJsonTest,Event) ->
 

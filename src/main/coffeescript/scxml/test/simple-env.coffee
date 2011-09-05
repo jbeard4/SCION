@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 #this class attempts provide simple emulation of the browser's setTimeout mechanism
 define ->
 	class SimpleEnv

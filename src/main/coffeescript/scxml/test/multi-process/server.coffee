@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scxml/test/report2string",'util/utils','child_process','argsparser','fs','util'],(jsonTests,BufferedStream,report2string,utils,child_process,argsparser,fs,util) ->
 
 	->

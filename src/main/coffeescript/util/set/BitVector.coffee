@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 define ->
 
 	#this code based on a snippet found here: http://acc6.its.brooklyn.cuny.edu/~gurwitz/core5/nav2tool.html

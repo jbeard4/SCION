@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 define ["scxml/doc2json","scxml/json2model","util/xml/rhino","util/xsl/rhino","scxml/test/harness","scxml/test/report2string","scxml/test/simple-env","lib/json2"],(doc2json,json2model,xml,xsl,harness,report2string,SimpleEnv) ->
 
 	importClass(Packages.java.io.File)

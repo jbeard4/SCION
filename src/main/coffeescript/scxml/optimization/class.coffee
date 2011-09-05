@@ -1,3 +1,6 @@
+# Copyright (C) 2011 Jacob Beard
+# Released under GNU LGPL, read the file 'COPYING' for more information
+
 define ["scxml/optimization/initializer","lib/beautify"],(initializer)->
 	(scxmlJson,beautify=true,asyncModuleDef=true) ->
 		DEFAULT_EVENT_NAME = "*"
