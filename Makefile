@@ -20,7 +20,9 @@ flattenedTransitionsSCXMLJson = $(patsubst $(buildFlattenedTransitionsDir)/%.scx
 #all scxmljson files (both flattened and non-flattened)
 scxmljson = $(sort $(nonTransformedScxmlJson)  $(flattenedTransitionsSCXMLJson)) 
 
-scxmljsontuple = $(patsubst $(buildtestdir)/%.scxml.json,$(buildtestdir)/%.js, $(scxmljson))
+annotated_scxml_json = $(patsubst $(buildtestdir)/%.scxml.json,$(buildtestdir)/%.annotated.scxml.json, $(scxmljson)) 
+
+scxmljsontuple = $(patsubst $(buildtestdir)/%.annotated.scxml.json,$(buildtestdir)/%.js, $(annotated_scxml_json))
 
 #optimization variables
 buildopt = $(build)/opt
@@ -34,12 +36,13 @@ spartanLoader = $(build)/spartanLoaderForAllTests.js
 
 #paths to some scripts
 scxmltojson = src/main/bash/util/scxml-to-json.sh
+annotateScxmlJson = coffee src/main/coffeescript/util/annotate-scxml-json.coffee
 generatetesttuple = src/main/bash/build/generate-requirejs-json-test-tuples.sh
 generatetestloadermodule = src/main/bash/build/generate-requirejs-test-loader-module.sh
 generateArrayTestLoaderModule = src/main/bash/build/generate-requirejs-array-test-loader-module.sh
 
 
-.PHONY: clean coffee scxml2json copy-others combine-json-and-scxml-tests gen-spartan-loader gen-class-transition-lookup-optimization gen-table-transition-lookup-optimization gen-switch-transition-lookup-optimization gen-transition-lookup-optimization gen-state-configuration-set-optimization gen-transition-configuration-set-optimization gen-model-caching-optimization gen-transformed-statecharts gen-ahead-of-time-optimizations gen-top-level-optimized-requirejs-modules 
+.PHONY: clean coffee scxml2json copy-others combine-json-and-scxml-tests gen-spartan-loader gen-class-transition-lookup-optimization gen-table-transition-lookup-optimization gen-switch-transition-lookup-optimization gen-transition-lookup-optimization gen-state-configuration-set-optimization gen-transition-configuration-set-optimization gen-model-caching-optimization gen-transformed-statecharts gen-ahead-of-time-optimizations gen-top-level-optimized-requirejs-modules annotated-json
 
 coffee : $(coffeejs)
 
@@ -65,23 +68,31 @@ scxml2json : $(scxmljson)
 
 $(buildtestdir)/%.flattened-transitions.scxml.json : $(buildFlattenedTransitionsDir)/%.scxml 
 	mkdir -p $(dir $@)
-	$(scxmltojson) $< $(extraModelXSLArgs) > $@
+	$(scxmltojson) $< > $@
 
 $(buildtestdir)/%.scxml.json : $(testdir)/%.scxml 
 	mkdir -p $(dir $@)
-	$(scxmltojson) $< $(extraModelXSLArgs) > $@
+	$(scxmltojson) $< > $@
 
 copy-others : build
 	cp -r lib/js/ $(build)/lib/
 	cp -r src/main/javascript/* $(build)
 	cp -r src/main/xslt $(build)
 
+annotated-json : $(annotated_scxml_json)
+
 combine-json-and-scxml-tests : $(scxmljsontuple) 
 
-$(buildtestdir)/%.flattened-transitions.js : $(buildtestdir)/%.flattened-transitions.scxml.json $(testdir)/%.json
+$(buildtestdir)/%.flattened-transitions.annotated.scxml.json : $(buildtestdir)/%.flattened-transitions.scxml.json
+	$(annotateScxmlJson) -o $@ $<
+
+$(buildtestdir)/%.annotated.scxml.json : $(buildtestdir)/%.scxml.json
+	$(annotateScxmlJson) -o $@ $< 
+
+$(buildtestdir)/%.flattened-transitions.js : $(buildtestdir)/%.flattened-transitions.annotated.scxml.json $(testdir)/%.json
 	$(generatetesttuple) $^ "$(basename $(basename $(notdir $<)))" "$(shell basename $(shell dirname $<))" > $@
 
-$(buildtestdir)/%.js : $(buildtestdir)/%.scxml.json $(testdir)/%.json
+$(buildtestdir)/%.js : $(buildtestdir)/%.annotated.scxml.json $(testdir)/%.json
 	$(generatetesttuple) $^ "$(basename $(basename $(notdir $<)))" "$(shell basename $(shell dirname $<))" > $@
 
 gen-spartan-loader : $(spartanLoader)
@@ -90,15 +101,15 @@ $(spartanLoader) :
 	$(generatetestloadermodule) $@ $(scxmljsontuple)
 
 
-$(tsel)/%.class.js : $(buildtestdir)/%.scxml.json coffee copy-others
+$(tsel)/%.class.js : $(buildtestdir)/%.annotated.scxml.json coffee copy-others
 	mkdir -p $(dir $@)
 	./bin/run-module-node.sh scxml/optimization/transition-optimizer $< class true true > $@
 
-$(tsel)/%.switch.js : $(buildtestdir)/%.scxml.json coffee copy-others
+$(tsel)/%.switch.js : $(buildtestdir)/%.annotated.scxml.json coffee copy-others
 	mkdir -p $(dir $@)
 	./bin/run-module-node.sh scxml/optimization/transition-optimizer $< switch true true > $@
 
-$(tsel)/%.table.js : $(buildtestdir)/%.scxml.json coffee copy-others
+$(tsel)/%.table.js : $(buildtestdir)/%.annotated.scxml.json coffee copy-others
 	mkdir -p $(dir $@)
 	./bin/run-module-node.sh scxml/optimization/transition-optimizer $< table true true > $@
 

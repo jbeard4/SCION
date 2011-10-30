@@ -1,14 +1,7 @@
 # Copyright (C) 2011 Jacob Beard
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
-define ->
-	BASIC : 0
-	COMPOSITE : 1
-	PARALLEL : 2
-	#AND : 3
-	HISTORY : 4
-	INITIAL : 5
-	FINAL : 6
+define ["scxml/state-kinds-enum"],(stateKinds)->
 
 	getDepth: (s) ->
 		count = 0
@@ -49,7 +42,7 @@ define ->
 	isOrthogonalTo: (s1,s2) ->
 		#Two control states are orthogonal if they are not ancestrally
 		#related, and their smallest, mutual parent is a Concurrent-state.
-		return not @isAncestrallyRelatedTo(s1,s2) and @getLCA(s1,s2).kind is @PARALLEL
+		return not @isAncestrallyRelatedTo(s1,s2) and @getLCA(s1,s2).kind is stateKinds.PARALLEL
 
 	isAncestrallyRelatedTo: (s1,s2) ->
 		#Two control states are ancestrally related if one is child/grandchild of another.

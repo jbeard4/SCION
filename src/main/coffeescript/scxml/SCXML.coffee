@@ -1,9 +1,7 @@
 # Copyright (C) 2011 Jacob Beard
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
-define ["scxml/default-transition-selector","util/set/ArraySet","scxml/model","scxml/event","scxml/evaluator","util/reduce"],(defaultTransitionSelector,ArraySet,m,Event,evaluator,reduce) ->
-
-
+define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","scxml/evaluator","util/reduce","scxml/setup-default-opts"],(ArraySet,stateKinds,Event,evaluator,reduce,setupDefaultOpts) ->
 
 	#imports
 
@@ -88,7 +86,7 @@ define ["scxml/default-transition-selector","util/set/ArraySet","scxml/model","s
 
 				keepGoing = not selectedTransitions.isEmpty()
 
-			nonFinalStates = (s for s of @_configuration.iter() when s.kind is not @opts.model.FINAL)
+			nonFinalStates = (s for s of @_configuration.iter() when s.kind is not stateKinds.FINAL)
 
 			if nonFinalStates.length is 0
 				@_isInFinalState = true
@@ -130,7 +128,7 @@ define ["scxml/default-transition-selector","util/set/ArraySet","scxml/model","s
 					#update history
 					if state.history
 						if state.history.isDeep
-							f = (s0) => s0.kind is @opts.model.BASIC and s0 in @opts.model.getDescendants(state)
+							f = (s0) => s0.kind is stateKinds.BASIC and s0 in @opts.model.getDescendants(state)
 						else
 							f = (s0) -> s0.parent is state
 						
@@ -255,7 +253,7 @@ define ["scxml/default-transition-selector","util/set/ArraySet","scxml/model","s
 					descendantsOfStatesToEnter.add(descendant)
 
 			for state in statesToEnter.iter()
-				if state.kind is @opts.model.PARALLEL
+				if state.kind is stateKinds.PARALLEL
 					for child in state.children
 						if not descendantsOfStatesToEnter.contains(child)
 							childrenOfParallelStatesWithoutDescendantsInStatesToEnter.add(child)
@@ -264,7 +262,7 @@ define ["scxml/default-transition-selector","util/set/ArraySet","scxml/model","s
 				
 
 		_recursiveAddStatesToEnter: (s,statesToEnter,basicStatesToEnter) ->
-			if s.kind is @opts.model.HISTORY
+			if s.kind is stateKinds.HISTORY
 				if s.id of @_historyValue
 					for historyState in @_historyValue[s.id]
 						@_recursiveAddStatesToEnter(historyState,statesToEnter,basicStatesToEnter)
@@ -274,12 +272,12 @@ define ["scxml/default-transition-selector","util/set/ArraySet","scxml/model","s
 			else
 				statesToEnter.add(s)
 
-				if s.kind is @opts.model.PARALLEL
+				if s.kind is stateKinds.PARALLEL
 					for child in s.children
-						if not (child.kind is @opts.model.HISTORY)		#don't enter history by default
+						if not (child.kind is stateKinds.HISTORY)		#don't enter history by default
 							@_recursiveAddStatesToEnter(child,statesToEnter,basicStatesToEnter)
 
-				else if s.kind is @opts.model.COMPOSITE
+				else if s.kind is stateKinds.COMPOSITE
 
 					#FIXME: problem: this doesn't check cond of initial state transitions
 					#also doesn't check priority of transitions (problem in the SCXML spec?)
@@ -288,7 +286,7 @@ define ["scxml/default-transition-selector","util/set/ArraySet","scxml/model","s
 					#for now, make simplifying assumption. later on check cond, then throw into the parameterized choose by priority
 					@_recursiveAddStatesToEnter(s.initial,statesToEnter,basicStatesToEnter)
 
-				else if s.kind is @opts.model.INITIAL or s.kind is @opts.model.BASIC or s.kind is @opts.model.FINAL
+				else if s.kind is stateKinds.INITIAL or s.kind is stateKinds.BASIC or s.kind is stateKinds.FINAL
 					basicStatesToEnter.add(s)
 
 			
@@ -377,7 +375,14 @@ define ["scxml/default-transition-selector","util/set/ArraySet","scxml/model","s
 		# -> Interrupt Transitions and Preemption: Non-preemptive 
 		_conflicts: (t1,t2) -> not @_isArenaOrthogonal(t1,t2)
 		
-		_isArenaOrthogonal: (t1,t2) -> @opts.model.isOrthogonalTo(@opts.model.getLCA(t1),@opts.model.getLCA(t2))
+		_isArenaOrthogonal: (t1,t2) ->
+			t1LCA = @opts.model.getLCA(t1)
+			t2LCA = @opts.model.getLCA(t2)
+			isOrthogonal = @opts.model.isOrthogonalTo t1LCA,t2LCA
+			if @opts.printTrace
+				console.debug "transition LCAs",t1LCA.id,t2LCA.id
+				console.debug "transition LCAs are orthogonal?",isOrthogonal
+			return isOrthogonal
 
 
 	class SimpleInterpreter extends SCXMLInterpreter
@@ -415,5 +420,26 @@ define ["scxml/default-transition-selector","util/set/ArraySet","scxml/model","s
 			if @opts.printTrace then console.debug("received event " + e)
 			@_performBigStep(e)
 
+	class BrowserInterpreter extends SimpleInterpreter
+		constructor : (model,opts={}) ->
+			#need to wrap setTimeout and clearTimeout, otherwise complains
+			setTimeout = (callback,timeout) -> window.setTimeout callback,timeout
+			clearTimeout = (timeoutId) -> window.clearTimeout timeoutId
+
+			#defaults
+			setupDefaultOpts opts
+
+			super model,setTimeout,clearTimeout,opts
+
+	class NodeInterpreter extends SimpleInterpreter
+		constructor : (model,opts={}) ->
+
+			#defaults
+			setupDefaultOpts opts
+
+			super model,setTimeout,clearTimeout,opts
+
 	SCXMLInterpreter:SCXMLInterpreter
 	SimpleInterpreter:SimpleInterpreter
+	BrowserInterpreter:BrowserInterpreter
+	NodeInterpreter:NodeInterpreter

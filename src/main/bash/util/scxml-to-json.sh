@@ -10,4 +10,6 @@ projdir=`cd $dn/../../../../; pwd`
 #TODO: hook up optional beautification
 scxmlFile=$1
 shift	#all other args are params
-xsltproc $projdir/src/main/xslt/normalizeInitialStates.xsl $scxmlFile | xsltproc $* $projdir/src/main/xslt/scxmlToJSON.xsl -
+xsltproc $projdir/lib/xsl/strip-whitespace.xsl $scxmlFile | \
+#xsltproc $projdir/src/main/xslt/normalizeInitialStates.xsl - | \
+xsltproc $projdir/lib/xsl/JsonML.xslt -
