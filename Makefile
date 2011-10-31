@@ -90,10 +90,10 @@ $(buildtestdir)/%.annotated.scxml.json : $(buildtestdir)/%.scxml.json
 	$(annotateScxmlJson) -o $@ $< 
 
 $(buildtestdir)/%.flattened-transitions.js : $(buildtestdir)/%.flattened-transitions.annotated.scxml.json $(testdir)/%.json
-	$(generatetesttuple) $^ "$(basename $(basename $(notdir $<)))" "$(shell basename $(shell dirname $<))" > $@
+	$(generatetesttuple) $^ "$(basename $(basename $(basename $(notdir $<))))" "$(shell basename $(shell dirname $<))" > $@
 
 $(buildtestdir)/%.js : $(buildtestdir)/%.annotated.scxml.json $(testdir)/%.json
-	$(generatetesttuple) $^ "$(basename $(basename $(notdir $<)))" "$(shell basename $(shell dirname $<))" > $@
+	$(generatetesttuple) $^ "$(basename $(basename $(basename $(notdir $<))))" "$(shell basename $(shell dirname $<))" > $@
 
 gen-spartan-loader : $(spartanLoader)
 
