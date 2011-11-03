@@ -36,7 +36,7 @@ spartanLoader = $(build)/spartanLoaderForAllTests.js
 
 #paths to some scripts
 scxmltojson = src/main/bash/util/scxml-to-json.sh
-annotateScxmlJson = coffee src/main/coffeescript/util/annotate-scxml-json.coffee
+annotateScxmlJson = bin/run-module-node.sh util/annotate-scxml-json
 generatetesttuple = src/main/bash/build/generate-requirejs-json-test-tuples.sh
 generatetestloadermodule = src/main/bash/build/generate-requirejs-test-loader-module.sh
 generateArrayTestLoaderModule = src/main/bash/build/generate-requirejs-array-test-loader-module.sh
@@ -83,11 +83,11 @@ annotated-json : $(annotated_scxml_json)
 
 combine-json-and-scxml-tests : $(scxmljsontuple) 
 
-$(buildtestdir)/%.flattened-transitions.annotated.scxml.json : $(buildtestdir)/%.flattened-transitions.scxml.json
-	$(annotateScxmlJson) -o $@ $<
+$(buildtestdir)/%.flattened-transitions.annotated.scxml.json : $(buildtestdir)/%.flattened-transitions.scxml.json coffee
+	$(annotateScxmlJson) $< $@
 
-$(buildtestdir)/%.annotated.scxml.json : $(buildtestdir)/%.scxml.json
-	$(annotateScxmlJson) -o $@ $< 
+$(buildtestdir)/%.annotated.scxml.json : $(buildtestdir)/%.scxml.json coffee
+	$(annotateScxmlJson) $< $@
 
 $(buildtestdir)/%.flattened-transitions.js : $(buildtestdir)/%.flattened-transitions.annotated.scxml.json $(testdir)/%.json
 	$(generatetesttuple) $^ "$(basename $(basename $(basename $(notdir $<))))" "$(shell basename $(shell dirname $<))" > $@
