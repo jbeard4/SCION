@@ -7,7 +7,7 @@ define ->
 			transitions = []
 
 			for t in state.transitions
-				if (not t.event or t.event in eventNames) and (not t.cond or evaluator(t.cond))
+				if (not t.event or t.event in eventNames) and (not t.cond or evaluator(t))
 					transitions.push t
 
 			return transitions
