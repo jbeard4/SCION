@@ -50,12 +50,13 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","scxml/evalua
 			@opts.EventSet = @opts.EventSet or ArraySet
 			@opts.TransitionPairSet = @opts.TransitionPairSet or ArraySet
 			@opts.priorityComparisonFn = @opts.priorityComparisonFn or getTransitionWithHigherSourceChildPriority(@opts.model)
+			@opts.globalEval ?= window?.executeScript or eval		#we parameterize this in case we want to use, e.g. jquery.globalEval
 
 			@_configuration = new @opts.BasicStateSet()	#full configuration, or basic configuration? what kind of set implementation?
 			@_historyValue = {}
 			@_innerEventQueue = []
 			@_isInFinalState = false
-			@_datamodel = {}		#FIXME: should these be global, or declared at the level of the big step, like the eventQueue?
+			@_datamodel = @model.datamodel		#FIXME: should these be global, or declared at the level of the big step, like the eventQueue?
 			@_timeoutMap = {}
 
 		
@@ -63,6 +64,13 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","scxml/evalua
 			#perform big step without events to take all default transitions and reach stable initial state
 			if @opts.printTrace then console.debug("performing initial big step")
 			@_configuration.add(@model.root.initial)
+
+			#eval top-level scripts
+			#we treat these differently than other scripts. they get evaled in global scope, and without explicit scripting interface
+			#this is necessary in order to, e.g., allow js function declarations that are visible to scxml script tags later.
+			for script in @model.scripts
+				`with(datamodelForNextStep){ this.opts.globalEval(script) }`
+
 			@_performBigStep()
 
 		getConfiguration: -> new @opts.StateIdSet(s.id for s in @_configuration.iter())
@@ -200,7 +208,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","scxml/evalua
 			#get the scripting interface
 			n = @_getScriptingInterface(datamodelForNextStep,eventSet,allowWrite)
 
-			evaluator(code,n.getData,n.setData,n.In,n.events)
+			evaluator(code,n.getData,n.setData,n.In,n.events,@_datamodel)
 
 		_getScriptingInterface: (datamodelForNextStep,eventSet,allowWrite=false) ->
 			setData : if allowWrite then (name,value) -> datamodelForNextStep[name] = value else ->
@@ -308,7 +316,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","scxml/evalua
 				states = statesAndParents.iter()
 
 			n = @_getScriptingInterface(datamodelForNextStep,eventSet)
-			e = (cond) -> evaluator(cond,n.getData,n.setData,n.In,n.events)
+			e = (cond) => evaluator(cond,n.getData,n.setData,n.In,n.events,@_datamodel)
 
 			eventNames = eventNames = (event.name for event in eventSet.iter())
 

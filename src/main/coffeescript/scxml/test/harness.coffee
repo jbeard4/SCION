@@ -71,7 +71,8 @@ define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for"],(Even
 			testFailBack = ->
 				console.info "test",nameGroup(test.name,test.group),"...failed"
 				results.testsFailed.push nameGroup(test.name,test.group)
-				doNextTest()
+				#doNextTest()
+				testsFinishedCallback()
 
 			testErrBack = (err) ->
 				console.info "test",nameGroup(test.name,test.group),"...errored"

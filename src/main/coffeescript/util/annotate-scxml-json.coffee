@@ -57,7 +57,7 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 	#TODO: read from stdin, file, or allow transorm via API
 
 	#variable declarations outside of scope of transform
-	states = basicStates = uniqueEvents = transitions = idToStateMap = onFoundStateIdCallbacks = dataModel = undefined
+	states = basicStates = uniqueEvents = transitions = idToStateMap = onFoundStateIdCallbacks = datamodel = undefined
 
 	transformAndSerialize = (root,genDepth,genAncestors,genDescendants,genLCA) ->
 		JSON.stringify transform(root,genDepth,genAncestors,genDescendants,genLCA)
@@ -71,7 +71,7 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 		transitions = []
 		idToStateMap = {}
 		onFoundStateIdCallbacks = []
-		dataModel = {}
+		datamodel = {}
 
 		rootState = transformStateNode root,[],genDepth,genAncestors,genDescendants,genLCA
 
@@ -102,6 +102,7 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 		scripts : genRootScripts children
 		profile : attributes.profile
 		version : attributes.version
+		datamodel : datamodel
 
 	genRootScripts = (rootChildren) ->
 		toReturn = []
@@ -213,6 +214,14 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 			when "raise"
 				#TODO
 				throw new Exception("#{tagName} not yet supported")
+
+	transformDatamodel = (node,ancestors,genDepth,genAncestors,genDescendants,genLCA) ->
+		[tagName,attributes,children] = deconstructNode node,true
+		
+		for child in children when child[0] is "data"
+			[childTagName,childAttributes,childChildren] = deconstructNode child,true
+			if childAttributes.id
+				datamodel[childAttributes.id] = childAttributes.expr or true
 		
 	transformStateNode = (node,ancestors,genDepth,genAncestors,genDescendants,genLCA) ->
 		[tagName,attributes,children] = deconstructNode node,true
@@ -313,6 +322,8 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 					child = transformStateNode child,nextAncestors,genDepth,genAncestors,genDescendants,genLCA
 					state.history = child.id
 					stateChildren.push child
+				when "datamodel"
+					transformDatamodel child,nextAncestors,genDepth,genAncestors,genDescendants,genLCA
 				else
 					if childTagName in STATES_THAT_CAN_BE_CHILDREN	#another filter
 						stateChildren.push transformStateNode child,nextAncestors,genDepth,genAncestors,genDescendants,genLCA
