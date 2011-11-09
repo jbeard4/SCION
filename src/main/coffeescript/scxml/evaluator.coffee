@@ -8,5 +8,7 @@
 #we would run a sandboxed interpreter, as is done in the python implementation.
 #We could possible change the API to use a with statement, which would be more 
 #concise, but might negatively affect performance.
-define -> (code,getData,setData,In,_events) -> eval code
+
+#coffeescript does not have a "with" keyword, so we escape it and use javascript
+define -> `function(code,getData,setData,In,_events,datamodel){ with(datamodel){ return eval(code); }}`
 

@@ -9,6 +9,10 @@ Released under GNU LGPL, read the file 'COPYING' for more information
 	profile="ecmascript"
 	id="root">
 
+	<datamodel>
+		<data id="a"/>
+	</datamodel>
+
 	<initial id="intitial1">
 		<transition target="a">
 			<assign location="a" expr="100"/>

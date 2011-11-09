@@ -83,10 +83,10 @@ annotated-json : $(annotated_scxml_json)
 
 combine-json-and-scxml-tests : $(scxmljsontuple) 
 
-$(buildtestdir)/%.flattened-transitions.annotated.scxml.json : $(buildtestdir)/%.flattened-transitions.scxml.json coffee
+$(buildtestdir)/%.flattened-transitions.annotated.scxml.json : $(buildtestdir)/%.flattened-transitions.scxml.json $(build)/util/annotate-scxml-json.js
 	$(annotateScxmlJson) $< $@
 
-$(buildtestdir)/%.annotated.scxml.json : $(buildtestdir)/%.scxml.json coffee
+$(buildtestdir)/%.annotated.scxml.json : $(buildtestdir)/%.scxml.json $(build)/util/annotate-scxml-json.js
 	$(annotateScxmlJson) $< $@
 
 $(buildtestdir)/%.flattened-transitions.js : $(buildtestdir)/%.flattened-transitions.annotated.scxml.json $(testdir)/%.json
