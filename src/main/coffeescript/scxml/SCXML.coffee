@@ -41,15 +41,16 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 			#default args
 			#@opts.onlySelectFromBasicStates
 			#@opts.printTrace = true
-			@opts.transitionSelector = @opts.transitionSelector #or defaultTransitionSelector()
-			@opts.model  = @opts.model #or m
-			@opts.TransitionSet = @opts.TransitionSet #or ArraySet
-			@opts.StateSet = @opts.StateSet #or ArraySet
-			@opts.BasicStateSet = @opts.BasicStateSet #or ArraySet
-			@opts.StateIdSet = @opts.StateIdSet or ArraySet
-			@opts.EventSet = @opts.EventSet or ArraySet
-			@opts.TransitionPairSet = @opts.TransitionPairSet or ArraySet
-			@opts.priorityComparisonFn = @opts.priorityComparisonFn or getTransitionWithHigherSourceChildPriority(@opts.model)
+			#@opts.evaluationContext	#sets the this object for script evaluation
+			#@opts.transitionSelector ?= defaultTransitionSelector()
+			#@opts.model ?= m
+			#@opts.TransitionSet ?= ArraySet
+			#@opts.StateSet ?= ArraySet
+			#@opts.BasicStateSet ?= ArraySet
+			@opts.StateIdSet ?= ArraySet
+			@opts.EventSet ?= ArraySet
+			@opts.TransitionPairSet ?= ArraySet
+			@opts.priorityComparisonFn ?= getTransitionWithHigherSourceChildPriority(@opts.model)
 			@opts.globalEval ?= window?.executeScript or eval		#we parameterize this in case we want to use, e.g. jquery.globalEval
 
 			@_configuration = new @opts.BasicStateSet()	#full configuration, or basic configuration? what kind of set implementation?
@@ -208,7 +209,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 			#get the scripting interface
 			n = @_getScriptingInterface(datamodelForNextStep,eventSet,allowWrite)
 
-			action.evaluate(n.getData,n.setData,n.In,n.events,@_datamodel)
+			action.evaluate.call(@opts.evaluationContext,n.getData,n.setData,n.In,n.events,@_datamodel)
 
 		_getScriptingInterface: (datamodelForNextStep,eventSet,allowWrite=false) ->
 			setData : if allowWrite then (name,value) -> datamodelForNextStep[name] = value else ->
@@ -316,7 +317,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 				states = statesAndParents.iter()
 
 			n = @_getScriptingInterface(datamodelForNextStep,eventSet)
-			e = (t) => t.evaluateCondition(n.getData,n.setData,n.In,n.events,@_datamodel)
+			e = (t) => t.evaluateCondition.call(@opts.evaluationContext,n.getData,n.setData,n.In,n.events,@_datamodel)
 
 			eventNames = (event.name for event in eventSet.iter())
 
