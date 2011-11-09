@@ -25,6 +25,8 @@ define ["scxml/model"],(model) ->
 				#assume milliseconds
 				return parseFloat(delayString)
 
+	makeEvaluationFn = (s,isExpression) -> new Function("getData","setData","In","_events","datamodel","with(datamodel){#{if isExpression then "return" else ""} #{s}}")
+
 	stateToString = -> @id
 
 	transitionToString = -> "#{@source.id} -> [#{target.id for target in @targets}]"
@@ -37,6 +39,7 @@ define ["scxml/model"],(model) ->
 
 		for transition in json.transitions
 			transition.toString = transitionToString 	#tag him with a toString method for more readable trace
+			transition.evaluateCondition = makeEvaluationFn transition.cond,true
 
 		for state in json.states
 			state.toString = stateToString 	#tag him with a toString method for more readable trace
@@ -49,8 +52,23 @@ define ["scxml/model"],(model) ->
 				for action in transition.actions
 					actions.push action
 
-			for action in actions when action.type is "send" and action.delay
-				action.delay = getDelayInMs action.delay
+			for action in actions
+				switch action.type
+					when "script"
+						action.evaluate = makeEvaluationFn action.script
+
+					when "assign"
+						action.evaluate = makeEvaluationFn action.expr,true
+
+					when "send"
+						if action.contentexpr
+							action.evaluate = makeEvaluationFn action.contentexpr,true
+					when "log"
+						action.evaluate = makeEvaluationFn action.expr,true
+
+				if action.type is "send" and action.delay
+					action.delay = getDelayInMs action.delay
+
 
 			state.initial = idToStateMap[state.initial]
 			state.history = idToStateMap[state.history]

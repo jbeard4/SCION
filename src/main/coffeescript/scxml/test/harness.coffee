@@ -78,7 +78,8 @@ define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for"],(Even
 				console.info "test",nameGroup(test.name,test.group),"...errored"
 				results.testsErrored.push nameGroup(test.name,test.group)
 				printError err
-				doNextTest()
+				#doNextTest()
+				testsFinishedCallback()
 
 			console.info("running test",test.name)
 

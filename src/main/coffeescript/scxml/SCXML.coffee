@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Jacob Beard
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
-define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","scxml/evaluator","util/reduce","scxml/setup-default-opts"],(ArraySet,stateKinds,Event,evaluator,reduce,setupDefaultOpts) ->
+define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce","scxml/setup-default-opts"],(ArraySet,stateKinds,Event,reduce,setupDefaultOpts) ->
 
 	#imports
 
@@ -193,22 +193,22 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","scxml/evalua
 			switch action.type
 				when "send"
 					if @opts.printTrace then console.debug "sending event",action.event,"with content",action.contentexpr
-					data = if action.contentexpr then @_eval action.contentexpr,datamodelForNextStep,eventSet else null
+					data = if action.contentexpr then @_eval action,datamodelForNextStep,eventSet else null
 
 					eventsToAddToInnerQueue.add new Event action.event,data
 				when "assign"
-					datamodelForNextStep[action.location] = @_eval action.expr,datamodelForNextStep,eventSet
+					datamodelForNextStep[action.location] = @_eval action,datamodelForNextStep,eventSet
 				when "script"
-					@_eval action.script,datamodelForNextStep,eventSet,true
+					@_eval action,datamodelForNextStep,eventSet,true
 				when "log"
-					log = @_eval action.expr,datamodelForNextStep,eventSet
+					log = @_eval action,datamodelForNextStep,eventSet
 					if @opts.printTrace then console.log(log)	#the one place where we use straight console.log
 
-		_eval : (code,datamodelForNextStep,eventSet,allowWrite) ->
+		_eval : (action,datamodelForNextStep,eventSet,allowWrite) ->
 			#get the scripting interface
 			n = @_getScriptingInterface(datamodelForNextStep,eventSet,allowWrite)
 
-			evaluator(code,n.getData,n.setData,n.In,n.events,@_datamodel)
+			action.evaluate(n.getData,n.setData,n.In,n.events,@_datamodel)
 
 		_getScriptingInterface: (datamodelForNextStep,eventSet,allowWrite=false) ->
 			setData : if allowWrite then (name,value) -> datamodelForNextStep[name] = value else ->
@@ -316,9 +316,9 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","scxml/evalua
 				states = statesAndParents.iter()
 
 			n = @_getScriptingInterface(datamodelForNextStep,eventSet)
-			e = (cond) => evaluator(cond,n.getData,n.setData,n.In,n.events,@_datamodel)
+			e = (t) => t.evaluateCondition(n.getData,n.setData,n.In,n.events,@_datamodel)
 
-			eventNames = eventNames = (event.name for event in eventSet.iter())
+			eventNames = (event.name for event in eventSet.iter())
 
 			#debugger
 			allTransitionsForEachState = (new @opts.TransitionSet @opts.transitionSelector state,eventNames,e for state in states)
@@ -402,7 +402,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","scxml/evalua
 			if action.type is "send" and action.delay
 				if @setTimeout
 					if @opts.printTrace then console.debug "sending event",action.event,"with content",action.contentexpr,"after delay",action.delay
-					data = if action.contentexpr then @_eval(action.contentexpr,datamodelForNextStep,eventSet) else null
+					data = if action.contentexpr then @_eval(action,datamodelForNextStep,eventSet) else null
 
 					callback = => @gen new Event(action.event,data)
 					timeoutId = @setTimeout callback,action.delay
