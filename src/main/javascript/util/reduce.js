@@ -1,25 +1,25 @@
 //adapted from https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/Reduce
-require.def(function(){
+define(function(){
 	return function(arr,fun,initial){
 		if(arr.reduce){
 			return initial ? arr.reduce(fun,initial) : arr.reduce(fun);
 		}else{
-			var len = arr.length;
+			var len = arr.length, rv;
 			if (typeof fun != "function")
 				throw new TypeError();
 
 			// no value to return if no initial value and an empty array
-			if (len == 0 && arguments.length == 2)
+			if (len === 0 && arguments.length === 2)
 				throw new TypeError();
 
 			var i = 0;
 			if (arguments.length >= 3) {
-				var rv = arguments[2];
+				rv = arguments[2];
 			}
 			else {
 				do {
 					if (i in arr) {
-						var rv = arr[i++];
+						rv = arr[i++];
 						break;
 					}
 
@@ -37,5 +37,5 @@ require.def(function(){
 
 			return rv;
 		}
-	}
+	};
 });

@@ -70,7 +70,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 			#we treat these differently than other scripts. they get evaled in global scope, and without explicit scripting interface
 			#this is necessary in order to, e.g., allow js function declarations that are visible to scxml script tags later.
 			for script in @model.scripts
-				`with(datamodelForNextStep){ this.opts.globalEval(script) }`
+				`with(this._datamodel){ this.opts.globalEval.call(null,script) }`
 
 			@_performBigStep()
 
