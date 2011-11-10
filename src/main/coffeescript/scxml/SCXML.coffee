@@ -12,6 +12,16 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 
 		return a
 
+
+	#technique adapted from http://javascript.crockford.com/prototypal.html
+	create = (o) ->
+		if Object.create
+			Object.create(o)
+		else
+			F = ->
+			F.prototype = o
+			return new F()
+
 	# -> Priority: Source-Child 
 	getTransitionWithHigherSourceChildPriority = (model) ->
 		([t1,t2]) ->
@@ -57,7 +67,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 			@_historyValue = {}
 			@_innerEventQueue = []
 			@_isInFinalState = false
-			@_datamodel = @model.datamodel		#FIXME: should these be global, or declared at the level of the big step, like the eventQueue?
+			@_datamodel = create @model.datamodel		#FIXME: should these be global, or declared at the level of the big step, like the eventQueue?
 			@_timeoutMap = {}
 
 		
