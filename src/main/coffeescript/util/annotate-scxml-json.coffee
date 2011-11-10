@@ -223,7 +223,7 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 		for child in children when child[0] is "data"
 			[childTagName,childAttributes,childChildren] = deconstructNode child,true
 			if childAttributes.id
-				datamodel[childAttributes.id] = childAttributes.expr or true
+				datamodel[childAttributes.id] = childAttributes.expr or null
 		
 	transformStateNode = (node,ancestors,genDepth,genAncestors,genDescendants,genLCA) ->
 		[tagName,attributes,children] = deconstructNode node,true
@@ -305,7 +305,7 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 			processedInitial = true
 
 		for child in children when isArray child	#they should all be tuples. too bad this is expensive.
-			[childTagName,childAttributes,childChildren] = deconstructNode child
+			[childTagName,childAttributes,childChildren] = deconstructNode child,true
 			switch childTagName
 				#apply recursively
 				when "transition"

@@ -1,0 +1,76 @@
+<scxml 
+	xmlns="http://www.w3.org/2005/07/scxml"
+	version="1.0"
+	profile="ecmascript"
+	id="scxmlRoot"
+	initial="initial_default">
+
+	<script>
+		function computeTDelta(oldEvent,newEvent){
+			//summary:computes the offset between two events; to be later used with this.translate
+			var dx = newEvent.clientX - oldEvent.clientX;
+			var dy = newEvent.clientY - oldEvent.clientY;
+
+			return {'dx':dx,'dy':dy};
+		}
+
+		function translate(rawNode,tDelta){
+			var tl = rawNode.transform.baseVal;
+			var t = tl.numberOfItems ? tl.getItem(0) : rawNode.ownerSVGElement.createSVGTransform();
+			var m = t.matrix;
+			var newM = rawNode.ownerSVGElement.createSVGMatrix().translate(tDelta.dx,tDelta.dy).multiply(m);
+			t.setMatrix(newM);
+			tl.initialize(t);
+			return newM;
+		}
+	</script>
+
+	<datamodel>
+		<data id="firstEvent"/>
+		<data id="eventStamp"/>
+		<data id="tDelta"/>
+		<data id="rawNode"/>
+		<data id="textNode"/>
+	</datamodel>
+
+	<state id="initial_default">
+		<transition event="init" target="idle">
+			<script>
+				rawNode = _events[0].data.rawNode;
+				textNode = _events[0].data.textNode;
+			</script>
+		</transition>
+	</state>
+
+	<state id="idle">
+		<onentry>
+			<script>
+				textNode.textContent='idle';
+			</script>
+		</onentry>
+
+		<transition event="mousedown" target="dragging">
+			<assign location="firstEvent" expr="_events[0].data"/>
+			<assign location="eventStamp" expr="_events[0].data"/>
+		</transition>
+	</state>
+
+	<state id="dragging">
+		<onentry>
+			<script>
+				textNode.textContent='dragging';
+			</script>
+		</onentry>
+
+		<transition event="mouseup" target="idle"/>
+
+		<transition event="mousemove" target="dragging">
+			<script>
+				tDelta = computeTDelta(eventStamp,_events[0].data);
+				translate(rawNode,tDelta);
+			</script>
+			<assign location="eventStamp" expr="_events[0].data"/>
+		</transition>
+	</state>
+
+</scxml>
