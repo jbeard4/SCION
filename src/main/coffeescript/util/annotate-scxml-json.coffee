@@ -77,9 +77,11 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 
 		[tagName,attributes,children] = deconstructNode root
 
+		#reverse ancestors (needs to be in reverse document order)
+		if genAncestors or genLCA then state.ancestors.reverse() for state in states
+
 		#reverse descendants (needs to be in reverse document order)
-		state.descendants.reverse() for state in states
-		state.ancestors.reverse() for state in states
+		if genDescendants or genLCA then state.descendants.reverse() for state in states
 
 		#generate LCAs on transitions
 		if genLCA
@@ -285,7 +287,7 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 		processedInitial = false
 
 		if attributes?.initial and not processedInitial
-			console.error "generating fake initial node"
+			console.log "generating fake initial node"
 			#create a fake initial state and process him
 			fakeInitialState = [
 				"initial",
@@ -380,29 +382,32 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 			throw new Error("Could not find LCA for states.")
 		return commonAncestors[0]
 
-	return (inFile,outFile) ->
+	#FIXME: work on this API
+	return (inFileOrObject,outFile) ->
+		if typeof inFileOrObject is "object" and isArray inFileOrObject
+			return transform inFileOrObject
+		else
+			go = (jsonStr) ->
+				scxmlJson = JSON.parse jsonStr
 
-		go = (jsonStr) ->
-			scxmlJson = JSON.parse jsonStr
+				s = transformAndSerialize scxmlJson,true,true,true,true
 
-			s = transformAndSerialize scxmlJson,true,true,true,true
+				if outFile is "-"
+					process.stdout.write s
+				else
+					fs = require 'fs'
+					fs.writeFileSync outFile,s,'utf-8'
 
-			if outFile is "-"
-				process.stdout.write s
+			if not inFile or inFile is "-"
+				process.stdin.resume()
+				process.stdin.setEncoding "utf-8"
+
+				#read from stdin
+				json = ""
+				process.stdin.on "data",(data) -> json += data
+				process.stdin.on "end", -> go json
+
 			else
 				fs = require 'fs'
-				fs.writeFileSync outFile,s,'utf-8'
-
-		if not inFile or inFile is "-"
-			process.stdin.resume()
-			process.stdin.setEncoding "utf-8"
-
-			#read from stdin
-			json = ""
-			process.stdin.on "data",(data) -> json += data
-			process.stdin.on "end", -> go json
-
-		else
-			fs = require 'fs'
-			str = fs.readFileSync inFile,'utf-8'
-			go str
+				str = fs.readFileSync inFile,'utf-8'
+				go str
