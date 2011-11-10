@@ -82,6 +82,10 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 			for script in @model.scripts
 				`with(this._datamodel){ this.opts.globalEval.call(null,script) }`
 
+			#initialize top-level datamodel expressions. simple eval
+			for k,v of @_datamodel
+				if v then @_datamodel[k] = eval(v)
+
 			@_performBigStep()
 
 		getConfiguration: -> new @opts.StateIdSet(s.id for s in @_configuration.iter())
