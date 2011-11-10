@@ -1,5 +1,6 @@
 #returns a function that should be called on load
 define ["scxml/SCXML","util/annotate-scxml-json","scxml/json2model","scxml/event","lib/JsonML_DOM"], ({BrowserInterpreter : BrowserInterpreter},jsonAnnotator,json2model,Event,JsonML) -> ->
+	#TODO: I should also try this module in some versions of IE, and see how well it does with regular HTML content 
 
 	"""
 	A statechart is initialized from an XML document as follows:
@@ -58,15 +59,22 @@ define ["scxml/SCXML","util/annotate-scxml-json","scxml/json2model","scxml/event
 		console.log "interpreter",interpreter
 
 		#step 6 - connect all relevant event listeners - maybe encoded in DOM?
-		#TODO: allow setting this up declaratively using DOM
-		for eventName in ["mousedown","mouseup","mousemove"]
-			do (eventName) ->
-				domNodeToHookUp.addEventListener(
-					eventName,
-					((e) ->
-						e.preventDefault()
-						interpreter.gen(new Event(eventName,e))),
-					false)
+		#we use DOM to allow this to be set up declaratively
+		
+		scionNS ="https://github.com/jbeard4/SCION"
+
+		if scxml.hasAttributeNS(scionNS,"domEventsToConnect")
+			eventsString = scxml.getAttributeNS(scionNS,"domEventsToConnect")
+			eventsToConnect = (event.trim() for event in eventsString.split(","))
+
+			for eventName in eventsToConnect
+				do (eventName) ->
+					domNodeToHookUp.addEventListener(
+						eventName,
+						((e) ->
+							e.preventDefault()
+							interpreter.gen(new Event(eventName,e))),
+						false)
 
 		#step 7 - start statechart
 		interpreter.start()
