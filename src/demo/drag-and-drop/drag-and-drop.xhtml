@@ -47,15 +47,17 @@ using SCXML:
 
 	</head>
 	<body>
-		<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="99%" >
+		<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:scion="https://github.com/jbeard4/SCION" width="100%" height="99%" >
 
 			<rect width="100" height="100" stroke="black" fill="red" id="rectToTranslate" >
+				<!-- the domEventsToConnect attribute is just some syntactic sugar provided by the scion parseOnLoad module -->
 				<scxml 
 					xmlns="http://www.w3.org/2005/07/scxml"
 					version="1.0"
 					profile="ecmascript"
 					id="scxmlRoot"
-					initial="idle">
+					initial="idle"
+					scion:domEventsToConnect="mousedown,mouseup,mousemove">
 
 					<script>
 						function computeTDelta(oldEvent,newEvent){
@@ -85,8 +87,8 @@ using SCXML:
 
 					<state id="idle">
 						<transition event="mousedown" target="dragging">
-							<assign location="firstEvent" expr="_events[0].data"/>
-							<assign location="eventStamp" expr="_events[0].data"/>
+							<assign location="firstEvent" expr="_event.data"/>
+							<assign location="eventStamp" expr="_event.data"/>
 						</transition>
 					</state>
 
@@ -99,14 +101,14 @@ using SCXML:
 								//but will in fact be assigned to the statechart's datamodel. Internally, the
 								//script block is being evaluated inside of a JavaScript "with" statement,
 								//where the datamodel object is the clause to "with".
-								tDelta = computeTDelta(eventStamp,_events[0].data);
+								tDelta = computeTDelta(eventStamp,_event.data);
 
 								//The "this" object hereis the parent rect node. 
 								//This is syntactic sugar, provided by the scion interpreter's evaluationContext 
 								//parameter, and the parseOnLoad script. See util/browser/parseOnLoad for more details.
 								translate(this,tDelta);
 							</script>
-							<assign location="eventStamp" expr="_events[0].data"/>
+							<assign location="eventStamp" expr="_event.data"/>
 						</transition>
 					</state>
 

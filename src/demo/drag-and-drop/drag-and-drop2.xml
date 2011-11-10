@@ -36,8 +36,8 @@
 	<state id="initial_default">
 		<transition event="init" target="idle">
 			<script>
-				rawNode = _events[0].data.rawNode;
-				textNode = _events[0].data.textNode;
+				rawNode = _event.data.rawNode;
+				textNode = _event.data.textNode;
 			</script>
 		</transition>
 	</state>
@@ -50,8 +50,8 @@
 		</onentry>
 
 		<transition event="mousedown" target="dragging">
-			<assign location="firstEvent" expr="_events[0].data"/>
-			<assign location="eventStamp" expr="_events[0].data"/>
+			<assign location="firstEvent" expr="_event.data"/>
+			<assign location="eventStamp" expr="_event.data"/>
 		</transition>
 	</state>
 
@@ -66,10 +66,10 @@
 
 		<transition event="mousemove" target="dragging">
 			<script>
-				tDelta = computeTDelta(eventStamp,_events[0].data);
+				tDelta = computeTDelta(eventStamp,_event.data);
 				translate(rawNode,tDelta);
 			</script>
-			<assign location="eventStamp" expr="_events[0].data"/>
+			<assign location="eventStamp" expr="_event.data"/>
 		</transition>
 	</state>
 

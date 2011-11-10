@@ -25,7 +25,8 @@ define ["scxml/model"],(model) ->
 				#assume milliseconds
 				return parseFloat(delayString)
 
-	makeEvaluationFn = (s,isExpression) -> new Function("getData","setData","In","_events","datamodel","with(datamodel){#{if isExpression then "return" else ""} #{s}}")
+	#we alias _event to _events[0] here for convenience
+	makeEvaluationFn = (s,isExpression) -> new Function("getData","setData","In","_events","datamodel","var _event = _events[0]; with(datamodel){#{if isExpression then "return" else ""} #{s}}")
 
 	stateToString = -> @id
 
