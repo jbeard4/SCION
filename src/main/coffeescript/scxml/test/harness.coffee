@@ -3,6 +3,8 @@
 
 define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for"],(Event,scxml,Set,asyncForEach) ->
 
+	stopOnFail = true	#TODO: parameterize this
+
 	SimpleInterpreter = scxml.SimpleInterpreter
 
 	nameGroup = (n,g) -> "#{n} (#{g})"
@@ -71,15 +73,21 @@ define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for"],(Even
 			testFailBack = ->
 				console.info "test",nameGroup(test.name,test.group),"...failed"
 				results.testsFailed.push nameGroup(test.name,test.group)
-				#doNextTest()
-				testsFinishedCallback()
+
+				if stopOnFail
+					testsFinishedCallback()
+				else
+					doNextTest()
 
 			testErrBack = (err) ->
 				console.info "test",nameGroup(test.name,test.group),"...errored"
 				results.testsErrored.push nameGroup(test.name,test.group)
 				printError err
-				#doNextTest()
-				testsFinishedCallback()
+
+				if stopOnFail
+					testsFinishedCallback()
+				else
+					doNextTest()
 
 			console.info("running test",test.name)
 
