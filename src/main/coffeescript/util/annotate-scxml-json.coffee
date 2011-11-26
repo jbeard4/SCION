@@ -398,7 +398,7 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 					fs = require 'fs'
 					fs.writeFileSync outFile,s,'utf-8'
 
-			if not inFile or inFile is "-"
+			if not inFileOrObject or inFileOrObject is "-"
 				process.stdin.resume()
 				process.stdin.setEncoding "utf-8"
 
@@ -409,5 +409,5 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 
 			else
 				fs = require 'fs'
-				str = fs.readFileSync inFile,'utf-8'
+				str = fs.readFileSync inFileOrObject,'utf-8'
 				go str

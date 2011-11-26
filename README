@@ -1,5 +1,83 @@
-./bin/run-multi-process-testing-framework.sh -projectDir `pwd` -clientAddresses node-0{1..9} node-{10..19} node-{21..33} -interpreters v8 spidermonkey rhino -verbose -logFile out.txt -stopOnFail -clientModulePath `pwd`/src/main/coffeescript/scxml/test/multi-process/client.coffee
+= What it is =
 
-./bin/run-multi-process-testing-framework.sh -projectDir `pwd` -local -numLocalProcesses 8 -interpreters v8 spidermonkey rhino -verbose -logFile out.txt
+Statecharts: way of describing timed, reactive, state-based behaviour. First described by David Harel in 1986 paper "". Many different versions over the years, including, recently, the W3C draft specification SCXML. SCXML provides an XML-based syntax for describing Statecharts, as well as a step algorithm which defines its semantics. 
 
-mvn appassembler:assemble
+SCION takes many ideas from the scxml standard, but attempts to base semantics on a strong theoretic foundation. In particular, does not aim to be "compatible with SCXML standard". Reason for this is primarily that SCXML step algorithm was broken. Syntax is identical - rarely extended. Semantics are slightly different. Will look similar if you are familiar with SCXML step algorithm, as it uses many of the same ideas, but fundamentally, the work is based on Nancy Day et al., and there may be some suprises. Again, does not aim to "be compatible" with SCXML semantics, as last time the author looked, significan problems existed in the step algorithm. 
+
+= Quickstart =
+
+Simple example - describe drag and drop behaviour. 
+
+Can be described using the simple state machine:
+
+[]
+
+Would be written in SCXML as:
+
+[]
+
+Now how do we execute this on a web page? How do we get it to listen to DOM events? SCION includes some tools that allow you to embed the statechart directly into the content of the page (as an XML data island), such that it listens to DOM events on the parent element.
+
+[]
+
+That's it! The state machine will be instantiated and listen to DOM events on the rect. 
+
+NOTE that due to the limitations of XML data islands, this is meant to be a technical demo that allows one to quickly begin experiemntation, rather than production tool.  Will only work in browsers that support XHTML, which is most non-IE browsers, and IE 9+. Older versions of IE will not work. SCION itself does not rely on the browser environment at all, and can be adapted to be run under a number of different js environments.
+
+Run the demo live here.
+
+= More browser Demos =
+
+OK, that was easy, now what if we want to dynamically create state machine instances, and attach them to DOM nodes manually? This takes a bit more code.
+
+There are 7 steps to go from an SCXML document to a working state machine instance that is consuming DOM events on your web page and scripting web content.
+
+[]
+
+Here is an example. Download SCXML document with XMLHttpRequest. Set up the object model. Creates circle nodes dynamically. Create state machine instance for each circle node instance, and attach event listeners.
+
+[Other drag and drop demo.]
+
+See it live here.
+
+= Advanced usage =
+
+Drag and drop is pretty simple examples. Statecharts are most valuable for describing user interfaces that involve a notion of time and complex state.
+
+A more advanced example can be seen here:
+
+[]
+
+And described in detail here:
+
+[]
+
+= Other Uses =
+
+= Use in node.js =
+
+TODO: Write documentation for this
+
+= Use in Rhino =
+
+TODO: Write documentation for this
+
+= More information on semantics =
+* If this is the first time you've heard of "SCXML" or "Statecharts" [start here].
+* If you're already familiar with SCXML, and want a high-level overview of similarities and differences between SCION and SCXML, start here.
+* If you're a specification implementer or a semanticist, and want the gritty details of the SCION semantics, go here.
+
+= Feature Matrix - Support = 
+
+= Project Status = 
+
+SCION has been thoroughly tested in recent versions of Chromium, Firefox, and Opera on Ubuntu 10.04. Has *not* been thoroughly tested with older browsers, or on Internet Explorer or Safari. SCION has also been thoroughly tested under multiple shell environments, including Node, rhino, and v8, spidermonkey and jsc default shells.
+
+= Project Background = 
+
+Several major iterations. js backend to SCC, written by Thomas Feng. Initial implementation of scxml-js done as course project in ___ by Laurie Hendren. Continued over Google Summer of Code 2010, under Apache and Rahul Akolkar. Decided to expand this work toward the completion of a master thesis at McGill under Hans Vangheluwe. Decided to rewrite the project from the ground up, for reasons described [here]. At the moment, still working on master thesis (onto performance testing and anlysis), but decided it is ready to release. My thanks go out to everyone who has supported me in this endeavour.
+
+= License =
+Some modules, tests, and demos derived from scxml-js. These are apache-licensed.
+Various libraries are included under their respective licenses (MIT, etc.). 
+Everything licensed under LGPLv3.

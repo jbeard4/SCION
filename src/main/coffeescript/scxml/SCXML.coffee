@@ -122,7 +122,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 
 			if @opts.printTrace then console.debug("selected transitions: " , selectedTransitions)
 
-			if selectedTransitions
+			if not selectedTransitions.isEmpty()
 
 				if @opts.printTrace then console.debug("sorted transitions: ", selectedTransitions)
 
@@ -260,29 +260,13 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 				for state in statesToRecursivelyAdd
 					@_recursiveAddStatesToEnter(state,statesToEnter,basicStatesToEnter)
 				
-				statesToRecursivelyAdd = @_getChildrenOfParallelStatesWithoutDescendantsInStatesToEnter(statesToEnter)
+				#add children of parallel states that are not already in statesToEnter to statesToRecursivelyAdd 
+				childrenOfParallelStatesInStatesToEnter = flatten(s.children for s in statesToEnter.iter() when s.kind is stateKinds.PARALLEL)
+				statesToRecursivelyAdd = (s for s in childrenOfParallelStatesInStatesToEnter when not s.kind is stateKinds.HISTORY and not statesToEnter.contains s)
 
 			sortedStatesEntered = statesToEnter.iter().sort((s1,s2) => @opts.model.getDepth(s1) - @opts.model.getDepth(s2))
 
 			return [basicStatesToEnter,sortedStatesEntered]
-
-		_getChildrenOfParallelStatesWithoutDescendantsInStatesToEnter: (statesToEnter) ->
-			childrenOfParallelStatesWithoutDescendantsInStatesToEnter = new @opts.StateSet()
-
-			#get all descendants of states to enter
-			descendantsOfStatesToEnter = new @opts.StateSet()
-			for state in statesToEnter.iter()
-				for descendant in @opts.model.getDescendants(state)
-					descendantsOfStatesToEnter.add(descendant)
-
-			for state in statesToEnter.iter()
-				if state.kind is stateKinds.PARALLEL
-					for child in state.children
-						if not descendantsOfStatesToEnter.contains(child)
-							childrenOfParallelStatesWithoutDescendantsInStatesToEnter.add(child)
-
-			return childrenOfParallelStatesWithoutDescendantsInStatesToEnter
-				
 
 		_recursiveAddStatesToEnter: (s,statesToEnter,basicStatesToEnter) ->
 			if s.kind is stateKinds.HISTORY
