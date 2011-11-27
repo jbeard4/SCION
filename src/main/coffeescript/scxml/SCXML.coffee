@@ -320,10 +320,13 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 			eventNames = (event.name for event in eventSet.iter())
 
 			#debugger
-			allTransitionsForEachState = (new @opts.TransitionSet @opts.transitionSelector state,eventNames,e for state in states)
+			allTransitions = new @opts.TransitionSet
+			for state in states
+				for t in @opts.transitionSelector state,eventNames,e
+					allTransitions.add t
 
 			if @opts.printTrace then console.debug("allTransitionsForEachState",allTransitionsForEachState)
-			consistentTransitions = @_makeTransitionsConsistent reduce((@_makeTransitionsConsistent transitionSet for transitionSet in allTransitionsForEachState),((a,b) -> a.union b), new @opts.TransitionSet)
+			consistentTransitions = @_makeTransitionsConsistent allTransitions
 			if @opts.printTrace then console.debug("consistentTransitions",consistentTransitions)
 			return consistentTransitions
 
