@@ -320,46 +320,46 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 			eventNames = (event.name for event in eventSet.iter())
 
 			#debugger
-			allTransitions = new @opts.TransitionSet
+			enabledTransitions = new @opts.TransitionSet
 			for state in states
 				for t in @opts.transitionSelector state,eventNames,e
-					allTransitions.add t
+					enabledTransitions.add t
 
 			if @opts.printTrace then console.debug("allTransitionsForEachState",allTransitionsForEachState)
-			consistentTransitions = @_makeTransitionsConsistent allTransitions
-			if @opts.printTrace then console.debug("consistentTransitions",consistentTransitions)
-			return consistentTransitions
+			priorityEnabledTransitions = @_selectPriorityEnabledTransitions enabledTransitions
+			if @opts.printTrace then console.debug("priorityEnabledTransitions",priorityEnabledTransitions)
+			return priorityEnabledTransitions
 
-		_makeTransitionsConsistent: (transitions) ->
-			consistentTransitions = new @opts.TransitionSet()
+		_selectPriorityEnabledTransitions: (enabledTransitions) ->
+			priorityEnabledTransitions = new @opts.TransitionSet()
 
-			[transitionsNotInConflict, transitionsPairsInConflict] = @_getTransitionsInConflict transitions
-			consistentTransitions.union transitionsNotInConflict
+			[consistentTransitions, inconsistentTransitionsPairs] = @_getInconsistentTransitions enabledTransitions
+			priorityEnabledTransitions.union consistentTransitions
 
-			if @opts.printTrace then console.debug "transitions",transitions
-			if @opts.printTrace then console.debug "transitionsNotInConflict",transitionsNotInConflict
-			if @opts.printTrace then console.debug "transitionsPairsInConflict",transitionsPairsInConflict
+			if @opts.printTrace then console.debug "enabledTransitions",enabledTransitions
 			if @opts.printTrace then console.debug "consistentTransitions",consistentTransitions
+			if @opts.printTrace then console.debug "inconsistentTransitionsPairs",inconsistentTransitionsPairs
+			if @opts.printTrace then console.debug "priorityEnabledTransitions",priorityEnabledTransitions
 
-			while not transitionsPairsInConflict.isEmpty()
+			while not inconsistentTransitionsPairs.isEmpty()
 
-				transitions = new @opts.TransitionSet(@opts.priorityComparisonFn t for t in transitionsPairsInConflict.iter())
+				enabledTransitions = new @opts.TransitionSet(@opts.priorityComparisonFn t for t in inconsistentTransitionsPairs.iter())
 
-				[transitionsNotInConflict, transitionsPairsInConflict] = @_getTransitionsInConflict transitions
+				[consistentTransitions, inconsistentTransitionsPairs] = @_getInconsistentTransitions enabledTransitions
 
-				consistentTransitions.union transitionsNotInConflict
+				priorityEnabledTransitions.union consistentTransitions
 
-				if @opts.printTrace then console.debug "transitions",transitions
-				if @opts.printTrace then console.debug "transitionsNotInConflict",transitionsNotInConflict
-				if @opts.printTrace then console.debug "transitionsPairsInConflict",transitionsPairsInConflict
+				if @opts.printTrace then console.debug "enabledTransitions",enabledTransitions
 				if @opts.printTrace then console.debug "consistentTransitions",consistentTransitions
+				if @opts.printTrace then console.debug "inconsistentTransitionsPairs",inconsistentTransitionsPairs
+				if @opts.printTrace then console.debug "priorityEnabledTransitions",priorityEnabledTransitions
 
-			return consistentTransitions
+			return priorityEnabledTransitions
 				
-		_getTransitionsInConflict: (transitions) ->
+		_getInconsistentTransitions: (transitions) ->
 
-			allTransitionsInConflict = new @opts.TransitionSet()
-			transitionsPairsInConflict = new @opts.TransitionPairSet() 	#set of tuples
+			allInconsistentTransitions = new @opts.TransitionSet()
+			inconsistentTransitionsPairs = new @opts.TransitionPairSet() 	#set of tuples
 
 			#better to use iterators, because not sure how to encode "order doesn't matter" to list comprehension
 			transitionList = transitions.iter()
@@ -371,13 +371,13 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 					t2 = transitionList[j]
 					
 					if @_conflicts(t1,t2)
-						allTransitionsInConflict.add t1
-						allTransitionsInConflict.add t2
-						transitionsPairsInConflict.add [t1,t2]
+						allInconsistentTransitions.add t1
+						allInconsistentTransitions.add t2
+						inconsistentTransitionsPairs.add [t1,t2]
 
-			transitionsNotInConflict = transitions.difference allTransitionsInConflict
+			consistentTransitions = transitions.difference allInconsistentTransitions
 
-			return [transitionsNotInConflict,transitionsPairsInConflict]
+			return [consistentTransitions,inconsistentTransitionsPairs]
 		
 
 		#this would be parameterizable
