@@ -49,9 +49,11 @@
       @import "lib/jquery.svg.css";
 
     </style>
-    <script src="../../../lib/js/require.js" type="text/javascript"></script>
 
-    <script src="lib/jquery-1.7.min.js" type="text/javascript"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7/jquery.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/1.0.1/require.min.js"></script>
+    <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/scion-browser-0.1.js"></script>
+
     <script src="lib/jquery.svg.js" type="text/javascript"></script>
     <script src="lib/jquery.svgdom.js" type="text/javascript"></script>
     <script src="transform.js" type="text/javascript"></script>
@@ -148,8 +150,6 @@ $(document).ready(function(){
 						transform:"translate(0,0)"
 					})
 
-
-					require.config({ baseUrl: "../../../build/"});
 
 					//the steps 1-7 referenced here are described in full detail in src/main/coffeescript/util/browser/parseOnLoad.coffee
 					require(["scxml/SCXML","util/annotate-scxml-json","scxml/json2model","scxml/event","lib/JsonML_DOM"],function(scxml,jsonAnnotator,json2model,SCEvent,JsonML){
