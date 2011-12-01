@@ -37,11 +37,11 @@ using SCXML:
 				padding: 0;
 			}
 		</style>
-		<script type="text/javascript" src="../../../lib/js/require.js"></script>
+		<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/1.0.1/require.min.js"></script>
+		<script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/scion-browser-0.1.js"></script>
 		<script type="text/javascript">
-			require.config({ baseUrl: "../../../build/"});
-			require(["lib/js/domReady",'util/browser/parseOnLoad'],function(domReady,parseOnLoad){
-				domReady(parseOnLoad);	
+			require(['util/browser/parseOnLoad'],function(parseOnLoad){
+				parseOnLoad()
 			});
 		</script>
 
