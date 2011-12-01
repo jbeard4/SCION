@@ -42,7 +42,7 @@
 <h1 id="toc_1">Overview</h1>
 
 <p>
-This document describes the similarities and differences between the semantics of SCION, and those of the "Algorithm for SCXML Interpretation" described in the SCXML draft specification. This document is targeted at developers already familiar with the "Algorithm for SCXML Interpretation", and who are interested in using SCION. Because this document is primarily targeted at developers familiar with the SCXML specification, the terminology used in this document will primarily be based on that of the SCXML specification, however some terminology from other papers will also be used.
+This document describes the similarities and differences between the semantics of SCION, and those of the "Algorithm for SCXML Interpretation" described in the SCXML draft specification. This document is targeted at developers already familiar with the "Algorithm for SCXML Interpretation", and who are interested in using SCION. Because this document is primarily targeted at developers familiar with the SCXML specification, the terminology used here will primarily be based on that of the SCXML specification, however some terminology from other papers will also be referred to.
 </p>
 
 <p>
@@ -56,21 +56,21 @@ All references to the "Algorithm for SCXML Interpretation" in this document are 
 </p>
 
 <p>
-There were a number of reasons to create a semantics different from those specified in the "Algorithm for SCXML Interpretation". The first is that the "Algorithm for SCXML Interpretation" <a href="http://lists.w3.org/Archives/Public/www-voice/2011JanMar/0033.html">contained a serious bug</a> regarding the execution of parallel states, such that the algorithm would cause the state machine interpreter to transition to illegal configurations for certain simple cases. It appeared as though this bug was not new, and had existed through several iterations of the specification, and it was uncertain whether and how the algorithm was being verified for correctness. Furthermore, the "Algorithm for SCXML Interpretation" diverged in unusual ways from the semantics of Statecharts defined in both "The Statemate Semantics of Statecharts" and "The Rhapsody Semantics of Statecharts" by David Harel, the creator of Statecharts. The motivation for these divergences was not always clear, and the fact that the W3C SCXML working group minutes are not publicly available made these choices difficult to investigate. 
+There were a number of reasons to create a semantics different from those specified in the "Algorithm for SCXML Interpretation". The first is that the "Algorithm for SCXML Interpretation" <a href="http://lists.w3.org/Archives/Public/www-voice/2011JanMar/0033.html">contained a serious bug</a> regarding the execution of parallel states, such that the algorithm would cause the state machine interpreter to transition to illegal configurations for certain simple cases. It appeared as though this bug was not new, and had existed through several iterations of the specification, and it was uncertain whether and how the algorithm was being verified for correctness. Furthermore, the "Algorithm for SCXML Interpretation" diverged in unusual ways from the semantics of Statecharts defined in both "The Statemate Semantics of Statecharts" and "The Rhapsody Semantics of Statecharts" by David Harel, the creator of Statecharts. The motivation for these divergences was not always clear, and the fact that the W3C SCXML working group minutes were not publicly available made these choices difficult to investigate. 
 </p>
 
 <p>
-For these reasons, I felt that it would be better to base the semantics of SCION on a strong theoretical foundation, and reuse well-known scholarly work on Statecharts semantics, and thus I chose to base SCION semantics on the paper ["Big-Step Semantics" <a href="http://www.cs.uwaterloo.ca/~nday/Papers/uw-scs-tr-2009-05.pdf">http://www.cs.uwaterloo.ca/~nday/Papers/uw-scs-tr-2009-05.pdf</a>], by Shahram Esmaeilsabzali, Nancy A. Day, Joanne M. Atlee, and Jianwei Niu provided. "Big-Step Semantics" describes eight semantic aspects that may be used to characterize the semantics of a Statecharts-like language. This allowed me to take the features of the "Algorithm for SCXML Interpretation" which I liked, and felt would be most salient to developers, and ensure that other decisions regarding Statecharts semantic would also be well-founded.
+For these reasons, I felt that it would be better to base the semantics of SCION on a strong theoretical foundation, and reuse well-known scholarly work on Statecharts semantics. I thus chose to base SCION semantics on the paper <a href="http://www.cs.uwaterloo.ca/~nday/Papers/uw-scs-tr-2009-05.pdf">"Big-Step Semantics"</a>, by Shahram Esmaeilsabzali, Nancy A. Day, Joanne M. Atlee, and Jianwei Niu. "Big-Step Semantics" describes eight semantic aspects that may be used to characterize the semantics of a Statecharts-like language. This allowed me to take the features of the "Algorithm for SCXML Interpretation" which I liked, and felt would be most salient to user interface developers, and ensure that other decisions regarding Statecharts semantic would also be well-founded.
 </p>
 
 <h1 id="toc_2">Similarities</h1>
 
 <p>
-Overall, I wanted the semantics of SCION to be well-defined with respect to the semantics described by "Big-Step Semantics", but to also be maximally intuitive to developers. There were many ideas in the "Algorithm for SCXML Interpretation" which I saw as being developer-friendly, and which were thus incorporated into the semantics of SCION. In general, SCION can be said to adhere to the general principles of <strong>Encapsulation, Causality, Determinism, Completeness, Run-to-completion, and Termination</strong>, as defined in "Algorithm for SCXML Interpretation". Specifically, some of the similarities between the "Algorithm for SCXML Interpretation" and SCION are as follows.
+Overall, I wanted the semantics of SCION to be well-defined with respect to the semantics described by "Big-Step Semantics", but to also be maximally intuitive for developers. There were many ideas in the "Algorithm for SCXML Interpretation" which I saw as being developer-friendly, and which were thus incorporated into the semantics of SCION. In general, SCION can be said to adhere to the general principles of <strong>Encapsulation, Causality, Determinism, Completeness, Run-to-completion, and Termination</strong>, as defined in "Algorithm for SCXML Interpretation". Specifically, some of the similarities between the "Algorithm for SCXML Interpretation" and SCION are as follows.
 </p>
 
 <p>
-SCION adheres to run-to-completion semantics, where the system will take multiple transitions given an external event, until it reaches a point where it no longer has any transitions selected.
+SCION adheres to run-to-completion semantics, where the system, when given an external event, will take multiple transitions, until it reaches a point where it is no longer possible to enable any further transitions.
 </p>
 
 <p>
@@ -82,7 +82,7 @@ In SCION, the source state of a transition is also used to resolve conflicts whe
 </p>
 
 <p>
-Finally, I liked the idea of using JavaScript, a general-purpose scripting language, as the action language in actions and guards of the state machine. This seemed well-aligned with the vision for SCION as being well-suited for developing user interfaces, as many developers are already familiar with JavaScript, JavaScript is easily embeddable, and is the only executable scripting language implemented across all modern Web browsers.
+Finally, I liked the idea of using JavaScript, a general-purpose scripting language, as the action language in actions and guards of the state machine. This seemed well-aligned with the vision for SCION as being well-suited for developing user interfaces on the Web.
 </p>
 
 <h1 id="toc_3">Differences</h1>
@@ -90,15 +90,15 @@ Finally, I liked the idea of using JavaScript, a general-purpose scripting langu
 <h2 id="toc_3.1">Event Lifeline</h2>
 
 <p>
-The "Event Lifeline" can be described as the question of when a generated event (an internal event generated by SCXML &lt;send&gt;) can be sensed by the state machine and used to trigger transitions.
+The "Event Lifeline" can be described as the question of when an internal event generated by SCXML &lt;send&gt; can be sensed by the state machine and used to trigger transitions.
 </p>
 
 <p>
-For the purposes of this paper, the terms "big-step"/"macrostep", and "small-step"/"microstep", should be considered synonyms. The terms "macrostep"/"microstep" will be preferred, as they are used in the SCXML specification, but "big-step"/"small-step" will be used in the titles of the semantic choices, as these are taken directly from the "Big-Step Semantics" paper.
+For the purposes of this paper, the terms "big-step"/"macrostep", and "small-step"/"microstep", should be considered synonyms. The terms "macrostep" and "microstep" will be preferred, as they are used in the SCXML specification, but "big-step" and "small-step" will be used in the titles of the semantic choices, as these are taken directly from "Big-Step Semantics".
 </p>
 
 <p>
-In SCXML semantics, exactly one event can be sensed at a time; if multiple send actions are triggered in a single microstep, then each of those send actions will add their event to the inner event queue. At the end of each microstep, an event is dequeued from the internal event queue, and this event is sensed in the next microstep. This continues until there are no longer any transitions selected.
+In SCXML semantics, exactly one event can be sensed at a time; if multiple send actions are triggered in a single microstep, then each of those send actions will add their event to the inner event queue. At the end of each microstep, an event is dequeued from the internal event queue, and this event is sensed in the next microstep. This continues until there are no longer any transitions enabled.
 </p>
 
 <p>
@@ -136,7 +136,7 @@ Same: a generated event is present during the current microstep
 </ul>
 
 <p>
-I felt that the "next small-step" semantic choice would be most intuitive for developers. This means that if multiple send actions are fired in a single microstep, the events from both will be added to a <strong>single event set</strong>, which will be dequeued and sensed in the next microstep. This will continue until a macrostep occurs which does not enable any transitions.
+I felt that the "next small-step" semantic choice would be most intuitive for developers. This means that if multiple send actions are fired in a single microstep, the events from both will be added to a <strong>single event set</strong>, potentially containing multiple individual events, which will be dequeued and sensed in the next microstep. This will continue until a macrostep occurs which does not enable any transitions.
 </p>
 
 <h3 id="toc_3.1.1">Sensing Events via Script</h3>
@@ -256,7 +256,7 @@ The statechart begins in initial state <code>a</code>. Upon receiving event <cod
 <h2 id="toc_3.2">Memory Protocol</h2>
 
 <p>
-"Memory protocol" refers to the question of how to obtain the value of a variable in the statechart datamodel when it is accessed in a variable condition or in the right-hand side of an assignment.
+"Memory protocol" refers to the question of how to obtain the value of a variable in the statechart datamodel when it is accessed in a <a href="JavaScript.html">JavaScript</a> expression.
 </p>
 
 <p>
@@ -277,7 +277,7 @@ In the "Algorithm for SCXML Interpretation", variables in the datamodel can be a
 </ul>
 	
 <p>
-Neither of these choices allow the kind of synchronous assignment that one finds in a typical procedural programming language. One consequence of this "double-buffering" of variables is additional overhead to the interpreter runtime, and more difficulty integrating these concepts with a general-purpose embedded scripting language. Furthermore, I feel that both of these choices are likely to be somewhat suprising and less intuitive to many web developers. Finally, the ability to enforce the microstep semantics is limited in the browser environment (to my knowledge, there does not exist a general mechanism to sandbox arbitrary JavaScript assignments in the browser environment, and thus the developers would be able to side-step Memory Protocol semantics by assigning to global variables the executing script). 
+Neither of these choices allow the kind of synchronous assignment that one finds in a typical procedural programming language. One consequence of this "double-buffering" of variables is additional overhead to the interpreter runtime, and more difficulty integrating these concepts with a general-purpose embedded scripting language. Furthermore, I feel that both of these choices are likely to be somewhat suprising and less intuitive to many web developers. Finally, the ability to enforce these semantics is limited in the browser environment (to my knowledge, there does not exist a general mechanism to sandbox arbitrary JavaScript assignments in the browser environment, and thus the developers would be able to side-step Memory Protocol semantics simply by assigning to global variables that are not declared in the datamodel). 
 </p>
 
 <p>
@@ -473,7 +473,7 @@ In SCION, top-level script elements (those that are children of the root &lt;scx
 </p>
 
 <p>
-All other action code is evaluated in a restricted scope. Local variables <code>getData</code>,<code>setData</code>,<code>_events</code>,<code>_event</code>, and <code>In</code>, as defined in this document and the SCXML specification, are available as local variables to the evaluating script context. Furthermore, datamodel variables are available as local variables, so that they can be assigned to directly, without declaring global variables.
+All other action code is evaluated in a restricted scope. Local variables <code>getData</code>, <code>setData</code>, <code>_events</code>, <code>_event</code>, and <code>In</code>, as defined in this document and the SCXML specification, are available as local variables to the evaluating script context. Furthermore, datamodel variables are available as local variables, so that they can be assigned to directly, without declaring global variables.
 </p>
 
 <h3 id="toc_3.3.1">Example</h3>
@@ -570,7 +570,7 @@ Datamodel variables <code>firstEvent</code>, <code>eventStamp</code>, and <code>
 <a href="SCION Semantics.html">SCION Semantics</a>
 </li>
 <li>
-["Big-Step Semantics" <a href="http://www.cs.uwaterloo.ca/~nday/Papers/uw-scs-tr-2009-05.pdf">http://www.cs.uwaterloo.ca/~nday/Papers/uw-scs-tr-2009-05.pdf</a>]
+<a href="http://www.cs.uwaterloo.ca/~nday/Papers/uw-scs-tr-2009-05.pdf">"Big-Step Semantics"</a>
 </li>
 </ul>
 

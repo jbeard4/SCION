@@ -37,7 +37,7 @@
 <h1 id="toc_1">Overview</h1>
 
 <p>
-The Statecharts semantics implemented by SCION is based on the paper ["Big-Step Semantics" <a href="http://www.cs.uwaterloo.ca/~nday/Papers/uw-scs-tr-2009-05.pdf">http://www.cs.uwaterloo.ca/~nday/Papers/uw-scs-tr-2009-05.pdf</a>], by Shahram Esmaeilsabzali, Nancy A. Day, Joanne M. Atlee, and Jianwei Niu. This work attempts to categorize the semantic aspects of a number of Statecharts variants, and describe the space of possible semantic options for each of these aspects. SCION chooses a particular configuration of the available options for each of these semantic aspects. This document provides a summary description of each of these semantic aspects, as well as the semantic choice selected by SCION, and for comparison, where possible, the choice made by the "Algorithm for SCXML Interpretation" described in the SCXML draft specification. This document is not meant to stand on its own, but rather assumes the reader has read "Big-Step Semantics", which fully describes all semantic aspects and their associated options.
+The Statecharts semantics implemented by SCION is based on the paper <a href="http://www.cs.uwaterloo.ca/~nday/Papers/uw-scs-tr-2009-05.pdf">"Big-Step Semantics"</a>, by Shahram Esmaeilsabzali, Nancy A. Day, Joanne M. Atlee, and Jianwei Niu. This work attempts to categorize the semantic aspects of a number of Statecharts variants, and describe the space of possible semantic options for each of these aspects. SCION chooses a particular configuration of the available options for each of these semantic aspects. This document provides a summary description of each of these semantic aspects, as well as the semantic choice selected by SCION, and for comparison, where possible, the choice made by the "Algorithm for SCXML Interpretation" described in the SCXML draft specification. This document is not meant to stand on its own, but rather assumes the reader has read "Big-Step Semantics", which fully describes all semantic aspects and their associated options.
 </p>
 
 <p>
@@ -142,7 +142,7 @@ Non-preemptive otherwise
 </ul>
 <dl>
 <dt>SCXML</dt>
-<dd>Non-preemptive, in a very specific way: it will select transitions based on document order, until a reaches a transition that preempts later transitions, in which case it will not select them.</dd>
+<dd>Non-preemptive, in a very specific way: it will select transitions based on document order, until it reaches a transition that preempts later transitions, in which case it will not select them.</dd>
 <dt>SCION</dt>
 <dd>Non-preemptive</dd>
 </dl>

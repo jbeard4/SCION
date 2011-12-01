@@ -46,7 +46,7 @@ This document describes a canonical step algorithm which implements SCION's sema
 </p>
 
 <p>
-SCION semantics are defined as a configuration of the possible semantic options of big-step languages presented in ["Big-Step Semantics" <a href="http://www.cs.uwaterloo.ca/~nday/Papers/uw-scs-tr-2009-05.pdf">http://www.cs.uwaterloo.ca/~nday/Papers/uw-scs-tr-2009-05.pdf</a>], by Shahram Esmaeilsabzali, Nancy A. Day, Joanne M. Atlee, and Jianwei Niu. 
+SCION semantics are defined as a configuration of the possible semantic options of big-step languages presented in <a href="http://www.cs.uwaterloo.ca/~nday/Papers/uw-scs-tr-2009-05.pdf">"Big-Step Semantics"</a>, by Shahram Esmaeilsabzali, Nancy A. Day, Joanne M. Atlee, and Jianwei Niu. 
 </p>
 
 <p>
@@ -58,41 +58,41 @@ SCION implements the following semantic options from the semantic aspects descri
 </p>
 <ul>
 <li>
-Concurrency::
+Concurrency:
 </li>
 <ul>
 <li>
-Number of transitions:: Multiple
+Number of transitions: Multiple
 </li>
 <li>
-Order of transitions:: Explicitly defined, based on document order (which defines a total order).
+Order of transitions: Explicitly defined, based on document order (which defines a total order).
 </li>
 </ul>
 <li>
-Transition Consistency::
+Transition Consistency:
 </li>
 <ul>
 <li>
-Small-step consistency:: Arena Orthogonal
+Small-step consistency: Arena Orthogonal
 </li>
 <li>
-Interrupt Transitions and Preemption:: Non-preemptive 
+Interrupt Transitions and Preemption: Non-preemptive 
 </li>
 </ul>
 <li>
-Maximality:: Take-Many 
+Maximality: Take-Many 
 </li>
 <li>
-Memory Protocols:: Small-step
+Memory Protocols: Small-step
 </li>
 <li>
-Event Lifelines:: Next small-step
+Event Lifelines: Next small-step
 </li>
 <li>
-External Event Communication:: Asynchronous
+External Event Communication: Asynchronous
 </li>
 <li>
-Priority:: Source-Child. If that is ambiguous, then document order is used.
+Priority: Source-Child. If that is ambiguous, then document order is used.
 </li>
 </ul>
 
@@ -108,13 +108,13 @@ The pseudocode is written using a python-inspired syntax. Indentation is used to
 <h1 id="toc_2">Data Structures</h1>
 <dl>
 <dt>Set</dt>
-<dd>An unordered set of objects. In particular, note that union and difference methods update the set object in-place.</dd>
+<dd>An unordered set of objects. In particular, note that union and difference methods mutate the set, such that it is updated in-place.</dd>
 <dt>List</dt>
 <dd>An ordered list of objects.</dd>
 <dt>Map</dt>
 <dd>A map of string keys to object values. </dd>
 <dt>Queue</dt>
-<dd>A First-in-First-Out (FIFO) ordered data structure.</dd>
+<dd>A First-in-First-Out (FIFO), ordered data structure.</dd>
 </dl>
 
 <dl>
@@ -173,7 +173,7 @@ INITIAL
 
 <h1 id="toc_4">Utility Functions</h1>
 <p>
-The following utility functions are used in the step algorithm. The implementation of these depends on the underlying representation of the Statecharts object model. An example implementation can be found in [model.coffee]
+The following utility functions are used in the step algorithm. The implementation of these depends on the underlying representation of the Statecharts object model. 
 </p>
 
 <ul>
@@ -270,16 +270,16 @@ procedure performSmallStep implements the following semantic options:
 </p>
 <ul>
 <li>
-Concurrency - Number of transitions:: Multiple
+Concurrency - Number of transitions: Multiple
 </li>
 <li>
-Concurrency - Order of transitions:: Explicitly defined
+Concurrency - Order of transitions: Explicitly defined
 </li>
 <li>
-Event Lifelines:: Next small-step
+Event Lifelines: Next small-step
 </li>
 <li>
-Maximality:: Take-Many
+Maximality: Take-Many
 </li>
 </ul>
 
@@ -526,7 +526,7 @@ This function implements the following semantic option:
 </p>
 <ul>
 <li>
-Priority:: Source-Child 
+Priority: Source-Child 
 </li>
 </ul>
 
@@ -554,10 +554,10 @@ This function implements the following semantic options:
 </p>
 <ul>
 <li>
-Transition Consistency:: Small-step consistency: Source/Destination Orthogonal
+Transition Consistency: Small-step consistency: Source/Destination Orthogonal
 </li>
 <li>
-Interrupt Transitions and Preemption:: Non-preemptive 
+Interrupt Transitions and Preemption: Non-preemptive 
 </li>
 </ul>
 		
@@ -612,13 +612,14 @@ procedure gen implements the following semantic option:
 </p>
 <ul>
 <li>
-External Event Communication:: Asynchronous
+External Event Communication: Asynchronous
+</li>
+</ul>
+
 <pre class="brush:python">
 procedure gen(e)
 	performBigStep(e)
 </pre>
-</li>
-</ul>
 
 
 <h2 id="toc_5.15">procedure evaluateAction</h2>

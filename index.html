@@ -154,13 +154,6 @@ One can add action code in order to script an SVG DOM element, so as to change i
 In order to execute this on a web page, such that the state machine is instantiated, receives DOM events, and is able to script DOM nodes, one may use a tool included with SCION that allows one to embed the statechart directly into the content of the page. 
 </p>
 
-<p>
-Note that, due to limitations in cross-browser compatibility of techniques for embedding XML data in HTML pages, this technique will currently only work for web browsers that support XHTML. In particular, this excludes versions of Internet Explorer before IE9, so this technique is primarily useful for experimentation and demo purposes. A technique that should work well across browsers, including older versions of IE, will be shown below. 
-</p>
-
-<p>
-The SCION interpreter itself does not have any browser-specific dependencies, and in fact, runs well in a number of JavaScript environments, including Rhino and NodeJS shell environments.
-</p>
 
 <pre class="brush:js;html-script:true;">
 &lt;html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg"&gt;
@@ -172,13 +165,16 @@ The SCION interpreter itself does not have any browser-specific dependencies, an
         padding: 0;
       }
     &lt;/style&gt;
-    &lt;script type="text/javascript" src="../../../lib/js/require.js"&gt;&lt;/script&gt;
-    &lt;script type="text/javascript"&gt;
-      require.config({ baseUrl: "../../../build/"});
-      require(["lib/js/domReady",'util/browser/parseOnLoad'],function(domReady,parseOnLoad){
-        domReady(parseOnLoad);  
-      });
-    &lt;/script&gt;
+    &lt;script type="text/javascript"
+      src="http://cdnjs.cloudflare.com/ajax/libs/require.js/1.0.1/require.min.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript"
+      src="http://jbeard4.github.com/SCION/builds/scion-browser-0.1.js"&gt;&lt;/script&gt;
+		&lt;script type="text/javascript"&gt;
+			require(['util/browser/parseOnLoad'],function(parseOnLoad){
+				parseOnLoad()
+			});
+		&lt;/script&gt;
+
 
   &lt;/head&gt;
   &lt;body&gt;
@@ -253,6 +249,10 @@ The SCION interpreter itself does not have any browser-specific dependencies, an
 </pre>
 
 <p>
+Note that, due to limitations in cross-browser compatibility of techniques for embedding XML data in HTML pages, this technique will currently only work for web browsers that support XHTML. In particular, this excludes versions of Internet Explorer before IE9, so this technique is primarily useful for experimentation and demo purposes. A technique that should work well across browsers, including older versions of IE, will be shown below.  The SCION interpreter itself does not have any browser-specific dependencies, and in fact, runs well in a number of JavaScript environments, including Rhino and NodeJS shell environments.
+</p>
+
+<p>
 You can run the demo live <a href="http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop.xhtml">here</a>.
 </p>
 
@@ -270,16 +270,16 @@ There are 7 steps that must be performed to go from an SCXML document to a worki
 Get the SCXML document.
 </li>
 <li>
-Convert the XML to JsonML using XSLT or DOM, and parse the JSON to a JsonML document.
+Convert the XML to a JsonML JSON document using XSLT or DOM, and parse the <a href="JsonML.html">JsonML</a> JSON document to a JsonML <a href="JavaScript.html">JavaScript</a> Object.
 </li>
 <li>
-Annotate and transform the JsonML document so that it is in a form more congenial to interpretation, creating an annotated JsonML document
+Annotate and transform the JsonML <a href="JavaScript.html">JavaScript</a> Object so that it is in a more convenient form for interpretation, creating an annotated JsonML <a href="JavaScript.html">JavaScript</a> Object
 </li>
 <li>
-Convert the JsonML document to a Statecharts object model. This step essentially converts id labels to object references, parses JavaScript scripts and expressions embedded in the SCXML as JavaScript functions, and does some validation for correctness. 
+Convert the annotated JsonML <a href="JavaScript.html">JavaScript</a> Object to a Statecharts object model. This step essentially converts id labels to object references, parses JavaScript scripts and expressions embedded in the SCXML as JavaScript functions, and does some validation for correctness. 
 </li>
 <li>
-Use the Statecharts object model to instantiate an instance of the SCION interpreter. Optionally, one can pass to the construct an object to be used as the context object (the object bound to the <code>this</code> identifier) in script evaluation. There are many other parameters that can be passed to the constructor, none of which are currently documented.
+Use the Statecharts object model to instantiate the SCION interpreter. Optionally, one can pass to the SCION constructor an object to be used as the context object (the object bound to the <code>this</code> identifier) in script evaluation. There are many other parameters that can be passed to the constructor, none of which are currently documented.
 </li>
 <li>
 Connect relevant event listeners to the statechart instance.
@@ -290,11 +290,11 @@ Call the <code>start</code> method on the new interpreter instance to start exec
 </ol>
 
 <p>
-Also note that steps 1-3 can be done ahead-of-time, such that the annotated JsonML document can be serialized as JSON and sent down the wire, before being downloaded and converted to a Statecharts object model in step 4. 
+Note that steps 1-3 can be done ahead-of-time, such that the annotated JsonML document can be serialized and sent down the wire, before being downloaded to the browser and parsed, then converted to a Statecharts object model in step 4. 
 </p>
 
 <p>
-Here is an example. An SCXML document is downloaded with XMLHttpRequest and initialized. SVG circle nodes can be created dynamically, such that a new state machine is instantiated and hooked into the DOM.
+Here is an example. An SCXML document is downloaded with XMLHttpRequest and initialized. SVG circle nodes can be created dynamically, such that a new state machine is instantiated, listens to the circle node's DOM events, and scripts the circle node's DOM attributes.
 </p>
 
 <pre class="brush:js;html-script:true;">
@@ -307,8 +307,13 @@ Here is an example. An SCXML document is downloaded with XMLHttpRequest and init
         padding: 0;
       }
     &lt;/style&gt;
-    &lt;script src="../../../lib/js/jquery.js" type="text/javascript"&gt;&lt;/script&gt;
-    &lt;script src="../../../lib/js/require.js" type="text/javascript"&gt;&lt;/script&gt;
+    &lt;script
+      src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7/jquery.min.js"
+      type="text/javascript"&gt;&lt;/script&gt; 
+    &lt;script type="text/javascript"
+      src="http://cdnjs.cloudflare.com/ajax/libs/require.js/1.0.1/require.min.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript"
+      src="http://jbeard4.github.com/SCION/builds/scion-browser-0.1.js"&gt;&lt;/script&gt;
   &lt;/head&gt;
   &lt;body&gt;
     &lt;svg xmlns="http://www.w3.org/2000/svg"
@@ -437,7 +442,7 @@ It is described in detail in the source code of the page.
 <h1 id="toc_3">Non-browser Environments</h1>
 
 <p>
-SCION works well under node.js and Rhino, but documentation still needs to be written to illustrate this.
+SCION works well under node.js and Rhino, but documentation still needs to be written to illustrate SCION's usage in these environments.
 </p>
 
 
@@ -473,7 +478,7 @@ If you're a specification implementer or a semanticist, and would like the detai
 <h1 id="toc_6">Project Status and Supported Environments</h1>
 
 <p>
-SCION has been thoroughly tested in recent versions of Chromium, Firefox, and Opera on Ubuntu 10.04. It has <strong>not</strong> been thoroughly tested with older browsers, or on Internet Explorer or Safari. SCION has also been thoroughly tested under multiple shell environments, including Node and Rhino, as well as the shell environments included with the v8, spidermonkey and jsc shell environments.
+SCION has been thoroughly tested in recent versions of Chromium, Firefox, and Opera on Ubuntu 10.04. It has <strong>not</strong> been thoroughly tested with older browsers, or on Internet Explorer or Safari. SCION has also been thoroughly tested under multiple shell environments, including Node and Rhino, as well as the shell environments included with the v8, spidermonkey and jsc.
 </p>
 
 <h1 id="toc_7">Project Background</h1>
