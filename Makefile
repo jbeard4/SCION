@@ -41,8 +41,9 @@ generatetesttuple = src/main/bash/build/generate-requirejs-json-test-tuples.sh
 generatetestloadermodule = src/main/bash/build/generate-requirejs-test-loader-module.sh
 generateArrayTestLoaderModule = src/main/bash/build/generate-requirejs-array-test-loader-module.sh
 
+scion-browser-build = $(build)/scion-browser.js
 
-.PHONY: clean coffee scxml2json copy-others combine-json-and-scxml-tests gen-spartan-loader gen-class-transition-lookup-optimization gen-table-transition-lookup-optimization gen-switch-transition-lookup-optimization gen-transition-lookup-optimization gen-state-configuration-set-optimization gen-transition-configuration-set-optimization gen-model-caching-optimization gen-transformed-statecharts gen-ahead-of-time-optimizations gen-top-level-optimized-requirejs-modules annotated-json
+.PHONY: clean coffee scxml2json copy-others combine-json-and-scxml-tests gen-spartan-loader gen-class-transition-lookup-optimization gen-table-transition-lookup-optimization gen-switch-transition-lookup-optimization gen-transition-lookup-optimization gen-state-configuration-set-optimization gen-transition-configuration-set-optimization gen-model-caching-optimization gen-transformed-statecharts gen-ahead-of-time-optimizations gen-top-level-optimized-requirejs-modules annotated-json scion-browser-build
 
 coffee : $(coffeejs)
 
@@ -163,3 +164,9 @@ gen-top-level-optimized-requirejs-modules : gen-ahead-of-time-optimizations
 scion : copy-others coffee
 
 all-tests : $(scxmljsontuple)
+
+$(scion-browser-build) : $(coffee)
+	#install r.js first
+	r.js -o name=util/browser/parseOnLoad out=$(scion-browser-build) baseUrl=$(build);
+
+scion-browser-build : $(scion-browser-build)
