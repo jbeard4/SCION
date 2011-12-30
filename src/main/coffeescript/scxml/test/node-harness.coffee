@@ -4,7 +4,7 @@
 #spartanLoaderForAllTests is built by make
 #we use spartanLoaderForAllTests due to lack of decent XML support in node.js, as we would at least need to convert scxml tests to json ahead of time
 #or, possibly use node's process support to make a system call to a command-line xslt process (e.g. xsltproc).
-define ["scxml/setup-default-opts","scxml/json2model","scxml/test/harness","scxml/test/report2string","scxml/async-for","spartanLoaderForAllTests"],(setupDefaultOpts,json2model,harness,report2string,asyncForEach,testTuples)->
+define ["scxml/setup-default-opts","scxml/json2model","scxml/test/harness","scxml/test/report2string","scxml/async-for","tests/loaders/spartan-loader-for-all-tests"],(setupDefaultOpts,json2model,harness,report2string,asyncForEach,testTuples)->
 
 	runTests = ->
 
