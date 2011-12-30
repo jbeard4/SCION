@@ -1,172 +1,180 @@
+#variable declarations
+#sources
+coffescript-dir = src/main/coffeescript
+test-dir = src/test
+
+#targets
 build = build
-csdir = src/main/coffeescript
-coffee := $(shell find $(csdir) -name "*.coffee")
-coffeejs = $(patsubst $(csdir)/%.coffee,$(build)/%.js, $(coffee))
+core = $(build)/core
+release = $(build)/release
+browser-release = $(release)/browser
+npm-release = $(release)/npm
+tests = $(build)/tests
+optimizations = $(tests)/optimizations
+loaders = $(tests)/loaders
+flattened-tests = $(tests)/flattened
+hier-tests = $(tests)/hier
 
-#TODO: generate these conditionally so we can compare the overhead induced by this version
-extraModelXSLArgs = --param genDepth "true()" --param genAncestors "true()" --param genDescendants "true()" --param genLCA "true()"
+#this should be overridden when doing actual releases
+release-number = 0.0.1
+#release stuff
+module-name = scion
+browser-release-module = $(browser-release)/$(module-name)-$(release-number).js
+#TODO: this isn't used yet
+npm-release-module = $(npm-release)/$(module-name)-$(release-number).tgz
 
-testdir = src/test
-buildtestdir = $(build)/test
-scxmltests := $(shell find $(testdir) -name "*.scxml")
-nonTransformedScxmlJson = $(patsubst $(testdir)/%.scxml,$(buildtestdir)/%.scxml.json, $(scxmltests))
+#these modules are significant for building other components, such as tests, etc.
+#TODO: use coffescript src names for these, and go through macro to convert them. More DRY
+annotate-scxml-json-module = $(core)/util/annotate-scxml-json.js
+runner-module = $(core)/runner.js
+beautify-module = $(lib)/beautify.js
+initializer-optimization-module = $(core)/scxml/optimization/initializer.js
+class-optimization-module = $(core)/scxml/optimization/class.js
+table-optimization-module = $(core)/scxml/optimization/state-table.js
+switch-optimization-module = $(core)/scxml/optimization/switch.js
 
-buildtransformdir = $(build)/transform
-buildFlattenedTransitionsDir = $(buildtransformdir)/flattened-transitions
-flattenedSCXMLTests = $(patsubst $(testdir)/%.scxml,$(buildFlattenedTransitionsDir)/%.scxml, $(scxmltests))
-
-flattenedTransitionsSCXMLJson = $(patsubst $(buildFlattenedTransitionsDir)/%.scxml,$(buildtestdir)/%.flattened-transitions.scxml.json, $(flattenedSCXMLTests))
-
-#all scxmljson files (both flattened and non-flattened)
-scxmljson = $(sort $(nonTransformedScxmlJson)  $(flattenedTransitionsSCXMLJson)) 
-
-annotated_scxml_json = $(patsubst $(buildtestdir)/%.scxml.json,$(buildtestdir)/%.annotated.scxml.json, $(scxmljson)) 
-
-scxmljsontuple = $(patsubst $(buildtestdir)/%.annotated.scxml.json,$(buildtestdir)/%.js, $(annotated_scxml_json))
-
-#optimization variables
-buildopt = $(build)/opt
-tsel = $(buildopt)/transition-selection
-
-tsel_class = $(patsubst $(buildtestdir)/%.scxml.json,$(tsel)/%.class.js, $(scxmljson))
-tsel_switch = $(patsubst $(buildtestdir)/%.scxml.json,$(tsel)/%.switch.js, $(scxmljson))
-tsel_table = $(patsubst $(buildtestdir)/%.scxml.json,$(tsel)/%.table.js, $(scxmljson))
-
-spartanLoader = $(build)/spartanLoaderForAllTests.js
-
-#paths to some scripts
-scxmltojson = src/main/bash/util/scxml-to-json.sh
-annotateScxmlJson = bin/run-module-node.sh util/annotate-scxml-json
-generatetesttuple = src/main/bash/build/generate-requirejs-json-test-tuples.sh
-generatetestloadermodule = src/main/bash/build/generate-requirejs-test-loader-module.sh
-generateArrayTestLoaderModule = src/main/bash/build/generate-requirejs-array-test-loader-module.sh
-
-scion-browser-build = $(build)/scion-browser.js
-
-.PHONY: clean coffee scxml2json copy-others combine-json-and-scxml-tests gen-spartan-loader gen-class-transition-lookup-optimization gen-table-transition-lookup-optimization gen-switch-transition-lookup-optimization gen-transition-lookup-optimization gen-state-configuration-set-optimization gen-transition-configuration-set-optimization gen-model-caching-optimization gen-transformed-statecharts gen-ahead-of-time-optimizations gen-top-level-optimized-requirejs-modules annotated-json scion-browser-build
-
-coffee : $(coffeejs)
-
-all : all-tests scion gen-top-level-optimized-requirejs-modules gen-transition-lookup-optimization gen-optimization-loaders gen-optimization-array-loaders gen-spartan-loader
-
-clean:
-	rm -rf $(build)
-
-build:
-	mkdir $(build)
-
-
-$(build)/%.js : $(csdir)/%.coffee
+#compile coffeescript
+coffeescript-src = $(shell find $(coffescript-dir))
+built-javascript-core = $(patsubst $(coffescript-dir)/%.coffee,$(core)/%.js, $(coffeescript-src))
+$(core)/%.js : $(coffescript-dir)/%.coffee
+	mkdir -p $(dir $@)
 	coffee -o $(dir $@) $<
 
-flatten-transitions-scxml-tests: $(flattenedSCXMLTests)
+#copy over lib/js/*
+lib-src = lib/js
+lib-js-src = $(shell find $(lib-src)/*)
+lib = $(core)/lib
+lib-core = $(patsubst $(lib-src)/%,$(core)/lib/%, $(lib-js-src))
 
-$(buildFlattenedTransitionsDir)/%.scxml : $(testdir)/%.scxml
+$(lib)/% : $(lib-src)/%
 	mkdir -p $(dir $@)
-	xsltproc src/main/xslt/flattenTransitions.xsl $< > $@
+	cp $< $@
 
-scxml2json : $(scxmljson)
-
-$(buildtestdir)/%.flattened-transitions.scxml.json : $(buildFlattenedTransitionsDir)/%.scxml 
+#build browser release module
+$(browser-release-module) : $(built-javascript-core) $(lib-core)
 	mkdir -p $(dir $@)
-	$(scxmltojson) $< > $@
+	r.js -o name=util/browser/parseOnLoad out=$(browser-release-module) baseUrl=$(core)
 
-$(buildtestdir)/%.scxml.json : $(testdir)/%.scxml 
+#generate tests
+scxml-test-src = $(shell find $(test-dir) -name "*.scxml")
+json-test-src = $(patsubst %.scxml,%.json,$(scxml-test-src))
+
+#generate json from scxml
+scxml-json-dir = $(tests)/scxml-json
+scxml-json-tests = $(patsubst $(test-dir)/%.scxml, $(scxml-json-dir)/%.json, $(scxml-test-src)) 
+$(scxml-json-dir)/%.json : $(test-dir)/%.scxml
 	mkdir -p $(dir $@)
-	$(scxmltojson) $< > $@
+	./src/main/bash/util/scxml-to-json.sh $< > $@
 
-copy-others : build
-	cp -r lib/js/ $(build)/lib/
-	cp -r src/main/javascript/* $(build)
-	cp -r src/main/xslt $(build)
+#annotate it
 
-annotated-json : $(annotated_scxml_json)
+annotated-scxml-json-dir = $(tests)/annotated-scxml-json
+annotated-scxml-json-tests = $(patsubst $(scxml-json-dir)/%.json,$(annotated-scxml-json-dir)/%.json,$(scxml-json-tests)) 
+$(annotated-scxml-json-dir)/%.json : $(tests)/scxml-json/%.json $(annotate-scxml-json-module) $(runner-module)
+	mkdir -p $(dir $@)
+	./bin/run-module-node.sh util/annotate-scxml-json $< $@
 
-combine-json-and-scxml-tests : $(scxmljsontuple) 
+#annotated-scxml-json-tests : $(annotated-scxml-json-tests)
 
-$(buildtestdir)/%.flattened-transitions.annotated.scxml.json : $(buildtestdir)/%.flattened-transitions.scxml.json $(build)/util/annotate-scxml-json.js
-	$(annotateScxmlJson) $< $@
+#combine it with the json test script
+#in this task, $^ are all the dependencies, second arg is the test name, third arg is the test group name
+combined-script-and-annotated-scxml-json-dir = $(tests)/combined-script-and-annotated-scxml-json-test
+combined-script-and-annotated-scxml-json-test = $(patsubst $(annotated-scxml-json-dir)/%.json,$(combined-script-and-annotated-scxml-json-dir)/%.js,$(annotated-scxml-json-tests)) 
+$(combined-script-and-annotated-scxml-json-dir)/%.js : $(annotated-scxml-json-dir)/%.json $(test-dir)/%.json
+	mkdir -p $(dir $@)
+	./src/main/bash/build/generate-requirejs-json-test-tuples.sh $^ "$(basename $(notdir $<))" "$(notdir $(shell dirname $<))" > $@
 
-$(buildtestdir)/%.annotated.scxml.json : $(buildtestdir)/%.scxml.json $(build)/util/annotate-scxml-json.js
-	$(annotateScxmlJson) $< $@
+#generate spartan loader
+generate-test-loader-module-script = src/main/bash/build/generate-requirejs-test-loader-module.sh
+$(loaders)/spartan-loader-for-all-tests.js :
+	mkdir -p $(dir $@)
+	$(generate-test-loader-module-script) $@ $(combined-script-and-annotated-scxml-json-test)
 
-$(buildtestdir)/%.flattened-transitions.js : $(buildtestdir)/%.flattened-transitions.annotated.scxml.json $(testdir)/%.json
-	$(generatetesttuple) $^ "$(basename $(basename $(basename $(notdir $<))))" "$(shell basename $(shell dirname $<))" > $@
+#generate optimizations
+transition-selector = $(optimizations)/transition-selector
 
-$(buildtestdir)/%.js : $(buildtestdir)/%.annotated.scxml.json $(testdir)/%.json
-	$(generatetesttuple) $^ "$(basename $(basename $(basename $(notdir $<))))" "$(shell basename $(shell dirname $<))" > $@
+#class, switch, and table transition selectors
+class-transition-selector = $(patsubst $(annotated-scxml-json-dir)/%.json,$(transition-selector)/%.class.js,$(annotated-scxml-json-tests))
+switch-transition-selector = $(patsubst $(annotated-scxml-json-dir)/%.json,$(transition-selector)/%.switch.js,$(annotated-scxml-json-tests))
+table-transition-selector = $(patsubst $(annotated-scxml-json-dir)/%.json,$(transition-selector)/%.table.js,$(annotated-scxml-json-tests))
 
-gen-spartan-loader : $(spartanLoader)
-
-$(spartanLoader) : 
-	$(generatetestloadermodule) $@ $(scxmljsontuple)
-
-
-$(tsel)/%.class.js : $(buildtestdir)/%.annotated.scxml.json coffee copy-others
+$(transition-selector)/%.class.js : $(annotated-scxml-json-dir)/%.json $(runner-module) $(beautify-module) $(initializer-optimization-module) $(class-optimization-module)
 	mkdir -p $(dir $@)
 	./bin/run-module-node.sh scxml/optimization/transition-optimizer $< class true true > $@
 
-$(tsel)/%.switch.js : $(buildtestdir)/%.annotated.scxml.json coffee copy-others
+$(transition-selector)/%.switch.js : $(annotated-scxml-json-dir)/%.json $(runner-module) $(beautify-module) $(initializer-optimization-module) $(switch-optimization-module)
 	mkdir -p $(dir $@)
 	./bin/run-module-node.sh scxml/optimization/transition-optimizer $< switch true true > $@
 
-$(tsel)/%.table.js : $(buildtestdir)/%.annotated.scxml.json coffee copy-others
+$(transition-selector)/%.table.js : $(annotated-scxml-json-dir)/%.json $(runner-module) $(beautify-module) $(initializer-optimization-module) $(table-optimization-module)
 	mkdir -p $(dir $@)
 	./bin/run-module-node.sh scxml/optimization/transition-optimizer $< table true true > $@
 
-gen-class-transition-lookup-optimization : $(tsel_class)
-gen-table-transition-lookup-optimization : $(tsel_table)
-gen-switch-transition-lookup-optimization : $(tsel_switch)
 
-$(build)/class-transition-lookup-optimization-loader.js : 
-	$(generatetestloadermodule) $@ $(tsel_class)
+generate-array-test-loader-module-script = src/main/bash/build/generate-requirejs-array-test-loader-module.sh
+
+#generate optimization loader modules
+$(loaders)/class-transition-lookup-optimization-loader.js : 
+	mkdir -p $(dir $@)
+	$(generate-test-loader-module-script) $@ $(class-transition-selector)
 	
-$(build)/table-transition-lookup-optimization-loader.js : 
-	$(generatetestloadermodule) $@ $(tsel_table)
+$(loaders)/table-transition-lookup-optimization-loader.js : 
+	mkdir -p $(dir $@)
+	$(generate-test-loader-module-script) $@ $(table-transition-selector)
 
-$(build)/switch-transition-lookup-optimization-loader.js : 
-	$(generatetestloadermodule) $@ $(tsel_switch)
+$(loaders)/switch-transition-lookup-optimization-loader.js : 
+	mkdir -p $(dir $@)
+	$(generate-test-loader-module-script) $@ $(switch-transition-selector)
 
-$(build)/class-transition-lookup-optimization-array-loader.js : 
-	$(generateArrayTestLoaderModule) $@ $(tsel_class)
+$(loaders)/class-transition-lookup-optimization-array-loader.js : 
+	mkdir -p $(dir $@)
+	$(generate-array-test-loader-module-script) $@ $(class-transition-selector)
 	
-$(build)/table-transition-lookup-optimization-array-loader.js : 
-	$(generateArrayTestLoaderModule) $@ $(tsel_table)
+$(loaders)/table-transition-lookup-optimization-array-loader.js : 
+	mkdir -p $(dir $@)
+	$(generate-array-test-loader-module-script) $@ $(table-transition-selector)
 
-$(build)/switch-transition-lookup-optimization-array-loader.js : 
-	$(generateArrayTestLoaderModule) $@ $(tsel_switch)
+$(loaders)/switch-transition-lookup-optimization-array-loader.js : 
+	mkdir -p $(dir $@)
+	$(generate-array-test-loader-module-script) $@ $(switch-transition-selector)
 
-gen-optimization-array-loaders : $(build)/switch-transition-lookup-optimization-array-loader.js $(build)/table-transition-lookup-optimization-array-loader.js  $(build)/class-transition-lookup-optimization-array-loader.js 
 
-gen-optimization-loaders : $(build)/class-transition-lookup-optimization-loader.js $(build)/table-transition-lookup-optimization-loader.js $(build)/switch-transition-lookup-optimization-loader.js
+#top-level tasks
+#TODO: node module
+#TODO: flattened test modules
+#TODO: all test modules
 
-gen-transition-lookup-optimization : gen-class-transition-lookup-optimization gen-table-transition-lookup-optimization gen-switch-transition-lookup-optimization
+all : interpreter browser-release tests test-loader optimizations optimization-loaders 
 
-gen-state-configuration-set-optimization : 
-	#bit-vector-set
-	#binary-array-set
+#interpreter
+interpreter : $(built-javascript-core) $(lib-core)
 
-gen-transition-configuration-set-optimization : 
-	#bit-vector-set
-	#binary-array-set
+#amd module
+browser-release : $(browser-release-module)
 
-gen-model-caching-optimization : 
+#test modules
+tests : $(combined-script-and-annotated-scxml-json-test)
 
-gen-transformed-statecharts : 
-	#flatten transitions
-	#flatten orthogonal states
+#test-loader	(with/without flattened test modules)
+test-loader : $(loaders)/spartan-loader-for-all-tests.js
 
-gen-ahead-of-time-optimizations : gen-transformed-statecharts gen-model-caching-optimization gen-transition-configuration-set-optimization gen-transition-lookup-optimization
+#optimizations
+optimizations : $(class-transition-selector) $(table-transition-selector) $(switch-transition-selector) 
 
-gen-top-level-optimized-requirejs-modules : gen-ahead-of-time-optimizations
-	#call script to make the module
+#optimization-loaders	(with/without flattened test modules)
+optimization-loaders : $(loaders)/class-transition-lookup-optimization-loader.js $(loaders)/table-transition-lookup-optimization-loader.js $(loaders)/switch-transition-lookup-optimization-loader.js $(loaders)/class-transition-lookup-optimization-array-loader.js $(loaders)/table-transition-lookup-optimization-array-loader.js $(loaders)/switch-transition-lookup-optimization-array-loader.js
 
-scion : copy-others coffee
+get-deps :
+	npm install -g coffee requirejs
 
-all-tests : $(scxmljsontuple)
 
-$(scion-browser-build) : $(coffee)
-	#install r.js first
-	r.js -o name=util/browser/parseOnLoad out=$(scion-browser-build) baseUrl=$(build);
+foo : 
+	echo $(class-transition-selector)
 
-scion-browser-build : $(scion-browser-build)
+clean : 
+	rm -rf $(build)
+
+
+.PHONY : interpreter-core browser-build tests optimzations test-loader optimization-loaders get-deps clean foo
+
+

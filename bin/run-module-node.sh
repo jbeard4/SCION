@@ -9,4 +9,4 @@ moduleToRun=$1
 
 shift
 
-node $basedir/lib/js/r.js $basedir/src/main/javascript/runner.js $basedir/build/ $moduleToRun $*
+r.js $basedir/build/core/runner.js $basedir/build/core $moduleToRun $*
