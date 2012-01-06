@@ -4,7 +4,7 @@
 #modules. I do not believe this woul dbe possible if the alternative strategy
 #were used, where each AMD module to be executed on the command line was
 #declared using require() rather than define().
-require ['env!env/args'],(args) ->
+require ['env!env/args','logger'],(args,logger) ->
 	args = args[1..]	#slice off the first arg, which is the name of this file
 
 	#TODO: maybe flip these so that basedir is optional? or check if basedir option is specified?
@@ -24,7 +24,7 @@ require ['env!env/args'],(args) ->
 		[mainFunction],
 		(fn) ->
 			if typeof fn isnt "function"
-				console.error("Unable to find module",mainFunction)
+				logger.error("Unable to find module " + mainFunction)
 				return 1
 			else
 				return fn.apply(this,moduleArguments)

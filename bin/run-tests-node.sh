@@ -10,7 +10,4 @@ if [ ! -e $basedir/build/tests/loaders/spartan-loader-for-all-tests.js ]; then
 	exit 1
 fi;
 
-#we can use regular r.js (the version installed from npm) here
-#we could also use the version of r.js which we bundle in lib/ which supports spartan shell environments
-#r.js -lib is primarily used to set up the env plugin
-r.js -lib $basedir/build/core/runner.js $basedir/build/core scxml/test/node-harness
+node $basedir/lib/js/r.js -lib $basedir/build/core/runner.js $basedir/build/core scxml/test/node-harness
