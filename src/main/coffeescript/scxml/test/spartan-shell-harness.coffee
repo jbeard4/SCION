@@ -2,26 +2,31 @@
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
 #spartanLoaderForAllTests is built by make
-require ["scxml/json2model","scxml/test/harness","scxml/test/report2string","scxml/test/simple-env","spartanLoaderForAllTests","logger"],(json2model,harness,report2string,SimpleEnv,testTuples,logger) ->
+define ["scxml/json2model","scxml/setup-default-opts","scxml/test/harness","scxml/test/report2string","scxml/test/simple-env","tests/loaders/spartan-loader-for-all-tests","logger"],(json2model,setupDefaultOpts,harness,report2string,SimpleEnv,testTuples,logger) ->
 
-	jsonTests = for testTuple in testTuples
-		model = json2model(testTuple.scxmlJson)
+	runTests = ->
 
-		{
-			name : testTuple.name
-			group : testTuple.group
-			model : model
-			testScript : testTuple.testScript
-		}
+		opts = setupDefaultOpts()
 
-	finish = (report) ->
-		logger.info report2string report
-		
-		#all spartan environments support quit()
-		quit report.testCount == report.testsPassed
+		jsonTests = for testTuple in testTuples
+			model = json2model(testTuple.scxmlJson)
 
-	env = new SimpleEnv()
+			{
+				name : testTuple.name
+				group : testTuple.group
+				model : model
+				testScript : testTuple.testScript
+				optimizations : opts
+			}
 
-	harness jsonTests,env.setTimeout,env.clearTimeout,finish
+		finish = (report) ->
+			logger.info report2string report
+			
+			#all spartan environments support quit()
+			quit report.testCount == report.testsPassed
 
-	env.mainLoop()
+		env = new SimpleEnv()
+
+		harness jsonTests,env.setTimeout,env.clearTimeout,finish
+
+		env.mainLoop()
