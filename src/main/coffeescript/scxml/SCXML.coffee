@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Jacob Beard
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
-define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce","scxml/setup-default-opts"],(ArraySet,stateKinds,Event,reduce,setupDefaultOpts) ->
+define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce","scxml/setup-default-opts","logger"],(ArraySet,stateKinds,Event,reduce,setupDefaultOpts,logger) ->
 
 	#imports
 
@@ -43,10 +43,10 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 		constructor : (@model,@opts={}) ->
 
 			if @opts.printTrace
-				console.debug "initializing SCXML interpreter with opts:"
+				logger.trace "initializing SCXML interpreter with opts:"
 				for own k,v of opts
 					v = if typeof v is "function" then v.toString() else v
-					console.debug k,v
+					logger.trace k,v
 
 			#default args
 			#@opts.onlySelectFromBasicStates
@@ -73,7 +73,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 		
 		start: ->
 			#perform big step without events to take all default transitions and reach stable initial state
-			if @opts.printTrace then console.debug("performing initial big step")
+			if @opts.printTrace then logger.trace("performing initial big step")
 			@_configuration.add(@model.root.initial)
 
 			#eval top-level scripts
@@ -116,23 +116,23 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 
 		_performSmallStep: (eventSet,datamodelForNextStep) ->
 
-			if @opts.printTrace then console.debug("selecting transitions with eventSet: " , eventSet)
+			if @opts.printTrace then logger.trace("selecting transitions with eventSet: " , eventSet)
 
 			selectedTransitions = @_selectTransitions(eventSet,datamodelForNextStep)
 
-			if @opts.printTrace then console.debug("selected transitions: " , selectedTransitions)
+			if @opts.printTrace then logger.trace("selected transitions: " , selectedTransitions)
 
 			if not selectedTransitions.isEmpty()
 
-				if @opts.printTrace then console.debug("sorted transitions: ", selectedTransitions)
+				if @opts.printTrace then logger.trace("sorted transitions: ", selectedTransitions)
 
 				[basicStatesExited,statesExited] = @_getStatesExited(selectedTransitions)
 				[basicStatesEntered,statesEntered] = @_getStatesEntered(selectedTransitions)
 
-				if @opts.printTrace then console.debug("basicStatesExited " , basicStatesExited)
-				if @opts.printTrace then console.debug("basicStatesEntered " , basicStatesEntered)
-				if @opts.printTrace then console.debug("statesExited " , statesExited)
-				if @opts.printTrace then console.debug("statesEntered " , statesEntered)
+				if @opts.printTrace then logger.trace("basicStatesExited " , basicStatesExited)
+				if @opts.printTrace then logger.trace("basicStatesEntered " , basicStatesEntered)
+				if @opts.printTrace then logger.trace("statesExited " , statesExited)
+				if @opts.printTrace then logger.trace("statesEntered " , statesEntered)
 
 				eventsToAddToInnerQueue = new @opts.EventSet()
 
@@ -140,9 +140,9 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 
 				#update history states
 
-				if @opts.printTrace then console.debug("executing state exit actions")
+				if @opts.printTrace then logger.trace("executing state exit actions")
 				for state in statesExited
-					if @opts.printTrace then console.debug("exiting " , state)
+					if @opts.printTrace then logger.trace("exiting " , state)
 
 					#peform exit actions
 					for action in state.onexit
@@ -161,42 +161,42 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 				# -> Concurrency: Order of transitions: Explicitly defined
 				sortedTransitions = selectedTransitions.iter().sort( (t1,t2) -> t1.documentOrder - t2.documentOrder)
 
-				if @opts.printTrace then console.debug("executing transitition actions")
+				if @opts.printTrace then logger.trace("executing transitition actions")
 				for transition in sortedTransitions
-					if @opts.printTrace then console.debug("transitition " , transition)
+					if @opts.printTrace then logger.trace("transitition " , transition)
 					for action in transition.actions
 						@_evaluateAction(action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue)
 
-				if @opts.printTrace then console.debug("executing state enter actions")
+				if @opts.printTrace then logger.trace("executing state enter actions")
 				for state in statesEntered
-					if @opts.printTrace then console.debug("entering " , state)
+					if @opts.printTrace then logger.trace("entering " , state)
 					for action in state.onentry
 						@_evaluateAction(action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue)
 
 				#update configuration by removing basic states exited, and adding basic states entered
-				if @opts.printTrace then console.debug("updating configuration ")
-				if @opts.printTrace then console.debug("old configuration " , @_configuration)
+				if @opts.printTrace then logger.trace("updating configuration ")
+				if @opts.printTrace then logger.trace("old configuration " , @_configuration)
 
 				@_configuration.difference basicStatesExited
 				@_configuration.union basicStatesEntered
 
-				if @opts.printTrace then console.debug("new configuration " , @_configuration)
+				if @opts.printTrace then logger.trace("new configuration " , @_configuration)
 				
 				#add set of generated events to the innerEventQueue -> Event Lifelines: Next small-step
 				if not eventsToAddToInnerQueue.isEmpty()
-					if @opts.printTrace then console.debug("adding triggered events to inner queue " , eventsToAddToInnerQueue)
+					if @opts.printTrace then logger.trace("adding triggered events to inner queue " , eventsToAddToInnerQueue)
 
 					@_innerEventQueue.push(eventsToAddToInnerQueue)
 
 				#update the datamodel
-				if @opts.printTrace then console.debug("updating datamodel for next small step :")
+				if @opts.printTrace then logger.trace("updating datamodel for next small step :")
 				for own key of datamodelForNextStep
-					if @opts.printTrace then console.debug("key " , key)
+					if @opts.printTrace then logger.trace("key " , key)
 					if key of @_datamodel
-						if @opts.printTrace then console.debug("old value " , @_datamodel[key])
+						if @opts.printTrace then logger.trace("old value " , @_datamodel[key])
 					else
-						if @opts.printTrace then console.debug("old value is null")
-					if @opts.printTrace then console.debug("new value " , datamodelForNextStep[key])
+						if @opts.printTrace then logger.trace("old value is null")
+					if @opts.printTrace then logger.trace("new value " , datamodelForNextStep[key])
 						
 					@_datamodel[key] = datamodelForNextStep[key]
 
@@ -207,7 +207,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 		_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
 			switch action.type
 				when "send"
-					if @opts.printTrace then console.debug "sending event",action.event,"with content",action.contentexpr
+					if @opts.printTrace then logger.trace "sending event",action.event,"with content",action.contentexpr
 					data = if action.contentexpr then @_eval action,datamodelForNextStep,eventSet else null
 
 					eventsToAddToInnerQueue.add new Event action.event,data
@@ -217,7 +217,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 					@_eval action,datamodelForNextStep,eventSet,true
 				when "log"
 					log = @_eval action,datamodelForNextStep,eventSet
-					if @opts.printTrace then console.log(log)	#the one place where we use straight console.log
+					if @opts.printTrace then logger.info(log)	#the one place where we use straight logger.info
 
 		_eval : (action,datamodelForNextStep,eventSet,allowWrite) ->
 			#get the scripting interface
@@ -252,7 +252,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 
 		_getStatesEntered: (transitions) ->
 			statesToRecursivelyAdd = flatten((state for state in transition.targets) for transition in transitions.iter())
-			if @opts.printTrace then console.debug "statesToRecursivelyAdd :",statesToRecursivelyAdd
+			if @opts.printTrace then logger.trace "statesToRecursivelyAdd :",statesToRecursivelyAdd
 			statesToEnter = new @opts.StateSet()
 			basicStatesToEnter = new @opts.BasicStateSet()
 
@@ -325,9 +325,9 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 				for t in @opts.transitionSelector state,eventNames,e
 					enabledTransitions.add t
 
-			if @opts.printTrace then console.debug("allTransitionsForEachState",allTransitionsForEachState)
+			if @opts.printTrace then logger.trace("allTransitionsForEachState",allTransitionsForEachState)
 			priorityEnabledTransitions = @_selectPriorityEnabledTransitions enabledTransitions
-			if @opts.printTrace then console.debug("priorityEnabledTransitions",priorityEnabledTransitions)
+			if @opts.printTrace then logger.trace("priorityEnabledTransitions",priorityEnabledTransitions)
 			return priorityEnabledTransitions
 
 		_selectPriorityEnabledTransitions: (enabledTransitions) ->
@@ -336,10 +336,10 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 			[consistentTransitions, inconsistentTransitionsPairs] = @_getInconsistentTransitions enabledTransitions
 			priorityEnabledTransitions.union consistentTransitions
 
-			if @opts.printTrace then console.debug "enabledTransitions",enabledTransitions
-			if @opts.printTrace then console.debug "consistentTransitions",consistentTransitions
-			if @opts.printTrace then console.debug "inconsistentTransitionsPairs",inconsistentTransitionsPairs
-			if @opts.printTrace then console.debug "priorityEnabledTransitions",priorityEnabledTransitions
+			if @opts.printTrace then logger.trace "enabledTransitions",enabledTransitions
+			if @opts.printTrace then logger.trace "consistentTransitions",consistentTransitions
+			if @opts.printTrace then logger.trace "inconsistentTransitionsPairs",inconsistentTransitionsPairs
+			if @opts.printTrace then logger.trace "priorityEnabledTransitions",priorityEnabledTransitions
 
 			while not inconsistentTransitionsPairs.isEmpty()
 
@@ -349,10 +349,10 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 
 				priorityEnabledTransitions.union consistentTransitions
 
-				if @opts.printTrace then console.debug "enabledTransitions",enabledTransitions
-				if @opts.printTrace then console.debug "consistentTransitions",consistentTransitions
-				if @opts.printTrace then console.debug "inconsistentTransitionsPairs",inconsistentTransitionsPairs
-				if @opts.printTrace then console.debug "priorityEnabledTransitions",priorityEnabledTransitions
+				if @opts.printTrace then logger.trace "enabledTransitions",enabledTransitions
+				if @opts.printTrace then logger.trace "consistentTransitions",consistentTransitions
+				if @opts.printTrace then logger.trace "inconsistentTransitionsPairs",inconsistentTransitionsPairs
+				if @opts.printTrace then logger.trace "priorityEnabledTransitions",priorityEnabledTransitions
 
 			return priorityEnabledTransitions
 				
@@ -363,7 +363,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 
 			#better to use iterators, because not sure how to encode "order doesn't matter" to list comprehension
 			transitionList = transitions.iter()
-			if @opts.printTrace then console.debug("transitions",transitionList)
+			if @opts.printTrace then logger.trace("transitions",transitionList)
 
 			for i in [0...transitionList.length]
 				for j in [i+1...transitionList.length]
@@ -390,8 +390,8 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 			t2LCA = @opts.model.getLCA(t2)
 			isOrthogonal = @opts.model.isOrthogonalTo t1LCA,t2LCA
 			if @opts.printTrace
-				console.debug "transition LCAs",t1LCA.id,t2LCA.id
-				console.debug "transition LCAs are orthogonal?",isOrthogonal
+				logger.trace "transition LCAs",t1LCA.id,t2LCA.id
+				logger.trace "transition LCAs are orthogonal?",isOrthogonal
 			return isOrthogonal
 
 
@@ -403,7 +403,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 		_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
 			if action.type is "send" and action.delay
 				if @setTimeout
-					if @opts.printTrace then console.debug "sending event",action.event,"with content",action.contentexpr,"after delay",action.delay
+					if @opts.printTrace then logger.trace "sending event",action.event,"with content",action.contentexpr,"after delay",action.delay
 					data = if action.contentexpr then @_eval(action,datamodelForNextStep,eventSet) else null
 
 					callback = => @gen new Event(action.event,data)
@@ -417,7 +417,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 			else if action.type is "cancel"
 				if @clearTimeout
 					if action.sendid of @_timeoutMap
-						if @opts.printTrace then console.debug "cancelling ",action.id," with timeout id ",@_timeoutMap[action.id]
+						if @opts.printTrace then logger.trace "cancelling ",action.id," with timeout id ",@_timeoutMap[action.id]
 						@clearTimeout @_timeoutMap[action.id]
 				else
 					throw new Error("clearTimeout function not set")
@@ -427,7 +427,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 		#External Event Communication: Asynchronous
 		gen: (e) ->
 			#pass it straight through	
-			if @opts.printTrace then console.debug("received event " + e)
+			if @opts.printTrace then logger.trace("received event " + e)
 			@_performBigStep(e)
 
 	class BrowserInterpreter extends SimpleInterpreter

@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Jacob Beard
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
-require ["scxml/test/harness","scxml/test/report2string","scxml/async-for","lib/jquery","lib/json2"],(harness,report2string,asyncForEach)->
+require ["scxml/test/harness","scxml/test/report2string","scxml/async-for","lib/jquery","lib/json2","logger"],(harness,report2string,asyncForEach,logger)->
 
 	setTimeout : (callback,timeout) -> window.setTimeout callback,timeout
 	clearTimeout : (timeoutId) -> window.clearTimeout timeoutId
@@ -11,7 +11,7 @@ require ["scxml/test/harness","scxml/test/report2string","scxml/async-for","lib/
 		jsonTests = []
 
 		loadCallback = (pathToJsonTest,nextStep,errBack,failBack) ->
-			console.log "loading",pathToJsonTest
+			logger.info "loading",pathToJsonTest
 			fullPathToJsonTest = "/test/" + pathToJsonTest
 			jQuery.ajax(
 				url: fullPathToJsonTest,
@@ -21,7 +21,7 @@ require ["scxml/test/harness","scxml/test/report2string","scxml/async-for","lib/
 
 					pathToSCXML = pathToJsonTest.split("/").slice(0,-1).concat(jsonTest.scxml).join("/")
 					fullPathToSCXML = "/test/" + pathToSCXML
-					console.log "loading",pathToSCXML
+					logger.info "loading",pathToSCXML
 
 					jQuery.ajax(
 						url: fullPathToSCXML,
@@ -36,14 +36,14 @@ require ["scxml/test/harness","scxml/test/report2string","scxml/async-for","lib/
 			)
 
 		finishLoad = ->
-			console.info "starting harness"
+			logger.info "starting harness"
 			harness jsonTests,setTimeout,clearTimeout,finish
 
 		loadError = (err) ->
-			console.error(err)
+			logger.error(err)
 
 		finish = (report) ->
-			console.info report2string report
+			logger.info report2string report
 			
 			window.success = report.testCount == report.testsPassed
 			window.report = report

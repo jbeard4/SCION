@@ -1,37 +1,25 @@
 # Copyright (C) 2011 Jacob Beard
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
-define ["scxml/doc2json","scxml/json2model","util/xml/rhino","util/xsl/rhino","scxml/test/harness","scxml/test/report2string","scxml/test/simple-env","lib/json2"],(doc2json,json2model,xml,xsl,harness,report2string,SimpleEnv) ->
-
-	importClass(Packages.java.io.File)
-
-	basename = (name) -> name.split(".").slice(0,-1).join(".")
+define ["scxml/test/simple-env","scxml/setup-default-opts","scxml/json2model","scxml/test/harness","scxml/test/report2string","scxml/async-for","tests/loaders/spartan-loader-for-all-tests","logger"],(SimpleEnv,setupDefaultOpts,json2model,harness,report2string,asyncForEach,testTuples,logger)->
 
 	runTests = ->
-		pathsToJsonTestFiles = Array.prototype.slice.call(arguments)
 
-		jsonTests = for jsonTestFileName in pathsToJsonTestFiles
-			jsonTest = JSON.parse readFile jsonTestFileName
-			jsonTestFile = new File jsonTestFileName
-			jsonTestFileDirStr = jsonTestFile.getParent()
-			groupName = jsonTestFile.parentFile.name
-			jsonBasename = basename(String(jsonTestFile.name))
-			pathToSCXMLFile = new File jsonTestFileDirStr,(jsonBasename + ".scxml")
-			pathToSCXML = pathToSCXMLFile.getPath()
+		opts = setupDefaultOpts()
 
-			scxmlDoc =  xml.parseFromPath pathToSCXML	#parse xml doc from path
-			json = doc2json scxmlDoc,xml,xsl
-			model = json2model json
+		jsonTests = for testTuple in testTuples
+			model = json2model testTuple.scxmlJson
 
 			{
-				name : jsonBasename
-				group : groupName
+				name : testTuple.name
+				group : testTuple.group
 				model : model
-				testScript : jsonTest
+				testScript : testTuple.testScript
+				optimizations : opts
 			}
 
 		finish = (report) ->
-			console.info report2string report
+			logger.info report2string report
 			
 			if report.testCount == report.testsPassed
 				java.lang.System.exit(0)
