@@ -1,54 +1,31 @@
-(->
-	if typeof process is "undefined"
-		argOffset = 0
+#This module exists to serve as a generic frontend to run other AMD modules.
+#This allows all other modules to be written generically - able to accept
+#string arguments from the command line, as well as to be imported by other amd
+#modules. I do not believe this woul dbe possible if the alternative strategy
+#were used, where each AMD module to be executed on the command line was
+#declared using require() rather than define().
+require ['env!env/args'],(args) ->
+	args = args[1..]	#slice off the first arg, which is the name of this file
 
-		#we are running under rhino - arguments are passed in on "arguments"
-		args = Array.prototype.slice.call(arguments)
+	#TODO: maybe flip these so that basedir is optional? or check if basedir option is specified?
+	basedir = args[0]
+	mainFunction = args[1]
 
-		this.console =
-			log : this.print,
-			info : this.print,
-			error : this.print,
-			debug : this.print
-		
-	else
-		#we are running under node
-		args = process.argv
-		argOffset = 2
-		if not this.console.debug
-			this.console.debug = this.console.log
-		
+	moduleArguments = args[2..]
 
-		fs = require("fs")
-
-		#also, add a synchronous API for reading files
-		this.readFile = (fileName) ->
-			return fs.readFileSync(fileName,"utf8")
-	
-
-	if(args.length >= 3+argOffset)
-		preparedArguments = args.slice(3+argOffset)
-
-		basedir = args[1+argOffset]
-		mainFunction = args[2+argOffset]
-
-		#bootstrap require.js
-		require(
-			{
-				baseUrl : basedir,
-				paths : {
-					"tests" : "../tests"
-				}
-			},
-			[mainFunction],
-			(fn) ->
-				if(!fn)
-					console.error("Unable to find module",mainFunction)
-					return 1
-				else
-					return fn.apply(this,preparedArguments)
-		)
-
-	
-
-).apply(this,if typeof arguments is "undefined" then [] else arguments)
+	#bootstrap require.js
+	require(
+		{
+			baseUrl : basedir,
+			paths : {
+				"tests" : "../tests"	#for running tests
+			}
+		},
+		[mainFunction],
+		(fn) ->
+			if typeof fn isnt "function"
+				console.error("Unable to find module",mainFunction)
+				return 1
+			else
+				return fn.apply(this,moduleArguments)
+	)
