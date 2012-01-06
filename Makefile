@@ -16,7 +16,7 @@ flattened-tests = $(tests)/flattened
 hier-tests = $(tests)/hier
 
 #this should be overridden when doing actual releases
-release-number = 0.0.1
+release-number = $(shell git rev-parse HEAD)
 #release stuff
 module-name = scion
 browser-release-module = $(browser-release)/$(module-name)-$(release-number).js
@@ -175,6 +175,6 @@ clean :
 	rm -rf $(build)
 
 
-.PHONY : interpreter-core browser-build tests optimzations test-loader optimization-loaders get-deps clean foo
+.PHONY : interpreter browser-release tests optimzations test-loader optimization-loaders get-deps clean foo
 
 
