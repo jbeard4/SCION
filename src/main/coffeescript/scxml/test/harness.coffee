@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Jacob Beard
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
-define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for"],(Event,scxml,Set,asyncForEach) ->
+define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for","logger"],(Event,scxml,Set,asyncForEach,logger) ->
 
 	stopOnFail = true	#TODO: parameterize this
 
@@ -12,13 +12,13 @@ define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for"],(Even
 	printError = (e) ->
 		if e.stack
 			#v8
-			console.error e.stack
+			logger.error e.stack
 		else
 			#rhino/spidermonkey
-			console.error e.name
-			console.error e.message
-			console.error e.fileName
-			console.error e.lineNumber
+			logger.error e.name
+			logger.error e.message
+			logger.error e.fileName
+			logger.error e.lineNumber
 
 	results =
 		testCount : 0
@@ -41,7 +41,7 @@ define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for"],(Even
 		doCallback = (e,nextStep,errBack,failBack) ->
 			sendEvent = ->
 				try
-					console.info "sending event",e["event"]["name"]
+					logger.info "sending event",e["event"]["name"]
 					interpreter.gen(new Event(e["event"]["name"]))
 					nextConfiguration = interpreter.getConfiguration()
 					expectedNextConfiguration = new Set(e["nextConfiguration"])
@@ -51,14 +51,14 @@ define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for"],(Even
 
 				if nextConfiguration and expectedNextConfiguration
 					if not expectedNextConfiguration.equals nextConfiguration
-						console.error("Configuration error: expected " + expectedNextConfiguration + ", received " + nextConfiguration)
+						logger.error("Configuration error: expected " + expectedNextConfiguration + ", received " + nextConfiguration)
 
 						failBack()
 					else
 						nextStep()
 
 			if(e.after)
-				console.info("e.after " + e.after)
+				logger.info("e.after " + e.after)
 				setTimeout(sendEvent,e.after)
 			else
 				sendEvent()
@@ -66,12 +66,12 @@ define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for"],(Even
 		startAsyncFor = (test,doNextTest) ->
 
 			testSuccessFullyFinished = ->
-				console.info "test",nameGroup(test.name,test.group),"...passes"
+				logger.info "test",nameGroup(test.name,test.group),"...passes"
 				results.testsPassed.push nameGroup(test.name,test.group)
 				doNextTest()
 
 			testFailBack = ->
-				console.info "test",nameGroup(test.name,test.group),"...failed"
+				logger.info "test",nameGroup(test.name,test.group),"...failed"
 				results.testsFailed.push nameGroup(test.name,test.group)
 
 				if stopOnFail
@@ -80,7 +80,7 @@ define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for"],(Even
 					doNextTest()
 
 			testErrBack = (err) ->
-				console.info "test",nameGroup(test.name,test.group),"...errored"
+				logger.info "test",nameGroup(test.name,test.group),"...errored"
 				results.testsErrored.push nameGroup(test.name,test.group)
 				printError err
 
@@ -89,12 +89,12 @@ define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for"],(Even
 				else
 					doNextTest()
 
-			console.info("running test",test.name)
+			logger.info("running test",test.name)
 
 			results.testCount++
 
 			try
-				console.log "running test for",test.name,test.group
+				logger.info "running test for",test.name,test.group
 				#TODO: other optimizations go here
 				#this is safe because js does not throw array out of bounds exceptions. 
 				#instead gives "undefined", so default args kick in in the SCXML constructor
@@ -102,23 +102,23 @@ define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for"],(Even
 
 				events = test.testScript.events.slice()
 
-				console.info "starting interpreter"
+				logger.info "starting interpreter"
 
 				interpreter.start()
 				initialConfiguration = interpreter.getConfiguration()
 
-				console.debug "initial configuration",initialConfiguration
+				logger.trace "initial configuration",initialConfiguration
 
 				expectedInitialConfiguration = new Set test.testScript.initialConfiguration
 
-				console.debug "expected configuration",expectedInitialConfiguration
+				logger.trace "expected configuration",expectedInitialConfiguration
 
 			catch err
 				testErrBack err
 
 			if expectedInitialConfiguration and initialConfiguration
 				if not expectedInitialConfiguration.equals(initialConfiguration)
-					console.error("Configuration error: expected " + expectedInitialConfiguration + ", received " + initialConfiguration)
+					logger.error("Configuration error: expected " + expectedInitialConfiguration + ", received " + initialConfiguration)
 					testFailBack()
 				else
 					asyncForEach events,doCallback,testSuccessFullyFinished,testErrBack,testFailBack

@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Jacob Beard
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
-define ["scxml/model"],(model) ->
+define ["scxml/model","logger"],(model,logger) ->
 	#local imports
 	SCXMLModel = model.SCXMLModel
 	State = model.State
@@ -66,9 +66,9 @@ define ["scxml/model"],(model) ->
 				newInitial.appendChild newTransition
 				elt.appendChild newInitial
 
-		console.debug "normalizing initial attributes..."
+		logger.trace "normalizing initial attributes..."
 		walk root,normalizeInitialAttributes
-		console.debug "done"
+		logger.trace "done"
 
 		localNameToPreviousCount = {}
 
@@ -80,11 +80,11 @@ define ["scxml/model"],(model) ->
 
 			newId = name + count
 
-			console.debug "newId",newId
+			logger.trace "newId",newId
 			while newId of idToNodeMap
 				count++
 				newId = name + count
-				console.debug "newId",newId
+				logger.trace "newId",newId
 
 			localNameToPreviousCount[name] = count
 
@@ -95,18 +95,18 @@ define ["scxml/model"],(model) ->
 		normalizeIds = (elt) ->
 			if not id(elt)
 				newId = generateNewId idToNodeMap,elt
-				console.debug "setting new id ",newId," for elt ",elt.node
+				logger.trace "setting new id ",newId," for elt ",elt.node
 				elt.setAttributeNS null,"id",newId
 			#update idToNodeMap on the fly
 			idToNodeMap[id(elt)] = elt
 
 
-		console.debug "normalizing node ids..."
+		logger.trace "normalizing node ids..."
 		walk root,normalizeIds
-		console.debug "done"
+		logger.trace "done"
 
-		#console.debug "normalized doc"
-		#console.debug xml.serializeToString doc.doc
+		#logger.trace "normalized doc"
+		#logger.trace xml.serializeToString doc.doc
 
 		eltIdToObj = {}
 			
@@ -150,9 +150,9 @@ define ["scxml/model"],(model) ->
 				when "script"
 					eltIdToObj[eltId] = new ScriptAction(elt.textContent)
 
-		console.debug "generating nodeToObjMap..."
+		logger.trace "generating nodeToObjMap..."
 		walk root,generateNodeToObjMap
-		console.debug "done..."
+		logger.trace "done..."
 
 		#second pass
 		#print "constructing model - starting second pass"
@@ -207,7 +207,7 @@ define ["scxml/model"],(model) ->
 			
 		#hook up the initial state
 		rootState = eltIdToObj[id(root)]
-		#console.debug "rootState",rootState
+		#logger.trace "rootState",rootState
 
 		#instantiate and return the model
 		model = new SCXMLModel rootState,profile

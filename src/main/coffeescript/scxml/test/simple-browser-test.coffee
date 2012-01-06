@@ -1,4 +1,4 @@
-define ["scxml/event","scxml/SCXML","scxml/json2model","test/basic/basic1"],(Event,scxml,json2model,basicTest,defaultTransitionSelector,ArraySet,m) ->
+define ["scxml/event","scxml/SCXML","scxml/json2model","test/basic/basic1","logger"],(Event,scxml,json2model,basicTest,defaultTransitionSelector,ArraySet,m,logger) ->
 	->
 
 		BrowserInterpreter = scxml.BrowserInterpreter
@@ -9,10 +9,10 @@ define ["scxml/event","scxml/SCXML","scxml/json2model","test/basic/basic1"],(Eve
 		interpreter.start()
 		initialConfiguration = interpreter.getConfiguration()
 
-		console.log initialConfiguration
+		logger.info initialConfiguration
 
 		interpreter.gen(new Event("t"))
 		nextConfiguration = interpreter.getConfiguration()
-		console.log nextConfiguration
+		logger.info nextConfiguration
 
 

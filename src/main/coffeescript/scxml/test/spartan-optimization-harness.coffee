@@ -1,16 +1,10 @@
 # Copyright (C) 2011 Jacob Beard
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
-require ["scxml/test/optimization-harness","scxml/test/simple-env","scxml/test/report2string"],(optimizationHarness,SimpleEnv,report2string) ->
-
-	this.console =
-		log : this.print
-		info : this.print
-		error : this.print
-		debug : this.print
+require ["scxml/test/optimization-harness","scxml/test/simple-env","scxml/test/report2string","logger"],(optimizationHarness,SimpleEnv,report2string,logger) ->
 
 	finish = (report) ->
-		console.info report2string report
+		logger.info report2string report
 
 		#all spartan environments support quit()
 		quit report.testCount == report.testsPassed

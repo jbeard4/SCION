@@ -2,13 +2,7 @@
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
 #spartanLoaderForAllTests is built by make
-require ["scxml/json2model","scxml/test/harness","scxml/test/report2string","scxml/test/simple-env","spartanLoaderForAllTests"],(json2model,harness,report2string,SimpleEnv,testTuples) ->
-
-	this.console =
-		log : this.print
-		info : this.print
-		error : this.print
-		debug : this.print
+require ["scxml/json2model","scxml/test/harness","scxml/test/report2string","scxml/test/simple-env","spartanLoaderForAllTests","logger"],(json2model,harness,report2string,SimpleEnv,testTuples,logger) ->
 
 	jsonTests = for testTuple in testTuples
 		model = json2model(testTuple.scxmlJson)
@@ -21,7 +15,7 @@ require ["scxml/json2model","scxml/test/harness","scxml/test/report2string","scx
 		}
 
 	finish = (report) ->
-		console.info report2string report
+		logger.info report2string report
 		
 		#all spartan environments support quit()
 		quit report.testCount == report.testsPassed
