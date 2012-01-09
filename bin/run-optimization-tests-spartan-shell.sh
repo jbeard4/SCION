@@ -5,28 +5,13 @@ dn=`dirname $0`
 abspath=`cd $dn; pwd`
 basedir=`dirname $abspath`
 
-if [ ! -e $basedir/build/spartanLoaderForAllTests.js ]; then
-	echo Please run \"make scion gen-requirejs-test-loader-module\" before running this file.
+if [ ! -e $basedir/build/tests/loaders/spartan-loader-for-all-tests.js ]; then
+	echo Please run \"make interpreter tests test-loader\" before running this file.
 	exit 1
 fi;
-	
-defaultShell=spidermonkey-js
-shell=${1-$defaultShell}
-echo $shell
 
-pushd $basedir/build
-if [ -e main.js ]; then
-	mv main.js /tmp/
-fi;
+interpreter=${1-spidermonkey}
 
-ln -s scxml/test/spartan-optimization-harness.js main.js
-
-$shell $basedir/lib/js/r.js 
-
-#move original main.js back
-rm main.js
-if [ -e /tmp/main.js ]; then
-	mv /tmp/main.js .
-fi;
-
-popd
+#these tests are highly recursive, so we increase the size of the nodejs stack. 
+#same thing is done with the rhino tests running under the JVM
+$interpreter $basedir/lib/js/r.js -lib $basedir/build/core/runner.js $basedir/build/core scxml/test/spartan-optimization-harness

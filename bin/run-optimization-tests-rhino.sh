@@ -1,110 +1,36 @@
 #!/bin/sh
-# ----------------------------------------------------------------------------
-#  Copyright 2001-2006 The Apache Software Foundation.
-#
-#  Licensed under the Apache License, Version 2.0 (the "License");
-#  you may not use this file except in compliance with the License.
-#  You may obtain a copy of the License at
-#
-#       http://www.apache.org/licenses/LICENSE-2.0
-#
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS,
-#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#  See the License for the specific language governing permissions and
-#  limitations under the License.
-# ----------------------------------------------------------------------------
-
-#   Copyright (c) 2001-2002 The Apache Software Foundation.  All rights
-#   reserved.
+#this script is copied from /usr/bin/rhino on Ubuntu 11.10
+#we need a special script here because the stack gets really big in the optimization tests, so we need to set JVM option Xss
+#really, I should fix this the optimization test runner to be less recursive.
 
 dn=`dirname $0`
 abspath=`cd $dn; pwd`
+basedir=`dirname $abspath`
 
-BASEDIR=`dirname $abspath`/target/appassembler/
-BASEDIR=`(cd "$BASEDIR"; pwd)`
-root=`dirname $abspath`
+if [ ! -e $basedir/build/tests/loaders/spartan-loader-for-all-tests.js ]; then
+	echo Please run \"make interpreter tests test-loader\" before running this file.
+	exit 1
+fi;
 
-# OS specific support.  $var _must_ be set to either true or false.
-cygwin=false;
-darwin=false;
-case "`uname`" in
-  CYGWIN*) cygwin=true ;;
-  Darwin*) darwin=true
-           if [ -z "$JAVA_VERSION" ] ; then
-             JAVA_VERSION="CurrentJDK"
-           else
-             echo "Using Java version: $JAVA_VERSION"
-           fi
-           if [ -z "$JAVA_HOME" ] ; then
-             JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/${JAVA_VERSION}/Home
-           fi
-           ;;
-esac
-
-if [ -z "$JAVA_HOME" ] ; then
-  if [ -r /etc/gentoo-release ] ; then
-    JAVA_HOME=`java-config --jre-home`
-  fi
-fi
-
-# For Cygwin, ensure paths are in UNIX format before anything is touched
-if $cygwin ; then
-  [ -n "$JAVA_HOME" ] && JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
-  [ -n "$CLASSPATH" ] && CLASSPATH=`cygpath --path --unix "$CLASSPATH"`
-fi
-
-# If a specific java binary isn't specified search for the standard 'java' binary
-if [ -z "$JAVACMD" ] ; then
-  if [ -n "$JAVA_HOME"  ] ; then
-    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
-      # IBM's JDK on AIX uses strange locations for the executables
-      JAVACMD="$JAVA_HOME/jre/sh/java"
-    else
-      JAVACMD="$JAVA_HOME/bin/java"
-    fi
-  else
-    JAVACMD=`which java`
-  fi
-fi
-
-if [ ! -x "$JAVACMD" ] ; then
-  echo "Error: JAVA_HOME is not defined correctly."
-  echo "  We cannot execute $JAVACMD"
-  exit 1
-fi
-
-if [ -z "$REPO" ]
-then
-  REPO="$BASEDIR"/repo
-fi
-
-CLASSPATH=$CLASSPATH_PREFIX:"$REPO"/rhino/js/1.7R2/js-1.7R2.jar
+JAVA_CMD="/usr/bin/java"
+JAVA_OPTS=""
+JAVA_CLASSPATH="/usr/share/java/js.jar:/usr/share/java/jline.jar"
+JAVA_MAIN="org.mozilla.javascript.tools.shell.Main"
 EXTRA_JVM_ARGUMENTS="-Xss10m"	#increase max heap size so we don't stackoverflow
 
-# For Cygwin, switch paths to Windows format before running java
-if $cygwin; then
-  [ -n "$CLASSPATH" ] && CLASSPATH=`cygpath --path --windows "$CLASSPATH"`
-  [ -n "$JAVA_HOME" ] && JAVA_HOME=`cygpath --path --windows "$JAVA_HOME"`
-  [ -n "$HOME" ] && HOME=`cygpath --path --windows "$HOME"`
-  [ -n "$BASEDIR" ] && BASEDIR=`cygpath --path --windows "$BASEDIR"`
-  [ -n "$REPO" ] && REPO=`cygpath --path --windows "$REPO"`
+## Fix for #512498
+## Change Bootclasspath when using OpenJDK because OpenJDK6
+## bundle his own release of Rhino.
+## References:
+## <https://bugs.launchpad.net/ubuntu/+source/openjdk-6/+bug/255149>
+## <http://icedtea.classpath.org/bugzilla/show_bug.cgi?id=179>
+## <http://www.openoffice.org/issues/show_bug.cgi?id=91641>
+isOpenJDK=`$JAVA_CMD -version 2>&1 | grep -i "OpenJDK" | wc -l`
+if [ $isOpenJDK -gt 0 ]
+then
+	JAVA_OPTS="-Xbootclasspath:/usr/lib/jvm/java-6-openjdk/jre/lib/rt.jar"
 fi
 
-exec "$JAVACMD" $JAVA_OPTS \
-  $EXTRA_JVM_ARGUMENTS \
-  -classpath "$CLASSPATH" \
-  -Dapp.name="JS-SCION" \
-  -Dapp.pid="$$" \
-  -Dapp.repo="$REPO" \
-  -Dbasedir="$BASEDIR" \
-  org.mozilla.javascript.tools.shell.Main \
-	-debug \
-	${root}/lib/js/r.js \
-	${root}/build/runner.js \
-	${root}/build \
-	scxml/test/rhino-optimization-harness \
-	"$*"
 
-
-
+$JAVA_CMD $JAVA_OPTS $EXTRA_JVM_ARGUMENTS -classpath $JAVA_CLASSPATH $JAVA_MAIN \
+-debug $basedir/lib/js/r.js -lib $basedir/build/core/runner.js $basedir/build/core scxml/test/rhino-optimization-harness

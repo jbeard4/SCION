@@ -1,7 +1,9 @@
 # Copyright (C) 2011 Jacob Beard
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
-define ["scxml/json2model","scxml/json2extra-model", "scxml/test/harness", "scxml/async-for","util/set/ArraySet","util/set/BitVector","util/set/BooleanArray","util/set/ObjectSet", "spartanLoaderForAllTests", "class-transition-lookup-optimization-loader", "switch-transition-lookup-optimization-loader", "table-transition-lookup-optimization-loader","scxml/model","scxml/extra-model"],(json2model,json2ExtraModel,harness,asyncForEach,ArraySet,BitVectorInitializer,BooleanArrayInitializer,ObjectSetInitializer,testTuples,classTransitionOpts,switchTransitionOpts,tableTransitionOpts,m,extraModel) ->
+define ["scxml/json2model","scxml/json2extra-model", "scxml/test/harness", "scxml/async-for","util/set/ArraySet","util/set/BitVector","util/set/BooleanArray","util/set/ObjectSet", "tests/loaders/spartan-loader-for-all-tests", "tests/loaders/class-transition-lookup-optimization-loader", "tests/loaders/switch-transition-lookup-optimization-loader", "tests/loaders/table-transition-lookup-optimization-loader","scxml/model","scxml/extra-model","scxml/default-transition-selector"],(json2model,json2ExtraModel,harness,asyncForEach,ArraySet,BitVectorInitializer,BooleanArrayInitializer,ObjectSetInitializer,testTuples,classTransitionOpts,switchTransitionOpts,tableTransitionOpts,m,extraModel,defaultTransitionSelector) ->
+
+
 
 	runTests = (setTimeout,clearTimeout,finish,mainloop) ->
 		
@@ -14,7 +16,6 @@ define ["scxml/json2model","scxml/json2extra-model", "scxml/test/harness", "scxm
 
 			#parse scxmlJson model
 			model = json2model scxmlJson
-			
 
 			#initialize opts			
 			classTransOpt = classTransitionOpts[i] model.transitions,model.events
@@ -22,7 +23,7 @@ define ["scxml/json2model","scxml/json2extra-model", "scxml/test/harness", "scxm
 			tableTransOpt = tableTransitionOpts[i] model.transitions,model.events
 
 			optArgs =	{
-						"default transition lookup" : {}
+						"default transition lookup" : {transitionSelector:defaultTransitionSelector()}
 						"class-transition-lookup" : {transitionSelector:classTransOpt,onlySelectFromBasicStates:true}
 						"switch-transition-lookup" : {transitionSelector:switchTransOpt}
 						"table-transition-lookup" : {transitionSelector:tableTransOpt}
