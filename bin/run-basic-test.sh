@@ -10,4 +10,8 @@ if [ ! -e $basedir/build/tests/loaders/spartan-loader-for-all-tests.js ]; then
 	exit 1
 fi;
 
-node $basedir/lib/js/r.js -lib $basedir/build/core/runner.js $basedir/build/core scxml/test/node-harness
+#first argument specifies the interpreter.
+#TODO: make this more helpful
+
+interpreter=${1-node}
+$interpreter $basedir/lib/js/r.js -lib $basedir/build/core/runner.js $basedir/build/core scxml/test/basic-test-harness
