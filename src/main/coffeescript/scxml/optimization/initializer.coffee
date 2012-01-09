@@ -25,7 +25,7 @@ define ->
 					var toReturn = [];
 					for(var i=0; i < transitions.length; i++){
 						var transition = transitions[i];
-						if(!transition.cond || evaluator(transition.cond)){
+						if(!transition.cond || evaluator(transition)){
 							toReturn.push(transition);
 						}
 					}

@@ -22,7 +22,7 @@ define ["scxml/optimization/initializer","lib/beautify"],(initializer,js_beautif
 									var transitions = #{initializer.arrayToIdentifierListString transitionsForEvent};
 									for(var i = 0,l=transitions.length; i < l; i++){
 										var transition = transitions[i];
-										if(!transition.cond || evaluator(transition.cond)){
+										if(!transition.cond || evaluator(transition)){
 											toReturn.push(transition); 
 										}
 									}
@@ -39,7 +39,7 @@ define ["scxml/optimization/initializer","lib/beautify"],(initializer,js_beautif
 								var transitions = #{initializer.arrayToIdentifierListString defaultTransitionsForEvent };
 								for(var i = 0,l=transitions.length; i < l; i++){
 									var transition = transitions[i];
-									if(!transition.cond || evaluator(transition.cond)){
+									if(!transition.cond || evaluator(transition)){
 										toReturn.push(transition); 
 									}
 								}
