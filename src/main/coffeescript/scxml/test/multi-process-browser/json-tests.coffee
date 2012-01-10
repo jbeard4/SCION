@@ -8,9 +8,9 @@ define ["tests/loaders/spartan-loader-for-all-tests", "tests/loaders/class-trans
 
 	#set up optimizations
 	#TODO: when we have other optimizations, this is where their initialization will also go
+	#we filter delayedSend tests as well, as they can be tricky to test in a distributed context
 	jsonTests = []
-	for i in [0...testTuples.length]
-		
+	for i in [0...testTuples.length] when testTuples[i].group isnt "delayedSend"
 
 		transitionSelectors =
 			"default-transition-lookup" : "scxml/default-transition-selector"
