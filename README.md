@@ -406,8 +406,8 @@ SCION also supports generating optimized data structures ahead-of-time using sta
 
 SCION takes many ideas from the SCXML standard. In particular, it reuses the syntax of SCXML, but changes some of the semantics.
 
-* If you're already familiar with SCXML, and want a high-level overview of similarities and differences between SCION and SCXML, start here: [[SCION vs. SCXML Comparison]].
-* If you're a specification implementer or a semanticist, and would like the details of the SCION semantics, start here: [[SCION Semantics]].
+* If you're already familiar with SCXML, and want a high-level overview of similarities and differences between SCION and SCXML, start here: [SCION vs. SCXML Comparison](https://github.com/jbeard4/SCION/wiki/SCION-vs.-SCXML-Comparison).
+* If you're a specification implementer or a semanticist, and would like the details of the SCION semantics, start here: [SCION Semantics](https://github.com/jbeard4/SCION/wiki/Scion-Semantics).
 
 # Project Status and Supported Environments # 
 
