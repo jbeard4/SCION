@@ -1,4 +1,4 @@
-# Overview #
+# Overview 
 
 Statecharts is a graphical modelling language developed to describe complex, reactive systems. Because of its usefulness for describing complex, timed, reactive, state-based behaviour, it is well-suited for developing rich user interfaces, including user interfaces built on Open Web technologies.
 
@@ -8,7 +8,7 @@ Statecharts was first described by David Harel in the 1987 paper "Statecharts: A
 
 The SCION project also includes a custom test suite for distributed unit and performance testing of SCXML interpreters.
 
-# Quickstart #
+# Quickstart
 
 Let's start with the simple example of drag-and-drop behaviour. An entity that can be dragged has two states: idle and dragging. If the entity is in an idle state, and it receives a mousedown event, then it starts dragging. While dragging, if it receives a mousemove event, then it changes its position. Also while dragging, when it receives a mouseup event, it returns to the idle state.
 
@@ -199,7 +199,7 @@ Note that, due to limitations in cross-browser compatibility of techniques for e
 
 You can run the demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop.xhtml).
 
-## More Control ##
+## More Control
 
 What if we want to dynamically create state machine instances, and attach them to DOM nodes manually? This takes a bit more code.
 
@@ -344,7 +344,7 @@ Here is an example. An SCXML document is downloaded with XMLHttpRequest and init
 
 See this demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop2.xhtml).
 
-## Advanced usage ##
+## Advanced usage 
 
 Drag and drop is a simple example of UI behaviour. Statecharts are most valuable for describing user interfaces that involve a more complex notion of state.
 
@@ -352,17 +352,17 @@ A more advanced example can be seen [here](http://jbeard4.github.com/SCION/demos
 
 It is described in detail in the source code of the page.
 
-# Non-browser Environments #
+# Non-browser Environments 
 
-## Use in node.js ##
+## Use in node.js 
 
-### Installation ###
+### Installation 
 
 ```bash
 npm install -g scion
 ```
 
-### Usage ###
+### Usage 
 
 node.js doesn't have great support for XML, so SCXML source must be converted ahead-of-time to annotated JSON. SCION ships with command-line tools to facilitate this. `scxml-to-json`  converts SCXML documents to JSON in the JsonML format, and `annotate-scxml-json` converts the JsonML document to a format more suitable for interpretation at runtime.
 
@@ -394,26 +394,26 @@ interpreter.gen(new scion.Event('t'));
 console.log(interpreter.getConfiguration());
 ```
 
-## Use in Rhino ##
+## Use in Rhino 
 
 SCION works well on Rhino, but this still needs to be documented.
 
-# Ahead-of-time Optimization using Static Analysis #
+# Ahead-of-time Optimization using Static Analysis 
 
 SCION also supports generating optimized data structures ahead-of-time using static analysis, which may enhance performance at runtime. This feature still needs to be documented.
 
-# SCION Semantics #
+# SCION Semantics 
 
 SCION takes many ideas from the SCXML standard. In particular, it reuses the syntax of SCXML, but changes some of the semantics.
 
 * If you're already familiar with SCXML, and want a high-level overview of similarities and differences between SCION and SCXML, start here: [SCION vs. SCXML Comparison](https://github.com/jbeard4/SCION/wiki/SCION-vs.-SCXML-Comparison).
 * If you're a specification implementer or a semanticist, and would like the details of the SCION semantics, start here: [SCION Semantics](https://github.com/jbeard4/SCION/wiki/Scion-Semantics).
 
-# Project Status and Supported Environments # 
+# Project Status and Supported Environments
 
 SCION has been thoroughly tested in recent versions of Chromium, Firefox, and Opera on Ubuntu 10.04. It has *not* been thoroughly tested with older browsers, or on Internet Explorer or Safari. SCION has also been thoroughly tested under multiple shell environments, including Node and Rhino, as well as the shell environments included with the v8, spidermonkey and jsc.
 
-# Project Background # 
+# Project Background 
 
 SCION is the third major iteration in an effort to create a Statecharts interpreter/compiler that would be well-suited for use in the browser environment. The first iteration was the development of a JavaScript backend to the [SCC Statecharts compiler](http://msdl.cs.mcgill.ca/people/tfeng/uml/scc/) written by Thomas Feng. The second iteration was [scxml-js](http://commons.apache.org/sandbox/gsoc/2010/scxml-js/), which was started as course project for [COMP-621 - Program Analysis and Transformations](http://www.sable.mcgill.ca/~hendren/621/) under Prof. Laurie Hendren, and continued as a project for Google Summer of Code 2010, under the Apache Software Foundation, with Rahul Akolkar serving as project mentor. I decided to expand this work toward the completion of a master thesis at McGill University under Prof. Hans Vangheluwe. The decision was made to rewrite scxml-js from the ground up, for reasons described [here](http://blog.echo-flow.com/2011/06/08/masters-thesis-update-2-new-statecharts-project/), and the new project was named SCION. 
 
@@ -421,7 +421,7 @@ Right now, I'm still working on my master thesis, but believe SCION is ready for
 
 My thanks go out to everyone who has supported me in this endeavour.
 
-# License #
+# License 
 
 Some modules, tests, and demos are derived from scxml-js. These are licensed under the Apache 2 software license.
 
@@ -429,7 +429,7 @@ Libraries included in lib/ are published under their respective licenses.
 
 Everything else is licensed under the LGPLv3.
 
-# Related Work #
+# Related Work 
 
 * [SCXML Commons](http://commons.apache.org/scxml/)
 * [PySCXML](http://code.google.com/p/pyscxml/) 
