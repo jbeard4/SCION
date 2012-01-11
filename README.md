@@ -413,14 +413,6 @@ SCION takes many ideas from the SCXML standard. In particular, it reuses the syn
 
 SCION has been thoroughly tested in recent versions of Chromium, Firefox, and Opera on Ubuntu 10.04. It has *not* been thoroughly tested with older browsers, or on Internet Explorer or Safari. SCION has also been thoroughly tested under multiple shell environments, including Node and Rhino, as well as the shell environments included with v8, spidermonkey and jsc.
 
-# Project Background 
-
-SCION is the third major iteration in an effort to create a Statecharts interpreter/compiler that would be well-suited for use in the browser environment. The first iteration was the development of a JavaScript backend to the [SCC Statecharts compiler](http://msdl.cs.mcgill.ca/people/tfeng/uml/scc/) written by Thomas Feng. The second iteration was [scxml-js](http://commons.apache.org/sandbox/gsoc/2010/scxml-js/), which was started as course project for [COMP-621 - Program Analysis and Transformations](http://www.sable.mcgill.ca/~hendren/621/) under Prof. Laurie Hendren, and continued as a project for Google Summer of Code 2010, under the Apache Software Foundation, with Rahul Akolkar serving as project mentor. I decided to expand this work toward the completion of a master thesis at McGill University under Prof. Hans Vangheluwe. The decision was made to rewrite scxml-js from the ground up, for reasons described [here](http://blog.echo-flow.com/2011/06/08/masters-thesis-update-2-new-statecharts-project/), and the new project was named SCION. 
-
-Right now, I'm still working on my master thesis, but believe SCION is ready for general use. 
-
-My thanks go out to everyone who has supported me in this endeavour.
-
 # License 
 
 Some modules, tests, and demos are derived from scxml-js. These are licensed under the Apache 2 software license.
@@ -432,6 +424,15 @@ Everything else is licensed under the LGPLv3.
 # Support
 
 [Mailing list](https://groups.google.com/group/scion-dev)
+
+# Project Background 
+
+SCION is the third major iteration in an effort to create a Statecharts interpreter/compiler that would be well-suited for use in the browser environment. The first iteration was the development of a JavaScript backend to the [SCC Statecharts compiler](http://msdl.cs.mcgill.ca/people/tfeng/uml/scc/) written by Thomas Feng. The second iteration was [scxml-js](http://commons.apache.org/sandbox/gsoc/2010/scxml-js/), which was started as course project for [COMP-621 - Program Analysis and Transformations](http://www.sable.mcgill.ca/~hendren/621/) under Prof. Laurie Hendren, and continued as a project for Google Summer of Code 2010, under the Apache Software Foundation, with Rahul Akolkar serving as project mentor. I decided to expand this work toward the completion of a master thesis at McGill University under Prof. Hans Vangheluwe. The decision was made to rewrite scxml-js from the ground up, for reasons described [here](http://blog.echo-flow.com/2011/06/08/masters-thesis-update-2-new-statecharts-project/), and the new project was named SCION. 
+
+Right now, I'm still working on my master thesis, but believe SCION is ready for general use. 
+
+My thanks go out to everyone who has supported me in this endeavour.
+
 
 # Related Work 
 
