@@ -429,6 +429,10 @@ Libraries included in lib/ are published under their respective licenses.
 
 Everything else is licensed under the LGPLv3.
 
+# Support
+
+[Mailing list](https://groups.google.com/group/scion-dev)
+
 # Related Work 
 
 * [SCXML Commons](http://commons.apache.org/scxml/)
