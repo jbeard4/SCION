@@ -33,6 +33,8 @@ class-optimization-module = $(core)/scxml/optimization/class.js
 table-optimization-module = $(core)/scxml/optimization/state-table.js
 switch-optimization-module = $(core)/scxml/optimization/switch.js
 
+all : interpreter tests test-loader optimizations optimization-loaders 
+
 #compile coffeescript
 coffeescript-src = $(shell find $(coffescript-dir))
 built-javascript-core = $(patsubst $(coffescript-dir)/%.coffee,$(core)/%.js, $(coffeescript-src))
@@ -143,8 +145,6 @@ $(loaders)/switch-transition-lookup-optimization-array-loader.js :
 #TODO: node module
 #TODO: flattened test modules
 #TODO: all test modules
-
-all : interpreter browser-release tests test-loader optimizations optimization-loaders 
 
 #interpreter
 interpreter : $(built-javascript-core) $(lib-core)
