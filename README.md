@@ -1,20 +1,20 @@
-= Overview =
+# Overview #
 
 Statecharts is a graphical modelling language developed to describe complex, reactive systems. Because of its usefulness for describing complex, timed, reactive, state-based behaviour, it is well-suited for developing rich user interfaces, including user interfaces built on Open Web technologies.
 
 Statecharts was first described by David Harel in the 1987 paper "Statecharts: A Visual Formalism for Complex Systems". Over the years, many different Statecharts variants have been developed, including the W3C SCXML draft specification. SCXML provides an XML-based syntax for describing Statecharts, as well as a step algorithm which defines its executable semantics. 
 
-'''StateCharts Interpretation and Optimization eNgine''' (SCION) is an implementation of Statecharts in JavaScript. Statecharts are written as XML documents, which are then executed by the SCION interpreter. Furthermore, optimized data structures may be generated ahead-of-time by SCION from the source SCXML document, which may improve memory usage and performance at runtime. 
+*StateCharts Interpretation and Optimization eNgine* (SCION) is an implementation of Statecharts in JavaScript. Statecharts are written as XML documents, which are then executed by the SCION interpreter. Furthermore, optimized data structures may be generated ahead-of-time by SCION from the source SCXML document, which may improve memory usage and performance at runtime. 
 
 The SCION project also includes a custom test suite for distributed unit and performance testing of SCXML interpreters.
 
-= Quickstart =
+# Quickstart #
 
 Let's start with the simple example of drag-and-drop behaviour. An entity that can be dragged has two states: idle and dragging. If the entity is in an idle state, and it receives a mousedown event, then it starts dragging. While dragging, if it receives a mousemove event, then it changes its position. Also while dragging, when it receives a mouseup event, it returns to the idle state.
 
 This natural-language description of behaviour can be described using the following simple state machine:
 
-[[http://jbeard4.github.com/SCION/img/drag_and_drop.png]]
+![Drag and Drop][http://jbeard4.github.com/SCION/img/drag_and_drop.png]
 
 This state machine could be written in SCXML as follows:
 
@@ -197,20 +197,20 @@ In order to execute this on a web page, such that the state machine is instantia
 
 Note that, due to limitations in cross-browser compatibility of techniques for embedding XML data in HTML pages, this technique will currently only work for web browsers that support XHTML. In particular, this excludes versions of Internet Explorer before IE9, so this technique is primarily useful for experimentation and demo purposes. A technique that should work well across browsers, including older versions of IE, will be shown below.  The SCION interpreter itself does not have any browser-specific dependencies, and in fact, runs well in a number of JavaScript environments, including Rhino and NodeJS shell environments.
 
-You can run the demo live [http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop.xhtml here].
+You can run the demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop.xhtml).
 
-== More Control ==
+## More Control ##
 
 What if we want to dynamically create state machine instances, and attach them to DOM nodes manually? This takes a bit more code.
 
 There are 7 steps that must be performed to go from an SCXML document to a working state machine instance that is consuming DOM events and scripting web content on a web page:
-# Get the SCXML document.
-# Convert the XML to a JsonML JSON document using XSLT or DOM, and parse the JsonML JSON document to a JsonML JavaScript Object.
-# Annotate and transform the JsonML JavaScript Object so that it is in a more convenient form for interpretation, creating an annotated JsonML JavaScript Object
-# Convert the annotated JsonML JavaScript Object to a Statecharts object model. This step essentially converts id labels to object references, parses JavaScript scripts and expressions embedded in the SCXML as JavaScript functions, and does some validation for correctness. 
-# Use the Statecharts object model to instantiate the SCION interpreter. Optionally, one can pass to the SCION constructor an object to be used as the context object (the object bound to the <tt>this</tt> identifier) in script evaluation. There are many other parameters that can be passed to the constructor, none of which are currently documented.
-# Connect relevant event listeners to the statechart instance.
-# Call the <tt>start</tt> method on the new interpreter instance to start execution of the statechart.
+1. Get the SCXML document.
+3. Convert the XML to a JsonML JSON document using XSLT or DOM, and parse the JsonML JSON document to a JsonML JavaScript Object.
+2. Annotate and transform the JsonML JavaScript Object so that it is in a more convenient form for interpretation, creating an annotated JsonML JavaScript Object
+4. Convert the annotated JsonML JavaScript Object to a Statecharts object model. This step essentially converts id labels to object references, parses JavaScript scripts and expressions embedded in the SCXML as JavaScript functions, and does some validation for correctness. 
+5. Use the Statecharts object model to instantiate the SCION interpreter. Optionally, one can pass to the SCION constructor an object to be used as the context object (the object bound to the `this` identifier) in script evaluation. There are many other parameters that can be passed to the constructor, none of which are currently documented.
+6. Connect relevant event listeners to the statechart instance.
+7. Call the `start` method on the new interpreter instance to start execution of the statechart.
 
 Note that steps 1-3 can be done ahead-of-time, such that the annotated JsonML document can be serialized and sent down the wire, before being downloaded to the browser and parsed, then converted to a Statecharts object model in step 4. 
 
@@ -341,29 +341,29 @@ Here is an example. An SCXML document is downloaded with XMLHttpRequest and init
 </html>
 ```
 
-See this demo live [http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop2.xhtml here].
+See this demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop2.xhtml).
 
-== Advanced usage ==
+## Advanced usage ##
 
 Drag and drop is a simple example of UI behaviour. Statecharts are most valuable for describing user interfaces that involve a more complex notion of state.
 
-A more advanced example can be seen [http://jbeard4.github.com/SCION/demos/drawing-tool/drawing-tool.html here].
+A more advanced example can be seen [here](http://jbeard4.github.com/SCION/demos/drawing-tool/drawing-tool.html).
 
 It is described in detail in the source code of the page.
 
-= Non-browser Environments =
+# Non-browser Environments #
 
-== Use in node.js ==
+## Use in node.js ##
 
-=== Installation ===
+### Installation ###
 
 ```bash
 npm install -g scion
 ```
 
-=== Usage ===
+### Usage ###
 
-node.js doesn't have great support for XML, so SCXML source must be converted ahead-of-time to annotated JSON. SCION ships with command-line tools to facilitate this. <tt>scxml-to-json</tt>  converts SCXML documents to JSON in the JsonML format, and <tt>annotate-scxml-json</tt> converts the JsonML document to a format more suitable for interpretation at runtime.
+node.js doesn't have great support for XML, so SCXML source must be converted ahead-of-time to annotated JSON. SCION ships with command-line tools to facilitate this. `scxml-to-json`  converts SCXML documents to JSON in the JsonML format, and `annotate-scxml-json` converts the JsonML document to a format more suitable for interpretation at runtime.
 
 ```bash
 scxml-to-json input.scxml | annotate-scxml-json > output.json
@@ -393,7 +393,7 @@ interpreter.gen(new scion.Event('t'));
 console.log(interpreter.getConfiguration());
 ```
 
-== Use in Rhino ==
+## Use in Rhino ##
 
 SCION works well on Rhino, but this still needs to be documented.
 
@@ -404,7 +404,7 @@ Two possibilities:
 1. Use multi-threaded setTimeout mechanism, and add logic for making stuff threadsafe. Add mutex, etc.
 2. Use something like Swing utils settimeout mechanism. This also abstracts out the mainloop.
 
-== Use on the Command-Line ==
+## Use on the Command-Line ##
 
 Shell interface. Designed to integrate well into shell scripting applications. Simple text-based, arbitrary character-delimited protocol (usually either newline or null char). Limitation is cannot send data on events. But each line is an event. Uses stdin/stdout.
 
@@ -421,15 +421,8 @@ SCION also supports generating optimized data structures ahead-of-time using sta
 
 SCION takes many ideas from the SCXML standard. In particular, it reuses the syntax of SCXML, but changes some of the semantics.
 
-<!-- * If this is the first time you've heard of "SCXML" or "Statecharts" start here: [[Statecharts Introduction]]. -->
 * If you're already familiar with SCXML, and want a high-level overview of similarities and differences between SCION and SCXML, start here: [[SCION vs. SCXML Comparison]].
 * If you're a specification implementer or a semanticist, and would like the details of the SCION semantics, start here: [[SCION Semantics]].
-
-<!--
-= Feature-Support Matrix = 
-
-[TODO:]
--->
 
 = Project Status and Supported Environments = 
 
@@ -437,7 +430,7 @@ SCION has been thoroughly tested in recent versions of Chromium, Firefox, and Op
 
 = Project Background = 
 
-SCION is the third major iteration in an effort to create a Statecharts interpreter/compiler that would be well-suited for use in the browser environment. The first iteration was the development of a JavaScript backend to the [http://msdl.cs.mcgill.ca/people/tfeng/uml/scc/ SCC Statecharts compiler] written by Thomas Feng. The second iteration was [http://commons.apache.org/sandbox/gsoc/2010/scxml-js/ scxml-js], which was started as course project for [http://www.sable.mcgill.ca/~hendren/621/ COMP-621 - Program Analysis and Transformations] under Prof. Laurie Hendren, and continued as a project for Google Summer of Code 2010, under the Apache Software Foundation, with Rahul Akolkar serving as project mentor. I decided to expand this work toward the completion of a master thesis at McGill University under Prof. Hans Vangheluwe. The decision was made to rewrite scxml-js from the ground up, for reasons described [http://blog.echo-flow.com/2011/06/08/masters-thesis-update-2-new-statecharts-project/ here], and the new project was named SCION. 
+SCION is the third major iteration in an effort to create a Statecharts interpreter/compiler that would be well-suited for use in the browser environment. The first iteration was the development of a JavaScript backend to the [SCC Statecharts compiler](http://msdl.cs.mcgill.ca/people/tfeng/uml/scc/) written by Thomas Feng. The second iteration was [scxml-js](http://commons.apache.org/sandbox/gsoc/2010/scxml-js/), which was started as course project for [COMP-621 - Program Analysis and Transformations](http://www.sable.mcgill.ca/~hendren/621/) under Prof. Laurie Hendren, and continued as a project for Google Summer of Code 2010, under the Apache Software Foundation, with Rahul Akolkar serving as project mentor. I decided to expand this work toward the completion of a master thesis at McGill University under Prof. Hans Vangheluwe. The decision was made to rewrite scxml-js from the ground up, for reasons described [here](http://blog.echo-flow.com/2011/06/08/masters-thesis-update-2-new-statecharts-project/), and the new project was named SCION. 
 
 Right now, I'm still working on my master thesis, but believe SCION is ready for general use. 
 
@@ -453,6 +446,6 @@ Everything else is licensed under the LGPLv3.
 
 = Related Work =
 
-* [http://commons.apache.org/scxml/ SCXML Commons]
-* [http://code.google.com/p/pyscxml/ PySCXML]
+* [SCXML Commons](http://commons.apache.org/scxml/)
+* [PySCXML](http://code.google.com/p/pyscxml/) 
 
