@@ -14,7 +14,7 @@ Let's start with the simple example of drag-and-drop behaviour. An entity that c
 
 This natural-language description of behaviour can be described using the following simple state machine:
 
-http://jbeard4.github.com/SCION/img/drag_and_drop.png
+![Drag and Drop](http://jbeard4.github.com/SCION/img/drag_and_drop.png)
 
 This state machine could be written in SCXML as follows:
 
