@@ -18,7 +18,7 @@ This natural-language description of behaviour can be described using the follow
 
 This state machine could be written in SCXML as follows:
 
-<pre>
+<blockquote>
 <scxml 
 	xmlns="http://www.w3.org/2005/07/scxml"
 	version="1.0"
@@ -35,11 +35,11 @@ This state machine could be written in SCXML as follows:
 	</state>
 
 </scxml>
-</pre>
+</blockquote>
 
 One can add action code in order to script an SVG DOM element, so as to change its transform attribute on mousemove events:
 
-<pre>
+<blockquote>
 <scxml 
   xmlns="http://www.w3.org/2005/07/scxml"
   version="1.0"
@@ -97,12 +97,12 @@ One can add action code in order to script an SVG DOM element, so as to change i
   </state>
 
 </scxml>
-</pre>
+</blockquote>
 
 In order to execute this on a web page, such that the state machine is instantiated, receives DOM events, and is able to script DOM nodes, one may use a tool included with SCION that allows one to embed the statechart directly into the content of the page. 
 
 
-<pre>
+<blockquote>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
   <head>
     <style type="text/css">
@@ -193,7 +193,7 @@ In order to execute this on a web page, such that the state machine is instantia
     </svg>
   </body>
 </html>
-</pre>
+</blockquote>
 
 Note that, due to limitations in cross-browser compatibility of techniques for embedding XML data in HTML pages, this technique will currently only work for web browsers that support XHTML. In particular, this excludes versions of Internet Explorer before IE9, so this technique is primarily useful for experimentation and demo purposes. A technique that should work well across browsers, including older versions of IE, will be shown below.  The SCION interpreter itself does not have any browser-specific dependencies, and in fact, runs well in a number of JavaScript environments, including Rhino and NodeJS shell environments.
 
@@ -216,7 +216,7 @@ Note that steps 1-3 can be done ahead-of-time, such that the annotated JsonML do
 
 Here is an example. An SCXML document is downloaded with XMLHttpRequest and initialized. SVG circle nodes can be created dynamically, such that a new state machine is instantiated, listens to the circle node's DOM events, and scripts the circle node's DOM attributes.
 
-<pre>
+<blockquote>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
   <head>
     <style type="text/css">
@@ -339,7 +339,7 @@ Here is an example. An SCXML document is downloaded with XMLHttpRequest and init
     </script>
   </body>
 </html>
-</pre>
+</blockquote>
 
 See this demo live [http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop2.xhtml here].
 
@@ -357,21 +357,21 @@ It is described in detail in the source code of the page.
 
 === Installation ===
 
-<pre>
+<blockquote>
 npm install -g scion
-</pre>
+</blockquote>
 
 === Usage ===
 
 node.js doesn't have great support for XML, so SCXML source must be converted ahead-of-time to annotated JSON. SCION ships with command-line tools to facilitate this. <tt>scxml-to-json</tt>  converts SCXML documents to JSON in the JsonML format, and <tt>annotate-scxml-json</tt> converts the JsonML document to a format more suitable for interpretation at runtime.
 
-<pre>
+<blockquote>
 scxml-to-json input.scxml | annotate-scxml-json > output.json
-</pre>
+</blockquote>
 
 The output json file can then be parse in node.js, and everything works as in the browser environment:
 
-<pre>
+<blockquote>
 var scion = require('scion'), 
 	fs=require('fs');
 
@@ -391,7 +391,7 @@ console.log(interpreter.getConfiguration());
 interpreter.gen(new scion.Event('t'));
 
 console.log(interpreter.getConfiguration());
-</pre>
+</blockquote>
 
 == Use in Rhino ==
 
