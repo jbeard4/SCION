@@ -411,7 +411,7 @@ SCION takes many ideas from the SCXML standard. In particular, it reuses the syn
 
 # Project Status and Supported Environments
 
-SCION has been thoroughly tested in recent versions of Chromium, Firefox, and Opera on Ubuntu 10.04. It has *not* been thoroughly tested with older browsers, or on Internet Explorer or Safari. SCION has also been thoroughly tested under multiple shell environments, including Node and Rhino, as well as the shell environments included with v8, spidermonkey and jsc.
+SCION has been thoroughly tested in recent versions of Chromium, Firefox, and Opera on Ubuntu 10.04, as well as Internet Explorer 9 and recent Firefox, Chrome, Opera, and Safari on Windows 7 x64. SCION has also been thoroughly tested under multiple shell environments, including Node and Rhino, as well as the default shell environments included with v8, spidermonkey and jsc.
 
 # License 
 
