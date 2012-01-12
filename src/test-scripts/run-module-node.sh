@@ -3,11 +3,11 @@
 
 dn=`dirname $0`
 abspath=`cd $dn; pwd`
-basedir=`dirname $abspath`
+t=`dirname $abspath`
+basedir=`dirname $t`
 
 moduleToRun=$1
-shift
-interpreter=${1-node}
+
 shift
 
-$interpreter $basedir/lib/js/r.js -lib $basedir/build/core/runner.js $basedir/build/core $moduleToRun $*
+node $basedir/lib/js/r.js -lib $basedir/build/core/runner.js $basedir/build/core $moduleToRun $*

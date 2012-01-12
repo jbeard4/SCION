@@ -69,7 +69,7 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 			console.error "received test #{currentTest.id}"
 			
 			#start up a new statechart process
-			currentScxmlProcess = child_process.spawn "bash",["#{projectDir}/bin/run-module.sh",SCXML_MODULE,currentTest.interpreter]
+			currentScxmlProcess = child_process.spawn "bash",["#{projectDir}/src/test-scripts/run-module.sh",SCXML_MODULE,currentTest.interpreter]
 
 			unexpectedExitListener = -> console.error "statechart process ended unexpectedly"
 			currentScxmlProcess.on "exit",unexpectedExitListener
