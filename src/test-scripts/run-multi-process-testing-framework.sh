@@ -3,9 +3,13 @@
 
 dn=`dirname $0`
 abspath=`cd $dn; pwd`
-basedir=`dirname $abspath`
+t=`dirname $abspath`
+basedir=`dirname $t`
 
-$basedir/bin/run-module.sh scxml/test/multi-process/server node -projectDir $basedir -local -numLocalProcesses 8 -interpreters spidermonkey rhino jsc v8 -verbose -logFile out.txt
+#spidermonkey rhino jsc v8 
+interpreters=$@
+
+$basedir/src/test-scripts/run-module.sh scxml/test/multi-process/server node -projectDir $basedir -local -numLocalProcesses 8 -interpreters $interpreters -verbose -logFile out.txt
 
 #./bin/run-multi-process-testing-framework.sh -projectDir `pwd` -clientAddresses node-0{1..9} node-{10..19} node-{21..33} -interpreters v8 spidermonkey rhino -verbose -logFile out.txt -stopOnFail -clientModulePath `pwd`/src/main/coffeescript/scxml/test/multi-process/client.coffee
 

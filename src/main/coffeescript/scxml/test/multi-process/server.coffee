@@ -203,7 +203,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 
 		startClient =
 			if local
-				-> child_process.spawn "bash",["#{projectDir}/bin/run-module.sh",CLIENT_MODULE,"node",eventDensity,projectDir,numberOfIterationsPerTest,performanceTestMode,numberOfEventsToSendInPerformanceTestMode]
+				-> child_process.spawn "bash",["#{projectDir}/src/test-scripts/run-module.sh",CLIENT_MODULE,"node",eventDensity,projectDir,numberOfIterationsPerTest,performanceTestMode,numberOfEventsToSendInPerformanceTestMode]
 			else
 				(address) -> child_process.spawn "ssh",[address,"bash","#{projectDir}/bin/run-module.sh",CLIENT_MODULE,"node",eventDensity,projectDir,numberOfIterationsPerTest,performanceTestMode,numberOfEventsToSendInPerformanceTestMode]
 
