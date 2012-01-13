@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Jacob Beard
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
-define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scxml/test/report2string",'util/utils','child_process','argsparser','fs','util'],(jsonTests,BufferedStream,report2string,utils,child_process,argsparser,fs,util) ->
+define ['test-harness/multi-process-browser/json-tests','util/BufferedStream',"test-harness/report2string",'util/utils','child_process','argsparser','fs','util'],(jsonTests,BufferedStream,report2string,utils,child_process,argsparser,fs,util) ->
 
 	->
 		optionToArray = (args,option,defaultValue) ->
@@ -15,7 +15,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 		eventDensity = args['-eventDensity'] or 10
 		stopOnFail = args['-stopOnFail']
 		projectDir = args['-projectDir'] or '/home/jacob/workspace/scion/'
-		clientModulePath = args['-clientModulePath'] or '/home/jacob/workspace/scion/src/main/coffeescript/scxml/test/multi-process/client.coffee'
+		clientModulePath = args['-clientModulePath'] or '/home/jacob/workspace/scion/src/main/coffeescript/test-harness/multi-process/client.coffee'
 		local = args['-local']
 		numLocalProcesses = args['-numLocalProcesses'] or 1
 		verbose = args['-verbose']
@@ -199,7 +199,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/BufferedStream',"scx
 			console.error "Process #{p.pid} ended unexpectedly"
 			if stopOnFail then process.exit 1
 			
-		CLIENT_MODULE = "scxml/test/multi-process/client"
+		CLIENT_MODULE = "test-harness/multi-process/client"
 
 		startClient =
 			if local

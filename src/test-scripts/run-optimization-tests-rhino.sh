@@ -34,4 +34,4 @@ fi
 
 
 $JAVA_CMD $JAVA_OPTS $EXTRA_JVM_ARGUMENTS -classpath $JAVA_CLASSPATH $JAVA_MAIN \
--debug $basedir/lib/js/r.js -lib $basedir/build/core/runner.js $basedir/build/core scxml/test/rhino-optimization-harness
+-debug $basedir/lib/js/r.js -lib $basedir/build/core/runner.js $basedir/build/core test-harness/rhino-optimization-harness

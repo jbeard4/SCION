@@ -2,7 +2,7 @@
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
 #listen to document ready first, as we might miss it later
-require ["scxml/SCXML","scxml/test/multi-process-browser/initialize-json-test-descriptor","scxml/event"],(scxml,initializeJsonTest,Event) ->
+require ["scxml/SCXML","test-harness/multi-process-browser/initialize-json-test-descriptor","scxml/event"],(scxml,initializeJsonTest,Event) ->
 
 	#fake console api if necessary
 	window.console ?=

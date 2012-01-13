@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Jacob Beard
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
-define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml/test/report2string",'scxml/test/multi-process-browser/server-client-comm','child_process','promise','http','url','path','util','fs','argsparser'],(jsonTests,Set,report2string,serverClientComm,child_process,promiseModule,http,urlModule,pathModule,util,fs,argsparser) ->
+define ['test-harness/multi-process-browser/json-tests','util/set/ArraySet',"test-harness/report2string",'test-harness/multi-process-browser/server-client-comm','child_process','promise','http','url','path','util','fs','argsparser'],(jsonTests,Set,report2string,serverClientComm,child_process,promiseModule,http,urlModule,pathModule,util,fs,argsparser) ->
 
 	clone = (o) ->
 		toReturn = {}
@@ -112,7 +112,7 @@ define ['scxml/test/multi-process-browser/json-tests','util/set/ArraySet',"scxml
 							<script src="lib/json2.js"></script>
 							<script src="lib/jquery.js"></script>
 							<script src="lib/require.js"></script>
-							<script src="scxml/test/multi-process-browser/browser-main.js"></script>
+							<script src="test-harness/multi-process-browser/browser-main.js"></script>
 
 						</head>
 						<body></body>

@@ -9,7 +9,7 @@
 define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','scxml/async-for',"child_process",'fs','util'],(BufferedStream,Set,utils,memoryUtil,asyncForEach,child_process,fs,util) ->
 
 	(eventDensity,projectDir,numberOfIterationsPerTest,performanceTestMode,numberOfEventsToSendInPerformanceTestMode) ->
-		SCXML_MODULE = "scxml/test/multi-process/scxml"
+		SCXML_MODULE = "test-harness/multi-process/scxml"
 
 		eventDensity = parseInt eventDensity
 		numberOfIterationsPerTest = parseInt numberOfIterationsPerTest
