@@ -1,3 +1,5 @@
+A Statecharts interpreter/compiler library targeting JavaScript environments.
+
 # Overview 
 
 Statecharts is a graphical modelling language developed to describe complex, reactive systems. Because of its usefulness for describing complex, timed, reactive, state-based behaviour, it is well-suited for developing rich user interfaces, including user interfaces built on Open Web technologies.
