@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Jacob Beard
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
-define ["scxml/optimization/initializer","lib/beautify"],(initializer,js_beautify)->
+define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 	tableToString = (table) ->
 		toReturn = "[\n"
 
