@@ -13,4 +13,4 @@ fi;
 
 #these tests are highly recursive, so we increase the size of the nodejs stack. 
 #same thing is done with the rhino tests running under the JVM
-node --stack_size=4096 $basedir/lib/js/r.js -lib $basedir/build/core/runner.js $basedir/build/core scxml/test/node-optimization-harness
+node --stack_size=4096 $basedir/lib/js/r.js -lib $basedir/build/core/runner.js $basedir/build/core test-harness/node-optimization-harness

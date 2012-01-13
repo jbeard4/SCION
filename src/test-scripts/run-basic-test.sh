@@ -15,5 +15,5 @@ fi;
 #TODO: make this more helpful
 
 for interpreter in $@;
-do $interpreter $basedir/lib/js/r.js -lib $basedir/build/core/runner.js $basedir/build/core scxml/test/basic-test-harness
+do $interpreter $basedir/lib/js/r.js -lib $basedir/build/core/runner.js $basedir/build/core test-harness/basic-test-harness
 done;

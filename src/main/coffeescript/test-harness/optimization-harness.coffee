@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Jacob Beard
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
-define ["scxml/json2model","scxml/json2extra-model", "scxml/test/harness", "scxml/async-for","util/set/ArraySet","util/set/BitVector","util/set/BooleanArray","util/set/ObjectSet", "tests/loaders/spartan-loader-for-all-tests", "tests/loaders/class-transition-lookup-optimization-loader", "tests/loaders/switch-transition-lookup-optimization-loader", "tests/loaders/table-transition-lookup-optimization-loader","scxml/model","scxml/extra-model","scxml/default-transition-selector"],(json2model,json2ExtraModel,harness,asyncForEach,ArraySet,BitVectorInitializer,BooleanArrayInitializer,ObjectSetInitializer,testTuples,classTransitionOpts,switchTransitionOpts,tableTransitionOpts,m,extraModel,defaultTransitionSelector) ->
+define ["scxml/json2model","scxml/json2extra-model", "test-harness/harness", "scxml/async-for","util/set/ArraySet","util/set/BitVector","util/set/BooleanArray","util/set/ObjectSet", "tests/loaders/spartan-loader-for-all-tests", "tests/loaders/class-transition-lookup-optimization-loader", "tests/loaders/switch-transition-lookup-optimization-loader", "tests/loaders/table-transition-lookup-optimization-loader","scxml/model","scxml/extra-model","scxml/default-transition-selector"],(json2model,json2ExtraModel,harness,asyncForEach,ArraySet,BitVectorInitializer,BooleanArrayInitializer,ObjectSetInitializer,testTuples,classTransitionOpts,switchTransitionOpts,tableTransitionOpts,m,extraModel,defaultTransitionSelector) ->
 
 
 

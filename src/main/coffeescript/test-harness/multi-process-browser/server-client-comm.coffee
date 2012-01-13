@@ -31,7 +31,7 @@ define ['child_process'],(child_process) ->
 	sendCommandThroughCachedPipe = (o,address,projectSrcDir,displayNum) ->
 		sshEventPipe =
 			(sshEventPipeCache[address] ?=
-				runSshCmd [address,"DISPLAY=#{displayNum}","coffee","#{projectSrcDir}/src/main/coffeescript/scxml/test/multi-process-browser/send-events.coffee"])
+				runSshCmd [address,"DISPLAY=#{displayNum}","coffee","#{projectSrcDir}/src/main/coffeescript/test-harness/multi-process-browser/send-events.coffee"])
 
 		sshEventPipe.stdin.write ((JSON.stringify o) + '\n')	#write the newline character, because the buffer is line-oriented
 

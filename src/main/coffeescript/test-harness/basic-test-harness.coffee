@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Jacob Beard
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
-define ["scxml/setup-default-opts","scxml/json2model","scxml/test/harness","scxml/test/report2string","scxml/async-for","tests/loaders/spartan-loader-for-all-tests","logger","env!env/quit","scxml/test/simple-env"],(setupDefaultOpts,json2model,harness,report2string,asyncForEach,testTuples,logger,quit,SimpleEnv)->
+define ["scxml/setup-default-opts","scxml/json2model","test-harness/harness","test-harness/report2string","scxml/async-for","tests/loaders/spartan-loader-for-all-tests","logger","env!env/quit","test-harness/simple-env"],(setupDefaultOpts,json2model,harness,report2string,asyncForEach,testTuples,logger,quit,SimpleEnv)->
 
 	runTests = ->
 

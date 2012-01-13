@@ -2,7 +2,7 @@
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
 #require ["scxml/SCXML","scxml/json2model","scxml/json2extra-model"],(scxml,json2model,json2ExtraModel) ->
-define ["scxml/SCXML","scxml/test/multi-process-browser/initialize-json-test-descriptor","scxml/event","util/utils","util/readline","lib/json2"],(scxml,initializeJsonTest,Event,utils,readline) ->
+define ["scxml/SCXML","test-harness/multi-process-browser/initialize-json-test-descriptor","scxml/event","util/utils","util/readline","lib/json2"],(scxml,initializeJsonTest,Event,utils,readline) ->
 
 	#a little compatibility layer for fn readline for rhino
 
