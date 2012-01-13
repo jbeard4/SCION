@@ -28,10 +28,10 @@ npm-release-module = $(npm-release)/$(module-name)-$(release-number).tgz
 annotate-scxml-json-module = $(core)/util/annotate-scxml-json.js
 runner-module = $(core)/runner.js
 beautify-module = $(lib)/beautify.js
-initializer-optimization-module = $(core)/scxml/optimization/initializer.js
-class-optimization-module = $(core)/scxml/optimization/class.js
-table-optimization-module = $(core)/scxml/optimization/state-table.js
-switch-optimization-module = $(core)/scxml/optimization/switch.js
+initializer-optimization-module = $(core)/optimization/initializer.js
+class-optimization-module = $(core)/optimization/class.js
+table-optimization-module = $(core)/optimization/state-table.js
+switch-optimization-module = $(core)/optimization/switch.js
 
 all : interpreter tests test-loader optimizations optimization-loaders 
 
@@ -74,7 +74,7 @@ annotated-scxml-json-dir = $(tests)/annotated-scxml-json
 annotated-scxml-json-tests = $(patsubst $(scxml-json-dir)/%.json,$(annotated-scxml-json-dir)/%.json,$(scxml-json-tests)) 
 $(annotated-scxml-json-dir)/%.json : $(tests)/scxml-json/%.json $(annotate-scxml-json-module) $(runner-module)
 	mkdir -p $(dir $@)
-	./bin/run-module-node.sh util/annotate-scxml-json $< $@
+	./src/test-scripts/run-module-node.sh util/annotate-scxml-json $< $@
 
 #annotated-scxml-json-tests : $(annotated-scxml-json-tests)
 
@@ -102,15 +102,15 @@ table-transition-selector = $(patsubst $(annotated-scxml-json-dir)/%.json,$(tran
 
 $(transition-selector)/%.class.js : $(annotated-scxml-json-dir)/%.json $(runner-module) $(beautify-module) $(initializer-optimization-module) $(class-optimization-module)
 	mkdir -p $(dir $@)
-	./bin/run-module-node.sh scxml/optimization/transition-optimizer $< class true true > $@
+	./src/test-scripts/run-module-node.sh optimization/transition-optimizer $< class true true > $@
 
 $(transition-selector)/%.switch.js : $(annotated-scxml-json-dir)/%.json $(runner-module) $(beautify-module) $(initializer-optimization-module) $(switch-optimization-module)
 	mkdir -p $(dir $@)
-	./bin/run-module-node.sh scxml/optimization/transition-optimizer $< switch true true > $@
+	./src/test-scripts/run-module-node.sh optimization/transition-optimizer $< switch true true > $@
 
 $(transition-selector)/%.table.js : $(annotated-scxml-json-dir)/%.json $(runner-module) $(beautify-module) $(initializer-optimization-module) $(table-optimization-module)
 	mkdir -p $(dir $@)
-	./bin/run-module-node.sh scxml/optimization/transition-optimizer $< table true true > $@
+	./src/test-scripts/run-module-node.sh optimization/transition-optimizer $< table true true > $@
 
 
 generate-array-test-loader-module-script = src/main/bash/build/generate-requirejs-array-test-loader-module.sh

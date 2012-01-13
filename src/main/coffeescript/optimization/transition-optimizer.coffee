@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Jacob Beard
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
-define ["scxml/json2model","scxml/optimization/class","scxml/optimization/state-table","scxml/optimization/switch","logger","env!env/file"],(json2model,classOpt,tableOpt,switchOpt,logger,file) ->
+define ["scxml/json2model","optimization/class","optimization/state-table","optimization/switch","logger","env!env/file"],(json2model,classOpt,tableOpt,switchOpt,logger,file) ->
 
 	(pathToSCXMLJson,optimizerName="table",beautify,asyncModuleDef) ->
 		beautify = beautify is "true"

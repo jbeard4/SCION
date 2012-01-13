@@ -7,7 +7,7 @@ t=`dirname $abspath`
 basedir=`dirname $t`
 
 #spidermonkey rhino jsc v8 
-interpreters=$@
+interpreters=${@-spidermonkey}
 
 $basedir/src/test-scripts/run-module.sh scxml/test/multi-process/server node -projectDir $basedir -local -numLocalProcesses 8 -interpreters $interpreters -verbose -logFile out.txt
 
