@@ -1,5 +1,5 @@
 #returns a function that should be called on load
-define ["scxml/SCXML","util/annotate-scxml-json","scxml/json2model","scxml/event","lib/JsonML_DOM"], ({BrowserInterpreter : BrowserInterpreter},jsonAnnotator,json2model,Event,JsonML) -> ->
+define ["lib/domReady","scxml/SCXML","util/annotate-scxml-json","scxml/json2model","scxml/event","lib/JsonML_DOM","browser/print"], (domReady,{BrowserInterpreter : BrowserInterpreter},jsonAnnotator,json2model,Event,JsonML) -> domReady ->
 	#TODO: I should also try this module in some versions of IE, and see how well it does with regular HTML content 
 
 	"""

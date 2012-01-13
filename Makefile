@@ -48,12 +48,37 @@ lib-js-src = $(shell find $(lib-src)/*)
 lib = $(core)/lib
 lib-core = $(patsubst $(lib-src)/%,$(core)/lib/%, $(lib-js-src))
 
+#copy over lib/requirejs/*
+#these are core parts of requirejs which we depend on and need in order to build
+requirejs-lib-src = lib/requirejs
+requirejs-lib-js-src = $(shell find $(requirejs-lib-src)/* -name "*.js")
+requirejs-lib-core = $(patsubst $(requirejs-lib-src)/%,$(core)/%, $(requirejs-lib-js-src))
+
+#special requirejs module dependencies
+#we can't use patterns easily here, so we just copy over targets
+$(core)/logger.js : $(requirejs-lib-src)/logger.js
+	mkdir -p $(dir $@)
+	cp $< $@
+	
+$(core)/browser/print.js : $(requirejs-lib-src)/browser/print.js
+	mkdir -p $(dir $@)
+	cp $< $@
+
+$(core)/env.js : $(requirejs-lib-src)/env.js
+	mkdir -p $(dir $@)
+	cp $< $@
+
+$(core)/node/print.js : $(requirejs-lib-src)/node/print.js
+	mkdir -p $(dir $@)
+	cp $< $@
+
+#copy over lib
 $(lib)/% : $(lib-src)/%
 	mkdir -p $(dir $@)
 	cp $< $@
 
 #build browser release module
-$(browser-release-module) : $(built-javascript-core) $(lib-core)
+$(browser-release-module) : $(built-javascript-core) $(lib-core) $(requirejs-lib-core)
 	mkdir -p $(dir $@)
 	r.js -o name=util/browser/parseOnLoad out=$(browser-release-module) baseUrl=$(core)
 
@@ -169,7 +194,7 @@ get-deps :
 
 
 foo : 
-	echo $(class-transition-selector)
+	echo $(requirejs-lib-core)
 
 clean : 
 	rm -rf $(build)
