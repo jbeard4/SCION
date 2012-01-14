@@ -1,0 +1,44 @@
+{
+	"name": "scion",
+	"version": "0.0.1",
+	"description": "StateCharts Interpretation and Optimization eNgine (SCION) is an implementation of Statecharts targeting JavaScript environments.",
+	"keywords": [
+		"scxml",
+		"statecharts",
+		"w3c",
+		"javascript"
+	],
+	"maintainers": [{
+		"name": "Jacob Beard",
+		"email": "jbeard4@cs.mcgill.ca",
+		"url": "http://echo-flow.com"
+	}],
+	"bugs": {
+		"email": "jbeard4@cs.mcgill.ca",
+		"url": "https://github.com/jbeard4/SCION/issues"
+	},
+	"licenses": [
+		{
+			"type": "LGPLv3",
+			"url": "https://github.com/jbeard4/SCION/blob/master/COPYING.LESSER"
+		}
+	],
+	"repositories": [
+		{
+			"type": "git",
+			"url": "https://github.com/jbeard4/SCION.git"
+		}
+	],
+	"implements": [
+		"http://www.w3.org/TR/scxml/"
+	],
+	"dependencies": {
+		 "requirejs" : "*"
+	},
+	"engines" : { "node" : ">=0.4.7" },
+	"bin": {
+		"scxml-to-json" : "./src/main/bash/util/scxml-to-json.sh",
+		"annotate-scxml-json": "./src/test-scripts/annotate-scxml-json.sh"
+	},
+	"main": "./build/core/node/index"
+}

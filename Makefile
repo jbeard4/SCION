@@ -177,6 +177,27 @@ interpreter : $(built-javascript-core) $(lib-core)
 #amd module
 browser-release : $(browser-release-module)
 
+#TODO: this task needs to be better integrated so that it's part of the build
+node-release :
+	#copy over core
+	mkdir -p build/npm/build
+	cp -r build/core/ build/npm/build/
+
+	#copy over relevant runner scripts
+	mkdir -p build/npm/src/test-scripts/
+	cp src/test-scripts/run-module.sh  build/npm/src/test-scripts/run-module.sh
+	cp src/test-scripts/annotate-scxml-json.sh  build/npm/src/test-scripts/annotate-scxml-json.sh
+
+	#copy over more scripts
+	mkdir -p build/npm/src/main/bash/util/
+	cp src/main/bash/util/scxml-to-json.sh build/npm/src/main/bash/util/
+
+#copy over lib
+cp -r lib/ build/npm/
+
+#copy over package.json
+cp src/npm/package.json build/npm/
+
 #test modules
 tests : $(combined-script-and-annotated-scxml-json-test)
 
@@ -200,6 +221,6 @@ clean :
 	rm -rf $(build)
 
 
-.PHONY : interpreter browser-release tests optimzations test-loader optimization-loaders get-deps clean foo
+.PHONY : interpreter browser-release node-release tests optimzations test-loader optimization-loaders get-deps clean foo
 
 
