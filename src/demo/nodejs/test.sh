@@ -1,3 +1,5 @@
+npm install scion
+
 mkdir build
 
 #1. Get the SCXML document. Nothing to do for now...

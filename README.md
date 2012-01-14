@@ -372,7 +372,7 @@ node.js doesn't have great support for XML, so SCXML source must be converted ah
 scxml-to-json input.scxml | annotate-scxml-json > output.json
 ```
 
-The output json file can then be parse in node.js, and everything works as in the browser environment:
+The output json file can then be parsed in node.js, and everything works as in the browser environment:
 
 ```javascript
 var scion = require('scion'), 
@@ -395,6 +395,8 @@ interpreter.gen(new scion.Event('t'));
 
 console.log(interpreter.getConfiguration());
 ```
+
+See `src/demo/nodejs` for a complete example of this.
 
 ## Use in Rhino 
 
