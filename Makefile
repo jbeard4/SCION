@@ -178,7 +178,7 @@ interpreter : $(built-javascript-core) $(lib-core)
 browser-release : $(browser-release-module)
 
 #TODO: this task needs to be better integrated so that it's part of the build
-node-release :
+node-release : $(built-javascript-core) $(lib-core) $(requirejs-lib-core)
 	#copy over core
 	mkdir -p build/npm/build
 	cp -r build/core/ build/npm/build/
@@ -192,11 +192,11 @@ node-release :
 	mkdir -p build/npm/src/main/bash/util/
 	cp src/main/bash/util/scxml-to-json.sh build/npm/src/main/bash/util/
 
-#copy over lib
-cp -r lib/ build/npm/
+	#copy over lib
+	cp -r lib/ build/npm/
 
-#copy over package.json
-cp src/npm/package.json build/npm/
+	#copy over package.json
+	cp src/npm/package.json build/npm/
 
 #test modules
 tests : $(combined-script-and-annotated-scxml-json-test)
@@ -222,5 +222,3 @@ clean :
 
 
 .PHONY : interpreter browser-release node-release tests optimzations test-loader optimization-loaders get-deps clean foo
-
-
