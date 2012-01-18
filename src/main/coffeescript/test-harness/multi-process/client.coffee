@@ -71,7 +71,11 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 			#start up a new statechart process
 			currentScxmlProcess = child_process.spawn "bash",["#{projectDir}/src/test-scripts/run-module.sh",SCXML_MODULE,currentTest.interpreter]
 
-			unexpectedExitListener = -> console.error "statechart process ended unexpectedly"
+			unexpectedExitListener = ->
+				msg = "statechart process ended unexpectedly"
+				finishTest "error",msg
+				console.error msg
+
 			currentScxmlProcess.on "exit",unexpectedExitListener
 
 			scxmlWL = utils.wrapLine currentScxmlProcess.stdin.write,currentScxmlProcess.stdin
@@ -117,30 +121,44 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 				#set timeout to do it again
 				setTimeout sendRandomEvents,eventDensity
 
-		finishTest = (pass,msg) ->
-			ns = if pass then nextStep else failBack
+		#FIXME: we may want to add better, more explicit error handling (e.g. using errback)
+		finishTest = (returnStatus,msg) ->
+
+			ns = switch returnStatus
+				when "pass" then nextStep
+				when "fail" then failBack
+				when "error" then errBack
 
 			#prevent sending further events
-			if not pass then eventsToSend = []
+			if returnStatus isnt "pass" then eventsToSend = []
 
-			#check memory usage
-			memory.push memoryUtil.getMemory currentScxmlProcess.pid
-			finishTime = new Date()
-
-			pushAggregateStats pass,msg
-
-			#remove the unexpected exit listener
-			currentScxmlProcess.removeListener 'exit',unexpectedExitListener
-
-			#we're done, post results and send signal to fetch next test
-			currentScxmlProcess.on 'exit',->
-				#remove all other event listeners
-				currentScxmlProcess.removeAllListeners()
-				#call next step or failBack
+			if returnStatus is "error"
+				#just call the next step
 				ns()
 
-			#close the pipe, which will terminate the process
-			currentScxmlProcess.stdin.end()
+				finishTime = new Date()
+				pushAggregateStats returnStatus,msg
+			else
+
+				#check memory usage
+				memory.push memoryUtil.getMemory currentScxmlProcess.pid
+
+				finishTime = new Date()
+				pushAggregateStats returnStatus,msg
+
+				#otherwise, child process should still be alive
+				#remove the unexpected exit listener
+				currentScxmlProcess.removeListener 'exit',unexpectedExitListener
+
+				#we're done, post results and send signal to fetch next test
+				currentScxmlProcess.on 'exit',->
+					#remove all other event listeners
+					currentScxmlProcess.removeAllListeners()
+					#call next step or failBack
+					ns()
+
+				#close the pipe, which will terminate the process
+				currentScxmlProcess.stdin.end()
 
 		processClientMessage = (jsonMessage) ->
 			switch jsonMessage.method
@@ -174,7 +192,7 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 						#statechart has executed all events, so wrap up
 						#+1 because we will receive initial configuration as well
 						if receivedConfigurationCounter == (numberOfEventsToSendInPerformanceTestMode+1)
-							finishTest true
+							finishTest "pass"
 					else
 						expectedConfiguration = expectedConfigurations.shift()
 
@@ -185,14 +203,14 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 							console.error "Matched expected configuration."
 
 							#if we're out of tests, then we're done and we report that we succeeded
-							if not expectedConfigurations.length then finishTest true
+							if not expectedConfigurations.length then finishTest "pass"
 								
 								
 						else
 							#test has failed
 							msg = "Did not match expected configuration. Received: #{JSON.stringify(configuration)}. Expected:#{JSON.stringify(expectedConfiguration)}."
 
-							finishTest false,msg
+							finishTest "fail",msg
 
 
 				when "set-timeout"
@@ -214,7 +232,7 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 				eventSet = (k for own k of currentTest.scxmlJson.events)
 				if not eventSet.length
 					console.error "No need to run performance test on statechart that does not have transitions other than default transitions. Posting results as trivial success."
-					postTestResults currentTest.id,true
+					postTestResults currentTest.id,"pass"
 					return
 
 			#TODO: accumulate aggregate results in some data structure so we can post them here
@@ -228,9 +246,14 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 				),
 				(->
 					console.error "Done. Posting results."
-					postTestResults currentTest.id,true),
-				(->),
-				(-> postTestResults currentTest.id,false)
+					postTestResults currentTest.id,"pass"),
+				(->
+					console.error "Done (test errored). Posting results."
+					postTestResults currentTest.id,"error"),
+				(->
+					
+					console.error "Done (test failed). Posting results."
+					postTestResults currentTest.id,"fail")
 			)
 
 		process.stdin.resume()

@@ -163,13 +163,16 @@ define ['test-harness/multi-process/json-tests','util/BufferedStream',"test-harn
 
 			testMap[jsonResults.testId].stats = jsonResults.stats
 
-			if jsonResults.pass
+			if jsonResults.pass is "pass"
 				results.testsPassed.push testMap[jsonResults.testId].test
 			else
-				results.testsFailed.push testMap[jsonResults.testId].test
+				if jsonResults.pass is "fail"
+					results.testsFailed.push testMap[jsonResults.testId].test
+				else
+					results.testsErrored.push testMap[jsonResults.testId].test
 
 				#error message will be in there somewhere. TODO: maybe filter it?
-				console.log jsonResults.stats
+				console.log "Test errored or failed:", jsonResults
 
 				#if stopOnFail is set, then wrap up
 				if stopOnFail
