@@ -1,0 +1,53 @@
+<ns0:scxml xmlns:ns0="http://www.w3.org/2005/07/scxml" profile="ecmascript" version="1.0" name="gen" initial="id17">
+  <ns0:state id="id17" initial="id16">
+    <ns0:state id="id16" initial="id11">
+      <ns0:state id="id11" initial="id4">
+        <ns0:state id="id5">
+          <ns0:transition target="id4" event="N"/>
+        </ns0:state>
+        <ns0:state id="id4">
+          <ns0:transition target="id1" event="Q"/>
+        </ns0:state>
+        <ns0:state id="id2">
+          <ns0:transition target="id17" event="J"/>
+        </ns0:state>
+        <ns0:state id="id7">
+          <ns0:transition target="id15" event="E"/>
+        </ns0:state>
+        <ns0:transition target="id3" event="Z"/>
+      </ns0:state>
+      <ns0:transition target="id10" event="J"/>
+    </ns0:state>
+    <ns0:transition target="id2" event="D"/>
+  </ns0:state>
+  <ns0:state id="id13" initial="id6">
+    <ns0:state id="id9">
+      <ns0:transition target="id8" event="w"/>
+    </ns0:state>
+    <ns0:state id="id6">
+      <ns0:transition target="id9"/>
+    </ns0:state>
+    <ns0:state id="id12" initial="id3">
+      <ns0:state id="id3">
+        <ns0:transition target="id3" event="O"/>
+      </ns0:state>
+      <ns0:state id="id1">
+        <ns0:transition target="id7" event="s"/>
+      </ns0:state>
+      <ns0:transition target="id15" event="j"/>
+    </ns0:state>
+    <ns0:transition target="id2" event="6"/>
+  </ns0:state>
+  <ns0:state id="id15" initial="id14">
+    <ns0:state id="id14" initial="id10">
+      <ns0:state id="id10">
+        <ns0:transition target="id17" event="f"/>
+      </ns0:state>
+      <ns0:transition target="id1" event="-"/>
+    </ns0:state>
+    <ns0:state id="id8">
+      <ns0:transition target="id11"/>
+    </ns0:state>
+    <ns0:transition target="id14" event="&quot;"/>
+  </ns0:state>
+</ns0:scxml>

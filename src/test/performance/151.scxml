@@ -1,0 +1,44 @@
+<ns0:scxml xmlns:ns0="http://www.w3.org/2005/07/scxml" profile="ecmascript" version="1.0" name="gen" initial="id14">
+  <ns0:state id="id7">
+    <ns0:transition target="id12" event="&gt;"/>
+  </ns0:state>
+  <ns0:state id="id3">
+    <ns0:transition target="id13" event="3"/>
+  </ns0:state>
+  <ns0:parallel id="id13">
+    <ns0:state id="id2">
+      <ns0:transition target="id3" event="t"/>
+    </ns0:state>
+    <ns0:state id="id8">
+      <ns0:transition target="id4" event="a"/>
+    </ns0:state>
+    <ns0:state id="id6">
+      <ns0:transition target="id8" event="#"/>
+    </ns0:state>
+    <ns0:state id="id9">
+      <ns0:transition target="id11" event="R"/>
+    </ns0:state>
+    <ns0:state id="id4">
+      <ns0:transition target="id12" event="G"/>
+    </ns0:state>
+    <ns0:transition target="id3" event=";"/>
+  </ns0:parallel>
+  <ns0:state id="id12" initial="id5">
+    <ns0:state id="id5">
+      <ns0:transition target="id4" event="o"/>
+    </ns0:state>
+    <ns0:transition target="id11" event="R"/>
+  </ns0:state>
+  <ns0:state id="id14" initial="id11">
+    <ns0:state id="id10">
+      <ns0:transition target="id13" event="V"/>
+    </ns0:state>
+    <ns0:parallel id="id11">
+      <ns0:state id="id1">
+        <ns0:transition target="id13" event="p"/>
+      </ns0:state>
+      <ns0:transition target="id2" event="Y"/>
+    </ns0:parallel>
+    <ns0:transition target="id2" event="e"/>
+  </ns0:state>
+</ns0:scxml>

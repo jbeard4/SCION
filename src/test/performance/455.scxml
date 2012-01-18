@@ -1,0 +1,126 @@
+<ns0:scxml xmlns:ns0="http://www.w3.org/2005/07/scxml" profile="ecmascript" version="1.0" name="gen" initial="id41">
+  <ns0:parallel id="id39">
+    <ns0:history id="id40" type="deep"/>
+    <ns0:parallel id="id34">
+      <ns0:state id="id14">
+        <ns0:transition target="id37" event="&gt;"/>
+      </ns0:state>
+      <ns0:state id="id23">
+        <ns0:transition target="id37" event="x"/>
+      </ns0:state>
+      <ns0:transition target="id19" event="]"/>
+    </ns0:parallel>
+    <ns0:transition target="id22" event="t"/>
+  </ns0:parallel>
+  <ns0:state id="id42" initial="id37">
+    <ns0:state id="id6">
+      <ns0:transition target="id36" event="R"/>
+    </ns0:state>
+    <ns0:parallel id="id37">
+      <ns0:parallel id="id36">
+        <ns0:state id="id33" initial="id27">
+          <ns0:state id="id15">
+            <ns0:transition target="id23" event="J"/>
+          </ns0:state>
+          <ns0:state id="id27">
+            <ns0:transition target="id4" event="f"/>
+          </ns0:state>
+          <ns0:state id="id28">
+            <ns0:transition target="id38" event="&lt;"/>
+          </ns0:state>
+          <ns0:state id="id12">
+            <ns0:transition target="id13" event="b"/>
+          </ns0:state>
+          <ns0:transition target="id10" event="&gt;"/>
+        </ns0:state>
+        <ns0:parallel id="id35">
+          <ns0:state id="id18">
+            <ns0:transition target="id4" event="t"/>
+          </ns0:state>
+          <ns0:state id="id26">
+            <ns0:transition target="id28" event=":"/>
+          </ns0:state>
+          <ns0:transition target="id16" event=":"/>
+        </ns0:parallel>
+        <ns0:transition target="id23" event="{"/>
+      </ns0:parallel>
+      <ns0:parallel id="id32">
+        <ns0:state id="id9">
+          <ns0:transition target="id39" event="_"/>
+        </ns0:state>
+        <ns0:state id="id8">
+          <ns0:transition target="id22" event="A"/>
+        </ns0:state>
+        <ns0:state id="id17">
+          <ns0:transition target="id8" event="q"/>
+        </ns0:state>
+        <ns0:state id="id25">
+          <ns0:transition target="id36" event="_"/>
+        </ns0:state>
+        <ns0:state id="id5">
+          <ns0:transition target="id39" event="m"/>
+        </ns0:state>
+        <ns0:state id="id24">
+          <ns0:transition target="id5" event="6"/>
+        </ns0:state>
+        <ns0:state id="id4">
+          <ns0:transition target="id22" event="O"/>
+        </ns0:state>
+        <ns0:state id="id3">
+          <ns0:transition target="id19" event="Z"/>
+        </ns0:state>
+        <ns0:state id="id2">
+          <ns0:transition target="id26" event="#"/>
+        </ns0:state>
+        <ns0:parallel id="id31">
+          <ns0:state id="id1">
+            <ns0:transition target="id3" event="t"/>
+          </ns0:state>
+          <ns0:state id="id20">
+            <ns0:transition target="id28" event="g"/>
+          </ns0:state>
+          <ns0:state id="id22">
+            <ns0:transition target="id16" event="S"/>
+          </ns0:state>
+          <ns0:transition target="id38" event="E"/>
+        </ns0:parallel>
+        <ns0:state id="id21">
+          <ns0:transition target="id20" event="l"/>
+        </ns0:state>
+        <ns0:state id="id30">
+          <ns0:transition target="id37" event="&amp;"/>
+        </ns0:state>
+        <ns0:state id="id13">
+          <ns0:transition target="id28" event="6"/>
+        </ns0:state>
+        <ns0:state id="id10">
+          <ns0:transition target="id25" event="2"/>
+        </ns0:state>
+        <ns0:transition target="id31" event="*"/>
+      </ns0:parallel>
+      <ns0:state id="id11">
+        <ns0:transition target="id17" event="a"/>
+      </ns0:state>
+      <ns0:transition target="id35" event="o"/>
+    </ns0:parallel>
+    <ns0:transition target="id27" event="l"/>
+  </ns0:state>
+  <ns0:parallel id="id41">
+    <ns0:parallel id="id38">
+      <ns0:state id="id7">
+        <ns0:transition target="id40" event="A"/>
+      </ns0:state>
+      <ns0:state id="id16">
+        <ns0:transition target="id6" event="&amp;"/>
+      </ns0:state>
+      <ns0:state id="id29">
+        <ns0:transition target="id32" event="R"/>
+      </ns0:state>
+      <ns0:transition target="id21" event="!"/>
+    </ns0:parallel>
+    <ns0:transition target="id8" event="("/>
+  </ns0:parallel>
+  <ns0:state id="id19">
+    <ns0:transition target="id22" event="9"/>
+  </ns0:state>
+</ns0:scxml>
