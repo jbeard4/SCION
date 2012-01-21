@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Jacob Beard
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
-define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
+define ["optimization/initializer","optimization/util","lib/beautify"],(initializer,util,js_beautify)->
 	(scxmlJson,beautify=true,asyncModuleDef=true) ->
 		DEFAULT_EVENT_NAME = "*"
 
@@ -17,7 +17,7 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 
 					if transitionsForEvent.length
 						classStr += 	"""
-								this['#{event.name}'] = function(evaluator){
+								this['#{util.escapeEvent event.name}'] = function(evaluator){
 									var toReturn = []
 									var transitions = #{initializer.arrayToIdentifierListString transitionsForEvent};
 									for(var i = 0,l=transitions.length; i < l; i++){
@@ -27,7 +27,7 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 										}
 									}
 
-									return toReturn.length ? toReturn : #{if state.parent then "instances['#{state.parent.id}']['#{event.name}'](evaluator)" else "null"};
+									return toReturn.length ? toReturn : #{if state.parent then "instances['#{state.parent.id}']['#{util.escapeEvent event.name}'](evaluator)" else "null"};
 								}
 								"""
 
@@ -50,7 +50,7 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 			else
 				#root state
 				for eventName,event of scxmlJson.events
-					classStr += "this['#{event.name}'] = function(){return null;};\n"
+					classStr += "this['#{util.escapeEvent event.name}'] = function(){return null;};\n"
 				classStr += "this['#{DEFAULT_EVENT_NAME}'] = function(){return null;};\n"
 					
 			classStr += """

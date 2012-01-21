@@ -406,6 +406,18 @@ SCION works well on Rhino, but this still needs to be documented.
 
 SCION also supports generating optimized data structures ahead-of-time using static analysis, which may enhance performance at runtime. This feature still needs to be documented.
 
+First convert scxml to JsonMl:
+./src/main/bash/util/scxml-to-json.sh src/test/performance/39.scxml  > ~/tmp/39.scxml.json
+
+Next, annotate sxml-json JSON:
+./src/test-scripts/run-module-node.sh util/annotate-scxml-json ~/tmp/39.scxml.json ~/tmp/39.annotated.scxml.json
+
+Finally, run the optimizer on the annotated scxml-json:
+./src/test-scripts/run-module-node.sh optimization/transition-optimizer ~/tmp/39.annotated.scxml.json [class | state | table] true true > ~/tmp/39.class.js
+optimization [strategy] beautify wrap in amd
+
+TODO: describe how to then use the compiled code.
+
 # SCION Semantics 
 
 SCION takes many ideas from the SCXML standard. In particular, it reuses the syntax of SCXML, but changes some of the semantics.

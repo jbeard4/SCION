@@ -199,7 +199,10 @@ node-release : $(built-javascript-core) $(lib-core) $(requirejs-lib-core)
 	cp src/npm/package.json build/npm/
 
 #test modules
-tests : $(combined-script-and-annotated-scxml-json-test)
+#secondary target tells make to keep the generated scxml-json and annotated-scxml-json files which are generated as intermediate files for the tests target
+.SECONDARY : $(scxml-json-tests) $(annotated-scxml-json-tests)
+
+tests : $(combined-script-and-annotated-scxml-json-test) 
 
 #test-loader	(with/without flattened test modules)
 test-loader : $(loaders)/spartan-loader-for-all-tests.js
@@ -215,7 +218,7 @@ get-deps :
 
 
 foo : 
-	echo $(requirejs-lib-core)
+	echo $(scxml-json-tests)
 
 clean : 
 	rm -rf $(build)

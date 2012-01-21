@@ -176,7 +176,7 @@ define ['test-harness/multi-process/json-tests','util/BufferedStream',"test-harn
 
 				#if stopOnFail is set, then wrap up
 				if stopOnFail
-					console.log "Test #{testId} failed and stopOnFail is set. Wrapping up..."
+					console.log "Test #{jsonResults.testId} failed and stopOnFail is set. Wrapping up..."
 					finish()
 
 			#send next test

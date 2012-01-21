@@ -1,7 +1,7 @@
 # Copyright (C) 2011 Jacob Beard
 # Released under GNU LGPL, read the file 'COPYING' for more information
 
-define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
+define ["optimization/initializer","optimization/util","lib/beautify"],(initializer,util,js_beautify)->
 
 	(scxmlJson,beautify=true,asyncModuleDef=true) ->
 		toReturn = 	"""
@@ -17,7 +17,7 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 
 		for state in scxmlJson.states when state.transitions.length
 			toReturn += 	"""
-								case "#{state.id}":
+								case '#{state.id}':
 								switch(eventName){\n
 					"""
 
@@ -25,7 +25,7 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 				transitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event or transition.event == event.name)
 				if transitionsForEvent.length
 					toReturn += 	"""
-									case "#{event.name}":
+									case '#{util.escapeEvent event.name}':
 										transitions = transitions.concat(#{initializer.arrayToIdentifierListString transitionsForEvent});\n
 										break;
 							"""
@@ -47,7 +47,7 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 			defaultTransitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event)
 			if defaultTransitionsForEvent.length
 				toReturn += 	"""
-							case "#{state.id}":
+							case '#{state.id}':
 								transitions = transitions.concat(#{initializer.arrayToIdentifierListString defaultTransitionsForEvent });
 								break;\n
 						"""
