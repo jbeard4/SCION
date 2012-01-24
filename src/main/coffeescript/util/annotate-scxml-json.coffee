@@ -287,7 +287,7 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 		processedInitial = false
 
 		if attributes?.initial and not processedInitial
-			console.log "generating fake initial node"
+			#console.log "generating fake initial node"
 			#create a fake initial state and process him
 			fakeInitialState = [
 				"initial",
