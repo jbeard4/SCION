@@ -192,7 +192,7 @@
     <ns0:transition target="id170" event="!"/>
   </ns0:state>
   <ns0:state id="id341">
-    <ns0:transition target="id3" event="*"/>
+    <ns0:transition target="id3" event="s"/>
   </ns0:state>
   <ns0:state id="id786">
     <ns0:transition target="id428" event="6"/>
@@ -351,7 +351,7 @@
     <ns0:transition target="id323" event="&gt;"/>
   </ns0:state>
   <ns0:state id="id256">
-    <ns0:transition target="id827" event="*"/>
+    <ns0:transition target="id827" event="s"/>
   </ns0:state>
   <ns0:state id="id834">
     <ns0:transition target="id500" event="D"/>
@@ -375,7 +375,7 @@
     <ns0:transition target="id171" event="K"/>
   </ns0:state>
   <ns0:state id="id153">
-    <ns0:transition target="id58" event="*"/>
+    <ns0:transition target="id58" event="s"/>
   </ns0:state>
   <ns0:state id="id297">
     <ns0:transition target="id882" event=";"/>
@@ -505,7 +505,7 @@
       <ns0:transition target="id103" event="#"/>
     </ns0:state>
     <ns0:state id="id867">
-      <ns0:transition target="id850" event="*"/>
+      <ns0:transition target="id850" event="s"/>
     </ns0:state>
     <ns0:state id="id718">
       <ns0:transition target="id744" event="^"/>
@@ -550,7 +550,7 @@
       <ns0:transition target="id64" event="O"/>
     </ns0:state>
     <ns0:state id="id463">
-      <ns0:transition target="id140" event="*"/>
+      <ns0:transition target="id140" event="s"/>
     </ns0:state>
     <ns0:state id="id208">
       <ns0:transition target="id371" event="h"/>
@@ -656,7 +656,7 @@
         <ns0:transition target="id95" event="\"/>
       </ns0:state>
       <ns0:state id="id724">
-        <ns0:transition target="id285" event="*"/>
+        <ns0:transition target="id285" event="s"/>
       </ns0:state>
       <ns0:state id="id726">
         <ns0:transition target="id525" event="X"/>
@@ -965,7 +965,7 @@
         <ns0:transition target="id112" event="?"/>
       </ns0:state>
       <ns0:state id="id878">
-        <ns0:transition target="id223" event="*"/>
+        <ns0:transition target="id223" event="s"/>
       </ns0:state>
       <ns0:state id="id730">
         <ns0:transition target="id283" event="O"/>
@@ -1043,7 +1043,7 @@
         <ns0:transition target="id863" event="M"/>
       </ns0:state>
       <ns0:state id="id468">
-        <ns0:transition target="id868" event="*"/>
+        <ns0:transition target="id868" event="s"/>
       </ns0:state>
       <ns0:state id="id248">
         <ns0:transition target="id472" event="q"/>
@@ -1421,7 +1421,7 @@
         <ns0:transition target="id369" event="Y"/>
       </ns0:state>
       <ns0:state id="id577">
-        <ns0:transition target="id116" event="*"/>
+        <ns0:transition target="id116" event="s"/>
       </ns0:state>
       <ns0:state id="id529">
         <ns0:transition target="id131" event="."/>
@@ -1475,7 +1475,7 @@
         <ns0:transition target="id402" event="q"/>
       </ns0:state>
       <ns0:state id="id550">
-        <ns0:transition target="id627" event="*"/>
+        <ns0:transition target="id627" event="s"/>
       </ns0:state>
       <ns0:state id="id625">
         <ns0:transition target="id141" event="}"/>
@@ -1595,7 +1595,7 @@
         <ns0:transition target="id831" event="f"/>
       </ns0:state>
       <ns0:state id="id181">
-        <ns0:transition target="id38" event="*"/>
+        <ns0:transition target="id38" event="s"/>
       </ns0:state>
       <ns0:state id="id94">
         <ns0:transition target="id300" event="c"/>
@@ -1790,7 +1790,7 @@
         <ns0:transition target="id713" event="h"/>
       </ns0:state>
       <ns0:state id="id660">
-        <ns0:transition target="id92" event="*"/>
+        <ns0:transition target="id92" event="s"/>
       </ns0:state>
       <ns0:state id="id506">
         <ns0:transition target="id828" event="f"/>
@@ -2142,7 +2142,7 @@
     <ns0:transition target="id782" event="+"/>
   </ns0:state>
   <ns0:state id="id664">
-    <ns0:transition target="id725" event="*"/>
+    <ns0:transition target="id725" event="s"/>
   </ns0:state>
   <ns0:state id="id136">
     <ns0:transition target="id434" event="|"/>

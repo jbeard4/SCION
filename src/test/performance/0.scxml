@@ -12,7 +12,7 @@
     <ns0:transition target="id5" event="/"/>
   </ns0:state>
   <ns0:state id="id2">
-    <ns0:transition target="id3" event="*"/>
+    <ns0:transition target="id3" event="s"/>
   </ns0:state>
   <ns0:state id="id9">
     <ns0:transition target="id5" event="H"/>

@@ -349,13 +349,13 @@
             <ns0:transition target="id77" event="6"/>
           </ns0:state>
           <ns0:state id="id156">
-            <ns0:transition target="id81" event="*"/>
+            <ns0:transition target="id81" event="s"/>
           </ns0:state>
           <ns0:state id="id67">
             <ns0:transition target="id99" event="'"/>
           </ns0:state>
           <ns0:state id="id42">
-            <ns0:transition target="id31" event="*"/>
+            <ns0:transition target="id31" event="s"/>
           </ns0:state>
           <ns0:state id="id64">
             <ns0:transition target="id54" event="B"/>

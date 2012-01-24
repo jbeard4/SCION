@@ -363,10 +363,10 @@
                       <ns0:transition target="id96" event="_"/>
                     </ns0:state>
                     <ns0:state id="id98">
-                      <ns0:transition target="id145" event="*"/>
+                      <ns0:transition target="id145" event="s"/>
                     </ns0:state>
                     <ns0:state id="id132">
-                      <ns0:transition target="id145" event="*"/>
+                      <ns0:transition target="id145" event="s"/>
                     </ns0:state>
                     <ns0:state id="id10">
                       <ns0:transition target="id179" event=","/>
@@ -437,7 +437,7 @@
                     <ns0:transition target="id147" event="."/>
                   </ns0:state>
                   <ns0:state id="id144">
-                    <ns0:transition target="id135" event="*"/>
+                    <ns0:transition target="id135" event="s"/>
                   </ns0:state>
                   <ns0:state id="id104">
                     <ns0:transition target="id12" event=")"/>

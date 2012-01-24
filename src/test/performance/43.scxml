@@ -69,7 +69,7 @@
     <ns0:transition target="id250" event="F"/>
   </ns0:state>
   <ns0:state id="id69">
-    <ns0:transition target="id24" event="*"/>
+    <ns0:transition target="id24" event="s"/>
   </ns0:state>
   <ns0:state id="id36">
     <ns0:transition target="id219" event="v"/>

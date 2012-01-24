@@ -204,7 +204,7 @@
           <ns0:transition target="id281" event="v"/>
         </ns0:state>
         <ns0:state id="id238">
-          <ns0:transition target="id155" event="*"/>
+          <ns0:transition target="id155" event="s"/>
         </ns0:state>
         <ns0:state id="id338" initial="id306">
           <ns0:history id="id339" type="shallow">

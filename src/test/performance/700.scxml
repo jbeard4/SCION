@@ -12,7 +12,7 @@
     <ns0:transition target="id222" event="R"/>
   </ns0:state>
   <ns0:state id="id574">
-    <ns0:transition target="id325" event="*"/>
+    <ns0:transition target="id325" event="s"/>
   </ns0:state>
   <ns0:state id="id207">
     <ns0:transition target="id229" event="f"/>
@@ -529,7 +529,7 @@
             <ns0:transition target="id409" event="%"/>
           </ns0:state>
           <ns0:state id="id449">
-            <ns0:transition target="id638" event="*"/>
+            <ns0:transition target="id638" event="s"/>
           </ns0:state>
           <ns0:state id="id74">
             <ns0:transition target="id625" event="P"/>
@@ -700,7 +700,7 @@
             <ns0:transition target="id499" event="f"/>
           </ns0:state>
           <ns0:state id="id517">
-            <ns0:transition target="id27" event="*"/>
+            <ns0:transition target="id27" event="s"/>
           </ns0:state>
           <ns0:state id="id610">
             <ns0:transition target="id160" event="g"/>
@@ -715,7 +715,7 @@
             <ns0:transition target="id132" event=";"/>
           </ns0:state>
           <ns0:state id="id256">
-            <ns0:transition target="id460" event="*"/>
+            <ns0:transition target="id460" event="s"/>
           </ns0:state>
           <ns0:state id="id360">
             <ns0:transition target="id19" event="J"/>
@@ -1437,7 +1437,7 @@
           <ns0:transition target="id506" event="N"/>
         </ns0:state>
         <ns0:state id="id472">
-          <ns0:transition target="id303" event="*"/>
+          <ns0:transition target="id303" event="s"/>
         </ns0:state>
         <ns0:state id="id423">
           <ns0:transition target="id638" event="o"/>
@@ -1512,7 +1512,7 @@
           <ns0:transition target="id223" event="?"/>
         </ns0:state>
         <ns0:state id="id543">
-          <ns0:transition target="id313" event="*"/>
+          <ns0:transition target="id313" event="s"/>
         </ns0:state>
         <ns0:state id="id340">
           <ns0:transition target="id413" event="{"/>

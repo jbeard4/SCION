@@ -6,7 +6,7 @@
     <ns0:transition target="id50" event="H"/>
   </ns0:state>
   <ns0:state id="id18">
-    <ns0:transition target="id29" event="*"/>
+    <ns0:transition target="id29" event="s"/>
   </ns0:state>
   <ns0:state id="id26">
     <ns0:transition target="id17" event="W"/>

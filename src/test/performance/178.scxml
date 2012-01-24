@@ -463,7 +463,7 @@
       <ns0:state id="id37">
         <ns0:transition target="id66" event="e"/>
       </ns0:state>
-      <ns0:transition target="id168" event="*"/>
+      <ns0:transition target="id168" event="s"/>
     </ns0:state>
     <ns0:state id="id184">
       <ns0:transition target="id184" event="J"/>

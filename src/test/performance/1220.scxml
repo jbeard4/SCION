@@ -64,7 +64,7 @@
                   <ns0:transition target="id133" event="m"/>
                 </ns0:state>
                 <ns0:state id="id77">
-                  <ns0:transition target="id137" event="*"/>
+                  <ns0:transition target="id137" event="s"/>
                 </ns0:state>
                 <ns0:state id="id134" initial="id129">
                   <ns0:history id="id135" type="deep">

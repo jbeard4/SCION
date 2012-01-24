@@ -1321,7 +1321,7 @@
           </ns0:parallel>
           <ns0:transition target="id162" event="y"/>
         </ns0:state>
-        <ns0:transition target="id352" event="*"/>
+        <ns0:transition target="id352" event="s"/>
       </ns0:state>
       <ns0:state id="id207">
         <ns0:transition target="id136" event="x"/>

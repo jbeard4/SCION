@@ -177,7 +177,7 @@
     <ns0:transition target="id364" event="5"/>
   </ns0:state>
   <ns0:state id="id136">
-    <ns0:transition target="id390" event="*"/>
+    <ns0:transition target="id390" event="s"/>
   </ns0:state>
   <ns0:state id="id370">
     <ns0:transition target="id505" event="\"/>
@@ -483,7 +483,7 @@
     <ns0:transition target="id81" event="U"/>
   </ns0:state>
   <ns0:state id="id542">
-    <ns0:transition target="id174" event="*"/>
+    <ns0:transition target="id174" event="s"/>
   </ns0:state>
   <ns0:state id="id312">
     <ns0:transition target="id416" event=";"/>
@@ -591,7 +591,7 @@
     <ns0:transition target="id485" event="&quot;"/>
   </ns0:state>
   <ns0:state id="id204">
-    <ns0:transition target="id295" event="*"/>
+    <ns0:transition target="id295" event="s"/>
   </ns0:state>
   <ns0:state id="id470">
     <ns0:transition target="id118" event="Y"/>
@@ -793,13 +793,13 @@
       <ns0:transition target="id163" event="N"/>
     </ns0:state>
     <ns0:state id="id3">
-      <ns0:transition target="id43" event="*"/>
+      <ns0:transition target="id43" event="s"/>
     </ns0:state>
     <ns0:state id="id371">
       <ns0:transition target="id347" event="l"/>
     </ns0:state>
     <ns0:state id="id561">
-      <ns0:transition target="id160" event="*"/>
+      <ns0:transition target="id160" event="s"/>
     </ns0:state>
     <ns0:state id="id171">
       <ns0:transition target="id355" event="|"/>
@@ -904,7 +904,7 @@
       <ns0:transition target="id368" event=";"/>
     </ns0:state>
     <ns0:state id="id181">
-      <ns0:transition target="id495" event="*"/>
+      <ns0:transition target="id495" event="s"/>
     </ns0:state>
     <ns0:state id="id69">
       <ns0:transition target="id56" event="`"/>
@@ -1419,7 +1419,7 @@
     <ns0:transition target="id405" event="?"/>
   </ns0:state>
   <ns0:state id="id14">
-    <ns0:transition target="id96" event="*"/>
+    <ns0:transition target="id96" event="s"/>
   </ns0:state>
   <ns0:state id="id333">
     <ns0:transition target="id442" event="I"/>

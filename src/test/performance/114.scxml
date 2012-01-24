@@ -3,7 +3,7 @@
     <ns0:transition target="id438" event="v"/>
   </ns0:state>
   <ns0:state id="id536">
-    <ns0:transition target="id41" event="*"/>
+    <ns0:transition target="id41" event="s"/>
   </ns0:state>
   <ns0:state id="id44">
     <ns0:transition target="id68" event="h"/>
@@ -447,7 +447,7 @@
     <ns0:transition target="id195" event="G"/>
   </ns0:state>
   <ns0:state id="id286">
-    <ns0:transition target="id570" event="*"/>
+    <ns0:transition target="id570" event="s"/>
   </ns0:state>
   <ns0:state id="id526">
     <ns0:transition target="id245" event="U"/>
@@ -540,7 +540,7 @@
     <ns0:transition target="id176" event="D"/>
   </ns0:state>
   <ns0:state id="id92">
-    <ns0:transition target="id98" event="*"/>
+    <ns0:transition target="id98" event="s"/>
   </ns0:state>
   <ns0:state id="id521">
     <ns0:transition target="id180" event="l"/>
@@ -1239,7 +1239,7 @@
     <ns0:transition target="id680" event="I"/>
   </ns0:state>
   <ns0:state id="id103">
-    <ns0:transition target="id537" event="*"/>
+    <ns0:transition target="id537" event="s"/>
   </ns0:state>
   <ns0:state id="id335">
     <ns0:transition target="id454" event="y"/>
@@ -1839,7 +1839,7 @@
     <ns0:transition target="id268" event="A"/>
   </ns0:state>
   <ns0:state id="id383">
-    <ns0:transition target="id253" event="*"/>
+    <ns0:transition target="id253" event="s"/>
   </ns0:state>
   <ns0:state id="id498">
     <ns0:transition target="id509" event="-"/>
@@ -2223,7 +2223,7 @@
     <ns0:transition target="id26" event="d"/>
   </ns0:state>
   <ns0:state id="id181">
-    <ns0:transition target="id327" event="*"/>
+    <ns0:transition target="id327" event="s"/>
   </ns0:state>
   <ns0:state id="id159">
     <ns0:transition target="id248" event="W"/>
@@ -2253,7 +2253,7 @@
     <ns0:transition target="id375" event="A"/>
   </ns0:state>
   <ns0:state id="id178">
-    <ns0:transition target="id154" event="*"/>
+    <ns0:transition target="id154" event="s"/>
   </ns0:state>
   <ns0:state id="id685">
     <ns0:transition target="id413" event="c"/>

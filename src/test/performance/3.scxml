@@ -87,6 +87,6 @@
     <ns0:transition target="id25" event="n"/>
   </ns0:state>
   <ns0:state id="id24">
-    <ns0:transition target="id11" event="*"/>
+    <ns0:transition target="id11" event="s"/>
   </ns0:state>
 </ns0:scxml>

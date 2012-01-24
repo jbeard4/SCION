@@ -240,7 +240,7 @@
     <ns0:transition target="id186" event="\"/>
   </ns0:state>
   <ns0:state id="id48">
-    <ns0:transition target="id28" event="*"/>
+    <ns0:transition target="id28" event="s"/>
   </ns0:state>
   <ns0:state id="id439">
     <ns0:transition target="id146" event="$"/>
@@ -363,7 +363,7 @@
     <ns0:transition target="id91" event="N"/>
   </ns0:state>
   <ns0:state id="id443">
-    <ns0:transition target="id494" event="*"/>
+    <ns0:transition target="id494" event="s"/>
   </ns0:state>
   <ns0:state id="id347">
     <ns0:transition target="id290" event="J"/>
@@ -396,7 +396,7 @@
     <ns0:transition target="id589" event="u"/>
   </ns0:state>
   <ns0:state id="id444">
-    <ns0:transition target="id433" event="*"/>
+    <ns0:transition target="id433" event="s"/>
   </ns0:state>
   <ns0:state id="id174">
     <ns0:transition target="id438" event="b"/>
@@ -555,7 +555,7 @@
     <ns0:transition target="id83" event="&gt;"/>
   </ns0:state>
   <ns0:state id="id315">
-    <ns0:transition target="id244" event="*"/>
+    <ns0:transition target="id244" event="s"/>
   </ns0:state>
   <ns0:state id="id558">
     <ns0:transition target="id491" event="C"/>
@@ -1338,7 +1338,7 @@
     <ns0:transition target="id181" event="F"/>
   </ns0:state>
   <ns0:state id="id586">
-    <ns0:transition target="id229" event="*"/>
+    <ns0:transition target="id229" event="s"/>
   </ns0:state>
   <ns0:state id="id537">
     <ns0:transition target="id487" event="A"/>
@@ -1362,7 +1362,7 @@
     <ns0:transition target="id433" event="Y"/>
   </ns0:state>
   <ns0:state id="id103">
-    <ns0:transition target="id449" event="*"/>
+    <ns0:transition target="id449" event="s"/>
   </ns0:state>
   <ns0:state id="id198">
     <ns0:transition target="id379" event="g"/>
@@ -1575,7 +1575,7 @@
     <ns0:transition target="id53" event="S"/>
   </ns0:state>
   <ns0:state id="id364">
-    <ns0:transition target="id132" event="*"/>
+    <ns0:transition target="id132" event="s"/>
   </ns0:state>
   <ns0:state id="id132">
     <ns0:transition target="id436" event="t"/>

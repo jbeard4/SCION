@@ -124,7 +124,7 @@
             <ns0:transition target="id120" event="."/>
           </ns0:state>
           <ns0:state id="id51">
-            <ns0:transition target="id2" event="*"/>
+            <ns0:transition target="id2" event="s"/>
           </ns0:state>
           <ns0:state id="id183">
             <ns0:transition target="id218" event="S"/>
@@ -310,7 +310,7 @@
             <ns0:transition target="id51" event="}"/>
           </ns0:state>
           <ns0:state id="id29">
-            <ns0:transition target="id191" event="*"/>
+            <ns0:transition target="id191" event="s"/>
           </ns0:state>
           <ns0:state id="id156">
             <ns0:transition target="id49" event="I"/>
@@ -376,7 +376,7 @@
         </ns0:state>
         <ns0:state id="id260" initial="id207">
           <ns0:state id="id224">
-            <ns0:transition target="id184" event="*"/>
+            <ns0:transition target="id184" event="s"/>
           </ns0:state>
           <ns0:state id="id20">
             <ns0:transition target="id228" event="."/>
@@ -428,7 +428,7 @@
               <ns0:transition target="id210" event="y"/>
             </ns0:state>
             <ns0:state id="id234">
-              <ns0:transition target="id138" event="*"/>
+              <ns0:transition target="id138" event="s"/>
             </ns0:state>
             <ns0:state id="id249">
               <ns0:transition target="id103" event="0"/>
@@ -565,7 +565,7 @@
             <ns0:transition target="id149" event="p"/>
           </ns0:state>
           <ns0:state id="id247">
-            <ns0:transition target="id61" event="*"/>
+            <ns0:transition target="id61" event="s"/>
           </ns0:state>
           <ns0:transition target="id231" event="H"/>
         </ns0:state>
@@ -596,7 +596,7 @@
         <ns0:transition target="id53" event="v"/>
       </ns0:state>
       <ns0:state id="id90">
-        <ns0:transition target="id119" event="*"/>
+        <ns0:transition target="id119" event="s"/>
       </ns0:state>
       <ns0:parallel id="id264">
         <ns0:state id="id179">

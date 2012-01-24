@@ -1,6 +1,6 @@
 <ns0:scxml xmlns:ns0="http://www.w3.org/2005/07/scxml" profile="ecmascript" version="1.0" name="gen" initial="id89">
   <ns0:state id="id89">
-    <ns0:transition target="id118" event="*"/>
+    <ns0:transition target="id118" event="s"/>
   </ns0:state>
   <ns0:state id="id60">
     <ns0:transition target="id205" event="\"/>
@@ -96,10 +96,10 @@
         <ns0:transition target="id73" event="'"/>
       </ns0:state>
       <ns0:state id="id181">
-        <ns0:transition target="id193" event="*"/>
+        <ns0:transition target="id193" event="s"/>
       </ns0:state>
       <ns0:state id="id110">
-        <ns0:transition target="id35" event="*"/>
+        <ns0:transition target="id35" event="s"/>
       </ns0:state>
       <ns0:state id="id207">
         <ns0:transition target="id185" event="6"/>
@@ -484,7 +484,7 @@
           <ns0:transition target="id4"/>
         </ns0:state>
         <ns0:state id="id33">
-          <ns0:transition target="id120" event="*"/>
+          <ns0:transition target="id120" event="s"/>
         </ns0:state>
         <ns0:state id="id151">
           <ns0:transition target="id111" event="L"/>

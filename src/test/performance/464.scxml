@@ -35,7 +35,7 @@
         <ns0:transition target="id46" event="|"/>
       </ns0:state>
       <ns0:state id="id44">
-        <ns0:transition target="id44" event="*"/>
+        <ns0:transition target="id44" event="s"/>
       </ns0:state>
       <ns0:state id="id63">
         <ns0:transition target="id33"/>

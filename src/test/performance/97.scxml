@@ -435,7 +435,7 @@
     <ns0:transition target="id98" event="%"/>
   </ns0:state>
   <ns0:state id="id306">
-    <ns0:transition target="id479" event="*"/>
+    <ns0:transition target="id479" event="s"/>
   </ns0:state>
   <ns0:state id="id198">
     <ns0:transition target="id443" event="n"/>
@@ -537,7 +537,7 @@
     <ns0:transition target="id114" event="T"/>
   </ns0:state>
   <ns0:state id="id86">
-    <ns0:transition target="id485" event="*"/>
+    <ns0:transition target="id485" event="s"/>
   </ns0:state>
   <ns0:state id="id72">
     <ns0:transition target="id1" event="`"/>
@@ -942,7 +942,7 @@
     <ns0:transition target="id212" event="&amp;"/>
   </ns0:state>
   <ns0:state id="id161">
-    <ns0:transition target="id403" event="*"/>
+    <ns0:transition target="id403" event="s"/>
   </ns0:state>
   <ns0:state id="id160">
     <ns0:transition target="id326" event="N"/>
@@ -1029,7 +1029,7 @@
     <ns0:transition target="id16" event="8"/>
   </ns0:state>
   <ns0:state id="id610">
-    <ns0:transition target="id156" event="*"/>
+    <ns0:transition target="id156" event="s"/>
   </ns0:state>
   <ns0:state id="id458">
     <ns0:transition target="id267" event="m"/>
@@ -1416,7 +1416,7 @@
     <ns0:transition target="id338" event="x"/>
   </ns0:state>
   <ns0:state id="id402">
-    <ns0:transition target="id334" event="*"/>
+    <ns0:transition target="id334" event="s"/>
   </ns0:state>
   <ns0:state id="id100">
     <ns0:transition target="id494" event="["/>
@@ -1566,7 +1566,7 @@
     <ns0:transition target="id403" event="3"/>
   </ns0:state>
   <ns0:state id="id426">
-    <ns0:transition target="id477" event="*"/>
+    <ns0:transition target="id477" event="s"/>
   </ns0:state>
   <ns0:state id="id427">
     <ns0:transition target="id165" event="."/>
@@ -1716,7 +1716,7 @@
     <ns0:transition target="id640" event="K"/>
   </ns0:state>
   <ns0:state id="id131">
-    <ns0:transition target="id422" event="*"/>
+    <ns0:transition target="id422" event="s"/>
   </ns0:state>
   <ns0:state id="id463">
     <ns0:transition target="id187" event="%"/>

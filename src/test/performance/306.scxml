@@ -171,6 +171,6 @@
     <ns0:transition target="id8" event="2"/>
   </ns0:state>
   <ns0:state id="id4">
-    <ns0:transition target="id36" event="*"/>
+    <ns0:transition target="id36" event="s"/>
   </ns0:state>
 </ns0:scxml>

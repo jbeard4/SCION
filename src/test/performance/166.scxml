@@ -170,7 +170,7 @@
         <ns0:transition target="id41" event="0"/>
       </ns0:state>
       <ns0:state id="id8">
-        <ns0:transition target="id16" event="*"/>
+        <ns0:transition target="id16" event="s"/>
       </ns0:state>
       <ns0:state id="id22">
         <ns0:transition target="id49" event="`"/>

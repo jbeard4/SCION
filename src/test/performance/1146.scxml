@@ -325,7 +325,7 @@
                   <ns0:transition target="id337" event="2"/>
                 </ns0:state>
                 <ns0:state id="id326">
-                  <ns0:transition target="id211" event="*"/>
+                  <ns0:transition target="id211" event="s"/>
                 </ns0:state>
                 <ns0:state id="id174">
                   <ns0:transition target="id337" event="g"/>
@@ -1327,7 +1327,7 @@
                   <ns0:transition target="id574" event=")"/>
                 </ns0:state>
                 <ns0:state id="id527">
-                  <ns0:transition target="id210" event="*"/>
+                  <ns0:transition target="id210" event="s"/>
                 </ns0:state>
                 <ns0:state id="id584">
                   <ns0:transition target="id307" event="t"/>
@@ -1456,7 +1456,7 @@
                   <ns0:transition target="id650" event=":"/>
                 </ns0:state>
                 <ns0:state id="id227">
-                  <ns0:transition target="id499" event="*"/>
+                  <ns0:transition target="id499" event="s"/>
                 </ns0:state>
                 <ns0:transition target="id597" event="("/>
               </ns0:state>
@@ -1646,7 +1646,7 @@
                     <ns0:transition target="id597" event="g"/>
                   </ns0:state>
                   <ns0:state id="id620">
-                    <ns0:transition target="id279" event="*"/>
+                    <ns0:transition target="id279" event="s"/>
                   </ns0:state>
                   <ns0:state id="id443">
                     <ns0:transition target="id132" event="C"/>
@@ -1667,7 +1667,7 @@
                     <ns0:transition target="id225" event="7"/>
                   </ns0:state>
                   <ns0:state id="id158">
-                    <ns0:transition target="id605" event="*"/>
+                    <ns0:transition target="id605" event="s"/>
                   </ns0:state>
                   <ns0:state id="id55">
                     <ns0:transition target="id338" event="g"/>

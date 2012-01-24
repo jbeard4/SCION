@@ -1971,7 +1971,7 @@
           <ns0:transition target="id541" event="1"/>
         </ns0:state>
         <ns0:state id="id715">
-          <ns0:transition target="id112" event="*"/>
+          <ns0:transition target="id112" event="s"/>
         </ns0:state>
         <ns0:state id="id163">
           <ns0:transition target="id106" event="V"/>

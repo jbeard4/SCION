@@ -14,7 +14,7 @@
             <ns0:transition target="id5" event="u"/>
           </ns0:state>
           <ns0:state id="id27">
-            <ns0:transition target="id21" event="*"/>
+            <ns0:transition target="id21" event="s"/>
           </ns0:state>
           <ns0:transition target="id4"/>
         </ns0:state>
@@ -26,7 +26,7 @@
             <ns0:transition target="id31"/>
           </ns0:history>
           <ns0:state id="id13">
-            <ns0:transition target="id42" event="*"/>
+            <ns0:transition target="id42" event="s"/>
           </ns0:state>
           <ns0:state id="id31" initial="id24">
             <ns0:state id="id4">

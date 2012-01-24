@@ -1,7 +1,7 @@
 <ns0:scxml xmlns:ns0="http://www.w3.org/2005/07/scxml" profile="ecmascript" version="1.0" name="gen" initial="id75">
   <ns0:state id="id71" initial="id28">
     <ns0:state id="id2">
-      <ns0:transition target="id40" event="*"/>
+      <ns0:transition target="id40" event="s"/>
     </ns0:state>
     <ns0:state id="id47">
       <ns0:transition target="id14" event="o"/>

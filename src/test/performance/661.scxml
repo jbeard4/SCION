@@ -433,7 +433,7 @@
             <ns0:transition target="id394" event="P"/>
           </ns0:state>
           <ns0:state id="id297">
-            <ns0:transition target="id154" event="*"/>
+            <ns0:transition target="id154" event="s"/>
           </ns0:state>
           <ns0:state id="id254">
             <ns0:transition target="id30" event="2"/>

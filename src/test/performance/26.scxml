@@ -420,7 +420,7 @@
     <ns0:transition target="id102" event="="/>
   </ns0:state>
   <ns0:state id="id165">
-    <ns0:transition target="id80" event="*"/>
+    <ns0:transition target="id80" event="s"/>
   </ns0:state>
   <ns0:state id="id94">
     <ns0:transition target="id55" event="3"/>

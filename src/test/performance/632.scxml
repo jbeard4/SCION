@@ -531,7 +531,7 @@
       </ns0:state>
       <ns0:transition target="id181" event="W"/>
     </ns0:state>
-    <ns0:transition target="id61" event="*"/>
+    <ns0:transition target="id61" event="s"/>
   </ns0:parallel>
   <ns0:parallel id="id225">
     <ns0:state id="id159">

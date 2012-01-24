@@ -114,7 +114,7 @@
     <ns0:transition target="id242" event="p"/>
   </ns0:state>
   <ns0:state id="id182">
-    <ns0:transition target="id118" event="*"/>
+    <ns0:transition target="id118" event="s"/>
   </ns0:state>
   <ns0:state id="id154">
     <ns0:transition target="id228" event="("/>

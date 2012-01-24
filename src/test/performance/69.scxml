@@ -312,7 +312,7 @@
     <ns0:transition target="id397" event="Z"/>
   </ns0:state>
   <ns0:state id="id125">
-    <ns0:transition target="id451" event="*"/>
+    <ns0:transition target="id451" event="s"/>
   </ns0:state>
   <ns0:state id="id424">
     <ns0:transition target="id428" event="S"/>
@@ -492,7 +492,7 @@
     <ns0:transition target="id58" event="}"/>
   </ns0:state>
   <ns0:state id="id192">
-    <ns0:transition target="id175" event="*"/>
+    <ns0:transition target="id175" event="s"/>
   </ns0:state>
   <ns0:state id="id465">
     <ns0:transition target="id267" event="f"/>
@@ -903,7 +903,7 @@
     <ns0:transition target="id292" event="4"/>
   </ns0:state>
   <ns0:state id="id67">
-    <ns0:transition target="id370" event="*"/>
+    <ns0:transition target="id370" event="s"/>
   </ns0:state>
   <ns0:state id="id347">
     <ns0:transition target="id337" event="!"/>
@@ -915,7 +915,7 @@
     <ns0:transition target="id188" event="j"/>
   </ns0:state>
   <ns0:state id="id167">
-    <ns0:transition target="id335" event="*"/>
+    <ns0:transition target="id335" event="s"/>
   </ns0:state>
   <ns0:state id="id349">
     <ns0:transition target="id211" event="h"/>
@@ -1320,7 +1320,7 @@
     <ns0:transition target="id295" event="i"/>
   </ns0:state>
   <ns0:state id="id325">
-    <ns0:transition target="id148" event="*"/>
+    <ns0:transition target="id148" event="s"/>
   </ns0:state>
   <ns0:state id="id326">
     <ns0:transition target="id247" event="t"/>
@@ -1362,7 +1362,7 @@
     <ns0:transition target="id18" event="W"/>
   </ns0:state>
   <ns0:state id="id361">
-    <ns0:transition target="id5" event="*"/>
+    <ns0:transition target="id5" event="s"/>
   </ns0:state>
   <ns0:state id="id155">
     <ns0:transition target="id310" event="D"/>
@@ -1404,7 +1404,7 @@
     <ns0:transition target="id212" event="@"/>
   </ns0:state>
   <ns0:state id="id346">
-    <ns0:transition target="id393" event="*"/>
+    <ns0:transition target="id393" event="s"/>
   </ns0:state>
   <ns0:state id="id363">
     <ns0:transition target="id7" event="e"/>

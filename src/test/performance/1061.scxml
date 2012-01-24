@@ -85,7 +85,7 @@
             <ns0:transition target="id14" event="]"/>
           </ns0:state>
           <ns0:state id="id57">
-            <ns0:transition target="id70" event="*"/>
+            <ns0:transition target="id70" event="s"/>
           </ns0:state>
           <ns0:transition target="id60" event=")"/>
         </ns0:parallel>
@@ -195,7 +195,7 @@
                     <ns0:transition target="id82" event="-"/>
                   </ns0:state>
                   <ns0:state id="id38">
-                    <ns0:transition target="id7" event="*"/>
+                    <ns0:transition target="id7" event="s"/>
                   </ns0:state>
                   <ns0:state id="id15">
                     <ns0:transition target="id92" event="2"/>

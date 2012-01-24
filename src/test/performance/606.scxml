@@ -133,7 +133,7 @@
         </ns0:state>
         <ns0:transition target="id59" event="u"/>
       </ns0:state>
-      <ns0:transition target="id59" event="*"/>
+      <ns0:transition target="id59" event="s"/>
     </ns0:state>
     <ns0:transition target="id31" event="J"/>
   </ns0:state>

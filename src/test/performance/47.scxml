@@ -57,7 +57,7 @@
     <ns0:transition target="id135" event="?"/>
   </ns0:state>
   <ns0:state id="id105">
-    <ns0:transition target="id10" event="*"/>
+    <ns0:transition target="id10" event="s"/>
   </ns0:state>
   <ns0:state id="id38">
     <ns0:transition target="id259" event="4"/>

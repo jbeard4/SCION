@@ -42,7 +42,7 @@
     <ns0:transition target="id405" event="g"/>
   </ns0:state>
   <ns0:state id="id429">
-    <ns0:transition target="id63" event="*"/>
+    <ns0:transition target="id63" event="s"/>
   </ns0:state>
   <ns0:state id="id773">
     <ns0:transition target="id346" event="l"/>
@@ -623,7 +623,7 @@
         <ns0:transition target="id371" event="H"/>
       </ns0:state>
       <ns0:state id="id768">
-        <ns0:transition target="id74" event="*"/>
+        <ns0:transition target="id74" event="s"/>
       </ns0:state>
       <ns0:state id="id625">
         <ns0:transition target="id517" event="C"/>
@@ -1627,7 +1627,7 @@
             <ns0:transition target="id550" event="\"/>
           </ns0:state>
           <ns0:state id="id683">
-            <ns0:transition target="id714" event="*"/>
+            <ns0:transition target="id714" event="s"/>
           </ns0:state>
           <ns0:state id="id158">
             <ns0:transition target="id290" event="O"/>
@@ -1645,7 +1645,7 @@
             <ns0:transition target="id591" event="v"/>
           </ns0:state>
           <ns0:state id="id714">
-            <ns0:transition target="id553" event="*"/>
+            <ns0:transition target="id553" event="s"/>
           </ns0:state>
           <ns0:state id="id313">
             <ns0:transition target="id124" event="x"/>
@@ -1870,7 +1870,7 @@
             <ns0:transition target="id202" event="T"/>
           </ns0:state>
           <ns0:state id="id467">
-            <ns0:transition target="id792" event="*"/>
+            <ns0:transition target="id792" event="s"/>
           </ns0:state>
           <ns0:state id="id468">
             <ns0:transition target="id626" event="#"/>
@@ -1966,7 +1966,7 @@
             <ns0:transition target="id166" event="z"/>
           </ns0:state>
           <ns0:state id="id323">
-            <ns0:transition target="id774" event="*"/>
+            <ns0:transition target="id774" event="s"/>
           </ns0:state>
           <ns0:state id="id542">
             <ns0:transition target="id494" event="v"/>

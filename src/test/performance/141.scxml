@@ -315,7 +315,7 @@
     <ns0:transition target="id880" event="j"/>
   </ns0:state>
   <ns0:state id="id226">
-    <ns0:transition target="id355" event="*"/>
+    <ns0:transition target="id355" event="s"/>
   </ns0:state>
   <ns0:state id="id861">
     <ns0:transition target="id156" event="1"/>
@@ -930,7 +930,7 @@
     <ns0:transition target="id312" event="e"/>
   </ns0:state>
   <ns0:state id="id470">
-    <ns0:transition target="id368" event="*"/>
+    <ns0:transition target="id368" event="s"/>
   </ns0:state>
   <ns0:state id="id19">
     <ns0:transition target="id281" event="V"/>
@@ -987,7 +987,7 @@
     <ns0:transition target="id430" event="6"/>
   </ns0:state>
   <ns0:state id="id308">
-    <ns0:transition target="id777" event="*"/>
+    <ns0:transition target="id777" event="s"/>
   </ns0:state>
   <ns0:state id="id463">
     <ns0:transition target="id103" event="H"/>
@@ -1131,7 +1131,7 @@
     <ns0:transition target="id391" event="D"/>
   </ns0:state>
   <ns0:state id="id218">
-    <ns0:transition target="id513" event="*"/>
+    <ns0:transition target="id513" event="s"/>
   </ns0:state>
   <ns0:state id="id293">
     <ns0:transition target="id278" event="V"/>
@@ -2055,7 +2055,7 @@
     <ns0:transition target="id467" event="!"/>
   </ns0:state>
   <ns0:state id="id159">
-    <ns0:transition target="id290" event="*"/>
+    <ns0:transition target="id290" event="s"/>
   </ns0:state>
   <ns0:state id="id160">
     <ns0:transition target="id787" event="t"/>
@@ -2130,7 +2130,7 @@
     <ns0:transition target="id428" event="}"/>
   </ns0:state>
   <ns0:state id="id719">
-    <ns0:transition target="id282" event="*"/>
+    <ns0:transition target="id282" event="s"/>
   </ns0:state>
   <ns0:state id="id423">
     <ns0:transition target="id817" event=";"/>
@@ -2724,7 +2724,7 @@
     <ns0:transition target="id876" event="`"/>
   </ns0:state>
   <ns0:state id="id935">
-    <ns0:transition target="id687" event="*"/>
+    <ns0:transition target="id687" event="s"/>
   </ns0:state>
   <ns0:state id="id947">
     <ns0:transition target="id126" event="9"/>

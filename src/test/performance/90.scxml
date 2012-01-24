@@ -531,7 +531,7 @@
     <ns0:transition target="id520" event="["/>
   </ns0:state>
   <ns0:state id="id366">
-    <ns0:transition target="id468" event="*"/>
+    <ns0:transition target="id468" event="s"/>
   </ns0:state>
   <ns0:state id="id564">
     <ns0:transition target="id547" event="@"/>
@@ -732,7 +732,7 @@
     <ns0:transition target="id251" event="3"/>
   </ns0:state>
   <ns0:state id="id191">
-    <ns0:transition target="id463" event="*"/>
+    <ns0:transition target="id463" event="s"/>
   </ns0:state>
   <ns0:state id="id148">
     <ns0:transition target="id151" event="w"/>
@@ -1023,7 +1023,7 @@
     <ns0:transition target="id350" event="Y"/>
   </ns0:state>
   <ns0:state id="id418">
-    <ns0:transition target="id422" event="*"/>
+    <ns0:transition target="id422" event="s"/>
   </ns0:state>
   <ns0:state id="id419">
     <ns0:transition target="id413" event="&lt;"/>
@@ -1191,7 +1191,7 @@
     <ns0:transition target="id485" event="e"/>
   </ns0:state>
   <ns0:state id="id212">
-    <ns0:transition target="id171" event="*"/>
+    <ns0:transition target="id171" event="s"/>
   </ns0:state>
   <ns0:state id="id317">
     <ns0:transition target="id583" event="1"/>
@@ -1386,7 +1386,7 @@
     <ns0:transition target="id203" event="4"/>
   </ns0:state>
   <ns0:state id="id133">
-    <ns0:transition target="id524" event="*"/>
+    <ns0:transition target="id524" event="s"/>
   </ns0:state>
   <ns0:state id="id132">
     <ns0:transition target="id64" event="8"/>
@@ -1632,7 +1632,7 @@
     <ns0:transition target="id359" event="A"/>
   </ns0:state>
   <ns0:state id="id104">
-    <ns0:transition target="id162" event="*"/>
+    <ns0:transition target="id162" event="s"/>
   </ns0:state>
   <ns0:state id="id85">
     <ns0:transition target="id402" event="K"/>
@@ -1803,7 +1803,7 @@
     <ns0:transition target="id118" event="Z"/>
   </ns0:state>
   <ns0:state id="id127">
-    <ns0:transition target="id268" event="*"/>
+    <ns0:transition target="id268" event="s"/>
   </ns0:state>
   <ns0:state id="id445">
     <ns0:transition target="id263" event="U"/>

@@ -465,7 +465,7 @@
     <ns0:transition target="id141" event="b"/>
   </ns0:state>
   <ns0:state id="id111">
-    <ns0:transition target="id133" event="*"/>
+    <ns0:transition target="id133" event="s"/>
   </ns0:state>
   <ns0:state id="id178">
     <ns0:transition target="id70" event="J"/>

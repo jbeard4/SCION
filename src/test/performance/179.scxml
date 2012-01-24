@@ -160,7 +160,7 @@
       <ns0:transition target="id102" event="q"/>
     </ns0:state>
     <ns0:state id="id189">
-      <ns0:transition target="id69" event="*"/>
+      <ns0:transition target="id69" event="s"/>
     </ns0:state>
     <ns0:state id="id57">
       <ns0:transition target="id109" event="O"/>

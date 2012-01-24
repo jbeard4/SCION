@@ -440,7 +440,7 @@
               <ns0:state id="id170">
                 <ns0:transition target="id111" event="2"/>
               </ns0:state>
-              <ns0:transition target="id150" event="*"/>
+              <ns0:transition target="id150" event="s"/>
             </ns0:state>
             <ns0:state id="id42">
               <ns0:transition target="id51" event="1"/>

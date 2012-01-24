@@ -62,12 +62,12 @@
         <ns0:transition target="id19" event="a"/>
       </ns0:state>
       <ns0:state id="id33">
-        <ns0:transition target="id216" event="*"/>
+        <ns0:transition target="id216" event="s"/>
       </ns0:state>
       <ns0:transition target="id93" event="O"/>
     </ns0:parallel>
     <ns0:state id="id17">
-      <ns0:transition target="id5" event="*"/>
+      <ns0:transition target="id5" event="s"/>
     </ns0:state>
     <ns0:state id="id231">
       <ns0:transition target="id257" event="u"/>

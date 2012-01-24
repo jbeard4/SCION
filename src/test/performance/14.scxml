@@ -1,6 +1,6 @@
 <ns0:scxml xmlns:ns0="http://www.w3.org/2005/07/scxml" profile="ecmascript" version="1.0" name="gen" initial="id78">
   <ns0:state id="id48">
-    <ns0:transition target="id10" event="*"/>
+    <ns0:transition target="id10" event="s"/>
   </ns0:state>
   <ns0:state id="id47">
     <ns0:transition target="id40" event="O"/>

@@ -1,1 +1,12 @@
-{events:[]}
+{
+	"initialConfiguration" : ["id62"],
+	"events" : [
+		{
+			"event" : { "name" : "I" },
+			"nextConfiguration" : ["id11"]
+		}	
+	]
+}
+
+
+

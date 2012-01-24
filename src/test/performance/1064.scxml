@@ -82,7 +82,7 @@
               </ns0:state>
               <ns0:transition target="id8" event="L"/>
             </ns0:state>
-            <ns0:transition target="id65" event="*"/>
+            <ns0:transition target="id65" event="s"/>
           </ns0:state>
           <ns0:state id="id71">
             <ns0:transition target="id47" event="/"/>

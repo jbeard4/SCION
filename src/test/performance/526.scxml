@@ -360,7 +360,7 @@
           <ns0:transition target="id383" event="e"/>
         </ns0:state>
         <ns0:state id="id412">
-          <ns0:transition target="id271" event="*"/>
+          <ns0:transition target="id271" event="s"/>
         </ns0:state>
         <ns0:state id="id315">
           <ns0:transition target="id420" event="B"/>
@@ -501,7 +501,7 @@
           <ns0:transition target="id141" event="d"/>
         </ns0:state>
         <ns0:state id="id46">
-          <ns0:transition target="id38" event="*"/>
+          <ns0:transition target="id38" event="s"/>
         </ns0:state>
         <ns0:state id="id442">
           <ns0:transition target="id360" event="_"/>
@@ -777,7 +777,7 @@
           <ns0:transition target="id425" event="0"/>
         </ns0:state>
         <ns0:state id="id497">
-          <ns0:transition target="id498" event="*"/>
+          <ns0:transition target="id498" event="s"/>
         </ns0:state>
         <ns0:state id="id147">
           <ns0:transition target="id512" event="B"/>
@@ -804,7 +804,7 @@
           <ns0:transition target="id36" event="q"/>
         </ns0:state>
         <ns0:state id="id194">
-          <ns0:transition target="id323" event="*"/>
+          <ns0:transition target="id323" event="s"/>
         </ns0:state>
         <ns0:state id="id211">
           <ns0:transition target="id439" event="j"/>
@@ -877,7 +877,7 @@
             <ns0:transition target="id397" event="@"/>
           </ns0:state>
           <ns0:state id="id101">
-            <ns0:transition target="id129" event="*"/>
+            <ns0:transition target="id129" event="s"/>
           </ns0:state>
           <ns0:state id="id266">
             <ns0:transition target="id118" event="n"/>
@@ -1398,7 +1398,7 @@
           <ns0:transition target="id508" event="R"/>
         </ns0:state>
         <ns0:state id="id387">
-          <ns0:transition target="id502" event="*"/>
+          <ns0:transition target="id502" event="s"/>
         </ns0:state>
         <ns0:state id="id5">
           <ns0:transition target="id52" event="u"/>

@@ -15,7 +15,7 @@
           <ns0:transition target="id11" event="j"/>
         </ns0:state>
         <ns0:state id="id6">
-          <ns0:transition target="id7" event="*"/>
+          <ns0:transition target="id7" event="s"/>
         </ns0:state>
         <ns0:state id="id3">
           <ns0:transition target="id11" event="@"/>

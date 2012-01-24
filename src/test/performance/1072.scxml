@@ -445,7 +445,7 @@
                   <ns0:transition target="id35" event="q"/>
                 </ns0:state>
                 <ns0:state id="id36">
-                  <ns0:transition target="id135" event="*"/>
+                  <ns0:transition target="id135" event="s"/>
                 </ns0:state>
                 <ns0:state id="id141">
                   <ns0:transition target="id166" event="/"/>

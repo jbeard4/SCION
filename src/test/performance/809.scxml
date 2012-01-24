@@ -739,7 +739,7 @@
                 <ns0:transition target="id349" event="Q"/>
               </ns0:state>
               <ns0:state id="id206">
-                <ns0:transition target="id23" event="*"/>
+                <ns0:transition target="id23" event="s"/>
               </ns0:state>
               <ns0:state id="id52">
                 <ns0:transition target="id36" event="."/>

@@ -654,7 +654,7 @@
     <ns0:transition target="id160" event=")"/>
   </ns0:state>
   <ns0:state id="id177">
-    <ns0:transition target="id198" event="*"/>
+    <ns0:transition target="id198" event="s"/>
   </ns0:state>
   <ns0:state id="id24">
     <ns0:transition target="id62" event="R"/>

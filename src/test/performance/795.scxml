@@ -803,7 +803,7 @@
               <ns0:transition target="id61" event="M"/>
             </ns0:state>
             <ns0:state id="id52">
-              <ns0:transition target="id176" event="*"/>
+              <ns0:transition target="id176" event="s"/>
             </ns0:state>
             <ns0:state id="id163">
               <ns0:transition target="id52" event="L"/>

@@ -120,6 +120,6 @@
     <ns0:transition target="id13" event="r"/>
   </ns0:state>
   <ns0:state id="id11">
-    <ns0:transition target="id2" event="*"/>
+    <ns0:transition target="id2" event="s"/>
   </ns0:state>
 </ns0:scxml>

@@ -106,7 +106,7 @@
       <ns0:transition target="id4" event="B"/>
     </ns0:state>
     <ns0:state id="id30">
-      <ns0:transition target="id52" event="*"/>
+      <ns0:transition target="id52" event="s"/>
     </ns0:state>
     <ns0:state id="id17">
       <ns0:transition target="id33" event="u"/>

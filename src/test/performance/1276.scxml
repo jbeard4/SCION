@@ -22,7 +22,7 @@
                   <ns0:transition target="id497" event="w"/>
                 </ns0:state>
                 <ns0:state id="id71">
-                  <ns0:transition target="id87" event="*"/>
+                  <ns0:transition target="id87" event="s"/>
                 </ns0:state>
                 <ns0:state id="id425">
                   <ns0:transition target="id146" event=":"/>
@@ -61,7 +61,7 @@
                   <ns0:transition target="id301" event="d"/>
                 </ns0:state>
                 <ns0:state id="id373">
-                  <ns0:transition target="id167" event="*"/>
+                  <ns0:transition target="id167" event="s"/>
                 </ns0:state>
                 <ns0:state id="id32">
                   <ns0:transition target="id298" event="y"/>
@@ -230,7 +230,7 @@
                     <ns0:transition target="id275" event="S"/>
                   </ns0:state>
                   <ns0:state id="id12">
-                    <ns0:transition target="id252" event="*"/>
+                    <ns0:transition target="id252" event="s"/>
                   </ns0:state>
                   <ns0:state id="id279">
                     <ns0:transition target="id245" event="L"/>
@@ -1160,7 +1160,7 @@
               <ns0:transition target="id133" event="k"/>
             </ns0:state>
             <ns0:state id="id498">
-              <ns0:transition target="id63" event="*"/>
+              <ns0:transition target="id63" event="s"/>
             </ns0:state>
             <ns0:state id="id504">
               <ns0:transition target="id33" event="V"/>
@@ -1223,7 +1223,7 @@
               <ns0:transition target="id162" event="["/>
             </ns0:state>
             <ns0:state id="id261">
-              <ns0:transition target="id530" event="*"/>
+              <ns0:transition target="id530" event="s"/>
             </ns0:state>
             <ns0:state id="id481">
               <ns0:transition target="id174" event="h"/>

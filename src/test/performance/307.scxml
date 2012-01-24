@@ -66,7 +66,7 @@
         <ns0:state id="id29">
           <ns0:transition target="id16" event=")"/>
         </ns0:state>
-        <ns0:transition target="id50" event="*"/>
+        <ns0:transition target="id50" event="s"/>
       </ns0:state>
       <ns0:state id="id9">
         <ns0:transition target="id5" event="p"/>

@@ -93,7 +93,7 @@
     <ns0:transition target="id132" event="z"/>
   </ns0:state>
   <ns0:state id="id502">
-    <ns0:transition target="id454" event="*"/>
+    <ns0:transition target="id454" event="s"/>
   </ns0:state>
   <ns0:state id="id32">
     <ns0:transition target="id340" event="6"/>
@@ -672,7 +672,7 @@
     <ns0:transition target="id667" event="["/>
   </ns0:state>
   <ns0:state id="id167">
-    <ns0:transition target="id542" event="*"/>
+    <ns0:transition target="id542" event="s"/>
   </ns0:state>
   <ns0:state id="id166">
     <ns0:transition target="id494" event="K"/>
@@ -1209,7 +1209,7 @@
     <ns0:transition target="id66" event="j"/>
   </ns0:state>
   <ns0:state id="id240">
-    <ns0:transition target="id332" event="*"/>
+    <ns0:transition target="id332" event="s"/>
   </ns0:state>
   <ns0:state id="id384">
     <ns0:transition target="id649" event="H"/>
@@ -1422,7 +1422,7 @@
     <ns0:transition target="id9" event="P"/>
   </ns0:state>
   <ns0:state id="id344">
-    <ns0:transition target="id584" event="*"/>
+    <ns0:transition target="id584" event="s"/>
   </ns0:state>
   <ns0:state id="id299">
     <ns0:transition target="id673" event="L"/>
@@ -1605,7 +1605,7 @@
     <ns0:transition target="id282" event="x"/>
   </ns0:state>
   <ns0:state id="id589">
-    <ns0:transition target="id636" event="*"/>
+    <ns0:transition target="id636" event="s"/>
   </ns0:state>
   <ns0:state id="id632">
     <ns0:transition target="id54" event="b"/>
@@ -1617,7 +1617,7 @@
     <ns0:transition target="id17" event="i"/>
   </ns0:state>
   <ns0:state id="id354">
-    <ns0:transition target="id706" event="*"/>
+    <ns0:transition target="id706" event="s"/>
   </ns0:state>
   <ns0:state id="id529">
     <ns0:transition target="id50" event="y"/>
@@ -2106,7 +2106,7 @@
     <ns0:transition target="id300" event="!"/>
   </ns0:state>
   <ns0:state id="id695">
-    <ns0:transition target="id372" event="*"/>
+    <ns0:transition target="id372" event="s"/>
   </ns0:state>
   <ns0:state id="id685">
     <ns0:transition target="id616" event="V"/>

@@ -60,7 +60,7 @@
             <ns0:parallel id="id192">
               <ns0:history id="id193" type="deep"/>
               <ns0:state id="id164">
-                <ns0:transition target="id37" event="*"/>
+                <ns0:transition target="id37" event="s"/>
               </ns0:state>
               <ns0:state id="id39">
                 <ns0:transition target="id76" event="j"/>

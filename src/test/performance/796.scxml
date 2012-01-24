@@ -500,7 +500,7 @@
               <ns0:transition target="id300" event="4"/>
             </ns0:state>
             <ns0:state id="id192">
-              <ns0:transition target="id185" event="*"/>
+              <ns0:transition target="id185" event="s"/>
             </ns0:state>
             <ns0:state id="id204">
               <ns0:transition target="id149" event="F"/>

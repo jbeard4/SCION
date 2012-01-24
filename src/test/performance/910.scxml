@@ -145,7 +145,7 @@
                   <ns0:transition target="id55" event="h"/>
                 </ns0:state>
                 <ns0:state id="id49">
-                  <ns0:transition target="id33" event="*"/>
+                  <ns0:transition target="id33" event="s"/>
                 </ns0:state>
                 <ns0:state id="id21">
                   <ns0:transition target="id10" event="W"/>

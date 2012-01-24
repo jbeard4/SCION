@@ -201,13 +201,13 @@
     <ns0:transition target="id85" event="0"/>
   </ns0:state>
   <ns0:state id="id78">
-    <ns0:transition target="id102" event="*"/>
+    <ns0:transition target="id102" event="s"/>
   </ns0:state>
   <ns0:state id="id12">
     <ns0:transition target="id34" event="M"/>
   </ns0:state>
   <ns0:state id="id72">
-    <ns0:transition target="id117" event="*"/>
+    <ns0:transition target="id117" event="s"/>
   </ns0:state>
   <ns0:state id="id120">
     <ns0:transition target="id15" event="v"/>

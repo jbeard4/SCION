@@ -48,7 +48,7 @@
                 <ns0:transition target="id19" event="B"/>
               </ns0:state>
               <ns0:state id="id20">
-                <ns0:transition target="id14" event="*"/>
+                <ns0:transition target="id14" event="s"/>
               </ns0:state>
               <ns0:state id="id29">
                 <ns0:transition target="id46" event="M"/>

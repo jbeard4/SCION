@@ -147,7 +147,7 @@
         <ns0:transition target="id104" event="W"/>
       </ns0:parallel>
       <ns0:state id="id24">
-        <ns0:transition target="id170" event="*"/>
+        <ns0:transition target="id170" event="s"/>
       </ns0:state>
       <ns0:state id="id147">
         <ns0:transition target="id161" event="B"/>
