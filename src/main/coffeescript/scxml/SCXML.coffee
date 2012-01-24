@@ -325,7 +325,6 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 				for t in @opts.transitionSelector state,eventNames,e
 					enabledTransitions.add t
 
-			if @opts.printTrace then logger.trace("allTransitionsForEachState",allTransitionsForEachState)
 			priorityEnabledTransitions = @_selectPriorityEnabledTransitions enabledTransitions
 			if @opts.printTrace then logger.trace("priorityEnabledTransitions",priorityEnabledTransitions)
 			return priorityEnabledTransitions
