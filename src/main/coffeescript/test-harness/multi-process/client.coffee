@@ -16,6 +16,8 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 		performanceTestMode = performanceTestMode == 'true'
 		numberOfEventsToSendInPerformanceTestMode = parseInt numberOfEventsToSendInPerformanceTestMode
 
+		STUCK_TIMEOUT = 2000		#2s timeout
+
 		console.error "Starting client. Received args eventDensity #{eventDensity}, projectDir #{projectDir}, numberOfIterationsPerTest #{numberOfIterationsPerTest}."
 
 		wl = utils.wrapLine process.stdout.write,process.stdout
@@ -30,6 +32,7 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 		initializationTime = null
 		finishTime = null
 		unexpectedExitListener = null
+		timeoutHandle = null
 
 		#state variables for each individual test, specifically pertaining to performance testing
 		randomEventCounter = null
@@ -41,12 +44,13 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 		nextStep = errBack = failBack = null
 		eventSet = null
 
-		postTestResults = (testId,passOrFail) ->
+		postTestResults = (testId,passOrFail,errcode) ->
 			wl(
 				method:"post-results"
 				testId:testId
 				stats:aggregateStats
 				pass : passOrFail	#aggregate pass or fail
+				errcode : errcode or ""
 			)
 
 		pushAggregateStats = (passOrFail,msg) ->
@@ -93,6 +97,8 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 				console.error 'from statechart stderr',s
 
 			scxmlWL currentTest
+
+			timeoutHandle = setTimeout timeoutHandler,STUCK_TIMEOUT
 				
 		sendEvents = ->
 			e = eventsToSend.shift()
@@ -122,7 +128,8 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 				setTimeout sendRandomEvents,eventDensity
 
 		#FIXME: we may want to add better, more explicit error handling (e.g. using errback)
-		finishTest = (returnStatus,msg) ->
+		finishTest = (returnStatus,msg,errcode) ->
+			clearTimeout timeoutHandle
 
 			ns = switch returnStatus
 				when "pass" then nextStep
@@ -134,7 +141,7 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 
 			if returnStatus is "error"
 				#just call the next step
-				ns()
+				ns(errcode)
 
 				finishTime = new Date()
 				pushAggregateStats returnStatus,msg
@@ -155,12 +162,20 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 					#remove all other event listeners
 					currentScxmlProcess.removeAllListeners()
 					#call next step or failBack
-					ns()
+					ns(errcode)
 
 				#close the pipe, which will terminate the process
 				currentScxmlProcess.stdin.end()
 
+		timeoutHandler = ->
+			currentScxmlProcess.kill()
+			finishTest "error","Test timed out.","timeout"
+
 		processClientMessage = (jsonMessage) ->
+			#restart timeout timer
+			clearTimeout timeoutHandle
+			timeoutHandle = setTimeout timeoutHandler,STUCK_TIMEOUT
+
 			switch jsonMessage.method
 				when "statechart-initialized"
 					console.error 'statechart in child process initialized.'
@@ -174,6 +189,7 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 						#reset the random event counter
 						randomEventCounter = 0
 						sendRandomEvents()
+	
 					else
 						console.error "sending events #{JSON.stringify eventsToSend}"
 						eventsToSend = currentTest.testScript.events.slice()
@@ -247,13 +263,13 @@ define ["util/BufferedStream","util/set/ArraySet","util/utils",'util/memory','sc
 				(->
 					console.error "Done. Posting results."
 					postTestResults currentTest.id,"pass"),
-				(->
+				((errcode) ->
 					console.error "Done (test errored). Posting results."
-					postTestResults currentTest.id,"error"),
-				(->
+					postTestResults currentTest.id,"error",errcode),
+				((errcode) ->
 					
 					console.error "Done (test failed). Posting results."
-					postTestResults currentTest.id,"fail")
+					postTestResults currentTest.id,"fail",errcode)
 			)
 
 		process.stdin.resume()

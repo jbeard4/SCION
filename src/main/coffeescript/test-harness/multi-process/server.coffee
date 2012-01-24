@@ -175,7 +175,8 @@ define ['test-harness/multi-process/json-tests','util/BufferedStream',"test-harn
 				console.log "Test errored or failed:", jsonResults
 
 				#if stopOnFail is set, then wrap up
-				if stopOnFail
+				#also, ignore timeout errors
+				if stopOnFail and jsonResults.errcode isnt "timeout"
 					console.log "Test #{jsonResults.testId} failed and stopOnFail is set. Wrapping up..."
 					finish()
 
