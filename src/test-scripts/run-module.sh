@@ -12,4 +12,4 @@ shift
 interpreter=${1-node}
 shift
 
-$interpreter $basedir/lib/js/r.js -lib $basedir/build/core/runner.js $basedir/build/core $moduleToRun $*
+$interpreter $basedir/lib/js/r.js -lib $basedir/target/core/runner.js $basedir/target/core $moduleToRun $*

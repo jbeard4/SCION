@@ -6,7 +6,7 @@ abspath=`cd $dn; pwd`
 t=`dirname $abspath`
 basedir=`dirname $t`
 
-if [ ! -e $basedir/build/tests/loaders/spartan-loader-for-all-tests.js ]; then
+if [ ! -e $basedir/target/tests/loaders/spartan-loader-for-all-tests.js ]; then
 	echo Please run \"make interpreter tests test-loader\" before running this file.
 	exit 1
 fi;
@@ -15,5 +15,5 @@ fi;
 #TODO: make this more helpful
 
 for interpreter in $@;
-do $interpreter $basedir/lib/js/r.js -lib $basedir/build/core/runner.js $basedir/build/core test-harness/basic-test-harness
+do $interpreter $basedir/lib/js/r.js -lib $basedir/target/core/runner.js $basedir/target/core test-harness/basic-test-harness
 done;

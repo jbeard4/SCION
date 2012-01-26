@@ -2,5 +2,5 @@
 *.sw*
 Session.vim
 target
-build
+target
 node_modules

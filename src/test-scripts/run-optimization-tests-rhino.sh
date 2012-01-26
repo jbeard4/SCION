@@ -8,7 +8,7 @@ abspath=`cd $dn; pwd`
 t=`dirname $abspath`
 basedir=`dirname $t`
 
-if [ ! -e $basedir/build/tests/loaders/spartan-loader-for-all-tests.js ]; then
+if [ ! -e $basedir/target/tests/loaders/spartan-loader-for-all-tests.js ]; then
 	echo Please run \"make interpreter tests test-loader\" before running this file.
 	exit 1
 fi;
@@ -34,4 +34,4 @@ fi
 
 
 $JAVA_CMD $JAVA_OPTS $EXTRA_JVM_ARGUMENTS -classpath $JAVA_CLASSPATH $JAVA_MAIN \
--debug $basedir/lib/js/r.js -lib $basedir/build/core/runner.js $basedir/build/core test-harness/rhino-optimization-harness
+-debug $basedir/lib/js/r.js -lib $basedir/target/core/runner.js $basedir/target/core test-harness/rhino-optimization-harness
