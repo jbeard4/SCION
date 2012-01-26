@@ -16,7 +16,7 @@ numTests=0
 for testModule in $tests; do
 	numTests=$(($numTests+1))
 
-	truncatedTestModule=`echo $testModule | sed -e "s/.*build\///"`
+	truncatedTestModule=`echo $testModule | sed -e "s/.*target\///"`
 	truncatedTestModuleWithoutExtension=${truncatedTestModule%.*}
 
 	echo -ne "\t'$truncatedTestModuleWithoutExtension'" >> $target

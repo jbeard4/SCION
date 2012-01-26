@@ -4,7 +4,7 @@ coffescript-dir = src/main/coffeescript
 test-dir = src/test
 
 #targets
-build = build
+build = target
 core = $(build)/core
 release = $(build)/release
 browser-release = $(release)/browser
@@ -180,23 +180,23 @@ browser-release : $(browser-release-module)
 #TODO: this task needs to be better integrated so that it's part of the build
 node-release : $(built-javascript-core) $(lib-core) $(requirejs-lib-core)
 	#copy over core
-	mkdir -p build/npm/build
-	cp -r build/core/ build/npm/build/
+	mkdir -p target/npm/target
+	cp -r target/core/ target/npm/target/
 
 	#copy over relevant runner scripts
-	mkdir -p build/npm/src/test-scripts/
-	cp src/test-scripts/run-module.sh  build/npm/src/test-scripts/run-module.sh
-	cp src/test-scripts/annotate-scxml-json.sh  build/npm/src/test-scripts/annotate-scxml-json.sh
+	mkdir -p target/npm/src/test-scripts/
+	cp src/test-scripts/run-module.sh  target/npm/src/test-scripts/run-module.sh
+	cp src/test-scripts/annotate-scxml-json.sh  target/npm/src/test-scripts/annotate-scxml-json.sh
 
 	#copy over more scripts
-	mkdir -p build/npm/src/main/bash/util/
-	cp src/main/bash/util/scxml-to-json.sh build/npm/src/main/bash/util/
+	mkdir -p target/npm/src/main/bash/util/
+	cp src/main/bash/util/scxml-to-json.sh target/npm/src/main/bash/util/
 
 	#copy over lib
-	cp -r lib/ build/npm/
+	cp -r lib/ target/npm/
 
 	#copy over package.json
-	cp src/npm/package.json build/npm/
+	cp src/npm/package.json target/npm/
 
 #test modules
 tests : $(combined-script-and-annotated-scxml-json-test)

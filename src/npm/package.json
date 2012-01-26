@@ -40,5 +40,5 @@
 		"scxml-to-json" : "./src/main/bash/util/scxml-to-json.sh",
 		"annotate-scxml-json": "./src/test-scripts/annotate-scxml-json.sh"
 	},
-	"main": "./build/core/node/index"
+	"main": "./target/core/node/index"
 }
