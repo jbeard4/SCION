@@ -82,6 +82,44 @@ $(browser-release-module) : $(built-javascript-core) $(lib-core) $(requirejs-lib
 	mkdir -p $(dir $@)
 	r.js -o name=util/browser/parseOnLoad out=$(browser-release-module) baseUrl=$(core)
 
+#npm package stuff
+
+#copy over core
+npm = $(build)/npm
+npm-core = $(npm)/$(core)
+npm-core-target = $(patsubst $(core)/%,$(npm-core)/%,$(built-javascript-core) $(lib-core) $(requirejs-lib-core))
+
+$(npm-core)/% : $(core)/%
+	mkdir -p $(dir $@)
+	cp $< $@
+
+#copy over relevant runner scripts
+npm-src-scripts = src/test-scripts/run-module.sh src/test-scripts/annotate-scxml-json.sh src/main/bash/util/scxml-to-json.sh
+npm-src-scripts-target = $(patsubst %.sh,$(npm)/%.sh,$(npm-src-scripts))
+
+$(npm)/%.sh : %.sh
+	mkdir -p $(dir $@)
+	cp $< $@
+
+#copy stuff to the root of the directory
+npm-package-json-src = src/npm/package.json
+npm-package-json-target = $(npm)/package.json
+
+$(npm-package-json-target) : $(npm-package-json-src)
+	mkdir -p $(dir $@)
+	cp $< $@
+
+#copy over lib 
+#FIXME: lib should go over as-is in core, and get mapped using require.confg in runner.js
+#cp -r lib/ target/npm/
+lib-src-all = $(shell find lib/* -type f)
+npm-lib = $(npm)/lib
+npm-lib-target = $(patsubst lib/%,$(npm-lib)/%,$(lib-src-all))
+
+$(npm-lib)/% : lib/%
+	mkdir -p $(dir $@)
+	cp $< $@
+
 #generate tests
 scxml-test-src = $(shell find $(test-dir) -name "*.scxml")
 json-test-src = $(patsubst %.scxml,%.json,$(scxml-test-src))
@@ -177,26 +215,8 @@ interpreter : $(built-javascript-core) $(lib-core)
 #amd module
 browser-release : $(browser-release-module)
 
-#TODO: this task needs to be better integrated so that it's part of the build
-node-release : $(built-javascript-core) $(lib-core) $(requirejs-lib-core)
-	#copy over core
-	mkdir -p target/npm/target
-	cp -r target/core/ target/npm/target/
-
-	#copy over relevant runner scripts
-	mkdir -p target/npm/src/test-scripts/
-	cp src/test-scripts/run-module.sh  target/npm/src/test-scripts/run-module.sh
-	cp src/test-scripts/annotate-scxml-json.sh  target/npm/src/test-scripts/annotate-scxml-json.sh
-
-	#copy over more scripts
-	mkdir -p target/npm/src/main/bash/util/
-	cp src/main/bash/util/scxml-to-json.sh target/npm/src/main/bash/util/
-
-	#copy over lib
-	cp -r lib/ target/npm/
-
-	#copy over package.json
-	cp src/npm/package.json target/npm/
+#npm package
+npm-package : $(npm-core-target) $(npm-src-scripts-target) $(npm-package-json-target) $(npm-lib-target)
 
 #test modules
 tests : $(combined-script-and-annotated-scxml-json-test)
@@ -215,10 +235,10 @@ get-deps :
 
 
 foo : 
-	echo $(requirejs-lib-core)
+	echo $(npm-src-scripts-target)
 
 clean : 
 	rm -rf $(build)
 
 
-.PHONY : interpreter browser-release node-release tests optimzations test-loader optimization-loaders get-deps clean foo
+.PHONY : interpreter browser-release npm-package tests optimzations test-loader optimization-loaders get-deps clean foo
