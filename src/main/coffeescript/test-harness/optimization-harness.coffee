@@ -1,5 +1,16 @@
-# Copyright (C) 2011 Jacob Beard
-# Released under GNU LGPL, read the file 'COPYING' for more information
+#   Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
 
 define ["scxml/json2model","scxml/json2extra-model", "test-harness/harness", "scxml/async-for","util/set/ArraySet","util/set/BitVector","util/set/BooleanArray","util/set/ObjectSet", "tests/loaders/spartan-loader-for-all-tests", "tests/loaders/class-transition-lookup-optimization-loader", "tests/loaders/switch-transition-lookup-optimization-loader", "tests/loaders/table-transition-lookup-optimization-loader","scxml/model","scxml/extra-model","scxml/default-transition-selector"],(json2model,json2ExtraModel,harness,asyncForEach,ArraySet,BitVectorInitializer,BooleanArrayInitializer,ObjectSetInitializer,testTuples,classTransitionOpts,switchTransitionOpts,tableTransitionOpts,m,extraModel,defaultTransitionSelector) ->
 

@@ -419,11 +419,9 @@ SCION has been thoroughly tested in recent versions of Chromium, Firefox, and Op
 
 # License 
 
-Some modules, tests, and demos are derived from scxml-js. These are licensed under the Apache 2 software license.
-
 Libraries included in lib/ are published under their respective licenses.
 
-Everything else is licensed under the LGPLv3.
+Everything else is licensed under the Apache License, version 2.0.
 
 # Support
 

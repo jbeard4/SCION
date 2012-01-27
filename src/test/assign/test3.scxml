@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright (C) 2011 Jacob Beard
-Released under GNU LGPL, read the file 'COPYING' for more information
+   Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
 -->
 <!--
      This test demonstrates the way the memory model semantics interact with transition order and concurrency semantics. Here, transitions originating from c1 and b1 will be taken in the same small-step, however i will not be updated until the end of that small step. The transitions actions are evaluated in document order, though, so the outcome is deterministic, so the assignment action on the transition originating from c1 will win. 
