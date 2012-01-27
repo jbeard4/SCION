@@ -1,6 +1,6 @@
 {
 	"name": "scion",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "StateCharts Interpretation and Optimization eNgine (SCION) is an implementation of Statecharts targeting JavaScript environments.",
 	"keywords": [
 		"scxml",
@@ -19,8 +19,8 @@
 	},
 	"licenses": [
 		{
-			"type": "LGPLv3",
-			"url": "https://github.com/jbeard4/SCION/blob/master/COPYING.LESSER"
+			"type": "Apache-2.0",
+			"url": "https://github.com/jbeard4/SCION/blob/master/LICENSE.txt"
 		}
 	],
 	"repositories": [
