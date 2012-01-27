@@ -2,5 +2,7 @@
 *.sw*
 Session.vim
 target
-target
 node_modules
+build
+src/demo/node-repl/build/
+src/demo/nodejs/build/
