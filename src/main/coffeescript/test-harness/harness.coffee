@@ -109,7 +109,11 @@ define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for","logge
 				#TODO: other optimizations go here
 				#this is safe because js does not throw array out of bounds exceptions. 
 				#instead gives "undefined", so default args kick in in the SCXML constructor
-				interpreter = new SimpleInterpreter test.model,setTimeout,clearTimeout,test.optimizations
+				opt = test.optimizations
+				opt.setTimeout = setTimeout
+				opt.clearTimeout = clearTimeout
+
+				interpreter = new SimpleInterpreter test.model,opt
 
 				events = test.testScript.events.slice()
 

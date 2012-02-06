@@ -56,13 +56,13 @@ This is to test the use of the In() predicate.
 			<!-- tests for success -->
 			<state id="f1">
 				<transition event="t6" target="g1" cond="In('a2')">
-					<send event="gen1"/>
+					<raise event="gen1"/>
 				</transition>
 			</state>
 
 			<state id="g1">
 				<transition event="t7" target="h1" cond="In('b2')">
-					<send event="gen2"/>
+					<raise event="gen2"/>
 				</transition>
 			</state>
 
@@ -72,7 +72,7 @@ This is to test the use of the In() predicate.
 
 			<state id="i1">
 				<transition event="t9" target="j1" cond="In('d2')">
-					<send event="gen3"/>
+					<raise event="gen3"/>
 				</transition>
 			</state>
 
