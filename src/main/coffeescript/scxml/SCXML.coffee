@@ -217,7 +217,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 
 		_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
 			switch action.type
-				when "send"
+				when "raise"
 					if @opts.printTrace then logger.trace "sending event",action.event,"with content",action.contentexpr
 					data = if action.contentexpr then @_eval action,datamodelForNextStep,eventSet else null
 
@@ -229,6 +229,25 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 				when "log"
 					log = @_eval action,datamodelForNextStep,eventSet
 					if @opts.printTrace then logger.info(log)	#the one place where we use straight logger.info
+				when "send"
+					#FIXME: if send is not defined
+					#we should provide a simple send handler which gets setup by default, and can be overridden.
+					#this is what node- and browser-specific classes should do... is setup default delayed send
+					data = if action.contentexpr then @_eval(action,datamodelForNextStep,eventSet) else null
+					if @_send then @_send(
+						action.target,
+						{
+							name : action.event
+							data : data	#TODO: handle namelist,content,params
+						},
+						this,
+						{
+							delay : action.delay
+							sendId : action.id
+						}
+					)
+				when "cancel"
+					if @_cancel then @_cancel action.sendid
 
 		_eval : (action,datamodelForNextStep,eventSet,allowWrite) ->
 			#get the scripting interface
@@ -405,62 +424,67 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 				logger.trace "transition LCAs are orthogonal?",isOrthogonal
 			return isOrthogonal
 
-
 	class SimpleInterpreter extends SCXMLInterpreter
 
-		constructor: (model,@setTimeout,@clearTimeout,opts) ->
-			super model,opts
-			
-		_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
-			if action.type is "send" and action.delay
-				if @setTimeout
-					if @opts.printTrace then logger.trace "sending event",action.event,"with content",action.contentexpr,"after delay",action.delay
-					data = if action.contentexpr then @_eval(action,datamodelForNextStep,eventSet) else null
+		constructor: (model,opts) ->
 
-					callback = => @gen new Event(action.event,data)
-					timeoutId = @setTimeout callback,action.delay
+			#set up send and cancel
+			#these may be passed in as options if, e.g., we 're using an external communication layer
+			#these are the defaults if an external communication layer is not being used.
+			@_send = opts.send or (target,event,caller,options) ->
+				if @opts.setTimeout
+					if @opts.printTrace then logger.trace "sending event",event.name,"with content",event.data,"after delay",options.delay
 
-					if action.id
-						@_timeoutMap[action.id] = timeoutId
+					callback = => @gen event
+						
+					timeoutId = @opts.setTimeout callback,options.delay
+
+					if options.sendid
+						@_timeoutMap[options.sendid] = timeoutId
 				else
 					throw new Error("setTimeout function not set")
 
-			else if action.type is "cancel"
-				if @clearTimeout
-					if action.sendid of @_timeoutMap
-						if @opts.printTrace then logger.trace "cancelling ",action.id," with timeout id ",@_timeoutMap[action.id]
-						@clearTimeout @_timeoutMap[action.id]
+			@_cancel = opts.canel or (sendid) ->
+				if @opts.clearTimeout
+					if sendid of @_timeoutMap
+						if @opts.printTrace then logger.trace "cancelling ",sendid," with timeout id ",@_timeoutMap[sendid]
+						@opts.clearTimeout @_timeoutMap[sendid]
 				else
 					throw new Error("clearTimeout function not set")
-			else
-				super action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue
 
+			super model,opts
+			
 		#External Event Communication: Asynchronous
 		gen: (e) ->
 			#pass it straight through	
-			if @opts.printTrace then logger.trace("received event " + e)
+			if @opts.printTrace then logger.trace("received event ", e)
 			@_performBigStep(e)
 
 	class BrowserInterpreter extends SimpleInterpreter
 		constructor : (model,opts={}) ->
-			#need to wrap setTimeout and clearTimeout, otherwise complains
-			setTimeout = (callback,timeout) -> window.setTimeout callback,timeout
-			clearTimeout = (timeoutId) -> window.clearTimeout timeoutId
 
 			#defaults
 			setupDefaultOpts opts
 
-			super model,setTimeout,clearTimeout,opts
+			#need to wrap setTimeout and clearTimeout, otherwise complains
+			opts.setTimeout ?= (callback,timeout) -> window.setTimeout callback,timeout
+			opts.clearTimeout ?= (timeoutId) -> window.clearTimeout timeoutId
+
+			super model,opts
 
 	class NodeInterpreter extends SimpleInterpreter
 		constructor : (model,opts={}) ->
 
+
 			#defaults
 			setupDefaultOpts opts
 
-			super model,setTimeout,clearTimeout,opts
+			opts.setTimeout = setTimeout
+			opts.clearTimeout = clearTimeout
 
-	SCXMLInterpreter:SCXMLInterpreter
+			super model,opts
+
 	SimpleInterpreter:SimpleInterpreter
 	BrowserInterpreter:BrowserInterpreter
 	NodeInterpreter:NodeInterpreter
+	SCXMLInterpreter:SCXMLInterpreter

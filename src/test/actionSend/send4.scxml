@@ -34,7 +34,7 @@
 
 	<state id="b">
 		<onentry>
-			<send event="s"/>
+			<raise event="s"/>
 		</onentry>
 
 		<transition target="c" event="s"/>

@@ -207,15 +207,17 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 				"location" : attributes.location
 				"expr" : attributes.expr
 
+			when "raise"
+				"type" : "raise"
+				"contentexpr" : attributes.contentexpr
+				"event" : attributes.event
+
 			when "invoke"
 				#TODO
-				throw new Exception("#{tagName} not yet supported")
+				throw new Error("Element #{tagName} not yet supported")
 			when "finalize"
 				#TODO
-				throw new Exception("#{tagName} not yet supported")
-			when "raise"
-				#TODO
-				throw new Exception("#{tagName} not yet supported")
+				throw new Error("Element #{tagName} not yet supported")
 
 	transformDatamodel = (node,ancestors,genDepth,genAncestors,genDescendants,genLCA) ->
 		[tagName,attributes,children] = deconstructNode node,true

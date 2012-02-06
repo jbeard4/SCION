@@ -29,7 +29,7 @@
 
 	<state id="a">
 		<transition target="b1" event="t">
-			<send event="s"/>
+			<raise event="s"/>
 		</transition>
 	</state>
 
