@@ -53,8 +53,7 @@ define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for","logge
 			sendEvent = ->
 				try
 					logger.info "sending event",e["event"]["name"]
-					interpreter.gen(new Event(e["event"]["name"]))
-					nextConfiguration = interpreter.getConfiguration()
+					nextConfiguration = interpreter.gen(new Event(e["event"]["name"]))
 					expectedNextConfiguration = new Set(e["nextConfiguration"])
 
 				catch err
@@ -119,8 +118,7 @@ define ["scxml/event","scxml/SCXML","util/set/ArraySet","scxml/async-for","logge
 
 				logger.info "starting interpreter"
 
-				interpreter.start()
-				initialConfiguration = interpreter.getConfiguration()
+				initialConfiguration = interpreter.start()
 
 				logger.trace "initial configuration",initialConfiguration
 
