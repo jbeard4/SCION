@@ -6,10 +6,10 @@ A Statecharts interpreter/compiler library targeting JavaScript environments.
 2\.  [Use in the Browser](#useinthebrowser)  
 2.1\.  [Quickstart](#quickstart)  
 2.2\.  [More Control](#morecontrol)  
-2.3\.  [Advanced usage](#advancedusage)  
+2.3\.  [Advanced Examples](#advancedexamples)  
 3\.  [Use in node.js](#useinnode.js)  
 3.1\.  [Installation](#installation)  
-3.2\.  [Usage](#usage)  
+3.2\.  [Example](#example)  
 4\.  [Use in Rhino](#useinrhino)  
 5\.  [Ahead-of-time Optimization using Static Analysis](#aheadoftimeoptimizationusingstaticanalysis)  
 6\.  [SCION Semantics](#scionsemantics)  
@@ -375,9 +375,9 @@ Here is an example. An SCXML document is downloaded with XMLHttpRequest and init
 
 See this demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop2.xhtml).
 
-<a name="advancedusage"></a>
+<a name="advancedexamples"></a>
 
-### 2.3\. Advanced usage 
+### 2.3\. Advanced Examples 
 
 Drag and drop is a simple example of UI behaviour. Statecharts are most valuable for describing user interfaces that involve a more complex notion of state.
 
@@ -397,9 +397,9 @@ It is described in detail in the source code of the page.
 npm install -g scion
 ```
 
-<a name="usage"></a>
+<a name="example"></a>
 
-### 3.2\. Usage 
+### 3.2\. Example 
 
 node.js doesn't have great support for XML, so SCXML source must be converted ahead-of-time to annotated JSON. SCION ships with command-line tools to facilitate this. `scxml-to-json`  converts SCXML documents to JSON in the JsonML format, and `annotate-scxml-json` converts the JsonML document to a format more suitable for interpretation at runtime.
 
