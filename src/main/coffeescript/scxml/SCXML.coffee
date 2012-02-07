@@ -230,17 +230,13 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 					log = @_eval action,datamodelForNextStep,eventSet
 					if @opts.printTrace then logger.info(log)	#the one place where we use straight logger.info
 				when "send"
-					#FIXME: if send is not defined
-					#we should provide a simple send handler which gets setup by default, and can be overridden.
-					#this is what node- and browser-specific classes should do... is setup default delayed send
 					data = if action.contentexpr then @_eval(action,datamodelForNextStep,eventSet) else null
 					if @_send then @_send(
-						action.target,
 						{
+							target : action.target
 							name : action.event
 							data : data	#TODO: handle namelist,content,params
 						},
-						this,
 						{
 							delay : action.delay
 							sendId : action.id
@@ -431,7 +427,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 			#set up send and cancel
 			#these may be passed in as options if, e.g., we 're using an external communication layer
 			#these are the defaults if an external communication layer is not being used.
-			@_send = opts.send or (target,event,caller,options) ->
+			@_send = opts.send or (event,options) ->
 				if @opts.setTimeout
 					if @opts.printTrace then logger.trace "sending event",event.name,"with content",event.data,"after delay",options.delay
 
@@ -444,7 +440,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 				else
 					throw new Error("setTimeout function not set")
 
-			@_cancel = opts.canel or (sendid) ->
+			@_cancel = opts.cancel or (sendid) ->
 				if @opts.clearTimeout
 					if sendid of @_timeoutMap
 						if @opts.printTrace then logger.trace "cancelling ",sendid," with timeout id ",@_timeoutMap[sendid]
