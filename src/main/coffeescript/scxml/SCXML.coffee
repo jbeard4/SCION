@@ -98,6 +98,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 				if v then @_datamodel[k] = eval(v)
 
 			@_performBigStep()
+			return @getConfiguration()
 
 		getConfiguration: -> new @opts.StateIdSet(s.id for s in @_configuration.iter())
 
@@ -458,6 +459,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 			#pass it straight through	
 			if @opts.printTrace then logger.trace("received event ", e)
 			@_performBigStep(e)
+			return @getConfiguration()
 
 	class BrowserInterpreter extends SimpleInterpreter
 		constructor : (model,opts={}) ->
