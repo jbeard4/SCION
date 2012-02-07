@@ -352,7 +352,7 @@ Here is an example. An SCXML document is downloaded with XMLHttpRequest and init
 
 See this demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop2.xhtml).
 
-### Advanced usage 
+### Advanced Examples 
 
 Drag and drop is a simple example of UI behaviour. Statecharts are most valuable for describing user interfaces that involve a more complex notion of state.
 
@@ -368,7 +368,7 @@ It is described in detail in the source code of the page.
 npm install -g scion
 ```
 
-### Usage 
+### Example 
 
 node.js doesn't have great support for XML, so SCXML source must be converted ahead-of-time to annotated JSON. SCION ships with command-line tools to facilitate this. `scxml-to-json`  converts SCXML documents to JSON in the JsonML format, and `annotate-scxml-json` converts the JsonML document to a format more suitable for interpretation at runtime.
 
