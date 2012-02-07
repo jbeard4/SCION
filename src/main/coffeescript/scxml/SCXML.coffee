@@ -231,11 +231,14 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 					if @opts.printTrace then logger.info(log)	#the one place where we use straight logger.info
 				when "send"
 					data = if action.contentexpr then @_eval(action,datamodelForNextStep,eventSet) else null
+					#TODO: handle namelist,content,params
+					#TODO: deep copy
 					if @_send then @_send(
 						{
 							target : action.target
 							name : action.event
-							data : data	#TODO: handle namelist,content,params
+							data : data
+							origin : @opts.origin
 						},
 						{
 							delay : action.delay
