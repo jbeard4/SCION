@@ -73,8 +73,14 @@ define ["scxml/model"],(model) ->
 						action.evaluate = makeEvaluationFn action.expr,true
 
 					when "send"
-						if action.contentexpr
-							action.evaluate = makeEvaluationFn action.contentexpr,true
+
+						for attributeName in ['contentexpr', 'eventexpr', 'targetexpr', 'typeexpr', 'delayexpr']
+							if action[attributeName]
+								action[attributeName] = { evaluate : makeEvaluationFn action[attributeName],true }
+
+						for param in action.params
+							if param.expr
+								param.expr = { evaluate : makeEvaluationFn param.expr,true }
 					when "log"
 						action.evaluate = makeEvaluationFn action.expr,true
 
