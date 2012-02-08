@@ -456,6 +456,9 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 			
 		#External Event Communication: Asynchronous
 		gen: (e) ->
+			if not e?.name
+				throw new Error "gen must be passed an event object."
+
 			#pass it straight through	
 			if @opts.printTrace then logger.trace("received event ", e)
 			@_performBigStep(e)

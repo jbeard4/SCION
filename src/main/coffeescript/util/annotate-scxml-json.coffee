@@ -105,10 +105,10 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 				source = idToStateMap[transition.source]
 				targets = (idToStateMap[target] for target in transition.targets)
 				if not source
-					console.debug transition
+					#console.debug transition
 					new Error "source missing"
 				else if not targets.length
-					console.debug transition
+					#console.debug transition
 					new Error "target missing"
 				
 				transition.lca = getLCA(source,targets[0])
@@ -249,7 +249,7 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 		#generate id if necessary
 		id = attributes?.id or genId tagName
 
-		console.warn "Processing #{tagName} node with id '#{id}'"
+		#console.warn "Processing #{tagName} node with id '#{id}'"
 		#console.warn "ancestors",ancestors
 
 		kind = switch tagName
@@ -350,7 +350,7 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 			hasInitialAttribute = attributes?.initial
 
 			generateFakeInitialState = (targetId) ->
-				console.log "generating fake initial node"
+				#console.log "generating fake initial node"
 				#create a fake initial state and process him
 				fakeInitialState = [
 					"initial",
