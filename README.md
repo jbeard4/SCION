@@ -433,6 +433,8 @@ console.log(interpreter.getConfiguration());
 
 See `src/demo/nodejs` for a complete example of this.
 
+Also see the [SCION node.js API reference](https://github.com/jbeard4/SCION/wiki/nodejs-api).
+
 <a name="useinrhino"></a>
 
 ## 4\. Use in Rhino 
