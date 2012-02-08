@@ -241,4 +241,5 @@ clean :
 	rm -rf $(build)
 
 
+.SECONDARY : $(scxml-json-tests) $(annotated-scxml-json-tests)
 .PHONY : interpreter browser-release npm-package tests optimzations test-loader optimization-loaders get-deps clean foo

@@ -1,4 +1,20 @@
 ###
+   Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+###
+
+###
 This file transforms an SCXML document converted to JsonML so that it is easier for a JavaScript-based SCXML interpreter to parse and interpret.
 ###
 
@@ -287,24 +303,14 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 		nextAncestors = ancestors.concat state.id	#we are copying ancestors twice. may be more efficient way?
 
 		processedInitial = false
+		firstStateChild = null
 
-		if attributes?.initial and not processedInitial
-			console.log "generating fake initial node"
-			#create a fake initial state and process him
-			fakeInitialState = [
-				"initial",
-				[
-					"transition",
-					{
-						target : attributes.initial
-					}
-				]
-			]
-
-			child = transformStateNode fakeInitialState,nextAncestors,genDepth,genAncestors,genDescendants,genLCA
-			state.initial = child.id 	#attributes?.initial
+		processInitialState = (initialState) ->
+			child = transformStateNode initialState,nextAncestors,genDepth,genAncestors,genDescendants,genLCA
+			state.initial =  child.id
 			stateChildren.push child
 			processedInitial = true
+
 
 		for child in children when isArray child	#they should all be tuples. too bad this is expensive.
 			[childTagName,childAttributes,childChildren] = deconstructNode child,true
@@ -318,10 +324,9 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 					(onExitChildren.push transformActionNode actionNode for actionNode in childChildren)
 				when "initial"
 					if not processedInitial
-						child = transformStateNode child,nextAncestors,genDepth,genAncestors,genDescendants,genLCA
-						state.initial =  child.id 	#attributes?.initial
-											#TODO: move initial state logic in here and out of XSL
-						stateChildren.push child
+						processInitialState child
+					else
+						throw new Error("Encountered duplicate initial states in state #{state.id}")
 				when "history"
 					child = transformStateNode child,nextAncestors,genDepth,genAncestors,genDescendants,genLCA
 					state.history = child.id
@@ -330,7 +335,41 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 					transformDatamodel child,nextAncestors,genDepth,genAncestors,genDescendants,genLCA
 				else
 					if childTagName in STATES_THAT_CAN_BE_CHILDREN	#another filter
-						stateChildren.push transformStateNode child,nextAncestors,genDepth,genAncestors,genDescendants,genLCA
+						transformedStateNode = transformStateNode child,nextAncestors,genDepth,genAncestors,genDescendants,genLCA
+						if firstStateChild is null
+							#this is used to set default initial state, if initial state is not specified
+							firstStateChild = transformedStateNode
+
+						stateChildren.push transformedStateNode
+
+		#console.error state.id,firstStateChild,processedInitial
+
+		#handle initial
+		#FIXME: handle initial state for parallel states
+		if not processedInitial and tagName isnt "parallel"
+			hasInitialAttribute = attributes?.initial
+
+			generateFakeInitialState = (targetId) ->
+				console.log "generating fake initial node"
+				#create a fake initial state and process him
+				fakeInitialState = [
+					"initial",
+					[
+						"transition",
+						{
+							target : targetId
+						}
+					]
+				]
+
+				processInitialState fakeInitialState
+
+			if hasInitialAttribute
+				generateFakeInitialState attributes.initial
+			else
+				if firstStateChild	#if this exists, he is composite
+					generateFakeInitialState firstStateChild.id
+
 
 		#set up these properties
 		state.onexit = onExitChildren
