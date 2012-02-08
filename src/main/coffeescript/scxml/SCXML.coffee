@@ -215,14 +215,33 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 			#if selectedTransitions is empty, we have reached a stable state, and the big-step will stop, otherwise will continue -> Maximality: Take-Many
 			return selectedTransitions
 
-
 		_evaluateAction: (action,eventSet,datamodelForNextStep,eventsToAddToInnerQueue) ->
+
+			_constructEventData = =>
+				data = {}
+
+				#namelist
+				if action.namelist
+					for name in action.namelist
+						data[name] = @_datamodel[name]
+
+				#params
+				for param in action.params
+					data[param.name] =
+						if param.expr then @_eval param.expr,datamodelForNextStep,eventSet
+						else if param.location then @_datamodel[param.location]
+						else ""
+					
+				#content
+				data['content'] = action.content
+
+				return data
+
 			switch action.type
 				when "raise"
 					if @opts.printTrace then logger.trace "sending event",action.event,"with content",action.contentexpr
-					data = if action.contentexpr then @_eval action,datamodelForNextStep,eventSet else null
 
-					eventsToAddToInnerQueue.add new Event action.event,data
+					eventsToAddToInnerQueue.add new Event action.event
 				when "assign"
 					datamodelForNextStep[action.location] = @_eval action,datamodelForNextStep,eventSet
 				when "script"
@@ -231,19 +250,21 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 					log = @_eval action,datamodelForNextStep,eventSet
 					if @opts.printTrace then logger.info(log)	#the one place where we use straight logger.info
 				when "send"
-					data = if action.contentexpr then @_eval(action,datamodelForNextStep,eventSet) else null
+					#data = if action.contentexpr then @_eval(action,datamodelForNextStep,eventSet) else null
 					#TODO: handle namelist,content,params
 					#TODO: deep copy
+					console.log action
 					if @_send then @_send(
 						{
-							target : action.target
-							name : action.event
-							data : data
+							target : if action.targetexpr then @_eval action.targetexpr,datamodelForNextStep,eventSet else action.target
+							name : if action.eventexpr then @_eval action.eventexpr,datamodelForNextStep,eventSet else action.event
+							data : _constructEventData()
 							origin : @opts.origin
+							type : if action.typeexpr then @_eval action.typeexpr,datamodelForNextStep,eventSet else action.sendType
 						},
 						{
-							delay : action.delay
-							sendId : action.id
+							delay : if action.delayexpr then @_eval action.delayexpr,datamodelForNextStep,eventSet else action.delay
+							sendId : if action.idlocation then @_datamodel[action.idlocation] else action.id
 						}
 					)
 				when "cancel"
@@ -432,6 +453,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 			#these may be passed in as options if, e.g., we 're using an external communication layer
 			#these are the defaults if an external communication layer is not being used.
 			@_send = opts.send or (event,options) ->
+				console.log event,options
 				if @opts.setTimeout
 					if @opts.printTrace then logger.trace "sending event",event.name,"with content",event.data,"after delay",options.delay
 

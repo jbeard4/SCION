@@ -180,6 +180,11 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 		
 		return transition
 
+	processParam = (param) ->
+		[tagName,attributes,children] = deconstructNode param
+		{ name : attributes.name, expr : attributes.expr, location: attributes.location }
+		
+
 	transformActionNode  = (node) ->
 		[tagName,attributes,children] = deconstructNode node
 
@@ -209,10 +214,21 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 
 			when "send"
 				"type" : "send",
+				"sendType" : attributes.type
 				"delay" : attributes.delay
 				"id" : attributes.id
-				"contentexpr" : attributes.contentexpr
 				"event" : attributes.event
+				"target" : attributes.target
+				"idlocation" : attributes.idlocation
+				#data
+				"namelist" : attributes?.namelist?.trim().split(new RegExp " +")
+				"params" : (processParam child for child in children when child[0] is "param")
+				"content" : (deconstructNode(child)[2][0] for child in children when child[0] is "content")[0]
+				#exprs
+				"eventexpr" : attributes.eventexpr
+				"targetexpr" : attributes.targetexpr
+				"typeexpr" : attributes.typeexpr
+				"delayexpr" : attributes.delayexpr
 
 			when "cancel"
 				"type" : "cancel",
@@ -225,7 +241,6 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 
 			when "raise"
 				"type" : "raise"
-				"contentexpr" : attributes.contentexpr
 				"event" : attributes.event
 
 			when "invoke"
