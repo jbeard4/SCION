@@ -402,6 +402,8 @@ console.log(interpreter.getConfiguration());
 
 See `src/demo/nodejs` for a complete example of this.
 
+Also see the [SCION node.js API reference](https://github.com/jbeard4/SCION/wiki/nodejs-api).
+
 ## Use in Rhino 
 
 SCION works well on Rhino, but this still needs to be documented.
