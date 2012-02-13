@@ -446,6 +446,8 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 
 	class SimpleInterpreter extends SCXMLInterpreter
 
+		_isStepping : false
+
 		constructor: (model,opts) ->
 
 			#set up send and cancel
@@ -476,12 +478,21 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 			
 		#External Event Communication: Asynchronous
 		gen: (e) ->
+			if @opts.printTrace then logger.trace("received event ", e)
+
 			if not e?.name
 				throw new Error "gen must be passed an event object."
 
+			if @_isStepping
+				throw new Error "gen called before previous call to gen could complete. if executed in single-threaded environment, this means it was called recursively, which is illegal, as it would break SCION step semantics."
+
+			@_isStepping = true
+
 			#pass it straight through	
-			if @opts.printTrace then logger.trace("received event ", e)
 			@_performBigStep(e)
+
+			@_isStepping  = false
+
 			return @getConfiguration()
 
 	class BrowserInterpreter extends SimpleInterpreter
