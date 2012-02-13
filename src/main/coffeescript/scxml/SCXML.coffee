@@ -248,12 +248,11 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 					@_eval action,datamodelForNextStep,eventSet,true
 				when "log"
 					log = @_eval action,datamodelForNextStep,eventSet
-					if @opts.printTrace then logger.info(log)	#the one place where we use straight logger.info
+					logger.info(log)	#the one place where we use straight logger.info
 				when "send"
 					#data = if action.contentexpr then @_eval(action,datamodelForNextStep,eventSet) else null
 					#TODO: handle namelist,content,params
 					#TODO: deep copy
-					console.log action
 					if @_send then @_send(
 						{
 							target : if action.targetexpr then @_eval action.targetexpr,datamodelForNextStep,eventSet else action.target
@@ -453,7 +452,6 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 			#these may be passed in as options if, e.g., we 're using an external communication layer
 			#these are the defaults if an external communication layer is not being used.
 			@_send = opts.send or (event,options) ->
-				console.log event,options
 				if @opts.setTimeout
 					if @opts.printTrace then logger.trace "sending event",event.name,"with content",event.data,"after delay",options.delay
 
