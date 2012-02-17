@@ -243,7 +243,8 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 
 					eventsToAddToInnerQueue.add new Event action.event
 				when "assign"
-					datamodelForNextStep[action.location] = @_eval action,datamodelForNextStep,eventSet
+					#FIXME: parameterize this so that it can assign to datamodel for next step
+					@_datamodel[action.location] = @_eval action,datamodelForNextStep,eventSet
 				when "script"
 					@_eval action,datamodelForNextStep,eventSet,true
 				when "log"
@@ -478,7 +479,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 			
 		#External Event Communication: Asynchronous
 		gen: (e) ->
-			if @opts.printTrace then logger.trace("received event ", e)
+			logger.trace("received event ", e)
 
 			if not e?.name
 				throw new Error "gen must be passed an event object."

@@ -15,7 +15,7 @@
    limitations under the License.
 -->
 <!--
-     This test illustrates how possibly infinite loops may be created. Here, without the counter and the cond, the big-step would never complete.
+     This is another test that illustrates how possibly infinite loops may be created. Here, without the counter and the cond, the big-step would never complete.
      -->
 <scxml 
 	xmlns="http://www.w3.org/2005/07/scxml"
@@ -33,17 +33,46 @@
 
 	<state id="a">
 		<transition target="b" event="t">
-			<assign location="i" expr="0"/>
+			<script>
+				setData('i',0);
+			</script>
 		</transition>
 	</state>
 
-	<state id="b">
-		<transition target="b" cond="getData('i') &lt; 100">
-			<assign location="i" expr="getData('i') + 1"/>
+	<state id="A">
+
+		<state id="b">
+			<transition target="c" cond="getData('i') &lt; 100">
+				<script>
+					setData('i',getData('i') + 1);
+				</script>
+			</transition>
+		</state>
+
+		<state id="c">
+			<transition target="b" cond="getData('i') &lt; 100">
+				<script>
+					setData('i',getData('i') + 1);
+				</script>
+			</transition>
+		</state>
+
+		<transition target="d" cond="getData('i') === 100">
+			<script>
+				setData('i',getData('i') * 2);
+			</script>
 		</transition>
-		<transition target="c" cond="getData('i') === 100"/>
 	</state>
 
-	<state id="c"/>
+
+	<state id="d">
+		<transition target="e" cond="getData('i') === 200"/>
+		<transition target="f"/>
+	</state>
+
+	<state id="e"/>
+
+	<state id="f"/>
 
 </scxml>
+

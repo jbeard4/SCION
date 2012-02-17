@@ -26,7 +26,9 @@
 
 	<initial id="intitial1">
 		<transition target="a">
-			<assign location="a" expr="100"/>
+			<script>
+				setData('a',100);
+			</script>
 		</transition>
 	</initial>
 
