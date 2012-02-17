@@ -33,7 +33,9 @@
 
 	<state id="a">
 		<transition target="p" event="t1">
-			<assign location="i" expr="0"/>
+			<script>
+				setData('i',0);
+			</script>
 		</transition>
 	</state>
 
@@ -42,7 +44,9 @@
 		<state id="b" initial="b1">
 			<state id="b1">
 				<transition event="t2" target="b2">
-					<assign location="i" expr="getData('i') + 1"/>
+					<script>
+						setData('i',getData('i') + 1);
+					</script>
 				</transition>
 			</state>
 
@@ -53,7 +57,9 @@
 		<state id="c" initial="c1">
 			<state id="c1">
 				<transition event="t2" target="c2">
-					<assign location="i" expr="getData('i') - 1"/>
+					<script>
+						setData('i',getData('i') - 1);
+					</script>
 				</transition>
 			</state>
 
