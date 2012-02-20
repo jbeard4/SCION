@@ -138,8 +138,11 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 
 				if @opts.printTrace then logger.trace("sorted transitions: ", selectedTransitions)
 
-				[basicStatesExited,statesExited] = @_getStatesExited(selectedTransitions)
-				[basicStatesEntered,statesEntered] = @_getStatesEntered(selectedTransitions)
+				#we only want to enter and exit states from transitions with targets
+				#filter out targetless transitions here - we will only use these to execute transition actions
+				selectedTransitionsWithTargets = new @opts.TransitionSet (t for t in selectedTransitions.iter() when t.targets)
+				[basicStatesExited,statesExited] = @_getStatesExited selectedTransitionsWithTargets
+				[basicStatesEntered,statesEntered] = @_getStatesEntered selectedTransitionsWithTargets
 
 				if @opts.printTrace then logger.trace("basicStatesExited " , basicStatesExited)
 				if @opts.printTrace then logger.trace("basicStatesEntered " , basicStatesEntered)
@@ -434,11 +437,13 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 		#this would be parameterizable
 		# -> Transition Consistency: Small-step consistency: Source/Destination Orthogonal
 		# -> Interrupt Transitions and Preemption: Non-preemptive 
-		_conflicts: (t1,t2) -> not @_isArenaOrthogonal(t1,t2)
+		_conflicts: (t1,t2) -> not @_isArenaOrthogonal t1,t2
 		
 		_isArenaOrthogonal: (t1,t2) ->
-			t1LCA = @opts.model.getLCA(t1)
-			t2LCA = @opts.model.getLCA(t2)
+			#if {t1,t2}.targets is blank, then t1 and t2 are targetless transitions, a.k.a. "static reactions" in statemate/rhapsody vocabulary
+			#we treat their source state as the arena
+			t1LCA = if t1.targets then @opts.model.getLCA(t1) else t1.source
+			t2LCA = if t2.targets then @opts.model.getLCA(t2) else t2.source
 			isOrthogonal = @opts.model.isOrthogonalTo t1LCA,t2LCA
 			if @opts.printTrace
 				logger.trace "transition LCAs",t1LCA.id,t2LCA.id

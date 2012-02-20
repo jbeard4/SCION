@@ -97,7 +97,7 @@ define ["scxml/model"],(model) ->
 
 			for t in state.transitions
 				t.source = idToStateMap[t.source]
-				t.targets = (idToStateMap[stateId] for stateId in t.targets)
+				t.targets = t.targets and (idToStateMap[stateId] for stateId in t.targets)
 
 		json.root = idToStateMap[json.root]
 
