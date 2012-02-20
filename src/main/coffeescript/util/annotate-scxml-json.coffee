@@ -101,7 +101,7 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 
 		#generate LCAs on transitions
 		if genLCA
-			for transition in transitions
+			for transition in transitions when transition.targets
 				source = idToStateMap[transition.source]
 				targets = (idToStateMap[target] for target in transition.targets)
 				if not source
@@ -153,6 +153,7 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 			attributes = n1
 			children = node[2..]
 		else
+			attributes = {}
 			children = node[1..]
 
 		if filterText
@@ -163,7 +164,7 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 	transformTransitionNode = (transitionNode,parentState,genDepth,genAncestors,genDescendants,genLCA) ->
 		[tagName,attributes,children] = deconstructNode transitionNode,true
 		
-		if attributes.event then uniqueEvents[attributes.event] = true	#track unique events
+		if attributes?.event then uniqueEvents[attributes.event] = true	#track unique events
 
 		transition =
 			documentOrder : transitions.length
@@ -172,7 +173,7 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 			cond : attributes.cond
 			event : attributes.event
 			actions : (transformActionNode child for child in children)
-			targets : attributes.target.trim().split(/\s+/)
+			targets : attributes?.target?.trim().split(/\s+/)	#this will either be a list, or undefined
 
 		transitions.push transition
 
