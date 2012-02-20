@@ -12,13 +12,4 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-define ->
-	->
-		(state,eventNames,evaluator) ->
-			transitions = []
-
-			for t in state.transitions
-				if (not t.event or t.event in eventNames) and (not t.cond or evaluator(t))
-					transitions.push t
-
-			return transitions
+define -> (state,eventNames,evaluator) -> (t for t in state.transitions when (not t.event or t.event in eventNames) and (not t.cond or evaluator(t)))
