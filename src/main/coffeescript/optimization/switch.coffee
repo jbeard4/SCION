@@ -17,7 +17,7 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 	(scxmlJson,beautify=true,asyncModuleDef=true) ->
 		toReturn = 	"""
 			return function(state,eventNames,evaluator){
-				var toReturn = [],transitions=[];
+				var transitions=[];
 
 				if(eventNames.length){
 					for(var j = 0; j < eventNames.length; j++){
@@ -42,11 +42,13 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 							"""
 					
 			toReturn += 	"""
+									default : break;
 								}
 								break;\n
 					"""
 				
 		toReturn += 	"""
+							default : break;
 						}
 					}
 
@@ -65,16 +67,17 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 			
 			
 		toReturn +=	"""
+						default : break;
 					}
 					
 				}
 
 				#{initializer.transitionFilterString}
-			}
+			};
 				"""
 
 		toReturn = initializer.genOuterInitializerStr scxmlJson,toReturn
 
-		toReturn = if asyncModuleDef then "define(function(){return #{toReturn};});" else toReturn
+		toReturn = if asyncModuleDef then "define(function(){return #{toReturn}});" else toReturn
 
 		if beautify then js_beautify toReturn else toReturn

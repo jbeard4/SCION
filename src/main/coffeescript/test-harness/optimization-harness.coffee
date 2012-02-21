@@ -34,7 +34,7 @@ define ["scxml/json2model","scxml/json2extra-model", "test-harness/harness", "sc
 			tableTransOpt = tableTransitionOpts[i] model.transitions,model.events
 
 			optArgs =	{
-						"default transition lookup" : {transitionSelector:defaultTransitionSelector()}
+						"default transition lookup" : {transitionSelector:defaultTransitionSelector}
 						"class-transition-lookup" : {transitionSelector:classTransOpt,onlySelectFromBasicStates:true}
 						"switch-transition-lookup" : {transitionSelector:switchTransOpt}
 						"table-transition-lookup" : {transitionSelector:tableTransOpt}
