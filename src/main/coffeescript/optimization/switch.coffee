@@ -19,57 +19,64 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 			return function(state,eventNames,evaluator){
 				var transitions=[];
 
-				if(eventNames.length){
+				switch(state.id){
+				"""
+
+		for state in scxmlJson.states when state.transitions.length
+
+			wildcardTransitions = (initializer.transitionToVarLabel transition for transition in state.transitions when transition.event is "*" )
+			defaultTransitions= (initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event)
+
+			toReturn += 	"""
+				case "#{state.id}":
+					"""
+
+			
+			if defaultTransitions.length
+				toReturn +=
+					"""
+					//default transitions
+					transitions = transitions.concat(#{initializer.arrayToIdentifierListString defaultTransitions});
+					"""
+
+			if wildcardTransitions.length
+				toReturn +=
+					"""
+					if(eventNames.length){
+						//wildcard event
+						transitions = transitions.concat(#{initializer.arrayToIdentifierListString wildcardTransitions});
+					}
+					"""
+
+			toReturn +=	"""
 					for(var j = 0; j < eventNames.length; j++){
 						var eventName = eventNames[j];
 
-						switch(state.id){
-				"""
-
-		for state in scxmlJson.states when state.transitions.length
-			toReturn += 	"""
-								case "#{state.id}":
-								switch(eventName){\n
+						switch(eventName){
 					"""
 
 			for eventName,event of scxmlJson.events
-				transitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event or transition.event == event.name)
+				#NOTE: scxmlJson.events will not contain wildcard ("*") event, 
+				#and will normalize events like "foo.bat.*" to "foo.bat"
+				transitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when transition.event == event.name)
 				if transitionsForEvent.length
 					toReturn += 	"""
-									case "#{event.name}":
-										transitions = transitions.concat(#{initializer.arrayToIdentifierListString transitionsForEvent});\n
-										break;
+							case "#{event.name}":
+								transitions = transitions.concat(#{initializer.arrayToIdentifierListString transitionsForEvent});
+								break;
 							"""
 					
 			toReturn += 	"""
-									default : break;
-								}
-								break;\n
+							default: break;
+						}
+					}
+					break;
 					"""
 				
 		toReturn += 	"""
-							default : break;
-						}
-					}
 
-				}else{
-					//default events
-					switch(state.id){
-				"""
-		for state in scxmlJson.states when state.transitions.length
-			defaultTransitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event)
-			if defaultTransitionsForEvent.length
-				toReturn += 	"""
-							case "#{state.id}":
-								transitions = transitions.concat(#{initializer.arrayToIdentifierListString defaultTransitionsForEvent });
-								break;\n
-						"""
-			
-			
-		toReturn +=	"""
-						default : break;
-					}
-					
+					//should throw an error here for unrecognized state
+					default : break;
 				}
 
 				#{initializer.transitionFilterString}
