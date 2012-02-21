@@ -29,7 +29,7 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 					if transitionsForEvent.length
 						classStr += 	"""
 								this['#{event.name}'] = function(evaluator){
-									var toReturn = []
+									var toReturn = [];
 									var transitions = #{initializer.arrayToIdentifierListString transitionsForEvent};
 									for(var i = 0,l=transitions.length; i < l; i++){
 										var transition = transitions[i];
@@ -39,14 +39,14 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 									}
 
 									return toReturn.length ? toReturn : #{if state.parent then "instances['#{state.parent.id}']['#{event.name}'](evaluator)" else "null"};
-								}
+								};
 								"""
 
 				defaultTransitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event)
 				if defaultTransitionsForEvent.length
 					classStr += 	"""
 							this['#{DEFAULT_EVENT_NAME}']  = function(evaluator){
-								var toReturn = []
+								var toReturn = [];
 								var transitions = #{initializer.arrayToIdentifierListString defaultTransitionsForEvent };
 								for(var i = 0,l=transitions.length; i < l; i++){
 									var transition = transitions[i];
@@ -56,7 +56,7 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 								}
 
 								return toReturn.length ? toReturn : #{if state.parent then "instances['#{state.parent.id}']['#{DEFAULT_EVENT_NAME}'](evaluator)" else "null"};
-							}
+							};
 							"""
 			else
 				#root state
@@ -66,7 +66,7 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 					
 			classStr += """
 					}
-				} 
+				}; 
 			"""
 			classStr += if state.parent then "o['#{state.id}'].prototype = instances['#{state.parent.id}'];" else ""
 			classStr += """
@@ -93,21 +93,24 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 						for(var j = 0; j < eventNames.length; j++){
 							var eventName = eventNames[j];
 
-							var transitions = stateClassNameList[state.documentOrder][eventName](evaluator);
-							if(transitions){
-								toReturn = toReturn.concat(transitions);
-							} 
+							var method = stateClassNameList[state.documentOrder][eventName];
+							if(method){ 
+								var transitions = method(evaluator);
+								if(transitions){
+									toReturn = toReturn.concat(transitions);
+								} 
+							}
 						}
 					}else{
 						//default events
 						toReturn = toReturn.concat(stateClassNameList[state.documentOrder]['#{DEFAULT_EVENT_NAME}'](evaluator) || []);
 					}
 					return toReturn;
-				}
+				};
 				"""
 
 		toReturn = initializer.genOuterInitializerStr scxmlJson,toReturn
 
-		toReturn = if asyncModuleDef then "define(function(){return #{toReturn};});" else toReturn
+		toReturn = if asyncModuleDef then "define(function(){return #{toReturn}});" else toReturn
 
 		if beautify then js_beautify toReturn else toReturn

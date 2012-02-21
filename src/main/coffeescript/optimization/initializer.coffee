@@ -28,7 +28,7 @@ define ->
 				
 		toReturn +=	"""
 					#{innerFnStr}
-				}
+				};
 				"""
 
 	transitionFilterString :  	"""

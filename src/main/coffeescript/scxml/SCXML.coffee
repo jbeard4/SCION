@@ -12,7 +12,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce","scxml/setup-default-opts","logger"],(ArraySet,stateKinds,Event,reduce,setupDefaultOpts,logger) ->
+
+
+define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce","scxml/setup-default-opts","scxml/scxml-dynamic-name-match-transition-selector","logger"],(ArraySet,stateKinds,Event,reduce,setupDefaultOpts,scxmlPrefixTransitionSelector,logger) ->
 
 	#imports
 
@@ -373,10 +375,14 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 
 			eventNames = (event.name for event in eventSet.iter())
 
+			usePrefixMatchingAlgorithm = (name for name in eventNames when "." in name).length
+
+			transitionSelector = if usePrefixMatchingAlgorithm then scxmlPrefixTransitionSelector else @opts.transitionSelector
+
 			#debugger
 			enabledTransitions = new @opts.TransitionSet
 			for state in states
-				for t in @opts.transitionSelector state,eventNames,e
+				for t in transitionSelector state,eventNames,e
 					enabledTransitions.add t
 
 			if @opts.printTrace then logger.trace("allTransitionsForEachState",allTransitionsForEachState)
@@ -484,7 +490,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 			
 		#External Event Communication: Asynchronous
 		gen: (e) ->
-			logger.trace("received event ", e)
+			#logger.trace("received event ", e)
 
 			if not e?.name
 				throw new Error "gen must be passed an event object."

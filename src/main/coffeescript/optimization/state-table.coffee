@@ -81,9 +81,11 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 				for(var j = 0; j < eventNames.length; j++){
 					var eventName = eventNames[j];
 					var enumeratedEvent = eventMap[eventName];
-					var eventId = enumeratedEvent.documentOrder; 
+					if(enumeratedEvent){ 
+						var eventId = enumeratedEvent.documentOrder; 
 
-					transitions = transitions.concat(stateTransitionTable[state.documentOrder][eventId] || []);
+						transitions = transitions.concat(stateTransitionTable[state.documentOrder][eventId] || []);
+					}
 				}
 			}else{
 				//default events
@@ -94,6 +96,6 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 		};
 		"""
 
-		toReturn = if asyncModuleDef then "define(function(){return #{toReturn};});" else toReturn
+		toReturn = if asyncModuleDef then "define(function(){return #{toReturn}});" else toReturn
 
 		if beautify then js_beautify toReturn else toReturn
