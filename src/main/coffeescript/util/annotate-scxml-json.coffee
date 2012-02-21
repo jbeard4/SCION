@@ -161,10 +161,16 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 
 		return [tagName,attributes,children]
 
+	stripStarFromEventNameRe = /^([a-zA-Z0-9.]+)(\.\*)?$/
+
 	transformTransitionNode = (transitionNode,parentState,genDepth,genAncestors,genDescendants,genLCA) ->
 		[tagName,attributes,children] = deconstructNode transitionNode,true
 		
-		if attributes?.event then uniqueEvents[attributes.event] = true	#track unique events
+		#transform event attribute
+		#TODO: split up space-delimited events
+		#if attributes.event [all,attributes.event] = attributes.event.match stripStar
+			
+		if attributes.event and attributes.event isnt "*" then uniqueEvents[attributes.event] = true	#track unique events
 
 		transition =
 			documentOrder : transitions.length

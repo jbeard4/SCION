@@ -14,7 +14,26 @@
 
 define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 	(scxmlJson,beautify=true,asyncModuleDef=true) ->
-		DEFAULT_EVENT_NAME = "*"
+
+		#the SCXML spec states that events must be alphanumeric, so picking out special strings to use as event names is technically safe
+		WILDCARD_EVENT_NAME = "*"
+		DEFAULT_EVENT_NAME = " "
+
+		generateMethod = (eventName,transitions,parent) ->
+			"""
+			this['#{eventName}'] = function(evaluator){
+				var toReturn = [];
+				var transitions = #{initializer.arrayToIdentifierListString transitions};
+				for(var i = 0,l=transitions.length; i < l; i++){
+					var transition = transitions[i];
+					if(!transition.cond || evaluator(transition)){
+						toReturn.push(transition); 
+					}
+				}
+
+				return toReturn.length ? toReturn : #{if parent then "instances['#{parent.id}']['#{eventName}'](evaluator)" else "null"};
+			};
+			"""
 
 		generateStateClassString = (state) ->
 			classStr = """
@@ -23,46 +42,30 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 					"#{state.id}" : function(){
 			"""
 			if state.parent
+
+				parent = state.parent
+
+				#NOTE: scxmlJson.events will not contain wildcard ("*") event, 
+				#and will normalize events like "foo.bat.*" to "foo.bat"
 				for own eventName,event of scxmlJson.events
-					transitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event or transition.event == event.name)
+					transitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when transition.event == event.name)
 
 					if transitionsForEvent.length
-						classStr += 	"""
-								this['#{event.name}'] = function(evaluator){
-									var toReturn = [];
-									var transitions = #{initializer.arrayToIdentifierListString transitionsForEvent};
-									for(var i = 0,l=transitions.length; i < l; i++){
-										var transition = transitions[i];
-										if(!transition.cond || evaluator(transition)){
-											toReturn.push(transition); 
-										}
-									}
-
-									return toReturn.length ? toReturn : #{if state.parent then "instances['#{state.parent.id}']['#{event.name}'](evaluator)" else "null"};
-								};
-								"""
+						classStr += generateMethod event.name,transitionsForEvent,parent
 
 				defaultTransitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event)
 				if defaultTransitionsForEvent.length
-					classStr += 	"""
-							this['#{DEFAULT_EVENT_NAME}']  = function(evaluator){
-								var toReturn = [];
-								var transitions = #{initializer.arrayToIdentifierListString defaultTransitionsForEvent };
-								for(var i = 0,l=transitions.length; i < l; i++){
-									var transition = transitions[i];
-									if(!transition.cond || evaluator(transition)){
-										toReturn.push(transition); 
-									}
-								}
+					classStr += generateMethod DEFAULT_EVENT_NAME,defaultTransitionsForEvent,parent
 
-								return toReturn.length ? toReturn : #{if state.parent then "instances['#{state.parent.id}']['#{DEFAULT_EVENT_NAME}'](evaluator)" else "null"};
-							};
-							"""
+				wildcardTransitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when transition.event is "*")
+				if wildcardTransitionsForEvent.length
+					classStr += generateMethod WILDCARD_EVENT_NAME,wildcardTransitionsForEvent,parent
 			else
 				#root state
 				for eventName,event of scxmlJson.events
 					classStr += "this['#{event.name}'] = function(){return null;};\n"
 				classStr += "this['#{DEFAULT_EVENT_NAME}'] = function(){return null;};\n"
+				classStr += "this['#{WILDCARD_EVENT_NAME}'] = function(){return null;};\n"
 					
 			classStr += """
 					}
@@ -90,6 +93,7 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 					var toReturn = [];
 
 					if(eventNames.length){
+						//named events
 						for(var j = 0; j < eventNames.length; j++){
 							var eventName = eventNames[j];
 
@@ -101,10 +105,13 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 								} 
 							}
 						}
-					}else{
-						//default events
-						toReturn = toReturn.concat(stateClassNameList[state.documentOrder]['#{DEFAULT_EVENT_NAME}'](evaluator) || []);
+
+						//wildcard event
+						toReturn = toReturn.concat(stateClassNameList[state.documentOrder]['#{WILDCARD_EVENT_NAME}'](evaluator) || []);
 					}
+
+					//default events
+					toReturn = toReturn.concat(stateClassNameList[state.documentOrder]['#{DEFAULT_EVENT_NAME}'](evaluator) || []);
 					return toReturn;
 				};
 				"""

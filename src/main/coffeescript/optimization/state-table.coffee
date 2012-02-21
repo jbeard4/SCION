@@ -69,11 +69,15 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 		return toReturn
 		
 	(scxmlJson,beautify=true,asyncModuleDef=true) ->
-		stateTransitionTable = (((initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event or transition.event == event.name) for eventName,event of scxmlJson.events ) for state in scxmlJson.states)
+		#NOTE: scxmlJson.events will not contain wildcard ("*") event, 
+		#and will normalize events like "foo.bat.*" to "foo.bat"
+		stateTransitionTable = (((initializer.transitionToVarLabel transition for transition in state.transitions when transition.event == event.name) for eventName,event of scxmlJson.events ) for state in scxmlJson.states)
+		wildcardTransitionsForStates = ((initializer.transitionToVarLabel transition for transition in state.transitions when transition.event is "*") for state in scxmlJson.states)
 		defaultTransitionsForStates = ((initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event) for state in scxmlJson.states)
 		toReturn = initializer.genOuterInitializerStr scxmlJson,"""
-		var stateTransitionTable = #{tableToString stateTransitionTable};
-		var defaultTransitionTable = #{defaultTableToString defaultTransitionsForStates};
+		var stateTransitionTable = #{tableToString stateTransitionTable},
+			wildcardTransitionTable = #{defaultTableToString wildcardTransitionsForStates},
+			defaultTransitionTable = #{defaultTableToString defaultTransitionsForStates};
 		return function(state,eventNames,evaluator){
 			var transitions = [];
 
@@ -87,10 +91,11 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 						transitions = transitions.concat(stateTransitionTable[state.documentOrder][eventId] || []);
 					}
 				}
-			}else{
-				//default events
-				transitions = transitions.concat(defaultTransitionTable[state.documentOrder] || []);
+
+				transitions = transitions.concat(wildcardTransitionTable[state.documentOrder] || []);
 			}
+			//default events
+			transitions = transitions.concat(defaultTransitionTable[state.documentOrder] || []);
 
 			#{initializer.transitionFilterString}
 		};
