@@ -161,16 +161,23 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 
 		return [tagName,attributes,children]
 
-	stripStarFromEventNameRe = /^([a-zA-Z0-9.]+)(\.\*)?$/
+	stripStarFromEventNameRe = /^((([a-zA-Z0-9]+)\.)*([a-zA-Z0-9]+))(\.\*)?$/
 
 	transformTransitionNode = (transitionNode,parentState,genDepth,genAncestors,genDescendants,genLCA) ->
 		[tagName,attributes,children] = deconstructNode transitionNode,true
 		
-		#transform event attribute
-		#TODO: split up space-delimited events
-		#if attributes.event [all,attributes.event] = attributes.event.match stripStar
 			
-		if attributes.event and attributes.event isnt "*" then uniqueEvents[attributes.event] = true	#track unique events
+		if attributes.event
+			#strip off trailing ".*"
+			#TODO: split up space-delimited events
+			m = attributes.event.match stripStarFromEventNameRe
+			if m
+				normalizedEvent = m[1]
+				if not (m and normalizedEvent) then throw new Error "Unable to parse event: #{attributes.event}"
+
+				attributes.event = normalizedEvent	#transform the model so that the event is now a normalized event
+			
+			if attributes.event isnt "*" then uniqueEvents[attributes.event] = true
 
 		transition =
 			documentOrder : transitions.length
