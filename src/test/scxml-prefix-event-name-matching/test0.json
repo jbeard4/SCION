@@ -32,7 +32,7 @@
 		{
 			"event" : { "name" : "foo.bar.bat.bif" },
 			"nextConfiguration" : ["g"]
-		},
+		}
 	]
 }
 
