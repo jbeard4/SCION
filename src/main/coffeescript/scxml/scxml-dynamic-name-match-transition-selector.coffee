@@ -7,8 +7,8 @@ define ->
 	retrieveEventRe = (name) -> eventNameReCache[name] ?= eventNameToRe name
 
 	nameMatch = (t,eventNames) ->
-		tEvent = t.event
-		f = if tEvent is "*" then -> true else (name) -> retrieveEventRe(tEvent).test(name)
+		tEvents = t.events
+		f = if "*" in tEvents then -> true else (name) -> (tEvent for tEvent in tEvents when retrieveEventRe(tEvent).test(name)).length
 		(name for name in eventNames when f name).length
 
-	(state,eventNames,evaluator) -> (t for t in state.transitions when (not t.event or nameMatch t,eventNames) and (not t.cond or evaluator(t)))
+	(state,eventNames,evaluator) -> (t for t in state.transitions when (not t.events or nameMatch t,eventNames) and (not t.cond or evaluator(t)))
