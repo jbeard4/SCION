@@ -168,6 +168,7 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 		
 			
 		#wildcard "*" event will show up on transition.events, but will not show up in uniqueEvents
+		#default transitions (those without events) will have events set to undefined (rather than empty array)
 		if attributes.event
 			events =
 				if attributes.event is "*" then [attributes.event]

@@ -47,23 +47,23 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 
 				#NOTE: scxmlJson.events will not contain wildcard ("*") event, 
 				#and will normalize events like "foo.bat.*" to "foo.bat"
-				for own eventName,event of scxmlJson.events
-					transitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when transition.event == event.name)
+				for own eventName of scxmlJson.events
+					transitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when transition.events and eventName in transition.events )
 
 					if transitionsForEvent.length
-						classStr += generateMethod event.name,transitionsForEvent,parent
+						classStr += generateMethod eventName,transitionsForEvent,parent
 
-				defaultTransitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event)
+				defaultTransitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when not transition.events)
 				if defaultTransitionsForEvent.length
 					classStr += generateMethod DEFAULT_EVENT_NAME,defaultTransitionsForEvent,parent
 
-				wildcardTransitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when transition.event is "*")
+				wildcardTransitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when transition.events and "*" in transition.events)
 				if wildcardTransitionsForEvent.length
 					classStr += generateMethod WILDCARD_EVENT_NAME,wildcardTransitionsForEvent,parent
 			else
 				#root state
-				for eventName,event of scxmlJson.events
-					classStr += "this['#{event.name}'] = function(){return null;};\n"
+				for own eventName of scxmlJson.events
+					classStr += "this['#{eventName}'] = function(){return null;};\n"
 				classStr += "this['#{DEFAULT_EVENT_NAME}'] = function(){return null;};\n"
 				classStr += "this['#{WILDCARD_EVENT_NAME}'] = function(){return null;};\n"
 					

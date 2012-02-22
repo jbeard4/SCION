@@ -71,9 +71,9 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 	(scxmlJson,beautify=true,asyncModuleDef=true) ->
 		#NOTE: scxmlJson.events will not contain wildcard ("*") event, 
 		#and will normalize events like "foo.bat.*" to "foo.bat"
-		stateTransitionTable = (((initializer.transitionToVarLabel transition for transition in state.transitions when transition.event == event.name) for eventName,event of scxmlJson.events ) for state in scxmlJson.states)
-		wildcardTransitionsForStates = ((initializer.transitionToVarLabel transition for transition in state.transitions when transition.event is "*") for state in scxmlJson.states)
-		defaultTransitionsForStates = ((initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event) for state in scxmlJson.states)
+		stateTransitionTable = (((initializer.transitionToVarLabel transition for transition in state.transitions when transition.events and eventName in transition.events) for eventName of scxmlJson.events ) for state in scxmlJson.states)
+		wildcardTransitionsForStates = ((initializer.transitionToVarLabel transition for transition in state.transitions when transition.events and "*" in transition.events) for state in scxmlJson.states)
+		defaultTransitionsForStates = ((initializer.transitionToVarLabel transition for transition in state.transitions when not transition.events) for state in scxmlJson.states)
 		toReturn = initializer.genOuterInitializerStr scxmlJson,"""
 		var stateTransitionTable = #{tableToString stateTransitionTable},
 			wildcardTransitionTable = #{defaultTableToString wildcardTransitionsForStates},
