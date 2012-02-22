@@ -24,8 +24,8 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 
 		for state in scxmlJson.states when state.transitions.length
 
-			wildcardTransitions = (initializer.transitionToVarLabel transition for transition in state.transitions when transition.event is "*" )
-			defaultTransitions= (initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event)
+			wildcardTransitions = (initializer.transitionToVarLabel transition for transition in state.transitions when transition.events and "*" in transition.events)
+			defaultTransitions= (initializer.transitionToVarLabel transition for transition in state.transitions when not transition.events)
 
 			toReturn += 	"""
 				case "#{state.id}":
@@ -55,13 +55,13 @@ define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
 						switch(eventName){
 					"""
 
-			for eventName,event of scxmlJson.events
+			for own eventName of scxmlJson.events
 				#NOTE: scxmlJson.events will not contain wildcard ("*") event, 
 				#and will normalize events like "foo.bat.*" to "foo.bat"
-				transitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when transition.event == event.name)
+				transitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when transition.events and eventName in transition.events)
 				if transitionsForEvent.length
 					toReturn += 	"""
-							case "#{event.name}":
+							case "#{eventName}":
 								transitions = transitions.concat(#{initializer.arrayToIdentifierListString transitionsForEvent});
 								break;
 							"""
