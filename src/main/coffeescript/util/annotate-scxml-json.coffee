@@ -167,24 +167,27 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 		[tagName,attributes,children] = deconstructNode transitionNode,true
 		
 			
+		#wildcard "*" event will show up on transition.events, but will not show up in uniqueEvents
 		if attributes.event
-			#strip off trailing ".*"
-			#TODO: split up space-delimited events
-			m = attributes.event.match stripStarFromEventNameRe
-			if m
-				normalizedEvent = m[1]
-				if not (m and normalizedEvent) then throw new Error "Unable to parse event: #{attributes.event}"
+			events =
+				if attributes.event is "*" then [attributes.event]
+				else for event in attributes.event.trim().split(/\s+/)
+					#strip off trailing ".*"
+					#TODO: split up space-delimited events
+					m = event.match stripStarFromEventNameRe
+					if m
+						normalizedEvent = m[1]
+						if not (m and normalizedEvent) then throw new Error "Unable to parse event: #{event}" else event
 
-				attributes.event = normalizedEvent	#transform the model so that the event is now a normalized event
-			
-			if attributes.event isnt "*" then uniqueEvents[attributes.event] = true
+			for event in events
+				if event isnt "*" then uniqueEvents[event] = true
 
 		transition =
 			documentOrder : transitions.length
 			id : transitions.length
 			source : parentState.id
 			cond : attributes.cond
-			event : attributes.event
+			events : events
 			actions : (transformActionNode child for child in children)
 			targets : attributes?.target?.trim().split(/\s+/)	#this will either be a list, or undefined
 
