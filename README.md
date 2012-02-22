@@ -16,7 +16,7 @@ A Statecharts interpreter/compiler library targeting JavaScript environments.
 7\.  [Project Status and Supported Environments](#projectstatusandsupportedenvironments)  
 8\.  [License](#license)  
 9\.  [Support](#support)  
-10\.  [Project Background](#projectbackground)  
+10\.  [Other Resources](#otherresources)  
 11\.  [Related Work](#relatedwork)  
 
 <a name="overview"></a>
@@ -431,7 +431,7 @@ interpreter.gen(new scion.Event('t'));
 console.log(interpreter.getConfiguration());
 ```
 
-See `src/demo/nodejs` for a complete example of this.
+See [src/demo/nodejs](https://github.com/jbeard4/SCION/tree/master/src/demo/nodejs) for a complete example of this, as well as [node-repl](https://github.com/jbeard4/SCION/tree/master/src/demo/node-repl) and [node-web-repl](https://github.com/jbeard4/SCION/tree/master/src/demo/node-web-repl) for other reduced demonstrations.
 
 Also see the [SCION node.js API reference](https://github.com/jbeard4/SCION/wiki/nodejs-api).
 
@@ -476,16 +476,12 @@ Everything else is licensed under the Apache License, version 2.0.
 
 [Mailing list](https://groups.google.com/group/scion-dev)
 
-<a name="projectbackground"></a>
+<a name="otherresources"></a>
 
-## 10\. Project Background 
+## 10\. Other Resources
 
-SCION is the third major iteration in an effort to create a Statecharts interpreter/compiler that would be well-suited for use in the browser environment. The first iteration was the development of a JavaScript backend to the [SCC Statecharts compiler](http://msdl.cs.mcgill.ca/people/tfeng/uml/scc/) written by Thomas Feng. The second iteration was [scxml-js](http://commons.apache.org/sandbox/gsoc/2010/scxml-js/), which was started as course project for [COMP-621 - Program Analysis and Transformations](http://www.sable.mcgill.ca/~hendren/621/) under Prof. Laurie Hendren, and continued as a project for Google Summer of Code 2010, under the Apache Software Foundation, with Rahul Akolkar serving as project mentor. I decided to expand this work toward the completion of a master thesis at McGill University under Prof. Hans Vangheluwe. The decision was made to rewrite scxml-js from the ground up, for reasons described [here](http://blog.echo-flow.com/2011/06/08/masters-thesis-update-2-new-statecharts-project/), and the new project was named SCION. 
-
-Right now, I'm still working on my master thesis, but believe SCION is ready for general use. 
-
-My thanks go out to everyone who has supported me in this endeavour.
-
+* [Table describing which SCXML tags are supported](https://github.com/jbeard4/SCION/wiki/SCION-Implementation-Status)
+* [Project Background](https://github.com/jbeard4/SCION/wiki/Project-Background)
 
 <a name="relatedwork"></a>
 
