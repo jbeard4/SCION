@@ -16,13 +16,7 @@
 -->
 <scxml 
 	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0"
-	profile="ecmascript"
-	id="root">
-
-	<initial id="intitial1">
-		<transition target="a"/>
-	</initial>
+	version="1.0">
 
 	<state id="a">
 		<onexit>

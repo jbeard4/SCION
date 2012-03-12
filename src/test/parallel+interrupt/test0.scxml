@@ -21,8 +21,8 @@ in our semantics, source state is at the same level of hierarchy, so document or
 <scxml
 	xmlns="http://www.w3.org/2005/07/scxml"
 	version="1.0"
-	profile="ecmascript"
-	id="root"
+	
+	
 	initial="b">
 
 	<parallel id="b">

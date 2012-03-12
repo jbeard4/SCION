@@ -16,11 +16,9 @@
 -->
 <scxml 
 	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0"
-	profile="ecmascript"
-	id="root">
+	version="1.0" >
 
-	<initial id="intitial1">
+	<initial>
 		<transition target="a">
 			<script>
 				setData('a',100)

@@ -1,4 +1,4 @@
-<ns0:scxml xmlns:ns0="http://www.w3.org/2005/07/scxml" profile="ecmascript" version="1.0"  name="root">
+<ns0:scxml xmlns:ns0="http://www.w3.org/2005/07/scxml"  version="1.0"  name="root">
   <ns0:state id="A">
     <ns0:onentry>
       <ns0:log expr="&quot;entering state A&quot;"/>
