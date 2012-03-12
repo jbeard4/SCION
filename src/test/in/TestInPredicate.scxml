@@ -21,7 +21,7 @@ This is to test the use of the In() predicate.
 <scxml 
 	xmlns="http://www.w3.org/2005/07/scxml"
 	version="1.0"
-	profile="ecmascript"
+	
 	name="root">
 
 	<initial>

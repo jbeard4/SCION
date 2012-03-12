@@ -19,17 +19,11 @@
      -->
 <scxml 
 	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0"
-	profile="ecmascript"
-	id="root">
+	version="1.0" >
 
 	<datamodel>
 		<data id="i"/>
 	</datamodel>
-
-	<initial id="intitial1">
-		<transition target="a"/>
-	</initial>
 
 	<state id="a">
 		<transition target="b" event="t">
