@@ -161,7 +161,7 @@ define ["scxml/state-kinds-enum"],(stateKinds) ->
 
 		return [tagName,attributes,children]
 
-	stripStarFromEventNameRe = /^((([a-zA-Z0-9]+)\.)*([a-zA-Z0-9]+))(\.\*)?$/
+	stripStarFromEventNameRe = /^((([^.]+)\.)*([^.]+))(\.\*)?$/
 
 	transformTransitionNode = (transitionNode,parentState,genDepth,genAncestors,genDescendants,genLCA) ->
 		[tagName,attributes,children] = deconstructNode transitionNode,true
