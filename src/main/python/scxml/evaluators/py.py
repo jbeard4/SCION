@@ -18,15 +18,15 @@ from scxml.evaluators.interface import IEvaluator
 
 class PythonEvaluator(IEvaluator):
 
-	def evaluateExpr(self,expr,api):
-		interpreter = code.InteractiveInterpreter(api)
-		expr = "_ = " + expr
-		interpreter.runsource(expr)
-		result = api["_"] 
-		return result
+    def evaluateExpr(self,expr,api):
+        interpreter = code.InteractiveInterpreter(api)
+        expr = "_ = " + expr
+        interpreter.runsource(expr)
+        result = api["_"] 
+        return result
 
-	def evaluateScript(self,script,api):
-		interpreter = code.InteractiveInterpreter(api)
-		interpreter.runsource(script)
+    def evaluateScript(self,script,api):
+        interpreter = code.InteractiveInterpreter(api)
+        interpreter.runsource(script)
 
 

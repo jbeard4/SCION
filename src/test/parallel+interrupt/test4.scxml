@@ -18,43 +18,43 @@
      orthogonal preemption - inner or states interrupt one-another 
 --> 
 <scxml
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0"
-	
-	
-	initial="b">
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0"
+    
+    
+    initial="b">
 
-	<parallel id="b">
-		<parallel id="p">
-			<state id="e">
-				<transition event="t" target="a1"/>
-			</state>
+    <parallel id="b">
+        <parallel id="p">
+            <state id="e">
+                <transition event="t" target="a1"/>
+            </state>
 
-			<state id="f">
-				<transition event="t" target="a2"/>
-			</state>
+            <state id="f">
+                <transition event="t" target="a2"/>
+            </state>
 
-			<transition event="t" target="a3"/>
-		</parallel>
+            <transition event="t" target="a3"/>
+        </parallel>
 
 
-		<state id="d" initial="g">
-			<state id="g">
-				<transition event="t" target="h"/>
-			</state>
+        <state id="d" initial="g">
+            <state id="g">
+                <transition event="t" target="h"/>
+            </state>
 
-			<state id="h"/>
-		</state>
+            <state id="h"/>
+        </state>
 
-	</parallel>
+    </parallel>
 
-	<state id="a1"/>
+    <state id="a1"/>
 
-	<state id="a2"/>
+    <state id="a2"/>
 
-	<state id="a3"/>
+    <state id="a3"/>
 
-	<state id="a4"/>
+    <state id="a4"/>
 
 </scxml>
 

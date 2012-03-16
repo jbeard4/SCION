@@ -14,34 +14,34 @@
 
 define ["scxml/setup-default-opts","scxml/json2model","test-harness/harness","test-harness/report2string","scxml/async-for","tests/loaders/spartan-loader-for-all-tests","logger","env!env/quit","test-harness/simple-env"],(setupDefaultOpts,json2model,harness,report2string,asyncForEach,testTuples,logger,quit,SimpleEnv)->
 
-	runTests = ->
+    runTests = ->
 
-		opts = setupDefaultOpts()
+        opts = setupDefaultOpts()
 
-		jsonTests = for testTuple in testTuples
-			model = json2model testTuple.scxmlJson
+        jsonTests = for testTuple in testTuples
+            model = json2model testTuple.scxmlJson
 
 
-			{
-				name : testTuple.name
-				group : testTuple.group
-				model : model
-				testScript : testTuple.testScript
-				optimizations : opts
-			}
+            {
+                name : testTuple.name
+                group : testTuple.group
+                model : model
+                testScript : testTuple.testScript
+                optimizations : opts
+            }
 
-		finish = (report) ->
-			logger.info report2string report
-			
-			quit report.testCount == report.testsPassed
+        finish = (report) ->
+            logger.info report2string report
+            
+            quit report.testCount == report.testsPassed
 
-		logger.info "starting harness"
+        logger.info "starting harness"
 
-		if typeof setTimeout isnt "function"
-			#we are not in an environment that abstracts out the mainloop
-			env = new SimpleEnv()
-			harness jsonTests,env.setTimeout,env.clearTimeout,finish
-			env.mainLoop()	#give control to the environment
-		else
-			harness jsonTests,this.setTimeout,this.clearTimeout,finish
+        if typeof setTimeout isnt "function"
+            #we are not in an environment that abstracts out the mainloop
+            env = new SimpleEnv()
+            harness jsonTests,env.setTimeout,env.clearTimeout,finish
+            env.mainLoop()  #give control to the environment
+        else
+            harness jsonTests,this.setTimeout,this.clearTimeout,finish
 

@@ -14,15 +14,15 @@
 
 define ["scxml/json2model","optimization/class","optimization/state-table","optimization/switch","logger","env!env/file"],(json2model,classOpt,tableOpt,switchOpt,logger,file) ->
 
-	(pathToSCXMLJson,optimizerName="table",beautify,asyncModuleDef) ->
-		beautify = beautify is "true"
-		asyncModuleDef = asyncModuleDef is "true"
+    (pathToSCXMLJson,optimizerName="table",beautify,asyncModuleDef) ->
+        beautify = beautify is "true"
+        asyncModuleDef = asyncModuleDef is "true"
 
-		jsonDoc  = JSON.parse(file.readFile(pathToSCXMLJson))
-		model = json2model jsonDoc
-		optimizer = switch optimizerName
-			when "table" then tableOpt
-			when "class" then classOpt
-			when "switch" then switchOpt
+        jsonDoc  = JSON.parse(file.readFile(pathToSCXMLJson))
+        model = json2model jsonDoc
+        optimizer = switch optimizerName
+            when "table" then tableOpt
+            when "class" then classOpt
+            when "switch" then switchOpt
 
-		logger.info optimizer model,beautify,asyncModuleDef
+        logger.info optimizer model,beautify,asyncModuleDef

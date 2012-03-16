@@ -15,30 +15,30 @@
    limitations under the License.
 -->
 <!--
-	Illustrates one of the edge cases of these semantics. Because initial transition will be taken in its own small step, triggered event "s" will be "lost" - not availble in the next small step from b1. Will therefore end up in b3.
+    Illustrates one of the edge cases of these semantics. Because initial transition will be taken in its own small step, triggered event "s" will be "lost" - not availble in the next small step from b1. Will therefore end up in b3.
      -->
 <scxml 
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0">
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0">
 
-	<state id="a">
-		<transition target="b" event="t">
-			<raise event="s"/>
-		</transition>
-	</state>
+    <state id="a">
+        <transition target="b" event="t">
+            <raise event="s"/>
+        </transition>
+    </state>
 
-	<state id="b" initial="b1">
-		<state id="b1">
-			<transition event="s" target="b2"/>
-			<transition target="b3"/>
-		</state>
+    <state id="b" initial="b1">
+        <state id="b1">
+            <transition event="s" target="b2"/>
+            <transition target="b3"/>
+        </state>
 
-		<state id="b2">
-		</state>
+        <state id="b2">
+        </state>
 
-		<state id="b3">
-		</state>
-	</state>
+        <state id="b3">
+        </state>
+    </state>
 </scxml>
 
 

@@ -18,47 +18,47 @@
      This is another test that illustrates how possibly infinite loops may be created. Here, without the counter and the cond, the big-step would never complete.
      -->
 <scxml 
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0" >
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0" >
 
-	<datamodel>
-		<data id="i"/>
-	</datamodel>
+    <datamodel>
+        <data id="i"/>
+    </datamodel>
 
-	<state id="a">
-		<transition target="b" event="t">
-			<assign location="i" expr="0"/>
-		</transition>
-	</state>
+    <state id="a">
+        <transition target="b" event="t">
+            <assign location="i" expr="0"/>
+        </transition>
+    </state>
 
-	<state id="A">
+    <state id="A">
 
-		<state id="b">
-			<transition target="c" cond="i &lt; 100">
-				<assign location="i" expr="i + 1"/>
-			</transition>
-		</state>
+        <state id="b">
+            <transition target="c" cond="i &lt; 100">
+                <assign location="i" expr="i + 1"/>
+            </transition>
+        </state>
 
-		<state id="c">
-			<transition target="b" cond="i &lt; 100">
-				<assign location="i" expr="i + 1"/>
-			</transition>
-		</state>
+        <state id="c">
+            <transition target="b" cond="i &lt; 100">
+                <assign location="i" expr="i + 1"/>
+            </transition>
+        </state>
 
-		<transition target="d" cond="i === 100">
-			<assign location="i" expr="i * 2"/>
-		</transition>
-	</state>
+        <transition target="d" cond="i === 100">
+            <assign location="i" expr="i * 2"/>
+        </transition>
+    </state>
 
 
-	<state id="d">
-		<transition target="e" cond="i === 200"/>
-		<transition target="f"/>
-	</state>
+    <state id="d">
+        <transition target="e" cond="i === 200"/>
+        <transition target="f"/>
+    </state>
 
-	<state id="e"/>
+    <state id="e"/>
 
-	<state id="f"/>
+    <state id="f"/>
 
 </scxml>
 

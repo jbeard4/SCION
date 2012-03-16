@@ -14,10 +14,10 @@
 
 define ["test-harness/optimization-harness","test-harness/report2string","logger"],(optimizationHarness,report2string,logger) ->
 
-	runTests = ->
+    runTests = ->
 
-		finish = (report) ->
-			logger.info report2string report
-			process.exit report.testCount == report.testsPassed
+        finish = (report) ->
+            logger.info report2string report
+            process.exit report.testCount == report.testsPassed
 
-		optimizationHarness this.setTimeout,this.clearTimeout,finish
+        optimizationHarness this.setTimeout,this.clearTimeout,finish

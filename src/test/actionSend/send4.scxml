@@ -18,35 +18,35 @@
      This is a test to illustrate the event lifeline. In c, event "s" should no longer be in the event queue, as we are using Next Small Step semantics, so we should end up in d. This would not be true if we were using Remainder semantics. 
      -->
 <scxml 
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0">
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0">
 
-	<state id="a">
-		<transition target="b" event="t">
-		</transition>
-	</state>
+    <state id="a">
+        <transition target="b" event="t">
+        </transition>
+    </state>
 
-	<state id="b">
-		<onentry>
-			<raise event="s"/>
-		</onentry>
+    <state id="b">
+        <onentry>
+            <raise event="s"/>
+        </onentry>
 
-		<transition target="c" event="s"/>
-		<transition target="f1"/>
-	</state>
+        <transition target="c" event="s"/>
+        <transition target="f1"/>
+    </state>
 
-	<state id="c">
-		<transition target="f2" event="s"/>
-		<transition target="d"/>
-	</state>
+    <state id="c">
+        <transition target="f2" event="s"/>
+        <transition target="d"/>
+    </state>
 
-	<state id="f1">
-	</state>
+    <state id="f1">
+    </state>
 
-	<state id="d">
-	</state>
+    <state id="d">
+    </state>
 
-	<state id="f2">
-	</state>
+    <state id="f2">
+    </state>
 
 </scxml>

@@ -1,11 +1,11 @@
 {
-	"initialConfiguration" : ["a"],
-	"events" : [
-		{
-			"event" : { "name" : "t" },
-			"nextConfiguration" : ["b"]
-		}
-	]
+    "initialConfiguration" : ["a"],
+    "events" : [
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["b"]
+        }
+    ]
 }
 
 

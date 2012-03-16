@@ -18,8 +18,8 @@ t=`dirname $abspath`
 basedir=`dirname $t`
 
 if [ ! -e $basedir/target/tests/loaders/spartan-loader-for-all-tests.js ]; then
-	echo Please run \"make interpreter tests test-loader\" before running this file.
-	exit 1
+    echo Please run \"make interpreter tests test-loader\" before running this file.
+    exit 1
 fi;
 
 interpreter=${1-spidermonkey}

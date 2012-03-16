@@ -15,25 +15,25 @@
    limitations under the License.
 -->
 <scxml 
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0" >
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0" >
 
-	<initial>
-		<transition target="a">
-			<script>
-				setData('a',100)
-			</script>
-		</transition>
-	</initial>
+    <initial>
+        <transition target="a">
+            <script>
+                setData('a',100)
+            </script>
+        </transition>
+    </initial>
 
-	<state id="a">
-		<transition target="b" event="t" cond="getData('a') === 100"/>
-		<transition target="f" event="t" />
-	</state>
+    <state id="a">
+        <transition target="b" event="t" cond="getData('a') === 100"/>
+        <transition target="f" event="t" />
+    </state>
 
-	<state id="b"/>
+    <state id="b"/>
 
-	<state id="f"/>
+    <state id="f"/>
 
 
 </scxml>

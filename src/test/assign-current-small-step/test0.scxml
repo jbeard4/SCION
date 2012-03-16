@@ -15,40 +15,40 @@
    limitations under the License.
 -->
 <scxml 
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0" >
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0" >
 
-	<datamodel>
-		<data id="a"/>
-	</datamodel>
+    <datamodel>
+        <data id="a"/>
+    </datamodel>
 
-	<state id="a">
-		<onentry>
-			<!-- first -1 will be assigned to the datamodel. then, in the same small-step, this will be overridden by the 99 -->
-			<assign location="a" expr="-1"/>
-			<assign location="a" expr="99"/>
-		</onentry>
+    <state id="a">
+        <onentry>
+            <!-- first -1 will be assigned to the datamodel. then, in the same small-step, this will be overridden by the 99 -->
+            <assign location="a" expr="-1"/>
+            <assign location="a" expr="99"/>
+        </onentry>
 
-		<!-- in order for this transition to be taken, a must be updated immediately, in the same small-step -->
-		<transition  event="t" target="b" cond="a === 99">
-			<assign location="a" expr="a + 1"/>
-		</transition>
-	</state>
+        <!-- in order for this transition to be taken, a must be updated immediately, in the same small-step -->
+        <transition  event="t" target="b" cond="a === 99">
+            <assign location="a" expr="a + 1"/>
+        </transition>
+    </state>
 
-	<state id="b">
-		<!-- use regular assignment syntax, assuming datamodel variables are in script scope -->
-		<onentry>
-			<script>
-				a *= 2;
-			</script>
-		</onentry>
+    <state id="b">
+        <!-- use regular assignment syntax, assuming datamodel variables are in script scope -->
+        <onentry>
+            <script>
+                a *= 2;
+            </script>
+        </onentry>
 
-		<transition target="c" cond="a === 200"/>
-		<transition target="f"/>
-	</state>
+        <transition target="c" cond="a === 200"/>
+        <transition target="f"/>
+    </state>
 
-	<state id="c"/>
+    <state id="c"/>
 
-	<state id="f"/>
+    <state id="f"/>
 
 </scxml>

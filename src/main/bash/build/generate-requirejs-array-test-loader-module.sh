@@ -25,16 +25,16 @@ totalTests=$#
 numTests=0
 
 for testModule in $tests; do
-	numTests=$(($numTests+1))
+    numTests=$(($numTests+1))
 
-	truncatedTestModule=`echo $testModule | sed -e "s/.*target\///"`
-	truncatedTestModuleWithoutExtension=${truncatedTestModule%.*}
+    truncatedTestModule=`echo $testModule | sed -e "s/.*target\///"`
+    truncatedTestModuleWithoutExtension=${truncatedTestModule%.*}
 
-	echo -ne "\t'$truncatedTestModuleWithoutExtension'" >> $target
+    echo -ne "\t'$truncatedTestModuleWithoutExtension'" >> $target
 
-	if [ $numTests -ne $totalTests ]; then
-		echo , >> $target
-	fi;
-done;	
+    if [ $numTests -ne $totalTests ]; then
+        echo , >> $target
+    fi;
+done;   
 
 echo "]})" >> $target

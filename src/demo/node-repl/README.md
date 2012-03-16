@@ -2,4 +2,4 @@ This demo illustrates how to interact with SCION from the command line in node.j
 
 Run this demo as follows:
 
-	./repl.sh path/to/scxml
+    ./repl.sh path/to/scxml

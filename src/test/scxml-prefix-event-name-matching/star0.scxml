@@ -15,20 +15,20 @@
    limitations under the License.
 -->
 <scxml 
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0"
-	 >
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0"
+     >
 
-	<state id="a">
-		<!-- we send foo here, and it matches the * event -->
-		<transition target="b" event="*"/>
-		<transition target="fail" event="foo"/>
-	</state>
-	
-	<state id="b">
-	</state>
+    <state id="a">
+        <!-- we send foo here, and it matches the * event -->
+        <transition target="b" event="*"/>
+        <transition target="fail" event="foo"/>
+    </state>
+    
+    <state id="b">
+    </state>
 
-	<state id="fail"/>
+    <state id="fail"/>
 
 </scxml>
 

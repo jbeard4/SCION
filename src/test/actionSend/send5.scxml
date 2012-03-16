@@ -18,37 +18,37 @@
      This is a test to illustrate the event lifeline, and how multiple events are handled. The whole set of triggered events will be dequeued from the inner event queue in the next small step. This is different from scxml, where only one event will be dequeued at a time in the next small step. So, SCXML semantics would lead to f2, whereas our semantics would lead to d.
      -->
 <scxml 
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0">
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0">
 
-	<state id="a">
-		<transition target="b" event="t">
-		</transition>
-	</state>
+    <state id="a">
+        <transition target="b" event="t">
+        </transition>
+    </state>
 
-	<state id="b">
-		<onentry>
-			<raise event="s"/>
-			<raise event="r"/>
-		</onentry>
+    <state id="b">
+        <onentry>
+            <raise event="s"/>
+            <raise event="r"/>
+        </onentry>
 
-		<transition target="c" event="s"/>
-		<transition target="f1"/>
-	</state>
+        <transition target="c" event="s"/>
+        <transition target="f1"/>
+    </state>
 
-	<state id="c">
-		<transition target="f2" event="r"/>
-		<transition target="d"/>
-	</state>
+    <state id="c">
+        <transition target="f2" event="r"/>
+        <transition target="d"/>
+    </state>
 
-	<state id="f1">
-	</state>
+    <state id="f1">
+    </state>
 
-	<state id="d">
-	</state>
+    <state id="d">
+    </state>
 
-	<state id="f2">
-	</state>
+    <state id="f2">
+    </state>
 
 </scxml>
 

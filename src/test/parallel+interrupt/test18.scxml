@@ -16,25 +16,25 @@
 -->
 <!-- orthogonal preemption - outer and state interrupts inner or state -->
 <scxml
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0"
-	
-	
-	initial="b">
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0"
+    
+    
+    initial="b">
 
-	<parallel id="b">
-		<state id="c"/>
+    <parallel id="b">
+        <state id="c"/>
 
-		<state id="d">
-			<transition event="t" target="a2"/>
-		</state>
+        <state id="d">
+            <transition event="t" target="a2"/>
+        </state>
 
-		<transition event="t" target="a1"/>
-	</parallel>
+        <transition event="t" target="a1"/>
+    </parallel>
 
-	<state id="a1"/>
+    <state id="a1"/>
 
-	<state id="a2"/>
+    <state id="a2"/>
 </scxml>
 
 

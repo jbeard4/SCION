@@ -14,12 +14,12 @@
 
 require ["test-harness/optimization-harness","test-harness/simple-env","test-harness/report2string","logger"],(optimizationHarness,SimpleEnv,report2string,logger) ->
 
-	finish = (report) ->
-		logger.info report2string report
+    finish = (report) ->
+        logger.info report2string report
 
-		#all spartan environments support quit()
-		quit report.testCount == report.testsPassed
+        #all spartan environments support quit()
+        quit report.testCount == report.testsPassed
 
-	env = new SimpleEnv()
+    env = new SimpleEnv()
 
-	optimizationHarness env.setTimeout,env.clearTimeout,finish,env.mainLoop
+    optimizationHarness env.setTimeout,env.clearTimeout,finish,env.mainLoop

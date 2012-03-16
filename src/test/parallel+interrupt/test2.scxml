@@ -19,34 +19,34 @@ orthogonal preemption - transition originating at inner OR state interrupts tran
 again, first OR state should win, as the transitions originate at the same level of hierarchy, and wins by document order
 --> 
 <scxml
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0"
-	
-	
-	initial="b">
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0"
+    
+    
+    initial="b">
 
 
-	<parallel id="b">
+    <parallel id="b">
 
-		<state id="c" initial="c1">
-			<state id="c1">
-				<transition event="t" target="a1"/>
-			</state>
+        <state id="c" initial="c1">
+            <state id="c1">
+                <transition event="t" target="a1"/>
+            </state>
 
-			<state id="c2"/>
-		</state>
+            <state id="c2"/>
+        </state>
 
-		<state id="d" initial="d1">
-			<state id="d1">
-				<transition event="t" target="d2"/>
-			</state>
+        <state id="d" initial="d1">
+            <state id="d1">
+                <transition event="t" target="d2"/>
+            </state>
 
-			<state id="d2"/>
-		</state>
+            <state id="d2"/>
+        </state>
 
-	</parallel>
+    </parallel>
 
-	<state id="a1"/>
+    <state id="a1"/>
 </scxml>
 
 

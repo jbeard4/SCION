@@ -15,57 +15,57 @@
    limitations under the License.
 -->
 <scxml 
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0"
-	>
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0"
+    >
 
-	<datamodel>
-		<data id="i" expr="1"/>
-	</datamodel>
+    <datamodel>
+        <data id="i" expr="1"/>
+    </datamodel>
 
-	<parallel id="p">
+    <parallel id="p">
 
-		<transition target="done" cond="i === 100"/>
+        <transition target="done" cond="i === 100"/>
 
-		<transition event="bar">
-			<assign location="i" expr="i * 20"/>
-			<log expr="i"/>
-		</transition>
+        <transition event="bar">
+            <assign location="i" expr="i * 20"/>
+            <log expr="i"/>
+        </transition>
 
-		<state id="a">
-			<state id="a1">
-				<transition event="foo" target="a2">
-					<assign location="i" expr="i * 2"/>
-					<log expr="i"/>
-				</transition>
-			</state>
+        <state id="a">
+            <state id="a1">
+                <transition event="foo" target="a2">
+                    <assign location="i" expr="i * 2"/>
+                    <log expr="i"/>
+                </transition>
+            </state>
 
-			<state id="a2">
-			</state>
-		</state>
+            <state id="a2">
+            </state>
+        </state>
 
-		<state id="b">
-			<state id="b1">
-				<transition event="foo" target="b2">
-					<assign location="i" expr="Math.pow(i,3)"/>
-					<log expr="i"/>
-				</transition>
-			</state>
+        <state id="b">
+            <state id="b1">
+                <transition event="foo" target="b2">
+                    <assign location="i" expr="Math.pow(i,3)"/>
+                    <log expr="i"/>
+                </transition>
+            </state>
 
-			<state id="b2">
-			</state>
-		</state>
+            <state id="b2">
+            </state>
+        </state>
 
-		<state id="c">
-			<transition event="foo">	
-				<assign location="i" expr="i - 3"/>
-				<log expr="i"/>
-			</transition>
-		</state>
-	
-	</parallel>
+        <state id="c">
+            <transition event="foo">    
+                <assign location="i" expr="i - 3"/>
+                <log expr="i"/>
+            </transition>
+        </state>
+    
+    </parallel>
 
-	<state id="done"/>
+    <state id="done"/>
 
 </scxml>
 
