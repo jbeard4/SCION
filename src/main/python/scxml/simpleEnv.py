@@ -13,15 +13,15 @@ import time
 timeouts = set()
 
 def setTimeout(callback,timeout):
-	timeouts.add((time.time(),timeout,callback))
+    timeouts.add((time.time(),timeout,callback))
 
 while True:
-	#see if any timeouts have been triggered
-	now = time.time()
-	triggeredTimeouts = set(filter(lambda (start,timeout,callback) : ((now - start) * 1000) >= timeout, timeouts))
+    #see if any timeouts have been triggered
+    now = time.time()
+    triggeredTimeouts = set(filter(lambda (start,timeout,callback) : ((now - start) * 1000) >= timeout, timeouts))
 
-	for (start,timeout,callback) in triggeredTimeouts:
-		callback()
+    for (start,timeout,callback) in triggeredTimeouts:
+        callback()
 
-	timeouts = timeouts - triggeredTimeouts 
+    timeouts = timeouts - triggeredTimeouts 
 

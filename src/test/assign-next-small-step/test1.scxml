@@ -18,30 +18,30 @@
      This test illustrates how possibly infinite loops may be created. Here, without the counter and the cond, the big-step would never complete.
      -->
 <scxml 
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0" >
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0" >
 
-	<datamodel>
-		<data id="i"/>
-	</datamodel>
+    <datamodel>
+        <data id="i"/>
+    </datamodel>
 
-	<state id="a">
-		<transition target="b" event="t">
-			<script>	
-				setData('i',0);
-			</script>
-		</transition>
-	</state>
+    <state id="a">
+        <transition target="b" event="t">
+            <script>    
+                setData('i',0);
+            </script>
+        </transition>
+    </state>
 
-	<state id="b">
-		<transition target="b" cond="getData('i') &lt; 100">
-			<script>
-				setData('i',getData('i') + 1);
-			</script>
-		</transition>
-		<transition target="c" cond="getData('i') === 100"/>
-	</state>
+    <state id="b">
+        <transition target="b" cond="getData('i') &lt; 100">
+            <script>
+                setData('i',getData('i') + 1);
+            </script>
+        </transition>
+        <transition target="c" cond="getData('i') === 100"/>
+    </state>
 
-	<state id="c"/>
+    <state id="c"/>
 
 </scxml>

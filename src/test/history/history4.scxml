@@ -18,77 +18,77 @@
      illustrates both deep and shallow history, working in both AND and OR states
 -->
 <scxml 
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0"
-	
-	
-	initial="a">
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0"
+    
+    
+    initial="a">
 
 
-	<state id="a">
-		<transition target="p" event="t1"/>
-		<transition target="p" event="t6"/>
-		<transition target="hp" event="t9"/>
-	</state>
+    <state id="a">
+        <transition target="p" event="t1"/>
+        <transition target="p" event="t6"/>
+        <transition target="hp" event="t9"/>
+    </state>
 
-	<parallel id="p">
-		<history id="hp" type="deep"/>
+    <parallel id="p">
+        <history id="hp" type="deep"/>
 
-		<state id="b" initial="hb">
+        <state id="b" initial="hb">
 
-			<history id="hb" type="deep">
-				<transition target="b1"/>
-			</history>
+            <history id="hb" type="deep">
+                <transition target="b1"/>
+            </history>
 
-			<state id="b1" initial="b1.1">
-				<state id="b1.1">
-					<transition target="b1.2" event="t2"/>
-				</state>
+            <state id="b1" initial="b1.1">
+                <state id="b1.1">
+                    <transition target="b1.2" event="t2"/>
+                </state>
 
-				<state id="b1.2">
-					<transition target="b2" event="t3"/>
-				</state>
-			</state>
+                <state id="b1.2">
+                    <transition target="b2" event="t3"/>
+                </state>
+            </state>
 
-			<state id="b2" initial="b2.1">
-				<state id="b2.1">
-					<transition target="b2.2" event="t4"/>
-				</state>
+            <state id="b2" initial="b2.1">
+                <state id="b2.1">
+                    <transition target="b2.2" event="t4"/>
+                </state>
 
-				<state id="b2.2">
-					<transition target="a" event="t5"/>
-					<transition target="a" event="t8"/>
-				</state>
-			</state>
-		</state>
+                <state id="b2.2">
+                    <transition target="a" event="t5"/>
+                    <transition target="a" event="t8"/>
+                </state>
+            </state>
+        </state>
 
-		<state id="c" initial="hc">
+        <state id="c" initial="hc">
 
-			<history id="hc" type="shallow">
-				<transition target="c1"/>
-			</history>
+            <history id="hc" type="shallow">
+                <transition target="c1"/>
+            </history>
 
-			<state id="c1" initial="c1.1">
-				<state id="c1.1">
-					<transition target="c1.2" event="t2"/>
-				</state>
+            <state id="c1" initial="c1.1">
+                <state id="c1.1">
+                    <transition target="c1.2" event="t2"/>
+                </state>
 
-				<state id="c1.2">
-					<transition target="c2" event="t3"/>
-				</state>
-			</state>
+                <state id="c1.2">
+                    <transition target="c2" event="t3"/>
+                </state>
+            </state>
 
-			<state id="c2" initial="c2.1">
-				<state id="c2.1">
-					<transition target="c2.2" event="t4"/>
-					<transition target="c2.2" event="t7"/>
-				</state>
+            <state id="c2" initial="c2.1">
+                <state id="c2.1">
+                    <transition target="c2.2" event="t4"/>
+                    <transition target="c2.2" event="t7"/>
+                </state>
 
-				<state id="c2.2">
-				</state>
-			</state>
-		</state>
-	</parallel>
+                <state id="c2.2">
+                </state>
+            </state>
+        </state>
+    </parallel>
 </scxml>
 
 

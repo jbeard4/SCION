@@ -15,34 +15,34 @@
    limitations under the License.
 -->
 <scxml 
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0"
-	 >
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0"
+     >
 
-	<state id="a">
-		<transition target="b" event="foo"/>
-	</state>
+    <state id="a">
+        <transition target="b" event="foo"/>
+    </state>
 
-	<state id="b">
-		<transition target="c" event="foo.bar"/>
-	</state>
+    <state id="b">
+        <transition target="c" event="foo.bar"/>
+    </state>
 
-	<state id="c">
-		<transition target="d" event="foo.bar.bat"/>
-	</state>
+    <state id="c">
+        <transition target="d" event="foo.bar.bat"/>
+    </state>
 
-	<state id="d">
-		<transition target="e" event="foo"/>
-	</state>
+    <state id="d">
+        <transition target="e" event="foo"/>
+    </state>
 
-	<state id="e">
-		<transition target="f" event="foo.bar"/>
-	</state>
+    <state id="e">
+        <transition target="f" event="foo.bar"/>
+    </state>
 
-	<state id="f">
-		<transition target="g" event="foo.bar.bat"/>
-	</state>
+    <state id="f">
+        <transition target="g" event="foo.bar.bat"/>
+    </state>
 
-	<state id="g"/>
+    <state id="g"/>
 
 </scxml>

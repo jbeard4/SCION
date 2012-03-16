@@ -15,32 +15,32 @@
    limitations under the License.
 -->
 <scxml 
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0"
-	
-	
-	initial="a">
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0"
+    
+    
+    initial="a">
 
-	<state id="a">
-		<transition target="h" event="t1"/>
-	</state>
+    <state id="a">
+        <transition target="h" event="t1"/>
+    </state>
 
-	<state id="b" initial="b1">
+    <state id="b" initial="b1">
 
-		<history id="h">
-			<transition target="b2"/>
-		</history>
+        <history id="h">
+            <transition target="b2"/>
+        </history>
 
-		<state id="b1"/>
+        <state id="b1"/>
 
-		<state id="b2">
-			<transition event="t2" target="b3"/>
-		</state>
+        <state id="b2">
+            <transition event="t2" target="b3"/>
+        </state>
 
-		<state id="b3">
-			<transition event="t3" target="a"/>
-		</state>
-	</state>
+        <state id="b3">
+            <transition event="t3" target="a"/>
+        </state>
+    </state>
 
 </scxml>
 

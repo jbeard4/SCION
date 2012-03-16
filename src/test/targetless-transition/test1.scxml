@@ -15,29 +15,29 @@
    limitations under the License.
 -->
 <scxml 
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0"
-	>
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0"
+    >
 
-	<datamodel>
-		<data id="i" expr="1"/>
-	</datamodel>
+    <datamodel>
+        <data id="i" expr="1"/>
+    </datamodel>
 
-	<state id="A">
-		<transition event="foo">	
-			<assign location="i" expr="i * 2"/>
-		</transition>
+    <state id="A">
+        <transition event="foo">    
+            <assign location="i" expr="i * 2"/>
+        </transition>
 
-		<state id="a">
-			<transition event="bar">
-				<assign location="i" expr="Math.pow(i,3)"/>
-			</transition>
-		</state>
-	
-		<transition target="done" cond="i === 8"/>
-	</state>
+        <state id="a">
+            <transition event="bar">
+                <assign location="i" expr="Math.pow(i,3)"/>
+            </transition>
+        </state>
+    
+        <transition target="done" cond="i === 8"/>
+    </state>
 
-	<state id="done"/>
+    <state id="done"/>
 
 </scxml>
 

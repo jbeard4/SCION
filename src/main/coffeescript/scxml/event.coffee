@@ -13,7 +13,7 @@
 #   limitations under the License.
 
 define ->
-	class Event
-		constructor: (@name="",@data) ->
+    class Event
+        constructor: (@name="",@data) ->
 
-		toString: -> @name
+        toString: -> @name

@@ -13,94 +13,94 @@
 #   limitations under the License.
 
 define ["optimization/initializer","lib/beautify"],(initializer,js_beautify)->
-	tableToString = (table) ->
-		toReturn = "[\n"
+    tableToString = (table) ->
+        toReturn = "[\n"
 
-		for i in [0...table.length]
-			toReturn += "\t["
+        for i in [0...table.length]
+            toReturn += "\t["
 
-			for j in [0...table[i].length]
+            for j in [0...table[i].length]
 
-				if table[i][j].length > 0
-					toReturn += "["
-					for k in [0...table[i][j].length]
-						transitionLabel = table[i][j][k]
-						toReturn += transitionLabel
+                if table[i][j].length > 0
+                    toReturn += "["
+                    for k in [0...table[i][j].length]
+                        transitionLabel = table[i][j][k]
+                        toReturn += transitionLabel
 
-						if k < table[i][j].length - 1
-							toReturn += ","
-					toReturn += "]"
-				else
-					toReturn += "null"
+                        if k < table[i][j].length - 1
+                            toReturn += ","
+                    toReturn += "]"
+                else
+                    toReturn += "null"
 
-				if j < table[i].length - 1
-					toReturn += ","
+                if j < table[i].length - 1
+                    toReturn += ","
 
-			toReturn += "]"
-			if i < table.length - 1 then toReturn += ","
-			toReturn += "\n"
+            toReturn += "]"
+            if i < table.length - 1 then toReturn += ","
+            toReturn += "\n"
 
-		toReturn += "]"
-		return toReturn
+        toReturn += "]"
+        return toReturn
 
-	defaultTableToString = (table) ->
-		toReturn = "[\n"
+    defaultTableToString = (table) ->
+        toReturn = "[\n"
 
-		for i in [0...table.length]
-			if table[i].length
-				toReturn += "\t["
+        for i in [0...table.length]
+            if table[i].length
+                toReturn += "\t["
 
-				for j in [0...table[i].length]
+                for j in [0...table[i].length]
 
-					transitionLabel = table[i][j]
-					toReturn += transitionLabel
+                    transitionLabel = table[i][j]
+                    toReturn += transitionLabel
 
-					if j < table[i].length - 1
-						toReturn += ","
+                    if j < table[i].length - 1
+                        toReturn += ","
 
-				toReturn += "]"
-			else
-				toReturn += "null"
-				
-			if i < table.length - 1 then toReturn += ","
-			toReturn += "\n"
+                toReturn += "]"
+            else
+                toReturn += "null"
+                
+            if i < table.length - 1 then toReturn += ","
+            toReturn += "\n"
 
-		toReturn += "]"
-		return toReturn
-		
-	(scxmlJson,beautify=true,asyncModuleDef=true) ->
-		#NOTE: scxmlJson.events will not contain wildcard ("*") event, 
-		#and will normalize events like "foo.bat.*" to "foo.bat"
-		stateTransitionTable = (((initializer.transitionToVarLabel transition for transition in state.transitions when transition.events and eventName in transition.events) for eventName of scxmlJson.events ) for state in scxmlJson.states)
-		wildcardTransitionsForStates = ((initializer.transitionToVarLabel transition for transition in state.transitions when transition.events and "*" in transition.events) for state in scxmlJson.states)
-		defaultTransitionsForStates = ((initializer.transitionToVarLabel transition for transition in state.transitions when not transition.events) for state in scxmlJson.states)
-		toReturn = initializer.genOuterInitializerStr scxmlJson,"""
-		var stateTransitionTable = #{tableToString stateTransitionTable},
-			wildcardTransitionTable = #{defaultTableToString wildcardTransitionsForStates},
-			defaultTransitionTable = #{defaultTableToString defaultTransitionsForStates};
-		return function(state,eventNames,evaluator){
-			var transitions = [];
+        toReturn += "]"
+        return toReturn
+        
+    (scxmlJson,beautify=true,asyncModuleDef=true) ->
+        #NOTE: scxmlJson.events will not contain wildcard ("*") event, 
+        #and will normalize events like "foo.bat.*" to "foo.bat"
+        stateTransitionTable = (((initializer.transitionToVarLabel transition for transition in state.transitions when transition.events and eventName in transition.events) for eventName of scxmlJson.events ) for state in scxmlJson.states)
+        wildcardTransitionsForStates = ((initializer.transitionToVarLabel transition for transition in state.transitions when transition.events and "*" in transition.events) for state in scxmlJson.states)
+        defaultTransitionsForStates = ((initializer.transitionToVarLabel transition for transition in state.transitions when not transition.events) for state in scxmlJson.states)
+        toReturn = initializer.genOuterInitializerStr scxmlJson,"""
+        var stateTransitionTable = #{tableToString stateTransitionTable},
+            wildcardTransitionTable = #{defaultTableToString wildcardTransitionsForStates},
+            defaultTransitionTable = #{defaultTableToString defaultTransitionsForStates};
+        return function(state,eventNames,evaluator){
+            var transitions = [];
 
-			if(eventNames.length){
-				for(var j = 0; j < eventNames.length; j++){
-					var eventName = eventNames[j];
-					var enumeratedEvent = eventMap[eventName];
-					if(enumeratedEvent){ 
-						var eventId = enumeratedEvent.documentOrder; 
+            if(eventNames.length){
+                for(var j = 0; j < eventNames.length; j++){
+                    var eventName = eventNames[j];
+                    var enumeratedEvent = eventMap[eventName];
+                    if(enumeratedEvent){ 
+                        var eventId = enumeratedEvent.documentOrder; 
 
-						transitions = transitions.concat(stateTransitionTable[state.documentOrder][eventId] || []);
-					}
-				}
+                        transitions = transitions.concat(stateTransitionTable[state.documentOrder][eventId] || []);
+                    }
+                }
 
-				transitions = transitions.concat(wildcardTransitionTable[state.documentOrder] || []);
-			}
-			//default events
-			transitions = transitions.concat(defaultTransitionTable[state.documentOrder] || []);
+                transitions = transitions.concat(wildcardTransitionTable[state.documentOrder] || []);
+            }
+            //default events
+            transitions = transitions.concat(defaultTransitionTable[state.documentOrder] || []);
 
-			#{initializer.transitionFilterString}
-		};
-		"""
+            #{initializer.transitionFilterString}
+        };
+        """
 
-		toReturn = if asyncModuleDef then "define(function(){return #{toReturn}});" else toReturn
+        toReturn = if asyncModuleDef then "define(function(){return #{toReturn}});" else toReturn
 
-		if beautify then js_beautify toReturn else toReturn
+        if beautify then js_beautify toReturn else toReturn

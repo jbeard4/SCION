@@ -15,30 +15,30 @@
    limitations under the License.
 -->
 <!--
-	Illustrates one of the edge cases of these semantics. Followup to send7. If we target, not the outer composite state, but the inner state directly, the event will be available in the next small step. This is an example of the way in which these semantics break the synchrony hypthosesis. 
+    Illustrates one of the edge cases of these semantics. Followup to send7. If we target, not the outer composite state, but the inner state directly, the event will be available in the next small step. This is an example of the way in which these semantics break the synchrony hypthosesis. 
      -->
 <scxml 
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0">
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0">
 
-	<state id="a">
-		<transition target="b1" event="t">
-			<raise event="s"/>
-		</transition>
-	</state>
+    <state id="a">
+        <transition target="b1" event="t">
+            <raise event="s"/>
+        </transition>
+    </state>
 
-	<state id="b" initial="b1">
-		<state id="b1">
-			<transition event="s" target="b2"/>
-			<transition target="b3"/>
-		</state>
+    <state id="b" initial="b1">
+        <state id="b1">
+            <transition event="s" target="b2"/>
+            <transition target="b3"/>
+        </state>
 
-		<state id="b2">
-		</state>
+        <state id="b2">
+        </state>
 
-		<state id="b3">
-		</state>
-	</state>
+        <state id="b3">
+        </state>
+    </state>
 </scxml>
 
 

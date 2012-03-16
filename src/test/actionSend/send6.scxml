@@ -15,40 +15,40 @@
    limitations under the License.
 -->
 <!--
-	This is a quick followup to send5.json, to show that order in the event set does not matter. Transitions with events r and s are switched.
+    This is a quick followup to send5.json, to show that order in the event set does not matter. Transitions with events r and s are switched.
      -->
 <scxml 
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0">
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0">
 
-	<state id="a">
-		<transition target="b" event="t">
-		</transition>
-	</state>
+    <state id="a">
+        <transition target="b" event="t">
+        </transition>
+    </state>
 
-	<state id="b">
-		<onentry>
-			<raise event="s"/>
-			<raise event="r"/>
-		</onentry>
+    <state id="b">
+        <onentry>
+            <raise event="s"/>
+            <raise event="r"/>
+        </onentry>
 
-		<transition target="c" event="r"/>
-		<transition target="f1"/>
-	</state>
+        <transition target="c" event="r"/>
+        <transition target="f1"/>
+    </state>
 
-	<state id="c">
-		<transition target="f2" event="s"/>
-		<transition target="d"/>
-	</state>
+    <state id="c">
+        <transition target="f2" event="s"/>
+        <transition target="d"/>
+    </state>
 
-	<state id="f1">
-	</state>
+    <state id="f1">
+    </state>
 
-	<state id="d">
-	</state>
+    <state id="d">
+    </state>
 
-	<state id="f2">
-	</state>
+    <state id="f2">
+    </state>
 
 </scxml>
 

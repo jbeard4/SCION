@@ -14,16 +14,16 @@
 
 define ["test-harness/optimization-harness","test-harness/simple-env","test-harness/report2string","logger"],(optimizationHarness,SimpleEnv,report2string,logger) ->
 
-	runTests = ->
+    runTests = ->
 
-		finish = (report) ->
-			logger.info report2string report
-			
-			if report.testCount == report.testsPassed
-				java.lang.System.exit(0)
-			else
-				java.lang.System.exit(1)
+        finish = (report) ->
+            logger.info report2string report
+            
+            if report.testCount == report.testsPassed
+                java.lang.System.exit(0)
+            else
+                java.lang.System.exit(1)
 
-		env = new SimpleEnv()
+        env = new SimpleEnv()
 
-		optimizationHarness env.setTimeout,env.clearTimeout,finish,env.mainLoop
+        optimizationHarness env.setTimeout,env.clearTimeout,finish,env.mainLoop

@@ -2,6 +2,6 @@ This demo illustrates how to interact with SCION from a node.js HTTP server, in 
 
 Run this demo as follows:
 
-	./repl.sh path/to/scxml
+    ./repl.sh path/to/scxml
 
 Then navigate to http://localhost:1337 in your browser.

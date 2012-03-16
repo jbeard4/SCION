@@ -19,26 +19,26 @@ orthogonal preemption - inner or states interrupt one-another
 in our semantics, source state is at the same level of hierarchy, so document order will resolve conflict. a1 will win.
 --> 
 <scxml
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0"
-	
-	
-	initial="b">
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0"
+    
+    
+    initial="b">
 
-	<parallel id="b">
-		<state id="c">
-			<transition event="t" target="a1"/>
-		</state>
+    <parallel id="b">
+        <state id="c">
+            <transition event="t" target="a1"/>
+        </state>
 
-		<state id="d">
-			<transition event="t" target="a2"/>
-		</state>
+        <state id="d">
+            <transition event="t" target="a2"/>
+        </state>
 
-	</parallel>
+    </parallel>
 
-	<state id="a1"/>
+    <state id="a1"/>
 
-	<state id="a2"/>
+    <state id="a2"/>
 </scxml>
 
 

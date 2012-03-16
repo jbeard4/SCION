@@ -21,23 +21,23 @@
     <script type="text/javascript" src="../../lib/js/r.js"></script>
 
     <script>
-	require(
-		{
-			baseUrl : "../../target/core",
-			paths : {
-				"tests" : "../tests"
-			}
-		},
-		["test-harness/basic-test-harness"],
-		function(fn){
-			if(typeof fn !== "function"){
-				console.error("Unable to find module");
-				return 1
-			}else{
-				return fn()
-			}
-		}
-	);
+    require(
+        {
+            baseUrl : "../../target/core",
+            paths : {
+                "tests" : "../tests"
+            }
+        },
+        ["test-harness/basic-test-harness"],
+        function(fn){
+            if(typeof fn !== "function"){
+                console.error("Unable to find module");
+                return 1
+            }else{
+                return fn()
+            }
+        }
+    );
     </script>
   </head>
   <body>

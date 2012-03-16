@@ -1,15 +1,15 @@
 {
-	"initialConfiguration" : ["a1","b1","c"],
-	"events" : [
-		{
-			"event" : { "name" : "foo" },
-			"nextConfiguration" : ["a2","b2","c"]
-		},
-		{
-			"event" : { "name" : "bar" },
-			"nextConfiguration" : ["done"]
-		}
-	]
+    "initialConfiguration" : ["a1","b1","c"],
+    "events" : [
+        {
+            "event" : { "name" : "foo" },
+            "nextConfiguration" : ["a2","b2","c"]
+        },
+        {
+            "event" : { "name" : "bar" },
+            "nextConfiguration" : ["done"]
+        }
+    ]
 }
 
 

@@ -15,43 +15,43 @@
    limitations under the License.
 -->
 <scxml 
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0"
-	>
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0"
+    >
 
-	<datamodel>
-		<data id="foo" expr="1"/>
-		<data id="bar" expr="2"/>
-		<data id="bat" expr="3"/>
-	</datamodel>
+    <datamodel>
+        <data id="foo" expr="1"/>
+        <data id="bar" expr="2"/>
+        <data id="bat" expr="3"/>
+    </datamodel>
 
-	<state id="a">
-		<transition target="b" event="t">
-			<send delayexpr="'10'" eventexpr="'s'" namelist="foo bar">
-				<param name="bif" location="bat"/>
-				<param name="belt" expr="4"/> 
-				<content>More content.</content>
-			</send>
-		</transition>
-	</state>
+    <state id="a">
+        <transition target="b" event="t">
+            <send delayexpr="'10'" eventexpr="'s'" namelist="foo bar">
+                <param name="bif" location="bat"/>
+                <param name="belt" expr="4"/> 
+                <content>More content.</content>
+            </send>
+        </transition>
+    </state>
 
-	<state id="b">
-		<transition event="s" target="c" 
-			cond="_event.data.foo === 1 &amp;&amp; 
-				_event.data.bar === 2 &amp;&amp; 
-				_event.data.bif === 3 &amp;&amp;
-				_event.data.belt === 4 &amp;&amp;
-				_event.data.content === 'More content.'"/>
-		<transition event="s" target="f"/>
-	</state>
+    <state id="b">
+        <transition event="s" target="c" 
+            cond="_event.data.foo === 1 &amp;&amp; 
+                _event.data.bar === 2 &amp;&amp; 
+                _event.data.bif === 3 &amp;&amp;
+                _event.data.belt === 4 &amp;&amp;
+                _event.data.content === 'More content.'"/>
+        <transition event="s" target="f"/>
+    </state>
 
-	<state id="c">
-		<transition event="t2" target="d"/>	
-	</state>
+    <state id="c">
+        <transition event="t2" target="d"/> 
+    </state>
 
-	<state id="d"/>
+    <state id="d"/>
 
-	<state id="f"/> 
+    <state id="f"/> 
 </scxml>
 
 

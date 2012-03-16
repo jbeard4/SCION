@@ -15,56 +15,56 @@
    limitations under the License.
 -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-	xmlns:s="http://www.w3.org/2005/07/scxml"
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0">
-	<xsl:output method="xml"/>
+    xmlns:s="http://www.w3.org/2005/07/scxml"
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0">
+    <xsl:output method="xml"/>
 
-	<!-- identity transform -->
-	<xsl:template match="@*|node()">
-		<xsl:copy>
-			<xsl:apply-templates select="@*|node()"/>
-		</xsl:copy>
-	</xsl:template>
+    <!-- identity transform -->
+    <xsl:template match="@*|node()">
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()"/>
+        </xsl:copy>
+    </xsl:template>
 
-	<!-- match only basic states -->
-	<xsl:template match="s:state | s:parallel | s:history | s:final">
+    <!-- match only basic states -->
+    <xsl:template match="s:state | s:parallel | s:history | s:final">
 
-		<xsl:copy>
-			<xsl:apply-templates select="@*"/>
+        <xsl:copy>
+            <xsl:apply-templates select="@*"/>
 
-			<xsl:if test="not(s:onentry)">
-				<onentry>
-					<log expr="'entering state {@id}'"/>
-				</onentry>
-			</xsl:if>
+            <xsl:if test="not(s:onentry)">
+                <onentry>
+                    <log expr="'entering state {@id}'"/>
+                </onentry>
+            </xsl:if>
 
-			<xsl:if test="not(s:onexit)">
-				<onexit>
-					<log expr="'exiting state {@id}'"/>
-				</onexit>
-			</xsl:if>
+            <xsl:if test="not(s:onexit)">
+                <onexit>
+                    <log expr="'exiting state {@id}'"/>
+                </onexit>
+            </xsl:if>
 
-			<xsl:apply-templates select="node()"/>
-		</xsl:copy>
+            <xsl:apply-templates select="node()"/>
+        </xsl:copy>
 
-	</xsl:template>
+    </xsl:template>
 
-	<xsl:template match="s:onentry">
-		<xsl:copy>
-			<log expr="'entering state {../@id}'"/>
+    <xsl:template match="s:onentry">
+        <xsl:copy>
+            <log expr="'entering state {../@id}'"/>
 
-			<xsl:apply-templates select="@*|node()"/>
-		</xsl:copy>
-	</xsl:template>
+            <xsl:apply-templates select="@*|node()"/>
+        </xsl:copy>
+    </xsl:template>
 
-	<xsl:template match="s:onexit">
-		<xsl:copy>
-			<log expr="'exiting state {../@id}'"/>
+    <xsl:template match="s:onexit">
+        <xsl:copy>
+            <log expr="'exiting state {../@id}'"/>
 
-			<xsl:apply-templates select="@*|node()"/>
-		</xsl:copy>
-	</xsl:template>
+            <xsl:apply-templates select="@*|node()"/>
+        </xsl:copy>
+    </xsl:template>
 
 </xsl:stylesheet>
 

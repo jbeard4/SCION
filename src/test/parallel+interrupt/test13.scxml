@@ -19,37 +19,37 @@ initial: [b1,b2]
 after t: [c1,c2]
 --> 
 <scxml
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0"
-	
-	
-	initial="a">
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0"
+    
+    
+    initial="a">
 
-	<state id="a" initial="b">
+    <state id="a" initial="b">
 
-		<parallel id="b">
-			<state id="b1">
-				<transition event="t" target="c"/>
-			</state>
+        <parallel id="b">
+            <state id="b1">
+                <transition event="t" target="c"/>
+            </state>
 
-			<state id="b2">
-			</state>
+            <state id="b2">
+            </state>
 
-			<transition event="t" target="d"/>
+            <transition event="t" target="d"/>
 
-		</parallel>
+        </parallel>
 
-		<parallel id="c">
-			<state id="c1">
-			</state>
+        <parallel id="c">
+            <state id="c1">
+            </state>
 
-			<state id="c2">
-			</state>
-		</parallel>
+            <state id="c2">
+            </state>
+        </parallel>
 
-	</state>
+    </state>
 
-	<state id="d"/>
+    <state id="d"/>
 
 </scxml>
 

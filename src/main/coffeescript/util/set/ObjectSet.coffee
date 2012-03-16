@@ -13,59 +13,59 @@
 #   limitations under the License.
 
 define ->
-	(defaultKeyProp="id") ->
-		class ObjectSet
-			constructor: (l=[],@keyProp=defaultKeyProp) ->
-				@o = {}
-				@union(l)
+    (defaultKeyProp="id") ->
+        class ObjectSet
+            constructor: (l=[],@keyProp=defaultKeyProp) ->
+                @o = {}
+                @union(l)
 
-			add: (x) ->
-				@o[x[@keyProp]] = x
+            add: (x) ->
+                @o[x[@keyProp]] = x
 
-			remove: (x) ->
-				delete @o[x[@keyProp]]
+            remove: (x) ->
+                delete @o[x[@keyProp]]
 
-			union: (l) ->
-				if l instanceof ObjectSet
-					for k,v of l.o
-						@add(v)
-				else
-					l = if l.iter then l.iter() else l
-					for x in l
-						@add(x)
+            union: (l) ->
+                if l instanceof ObjectSet
+                    for k,v of l.o
+                        @add(v)
+                else
+                    l = if l.iter then l.iter() else l
+                    for x in l
+                        @add(x)
 
-				return @
+                return @
 
-			difference: (l) ->
-				if l instanceof ObjectSet
-					for k,v of l.o
-						@remove(v)
-				else
-					l = if l.iter then l.iter() else l
-					for x in l
-						@remove(x)
+            difference: (l) ->
+                if l instanceof ObjectSet
+                    for k,v of l.o
+                        @remove(v)
+                else
+                    l = if l.iter then l.iter() else l
+                    for x in l
+                        @remove(x)
 
-				return @
+                return @
 
-			contains: (x) -> @o[x[@keyProp]] is x
+            contains: (x) -> @o[x[@keyProp]] is x
 
-			iter: -> v for own k,v of @o
+            iter: -> v for own k,v of @o
 
-			isEmpty : ->
-				for own k,v of @o
-					return false
-				return true
+            isEmpty : ->
+                for own k,v of @o
+                    return false
+                return true
 
-			equals : (s2) ->
-				l1 = @iter()
-				l2 = s2.iter()
-				
-				for v in l1
-					if not s2.contains(v)
-						return false
+            equals : (s2) ->
+                l1 = @iter()
+                l2 = s2.iter()
+                
+                for v in l1
+                    if not s2.contains(v)
+                        return false
 
-				for v in l2
-					if not @contains(v)
-						return false
+                for v in l2
+                    if not @contains(v)
+                        return false
 
-				return true
+                return true

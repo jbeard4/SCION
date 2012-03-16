@@ -15,51 +15,51 @@
    limitations under the License.
 -->
 <scxml 
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0" >
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0" >
 
-	<state id="a">
-		<transition target="b" event="t">
-			<script>
-				setData('i',0)
-			</script>
-		</transition>
-	</state>
+    <state id="a">
+        <transition target="b" event="t">
+            <script>
+                setData('i',0)
+            </script>
+        </transition>
+    </state>
 
-	<state id="A">
+    <state id="A">
 
-		<state id="b">
-			<transition target="c" cond="getData('i') &lt; 100">
-				<script>
-					setData('i',getData('i') + 1)
-				</script>
-			</transition>
-		</state>
+        <state id="b">
+            <transition target="c" cond="getData('i') &lt; 100">
+                <script>
+                    setData('i',getData('i') + 1)
+                </script>
+            </transition>
+        </state>
 
-		<state id="c">
-			<transition target="b" cond="getData('i') &lt; 100">
-				<script>
-					setData('i',getData('i') + 1)
-				</script>
-			</transition>
-		</state>
+        <state id="c">
+            <transition target="b" cond="getData('i') &lt; 100">
+                <script>
+                    setData('i',getData('i') + 1)
+                </script>
+            </transition>
+        </state>
 
-		<transition target="d" cond="getData('i') === 100">
-			<script>
-				setData('i',getData('i') * 2)
-			</script>
-		</transition>
-	</state>
+        <transition target="d" cond="getData('i') === 100">
+            <script>
+                setData('i',getData('i') * 2)
+            </script>
+        </transition>
+    </state>
 
 
-	<state id="d">
-		<transition target="e" cond="getData('i') === 200"/>
-		<transition target="f"/>
-	</state>
+    <state id="d">
+        <transition target="e" cond="getData('i') === 200"/>
+        <transition target="f"/>
+    </state>
 
-	<state id="e"/>
+    <state id="e"/>
 
-	<state id="f"/>
+    <state id="f"/>
 
 </scxml>
 

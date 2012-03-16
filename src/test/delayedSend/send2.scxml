@@ -15,27 +15,27 @@
    limitations under the License.
 -->
 <scxml 
-	xmlns="http://www.w3.org/2005/07/scxml"
-	version="1.0" >
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0" >
 
-	<state id="a">
-		<onexit>
-			<send event="s" delay="10ms"/>
-		</onexit>
+    <state id="a">
+        <onexit>
+            <send event="s" delay="10ms"/>
+        </onexit>
 
-		<transition target="b" event="t1">
-		</transition>
-	</state>
+        <transition target="b" event="t1">
+        </transition>
+    </state>
 
-	<state id="b">
-		<transition target="c" event="s"/>
-	</state>
+    <state id="b">
+        <transition target="c" event="s"/>
+    </state>
 
-	<state id="c">
-		<transition target="d" event="t2"/>
-	</state>
+    <state id="c">
+        <transition target="d" event="t2"/>
+    </state>
 
-	<state id="d"/>
+    <state id="d"/>
 
 </scxml>
 
