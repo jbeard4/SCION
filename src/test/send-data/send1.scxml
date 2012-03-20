@@ -16,8 +16,7 @@
 -->
 <scxml 
     xmlns="http://www.w3.org/2005/07/scxml"
-    version="1.0"
-    >
+    version="1.0" >
 
     <datamodel>
         <data id="foo" expr="1"/>
@@ -30,7 +29,6 @@
             <send delayexpr="'10'" eventexpr="'s'" namelist="foo bar">
                 <param name="bif" location="bat"/>
                 <param name="belt" expr="4"/> 
-                <content>More content.</content>
             </send>
         </transition>
     </state>
@@ -40,16 +38,28 @@
             cond="_event.data.foo === 1 &amp;&amp; 
                 _event.data.bar === 2 &amp;&amp; 
                 _event.data.bif === 3 &amp;&amp;
-                _event.data.belt === 4 &amp;&amp;
-                _event.data.content === 'More content.'"/>
+                _event.data.belt === 4">
+
+            <send delayexpr="'10'" eventexpr="'s2'">
+                <content>More content.</content>
+            </send>
+        </transition>
+
         <transition event="s" target="f"/>
     </state>
 
     <state id="c">
-        <transition event="t2" target="d"/> 
+        <transition event="s2" target="d" 
+            cond="_event.data === 'More content.'"/> 
+        
+        <transition event="s2" target="f"/> 
     </state>
 
-    <state id="d"/>
+    <state id="d">
+        <transition target="e" event="t2"/>
+    </state>
+
+    <state id="e"/>
 
     <state id="f"/> 
 </scxml>

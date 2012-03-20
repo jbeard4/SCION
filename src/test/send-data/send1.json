@@ -8,7 +8,7 @@
         {
             "after" : 100,
             "event" : { "name" : "t2" },
-            "nextConfiguration" : ["d"]
+            "nextConfiguration" : ["e"]
         }
     ]
 }
