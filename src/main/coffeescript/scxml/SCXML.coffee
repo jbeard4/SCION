@@ -97,7 +97,7 @@ define ["util/set/ArraySet","scxml/state-kinds-enum","scxml/event","util/reduce"
 
             #initialize top-level datamodel expressions. simple eval
             for k,v of @_datamodel
-                if v then @_datamodel[k] = eval(v)
+                if v then @_datamodel[k] = eval("(#{v})")
 
             @_performBigStep()
             return @getConfiguration()
