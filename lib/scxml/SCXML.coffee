@@ -13,11 +13,10 @@
 #   limitations under the License.
 
 
-ArraySet = require 'set/ArraySet'
-stateKinds = require 'state-kinds-enum'
-reduce = require 'reduce'
-setupDefaultOpts = 'setup-default-opts'
-scxmlPrefixTransitionSelector = "scxml-dynamic-name-match-transition-selector"
+ArraySet = require './set/ArraySet'
+stateKinds = require './state-kinds-enum'
+setupDefaultOpts = require './setup-default-opts'
+scxmlPrefixTransitionSelector = require './scxml-dynamic-name-match-transition-selector'
 
 #imports
 

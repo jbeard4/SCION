@@ -1,7 +1,7 @@
 var xml2jsonml = require('xml2jsonml'),
-    annotator = require('../lib/util/annotate-scxml-json'),
-    json2model = require('../lib/scxml/json2model'),
-    scxml = require('../lib/scxml/SCXML');
+    annotator = require('../../lib/util/annotate-scxml-json'),
+    json2model = require('../../lib/scxml/json2model'),
+    scxml = require('../../lib/scxml/SCXML');
 
 
 //1 - 2. get the xml file and convert it to jsonml

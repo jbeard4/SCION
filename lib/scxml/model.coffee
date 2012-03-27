@@ -12,11 +12,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-stateKinds = require 'state-kinds-enum'
+stateKinds = require './state-kinds-enum'
 
-return {
+module.exports =
 
-	getDepth: (s) ->
+    getDepth: (s) ->
         if s.depth isnt undefined then return s.depth
         else
             count = 0
@@ -27,13 +27,13 @@ return {
 
             return count
 
-	getAncestors: (s,root) ->
+    getAncestors: (s,root) ->
         if s.ancestors
-			index = s.ancestors.indexOf(root)
-			if index is -1
-				s.ancestors
-			else
-				s.ancestors.slice(0,index)
+            index = s.ancestors.indexOf(root)
+            if index is -1
+                s.ancestors
+            else
+                s.ancestors.slice(0,index)
         else
             ancestors = []
 
@@ -44,9 +44,9 @@ return {
 
             return ancestors
 
-	getAncestorsOrSelf: (s,root) -> [s].concat @getAncestors(s,root)
+    getAncestorsOrSelf: (s,root) -> [s].concat @getAncestors(s,root)
 
-	getDescendants: (s) ->
+    getDescendants: (s) ->
         if s.descendants then return s.descendants
         else
             descendants = []
@@ -61,18 +61,18 @@ return {
 
             return descendants
 
-	getDescendantsOrSelf: (s) -> [s].concat @getDescendants(s)
+    getDescendantsOrSelf: (s) -> [s].concat @getDescendants(s)
 
-	isOrthogonalTo: (s1,s2) ->
-		#Two control states are orthogonal if they are not ancestrally
-		#related, and their smallest, mutual parent is a Concurrent-state.
-		return not @isAncestrallyRelatedTo(s1,s2) and @getLCA(s1,s2).kind is stateKinds.PARALLEL
+    isOrthogonalTo: (s1,s2) ->
+        #Two control states are orthogonal if they are not ancestrally
+        #related, and their smallest, mutual parent is a Concurrent-state.
+        return not @isAncestrallyRelatedTo(s1,s2) and @getLCA(s1,s2).kind is stateKinds.PARALLEL
 
-	isAncestrallyRelatedTo: (s1,s2) ->
-		#Two control states are ancestrally related if one is child/grandchild of another.
-		return s1 in @getAncestorsOrSelf(s2) or s2 in @getAncestorsOrSelf(s1)
+    isAncestrallyRelatedTo: (s1,s2) ->
+        #Two control states are ancestrally related if one is child/grandchild of another.
+        return s1 in @getAncestorsOrSelf(s2) or s2 in @getAncestorsOrSelf(s1)
 
-	getLCA: (tOrS1,s2) ->
+    getLCA: (tOrS1,s2) ->
         if tOrS1.lca then return tOrS1.lca
         else
             #can take one or two arguments: either 1 transition, or two states
@@ -84,4 +84,3 @@ return {
                 commonAncestors = (a for a in @getAncestors(s1) when s2 in @getDescendants(a))
                 return commonAncestors[0]
 
-}
