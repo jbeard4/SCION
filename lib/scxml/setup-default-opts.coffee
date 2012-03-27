@@ -1,6 +1,6 @@
-selector = require 'scxml-dynamic-name-match-transition-selector'
-ArraySet = require 'set/ArraySet'
-m = require 'model'
+selector = require './scxml-dynamic-name-match-transition-selector'
+ArraySet = require './set/ArraySet'
+m = require './model'
 
 module.exports = (opts={}) ->
     opts.TransitionSet ?= ArraySet
