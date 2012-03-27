@@ -6,10 +6,10 @@
    Please attribute the author if you use it. */
 
 svg\:svg {
-	display: none;
+    display: none;
 }
 
 .svg_error {
-	color: red;
-	font-weight: bold;
+    color: red;
+    font-weight: bold;
 }
