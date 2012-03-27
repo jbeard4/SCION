@@ -1,28 +1,36 @@
-var fs = require('fs');
+var xml2jsonml = require('xml2jsonml'),
+    annotator = require('../lib/util/annotate-scxml-json'),
+    json2model = require('../lib/scxml/json2model'),
+    scxml = require('../lib/scxml/SCXML');
 
-var s = fs.readFileSync('build/basic1.annotated.scxml.json','utf8');
-var annotatedScxmlJson = JSON.parse(s);
 
-var scion = require('scion');
+//1 - 2. get the xml file and convert it to jsonml
+xml2jsonml.parseFile(process.argv[2],function(scxmlJson){
 
-//4. Convert the SCXML-JSON document to a statechart object model. This step essentially converts id labels to object references, parses JavaScript scripts and expressions embedded in the SCXML as js functions, and does some validation for correctness. 
-var model = scion.json2model(annotatedScxmlJson); 
-console.log("model",model);
+    //3. annotate jsonml
+    var annotatedScxmlJson = annotator.transform(scxmlJson,true,true,true,true);
 
-//5. Use the statechart object model to instantiate an instance of the statechart interpreter. Optionally, we can pass to the construct an object to be used as the context object (the 'this' object) in script evaluation. Lots of other parameters are available.
-var interpreter = new scion.NodeInterpreter(model);
-console.log("interpreter",interpreter);
+    //4. Convert the SCXML-JSON document to a statechart object model. This step essentially converts id labels to object references, parses JavaScript scripts and expressions embedded in the SCXML as js functions, and does some validation for correctness. 
+    var model = json2model(annotatedScxmlJson); 
+    console.log("model",model);
 
-//6. We would connect relevant event listeners to the statechart instance here.
+    //5. Use the statechart object model to instantiate an instance of the statechart interpreter. Optionally, we can pass to the construct an object to be used as the context object (the 'this' object) in script evaluation. Lots of other parameters are available.
+    var interpreter = new scxml.NodeInterpreter(model);
+    console.log("interpreter",interpreter);
 
-//7. Call the start method on the new intrepreter instance to start execution of the statechart.
-interpreter.start()
+    //6. We would connect relevant event listeners to the statechart instance here.
 
-//let's test it by printing current state
-console.log("initial configuration",interpreter.getConfiguration());
+    //7. Call the start method on the new intrepreter instance to start execution of the statechart.
+    interpreter.start();
 
-//send an event, inspect new configuration
-console.log("sending event t");
-interpreter.gen(new scion.Event("t"));
+    //let's test it by printing current state
+    console.log("initial configuration",interpreter.getConfiguration());
 
-console.log("next configuration",interpreter.getConfiguration());
+    //send an event, inspect new configuration
+    console.log("sending event t");
+    interpreter.gen({name : "t"});
+
+    console.log("next configuration",interpreter.getConfiguration());
+    
+});
+

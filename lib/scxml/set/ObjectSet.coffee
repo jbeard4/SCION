@@ -12,60 +12,62 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-define ->
-	(defaultKeyProp="id") ->
-		class ObjectSet
-			constructor: (l=[],@keyProp=defaultKeyProp) ->
-				@o = {}
-				@union(l)
+defaultKeyProp = "id"
 
-			add: (x) ->
-				@o[x[@keyProp]] = x
+class ObjectSet
+    constructor: (l=[],@keyProp=defaultKeyProp) ->
+        @o = {}
+        @union(l)
 
-			remove: (x) ->
-				delete @o[x[@keyProp]]
+    add: (x) ->
+        @o[x[@keyProp]] = x
 
-			union: (l) ->
-				if l instanceof ObjectSet
-					for k,v of l.o
-						@add(v)
-				else
-					l = if l.iter then l.iter() else l
-					for x in l
-						@add(x)
+    remove: (x) ->
+        delete @o[x[@keyProp]]
 
-				return @
+    union: (l) ->
+        if l instanceof ObjectSet
+            for k,v of l.o
+                @add(v)
+        else
+            l = if l.iter then l.iter() else l
+            for x in l
+                @add(x)
 
-			difference: (l) ->
-				if l instanceof ObjectSet
-					for k,v of l.o
-						@remove(v)
-				else
-					l = if l.iter then l.iter() else l
-					for x in l
-						@remove(x)
+        return @
 
-				return @
+    difference: (l) ->
+        if l instanceof ObjectSet
+            for k,v of l.o
+                @remove(v)
+        else
+            l = if l.iter then l.iter() else l
+            for x in l
+                @remove(x)
 
-			contains: (x) -> @o[x[@keyProp]] is x
+        return @
 
-			iter: -> v for own k,v of @o
+    contains: (x) -> @o[x[@keyProp]] is x
 
-			isEmpty : ->
-				for own k,v of @o
-					return false
-				return true
+    iter: -> v for own k,v of @o
 
-			equals : (s2) ->
-				l1 = @iter()
-				l2 = s2.iter()
-				
-				for v in l1
-					if not s2.contains(v)
-						return false
+    isEmpty : ->
+        for own k,v of @o
+            return false
+        return true
 
-				for v in l2
-					if not @contains(v)
-						return false
+    equals : (s2) ->
+        l1 = @iter()
+        l2 = s2.iter()
+        
+        for v in l1
+            if not s2.contains(v)
+                return false
 
-				return true
+        for v in l2
+            if not @contains(v)
+                return false
+
+        return true
+
+module.exports = ObjectSet

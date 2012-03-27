@@ -12,58 +12,59 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-define ->
-	class ArraySet
-		constructor: (l=[]) ->
-			@o = []
+class ArraySet
+    constructor: (l=[]) ->
+        @o = []
 
-			for x in l
-				@add x
+        for x in l
+            @add x
 
-		add: (x) ->
-			if not @contains x
-				@o.push x
+    add: (x) ->
+        if not @contains x
+            @o.push x
 
-		remove: (x) ->
-			for i in [0...@o.length]
-				if @o[i] is x
-					@o.splice i,1
-					return true
-			return false
+    remove: (x) ->
+        for i in [0...@o.length]
+            if @o[i] is x
+                @o.splice i,1
+                return true
+        return false
 
-		union: (l) ->
-			l = if l.iter then l.iter() else l
+    union: (l) ->
+        l = if l.iter then l.iter() else l
 
-			for i in l
-				@add(i)
+        for i in l
+            @add(i)
 
-			return @
+        return @
 
-		difference: (l) ->
-			l = if l.iter then l.iter() else l
+    difference: (l) ->
+        l = if l.iter then l.iter() else l
 
-			for i in l
-				@remove(i)
+        for i in l
+            @remove(i)
 
-			return @
+        return @
 
-		contains: (x) -> x in @o
+    contains: (x) -> x in @o
 
-		iter: -> @o
+    iter: -> @o
 
-		isEmpty : -> !@o.length
+    isEmpty : -> !@o.length
 
-		equals : (s2) ->
-			l2 = s2.iter()
-			
-			for v in @o
-				if not s2.contains(v)
-					return false
+    equals : (s2) ->
+        l2 = s2.iter()
+        
+        for v in @o
+            if not s2.contains(v)
+                return false
 
-			for v in l2
-				if not @contains(v)
-					return false
+        for v in l2
+            if not @contains(v)
+                return false
 
-			return true
+        return true
 
-		toString : -> "Set(" + @o.toString() + ")"
+    toString : -> "Set(" + @o.toString() + ")"
+
+module.exports = ArraySet

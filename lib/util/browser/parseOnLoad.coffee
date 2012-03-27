@@ -1,3 +1,5 @@
+#TODO: this will be the browser entry point. need to figure out domReady, and converting to JsonML in the browser
+
 #returns a function that should be called on load
 define ["lib/domReady","scxml/SCXML","util/annotate-scxml-json","scxml/json2model","scxml/event","lib/JsonML_DOM","browser/print"], (domReady,{BrowserInterpreter : BrowserInterpreter},jsonAnnotator,json2model,Event,JsonML) -> domReady ->
 	#TODO: I should also try this module in some versions of IE, and see how well it does with regular HTML content 

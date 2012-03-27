@@ -1,4 +1,4 @@
-define
+module.exports =
 	BASIC : 0
 	COMPOSITE : 1
 	PARALLEL : 2

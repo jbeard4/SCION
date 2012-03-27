@@ -1,10 +1,12 @@
-define ["scxml/scxml-dynamic-name-match-transition-selector","util/set/ArraySet","scxml/model"],(defaultTransitionSelector,ArraySet,m) ->
+selector = require 'scxml-dynamic-name-match-transition-selector'
+ArraySet = require 'set/ArraySet'
+m = require 'model'
 
-	(opts={}) ->
-		opts.TransitionSet ?= ArraySet
-		opts.StateSet ?= ArraySet
-		opts.BasicStateSet ?= ArraySet
-		opts.transitionSelector ?= defaultTransitionSelector
-		opts.model  ?= m
+module.exports = (opts={}) ->
+    opts.TransitionSet ?= ArraySet
+    opts.StateSet ?= ArraySet
+    opts.BasicStateSet ?= ArraySet
+    opts.transitionSelector ?= selector
+    opts.model  ?= m
 
-		return opts
+    return opts
