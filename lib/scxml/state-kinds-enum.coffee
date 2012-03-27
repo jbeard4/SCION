@@ -5,4 +5,3 @@ module.exports =
 	HISTORY : 3
 	INITIAL : 4
 	FINAL : 5
-

@@ -1,14 +1,14 @@
 var repl = require('repl'),
-	fs = require('fs'),
-	scion = require('scion');
+    fs = require('fs'),
+    scion = require('scion');
 
 var scxmlJsonStr = fs.readFileSync(process.argv[2],'utf8');
 
 try{
-	var scxmlJson = JSON.parse(scxmlJsonStr);
+    var scxmlJson = JSON.parse(scxmlJsonStr);
 }catch(e){
-	console.error(e);
-	process.exit(1);
+    console.error(e);
+    process.exit(1);
 }
 
 //3. annotate him programmatically
@@ -31,11 +31,11 @@ console.log(interpreter.getConfiguration().iter());
 var parseRE = /\((.*)\n\)/;
 
 function processEvent(cmd,dontKnow,alsoDontKnow,callback){
-	var e = cmd.match(parseRE)[1];
-	interpreter.gen(new scion.Event(e));
-	conf = interpreter.getConfiguration();
-	callback(null,conf.iter());
+    var e = cmd.match(parseRE)[1];
+    interpreter.gen(new scion.Event(e));
+    conf = interpreter.getConfiguration();
+    callback(null,conf.iter());
 }
-	
+    
 //start 
 repl.start('#',process.stdin,processEvent);
