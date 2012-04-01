@@ -4,7 +4,7 @@
 //clean up statechart
 
 var xml2jsonml = require('xml2jsonml'),
-    scion = require('../index'),
+    scion = require('../lib/scion'),
     http = require('http');
 
 var sessionCounter = 0, sessions = {}, timeouts = {}, timeoutMs = 5000;
