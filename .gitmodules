@@ -1,3 +1,0 @@
-[submodule "demos"]
-	path = demos
-	url = git://github.com/jbeard4/scion-demos.git
