@@ -6,3 +6,6 @@ node_modules
 build
 src/demo/node-repl/build/
 src/demo/nodejs/build/
+scion.js
+scion-min.js
+TODO

@@ -37,12 +37,13 @@ using SCXML:
                 padding: 0;
             }
         </style>
-        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/1.0.1/require.min.js"></script>
-        <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/scion-browser-0.1.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
+        <script src="https://raw.github.com/mckamey/jsonml/master/jsonml-dom.js"></script>
+        <script type="text/javascript" src="/scion.js"></script>
         <script type="text/javascript">
-            require(['util/browser/parseOnLoad'],function(parseOnLoad){
-                parseOnLoad()
-            });
+            var parsepage = require('util/browser/parsePage');
+            $(document).ready(parsepage);
         </script>
 
     </head>
@@ -55,7 +56,6 @@ using SCXML:
                     xmlns="http://www.w3.org/2005/07/scxml"
                     version="1.0"
                     profile="ecmascript"
-                    id="scxmlRoot"
                     initial="idle"
                     scion:domEventsToConnect="mousedown,mouseup,mousemove">
 
