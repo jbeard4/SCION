@@ -6,7 +6,7 @@ A Statecharts interpreter/compiler library targeting JavaScript environments.
 
 ## Overview 
 
-SCION provides an implementation of the [W3C SCXML draft specification](http://www.w3.org/TR/scxml/) in JavaScript. It is implemented to be portable, and works well in the browser, node.js, rhino, and various JavaScript shell environments. In the browser, SCION can be used to facilitate the development of rich, web-based user interfaces with complex behavioural requirements. On the server, SCION can be used to manage asynchronous control flow. 
+SCION provides an implementation of the [W3C SCXML draft specification](http://www.w3.org/TR/scxml/) in JavaScript. It is implemented to be portable across JavaScript environments, and works well in the browser, node.js, rhino, and various JavaScript shell environments. In the browser, SCION can be used to facilitate the development of rich, web-based user interfaces with complex behavioural requirements. On the server, SCION can be used to manage asynchronous control flow. 
 
 ## Use in node.js 
 
@@ -408,20 +408,12 @@ It is described in detail in the source code of the page.
 
 SCION works well on Rhino, but this still needs to be documented.
 
-## Ahead-of-time Optimization using Static Analysis 
-
-SCION also supports generating optimized data structures ahead-of-time using static analysis, which may enhance performance at runtime. This feature still needs to be documented.
-
 ## SCION Semantics 
 
 SCION takes many ideas from the SCXML standard. In particular, it reuses the syntax of SCXML, but changes some of the semantics.
 
 * If you're already familiar with SCXML, and want a high-level overview of similarities and differences between SCION and SCXML, start here: [SCION vs. SCXML Comparison](https://github.com/jbeard4/SCION/wiki/SCION-vs.-SCXML-Comparison).
 * If you're a specification implementer or a semanticist, and would like the details of the SCION semantics, start here: [SCION Semantics](https://github.com/jbeard4/SCION/wiki/Scion-Semantics).
-
-## Project Status and Supported Environments
-
-SCION has been thoroughly tested in recent versions of Chromium, Firefox, and Opera on Ubuntu 10.04, as well as Internet Explorer 9 and recent Firefox, Chrome, Opera, and Safari on Windows 7 x64. SCION has also been thoroughly tested under multiple shell environments, including Node and Rhino, as well as the default shell environments included with v8, spidermonkey and jsc.
 
 ## License 
 
@@ -440,6 +432,7 @@ Everything else is licensed under the Apache License, version 2.0.
 
 ## Related Work 
 
+* [SCXML Test Framework](https://github.com/jbeard4/scxml-test-framework)
+* [SCION Demos](https://github.com/jbeard4/scion-demos)
 * [SCXML Commons](http://commons.apache.org/scxml/)
 * [PySCXML](http://code.google.com/p/pyscxml/) 
-
