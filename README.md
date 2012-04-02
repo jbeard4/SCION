@@ -5,6 +5,19 @@ A Statecharts interpreter/compiler library targeting JavaScript environments.
 1\.  [Overview](#overview)  
 2\.  [Use in the Browser](#useinthebrowser)  
 2.1\.  [Quickstart](#quickstart)  
+2.2\.  [More Control](#morecontrol)  
+2.3\.  [Advanced Examples](#advancedexamples)  
+3\.  [Use in node.js](#useinnode.js)  
+3.1\.  [Installation](#installation)  
+3.2\.  [Example](#example)  
+4\.  [Use in Rhino](#useinrhino)  
+5\.  [Ahead-of-time Optimization using Static Analysis](#aheadoftimeoptimizationusingstaticanalysis)  
+6\.  [SCION Semantics](#scionsemantics)  
+7\.  [Project Status and Supported Environments](#projectstatusandsupportedenvironments)  
+8\.  [License](#license)  
+9\.  [Support](#support)  
+10\.  [Other Resources](#otherresources)  
+11\.  [Related Work](#relatedwork)  
 
 <a name="overview"></a>
 
@@ -229,7 +242,9 @@ Note that, due to limitations in cross-browser compatibility of techniques for e
 
 You can run the demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop.xhtml).
 
-### More Control
+<a name="morecontrol"></a>
+
+### 2.2\. More Control
 
 What if we want to dynamically create state machine instances, and attach them to DOM nodes manually? This takes a bit more code.
 
@@ -359,7 +374,9 @@ Here is an example. An SCXML document is downloaded with XMLHttpRequest and init
 
 See this demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop2.xhtml).
 
-### Advanced Examples 
+<a name="advancedexamples"></a>
+
+### 2.3\. Advanced Examples 
 
 Drag and drop is a simple example of UI behaviour. Statecharts are most valuable for describing user interfaces that involve a more complex notion of state.
 
@@ -367,15 +384,21 @@ A more advanced example can be seen [here](http://jbeard4.github.com/scion-demos
 
 It is described in detail in the source code of the page.
 
-## Use in node.js 
+<a name="useinnode.js"></a>
 
-### Installation 
+## 3\. Use in node.js 
+
+<a name="installation"></a>
+
+### 3.1\. Installation 
 
 ```bash
 npm install scion xml2jsonml
 ```
 
-### Example 
+<a name="example"></a>
+
+### 3.2\. Example 
 
 ```javascript
 var xml2jsonml = require('xml2jsonml'),
@@ -420,41 +443,57 @@ See [src/demo/nodejs](https://github.com/jbeard4/scion-demos/tree/master/src/dem
 
 Also see the [SCION node.js API reference](https://github.com/jbeard4/SCION/wiki/nodejs-api).
 
-## Use in Rhino 
+<a name="useinrhino"></a>
+
+## 4\. Use in Rhino 
 
 SCION works well on Rhino, but this still needs to be documented.
 
-## Ahead-of-time Optimization using Static Analysis 
+<a name="aheadoftimeoptimizationusingstaticanalysis"></a>
+
+## 5\. Ahead-of-time Optimization using Static Analysis 
 
 SCION also supports generating optimized data structures ahead-of-time using static analysis, which may enhance performance at runtime. This feature still needs to be documented.
 
-## SCION Semantics 
+<a name="scionsemantics"></a>
+
+## 6\. SCION Semantics 
 
 SCION takes many ideas from the SCXML standard. In particular, it reuses the syntax of SCXML, but changes some of the semantics.
 
 * If you're already familiar with SCXML, and want a high-level overview of similarities and differences between SCION and SCXML, start here: [SCION vs. SCXML Comparison](https://github.com/jbeard4/SCION/wiki/SCION-vs.-SCXML-Comparison).
 * If you're a specification implementer or a semanticist, and would like the details of the SCION semantics, start here: [SCION Semantics](https://github.com/jbeard4/SCION/wiki/Scion-Semantics).
 
-## Project Status and Supported Environments
+<a name="projectstatusandsupportedenvironments"></a>
+
+## 7\. Project Status and Supported Environments
 
 SCION has been thoroughly tested in recent versions of Chromium, Firefox, and Opera on Ubuntu 10.04, as well as Internet Explorer 9 and recent Firefox, Chrome, Opera, and Safari on Windows 7 x64. SCION has also been thoroughly tested under multiple shell environments, including Node and Rhino, as well as the default shell environments included with v8, spidermonkey and jsc.
 
-## License 
+<a name="license"></a>
+
+## 8\. License 
 
 Libraries included in lib/ are published under their respective licenses.
 
 Everything else is licensed under the Apache License, version 2.0.
 
-## Support
+<a name="support"></a>
+
+## 9\. Support
 
 [Mailing list](https://groups.google.com/group/scion-dev)
 
-## Other Resources
+<a name="otherresources"></a>
+
+## 10\. Other Resources
 
 * [Table describing which SCXML tags are supported](https://github.com/jbeard4/SCION/wiki/SCION-Implementation-Status)
 * [Project Background](https://github.com/jbeard4/SCION/wiki/Project-Background)
 
-## Related Work 
+<a name="relatedwork"></a>
+
+## 11\. Related Work 
 
 * [SCXML Commons](http://commons.apache.org/scxml/)
 * [PySCXML](http://code.google.com/p/pyscxml/) 
