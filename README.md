@@ -3,13 +3,13 @@
 A Statecharts interpreter/compiler library targeting JavaScript environments.
 
 1\.  [Overview](#overview)  
-2\.  [Use in the Browser](#useinthebrowser)  
-2.1\.  [Quickstart](#quickstart)  
-2.2\.  [More Control](#morecontrol)  
-2.3\.  [Advanced Examples](#advancedexamples)  
-3\.  [Use in node.js](#useinnode.js)  
-3.1\.  [Installation](#installation)  
-3.2\.  [Example](#example)  
+2\.  [Use in node.js](#useinnode.js)  
+2.1\.  [Installation](#installation)  
+2.2\.  [Example](#example)  
+3\.  [Use in the Browser](#useinthebrowser)  
+3.1\.  [Quickstart](#quickstart)  
+3.2\.  [More Control](#morecontrol)  
+3.3\.  [Advanced Examples](#advancedexamples)  
 4\.  [Use in Rhino](#useinrhino)  
 5\.  [Ahead-of-time Optimization using Static Analysis](#aheadoftimeoptimizationusingstaticanalysis)  
 6\.  [SCION Semantics](#scionsemantics)  
@@ -23,21 +23,72 @@ A Statecharts interpreter/compiler library targeting JavaScript environments.
 
 ## 1\. Overview 
 
-Statecharts is a graphical modelling language developed to describe complex, reactive systems. Because of its usefulness for describing complex, timed, reactive, state-based behaviour, it is well-suited for developing rich user interfaces, including user interfaces built on Open Web technologies.
+SCION provides an implementation of the [W3C SCXML draft specification](http://www.w3.org/TR/scxml/) in JavaScript. It is implemented to be portable, and works well in the browser, node.js, rhino, and various JavaScript shell environments. In the browser, SCION can be used to facilitate the development of rich, web-based user interfaces with complex behavioural requirements. On the server, SCION can be used to manage asynchronous control flow. 
 
-Statecharts was first described by David Harel in the 1987 paper "Statecharts: A Visual Formalism for Complex Systems". Over the years, many different Statecharts variants have been developed, including the W3C SCXML draft specification. SCXML provides an XML-based syntax for describing Statecharts, as well as a step algorithm which defines its executable semantics. 
+<a name="useinnode.js"></a>
 
-**StateCharts Interpretation and Optimization eNgine** (SCION) is an implementation of Statecharts in JavaScript. Statecharts are written as XML documents, which are then executed by the SCION interpreter. Furthermore, optimized data structures may be generated ahead-of-time by SCION from the source SCXML document, which may improve memory usage and performance at runtime. 
+## 2\. Use in node.js 
 
-The SCION project also includes a custom test suite for distributed unit and performance testing of SCXML interpreters.
+<a name="installation"></a>
+
+### 2.1\. Installation 
+
+```bash
+npm install scion xml2jsonml
+```
+
+<a name="example"></a>
+
+### 2.2\. Example 
+
+```javascript
+var xml2jsonml = require('xml2jsonml'),
+    scion = require('scion');
+
+//1 - 2. get the xml file and convert it to jsonml
+xml2jsonml.parseFile('basic1.scxml',function(err,scxmlJson){
+
+    if(err){
+        throw err;
+    }
+
+    //3. annotate jsonml
+    var annotatedScxmlJson = scion.annotator.transform(scxmlJson,true,true,true,true);
+
+    //4. Convert the SCXML-JSON document to a statechart object model. This step essentially converts id labels to object references, parses JavaScript scripts and expressions embedded in the SCXML as js functions, and does some validation for correctness. 
+    var model = scion.json2model(annotatedScxmlJson); 
+    console.log("model",model);
+
+    //5. Use the statechart object model to instantiate an instance of the statechart interpreter. Optionally, we can pass to the construct an object to be used as the context object (the 'this' object) in script evaluation. Lots of other parameters are available.
+    var interpreter = new scion.scxml.NodeInterpreter(model);
+    console.log("interpreter",interpreter);
+
+    //6. We would connect relevant event listeners to the statechart instance here.
+
+    //7. Call the start method on the new intrepreter instance to start execution of the statechart.
+    interpreter.start();
+
+    //let's test it by printing current state
+    console.log("initial configuration",interpreter.getConfiguration());
+
+    //send an event, inspect new configuration
+    console.log("sending event t");
+    interpreter.gen({name : "t"});
+
+    console.log("next configuration",interpreter.getConfiguration());
+});
+
+```
+
+See [src/demo/nodejs](https://github.com/jbeard4/scion-demos/tree/master/src/demo/nodejs) for a complete example of this, as well as [node-repl](https://github.com/jbeard4/scion-demos/tree/master/src/demo/node-repl) and [node-web-repl](https://github.com/jbeard4/scion-demos/tree/master/src/demo/node-web-repl) for other reduced demonstrations.
 
 <a name="useinthebrowser"></a>
 
-## 2\. Use in the Browser
+## 3\. Use in the Browser
 
 <a name="quickstart"></a>
 
-### 2.1\. Quickstart
+### 3.1\. Quickstart
 
 Let's start with the simple example of drag-and-drop behaviour. An entity that can be dragged has two states: idle and dragging. If the entity is in an idle state, and it receives a mousedown event, then it starts dragging. While dragging, if it receives a mousemove event, then it changes its position. Also while dragging, when it receives a mouseup event, it returns to the idle state.
 
@@ -244,7 +295,7 @@ You can run the demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-
 
 <a name="morecontrol"></a>
 
-### 2.2\. More Control
+### 3.2\. More Control
 
 What if we want to dynamically create state machine instances, and attach them to DOM nodes manually? This takes a bit more code.
 
@@ -376,72 +427,13 @@ See this demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/dr
 
 <a name="advancedexamples"></a>
 
-### 2.3\. Advanced Examples 
+### 3.3\. Advanced Examples 
 
 Drag and drop is a simple example of UI behaviour. Statecharts are most valuable for describing user interfaces that involve a more complex notion of state.
 
 A more advanced example can be seen [here](http://jbeard4.github.com/scion-demos/demos/drawing-tool/drawing-tool.html).
 
 It is described in detail in the source code of the page.
-
-<a name="useinnode.js"></a>
-
-## 3\. Use in node.js 
-
-<a name="installation"></a>
-
-### 3.1\. Installation 
-
-```bash
-npm install scion xml2jsonml
-```
-
-<a name="example"></a>
-
-### 3.2\. Example 
-
-```javascript
-var xml2jsonml = require('xml2jsonml'),
-    scion = require('scion');
-
-//1 - 2. get the xml file and convert it to jsonml
-xml2jsonml.parseFile('basic1.scxml',function(err,scxmlJson){
-
-    if(err){
-        throw err;
-    }
-
-    //3. annotate jsonml
-    var annotatedScxmlJson = scion.annotator.transform(scxmlJson,true,true,true,true);
-
-    //4. Convert the SCXML-JSON document to a statechart object model. This step essentially converts id labels to object references, parses JavaScript scripts and expressions embedded in the SCXML as js functions, and does some validation for correctness. 
-    var model = scion.json2model(annotatedScxmlJson); 
-    console.log("model",model);
-
-    //5. Use the statechart object model to instantiate an instance of the statechart interpreter. Optionally, we can pass to the construct an object to be used as the context object (the 'this' object) in script evaluation. Lots of other parameters are available.
-    var interpreter = new scion.scxml.NodeInterpreter(model);
-    console.log("interpreter",interpreter);
-
-    //6. We would connect relevant event listeners to the statechart instance here.
-
-    //7. Call the start method on the new intrepreter instance to start execution of the statechart.
-    interpreter.start();
-
-    //let's test it by printing current state
-    console.log("initial configuration",interpreter.getConfiguration());
-
-    //send an event, inspect new configuration
-    console.log("sending event t");
-    interpreter.gen({name : "t"});
-
-    console.log("next configuration",interpreter.getConfiguration());
-});
-
-```
-
-See [src/demo/nodejs](https://github.com/jbeard4/scion-demos/tree/master/src/demo/nodejs) for a complete example of this, as well as [node-repl](https://github.com/jbeard4/scion-demos/tree/master/src/demo/node-repl) and [node-web-repl](https://github.com/jbeard4/scion-demos/tree/master/src/demo/node-web-repl) for other reduced demonstrations.
-
-Also see the [SCION node.js API reference](https://github.com/jbeard4/SCION/wiki/nodejs-api).
 
 <a name="useinrhino"></a>
 
