@@ -11,19 +11,17 @@ A Statecharts interpreter/compiler library targeting JavaScript environments.
 3.2\.  [More Control](#morecontrol)  
 3.3\.  [Advanced Examples](#advancedexamples)  
 4\.  [Use in Rhino](#useinrhino)  
-5\.  [Ahead-of-time Optimization using Static Analysis](#aheadoftimeoptimizationusingstaticanalysis)  
-6\.  [SCION Semantics](#scionsemantics)  
-7\.  [Project Status and Supported Environments](#projectstatusandsupportedenvironments)  
-8\.  [License](#license)  
-9\.  [Support](#support)  
-10\.  [Other Resources](#otherresources)  
-11\.  [Related Work](#relatedwork)  
+5\.  [SCION Semantics](#scionsemantics)  
+6\.  [License](#license)  
+7\.  [Support](#support)  
+8\.  [Other Resources](#otherresources)  
+9\.  [Related Work](#relatedwork)  
 
 <a name="overview"></a>
 
 ## 1\. Overview 
 
-SCION provides an implementation of the [W3C SCXML draft specification](http://www.w3.org/TR/scxml/) in JavaScript. It is implemented to be portable, and works well in the browser, node.js, rhino, and various JavaScript shell environments. In the browser, SCION can be used to facilitate the development of rich, web-based user interfaces with complex behavioural requirements. On the server, SCION can be used to manage asynchronous control flow. 
+SCION provides an implementation of the [W3C SCXML draft specification](http://www.w3.org/TR/scxml/) in JavaScript. It is implemented to be portable across JavaScript environments, and works well in the browser, node.js, rhino, and various JavaScript shell environments. In the browser, SCION can be used to facilitate the development of rich, web-based user interfaces with complex behavioural requirements. On the server, SCION can be used to manage asynchronous control flow. 
 
 <a name="useinnode.js"></a>
 
@@ -441,30 +439,18 @@ It is described in detail in the source code of the page.
 
 SCION works well on Rhino, but this still needs to be documented.
 
-<a name="aheadoftimeoptimizationusingstaticanalysis"></a>
-
-## 5\. Ahead-of-time Optimization using Static Analysis 
-
-SCION also supports generating optimized data structures ahead-of-time using static analysis, which may enhance performance at runtime. This feature still needs to be documented.
-
 <a name="scionsemantics"></a>
 
-## 6\. SCION Semantics 
+## 5\. SCION Semantics 
 
 SCION takes many ideas from the SCXML standard. In particular, it reuses the syntax of SCXML, but changes some of the semantics.
 
 * If you're already familiar with SCXML, and want a high-level overview of similarities and differences between SCION and SCXML, start here: [SCION vs. SCXML Comparison](https://github.com/jbeard4/SCION/wiki/SCION-vs.-SCXML-Comparison).
 * If you're a specification implementer or a semanticist, and would like the details of the SCION semantics, start here: [SCION Semantics](https://github.com/jbeard4/SCION/wiki/Scion-Semantics).
 
-<a name="projectstatusandsupportedenvironments"></a>
-
-## 7\. Project Status and Supported Environments
-
-SCION has been thoroughly tested in recent versions of Chromium, Firefox, and Opera on Ubuntu 10.04, as well as Internet Explorer 9 and recent Firefox, Chrome, Opera, and Safari on Windows 7 x64. SCION has also been thoroughly tested under multiple shell environments, including Node and Rhino, as well as the default shell environments included with v8, spidermonkey and jsc.
-
 <a name="license"></a>
 
-## 8\. License 
+## 6\. License 
 
 Libraries included in lib/ are published under their respective licenses.
 
@@ -472,21 +458,22 @@ Everything else is licensed under the Apache License, version 2.0.
 
 <a name="support"></a>
 
-## 9\. Support
+## 7\. Support
 
 [Mailing list](https://groups.google.com/group/scion-dev)
 
 <a name="otherresources"></a>
 
-## 10\. Other Resources
+## 8\. Other Resources
 
 * [Table describing which SCXML tags are supported](https://github.com/jbeard4/SCION/wiki/SCION-Implementation-Status)
 * [Project Background](https://github.com/jbeard4/SCION/wiki/Project-Background)
 
 <a name="relatedwork"></a>
 
-## 11\. Related Work 
+## 9\. Related Work 
 
+* [SCXML Test Framework](https://github.com/jbeard4/scxml-test-framework)
+* [SCION Demos](https://github.com/jbeard4/scion-demos)
 * [SCXML Commons](http://commons.apache.org/scxml/)
 * [PySCXML](http://code.google.com/p/pyscxml/) 
-
