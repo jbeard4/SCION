@@ -16,11 +16,11 @@ SCION provides an implementation of the [W3C SCXML draft specification](http://w
 
 <a name="useinthebrowser"></a>
 
-# 3\. Use in the Browser
+# Use in the Browser
 
 <a name="quickstart"></a>
 
-## 3.1\. Quickstart
+## Quickstart
 
 Let's start with the simple example of drag-and-drop behaviour. An entity that can be dragged has two states: idle and dragging. If the entity is in an idle state, and it receives a mousedown event, then it starts dragging. While dragging, if it receives a mousemove event, then it changes its position. Also while dragging, when it receives a mouseup event, it returns to the idle state.
 
@@ -227,7 +227,7 @@ You can run the demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-
 
 <a name="morecontrol"></a>
 
-## 3.2\. More Control
+## More Control
 
 What if we want to dynamically create state machine instances, and attach them to DOM nodes manually? This takes a bit more code.
 
@@ -371,7 +371,7 @@ See this demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/dr
 
 <a name="advancedexamples"></a>
 
-## 3.3\. Advanced Examples 
+## Advanced Examples 
 
 Drag and drop is a simple example of UI behaviour. Statecharts are most valuable for describing user interfaces that involve a more complex notion of state.
 
@@ -381,18 +381,18 @@ It is described in detail in the source code of the page.
 
 <a name="useinnode.js"></a>
 
-# 2\. Use in node.js 
+# Use in node.js 
 
 <a name="installation"></a>
 
-## 2.1\. Installation 
+## Installation 
 
 ```bash
 npm install scion xml2jsonml
 ```
 <a name="example"></a>
 
-## 2.2\. Example 
+## Example 
 
 The same 7 steps are performed in node.js as those described in section [More Control](#morecontrol).
 
@@ -441,13 +441,13 @@ See [scion-demos/nodejs](https://github.com/jbeard4/scion-demos/tree/master/src/
 
 <a name="useinrhino"></a>
 
-# 4\. Use in Rhino 
+# Use in Rhino 
 
 SCION works well on Rhino, but this still needs to be documented.
 
 <a name="scionsemantics"></a>
 
-# 5\. SCION Semantics 
+# SCION Semantics 
 
 SCION takes many ideas from the SCXML standard. In particular, it reuses the syntax of SCXML, but changes some of the semantics.
 
@@ -456,19 +456,19 @@ SCION takes many ideas from the SCXML standard. In particular, it reuses the syn
 
 <a name="license"></a>
 
-# 6\. License 
+# License 
 
 Apache License, version 2.0.
 
 <a name="support"></a>
 
-# 7\. Support
+# Support
 
 [Mailing list](https://groups.google.com/group/scion-dev)
 
 <a name="otherresources"></a>
 
-# 8\. Other Resources
+# Other Resources
 
 * [SCION Demos](https://github.com/jbeard4/scion-demos)
 * [Table describing which SCXML tags are supported](https://github.com/jbeard4/SCION/wiki/SCION-Implementation-Status)
@@ -476,7 +476,7 @@ Apache License, version 2.0.
 
 <a name="relatedwork"></a>
 
-# 9\. Related Projects
+# Related Projects
 
 * [SCXML Test Framework](https://github.com/jbeard4/scxml-test-framework)
 * [SCXML Commons](http://commons.apache.org/scxml/)
