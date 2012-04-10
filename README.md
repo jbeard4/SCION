@@ -307,6 +307,7 @@ Here is an example. An SCXML document is downloaded with XMLHttpRequest and init
         }
 
         //hook up button UI control
+        var interpreters = [];
         elementButton.addEventListener("click",function(e){
 
           //do DOM stuff- create new blue circle
@@ -333,12 +334,14 @@ Here is an example. An SCXML document is downloaded with XMLHttpRequest and init
           console.log("interpreter",interpreter);
 
           //step 6 - connect all relevant event listeners
-          ["mousedown","mouseup","mousemove"].forEach(function(eventName){
+          ["mousedown","mouseup"].forEach(function(eventName){
             newGNode.addEventListener( eventName, function(e){
               e.preventDefault();
               interpreter.gen({name : eventName,data: e});
             },false)
           });
+
+          interpreters.push(interpreter); 
 
           //step 7 - start statechart
           interpreter.start()
@@ -348,6 +351,14 @@ Here is an example. An SCXML document is downloaded with XMLHttpRequest and init
 
           svgCanvas.appendChild(newGNode);
         },false);
+
+        //add mousemove listener on the root element which dispatches 
+        document.documentElement.addEventListener("mousemove", function(e){
+          e.preventDefault();
+          interpreters.forEach(function(interpreter){
+            interpreter.gen({name : "mousemove",data: e});
+          });
+        },true);
     
       },"xml");
     ]]></script>
