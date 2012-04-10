@@ -435,7 +435,7 @@ xml2jsonml.parseFile('basic1.scxml',function(err,scxmlJson){
 
 ```
 
-See [scion-demos/nodejs](https://github.com/jbeard4/scion-demos/tree/master/src/nodejs) for a complete example of this, as well as [scion-demos/node-repl](https://github.com/jbeard4/scion-demos/tree/master/node-repl) and [scion-demos/node-web-repl](https://github.com/jbeard4/scion-demos/tree/master/node-web-repl) for other reduced demonstrations.
+See [scion-demos/nodejs](https://github.com/jbeard4/scion-demos/tree/master/nodejs) for a complete example of this, as well as [scion-demos/node-repl](https://github.com/jbeard4/scion-demos/tree/master/node-repl) and [scion-demos/node-web-repl](https://github.com/jbeard4/scion-demos/tree/master/node-web-repl) for other reduced demonstrations.
 
 
 
