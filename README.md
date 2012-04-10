@@ -375,7 +375,7 @@ See this demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/dr
 
 Drag and drop is a simple example of UI behaviour. Statecharts are most valuable for describing user interfaces that involve a more complex notion of state.
 
-A more advanced example can be seen [here](http://jbeard4.github.com/SCION/drawing-tool/drawing-tool.html).
+A more advanced example can be seen [here](http://jbeard4.github.com/SCION/demos/drawing-tool/drawing-tool.html).
 
 It is described in detail in the source code of the page.
 
