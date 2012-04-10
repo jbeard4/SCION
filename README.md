@@ -247,122 +247,123 @@ Here is an example. An SCXML document is downloaded with XMLHttpRequest and init
 
 ```html
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
-  <head>
-    <style type="text/css">
-      html, body {
-        height:100%;
-        margin: 0;
-        padding: 0;
-      }
-    </style>
-    <!-- we use jquery for jQuery.get and jQuery.globalEval (globalEval can optionally be used by the statechart) -->
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
-    <script src="https://raw.github.com/mckamey/jsonml/master/jsonml-dom.js"></script>
-    <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/0.0.3/scion-min.js"></script>
-  </head>
-  <body>
-    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="99%" id="canvas"/>
-    <button id="elementButton" style="position:absolute;bottom:0px;left:0px;">Make draggable SVG Element</button>
-    <script><![CDATA[
+    <head>
+        <style type="text/css">
+            html, body {
+                height:100%;
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+        <!-- we use jquery for jQuery.get and jQuery.globalEval (globalEval can optionally be used by the statechart) -->
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
+        <script src="https://raw.github.com/mckamey/jsonml/master/jsonml-dom.js"></script>
+        <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/0.0.3/scion-min.js"></script>
+    </head>
+    <body>
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="99%" id="canvas"/>
+        <button id="elementButton" style="position:absolute;bottom:0px;left:0px;">Make draggable SVG Element</button>
+        <script><![CDATA[
 
-      var scion = require('scion');
+            var scion = require('scion');
 
-      var svgCanvas = document.getElementById("canvas"), 
-        elementButton = document.getElementById("elementButton"),
-        SVG_NS = "http://www.w3.org/2000/svg";
+            var svgCanvas = document.getElementById("canvas"), 
+                elementButton = document.getElementById("elementButton"),
+                SVG_NS = "http://www.w3.org/2000/svg";
 
-      //hook up minimal console api
-      if(typeof console == "undefined"){
-        console = {};
-        ["log","info","error"].forEach(function(m){console[m] = console[m] || function(){} });
-      } 
+            //hook up minimal console api
+            if(typeof console == "undefined"){
+                console = {};
+                ["log","info","error"].forEach(function(m){console[m] = console[m] || function(){} });
+            } 
 
-      //step 1 - get the scxml document
-      jQuery.get("drag-and-drop2.xml" , function(scxmlToTransform, textStatus, jqXHR){
+            //step 1 - get the scxml document
+            jQuery.get("drag-and-drop2.xml" , function(scxmlToTransform, textStatus, jqXHR){
 
-        console.log("scxmlToTransform",scxmlToTransform);
+                console.log("scxmlToTransform",scxmlToTransform);
 
-        //step 2 - transform scxmlToTransform to JSON
-        var arr = JsonML.parseDOM(scxmlToTransform);
-        var scxmlJson = arr[1];
-        console.log("scxmlJson",scxmlJson);
+                //step 2 - transform scxmlToTransform to JSON
+                var arr = JsonML.parseDOM(scxmlToTransform);
+                var scxmlJson = arr[1];
+                console.log("scxmlJson",scxmlJson);
 
-        //step 3 - transform the parsed JSON model so it is friendlier to interpretation
-        var annotatedScxmlJson = scion.annotator.transform(scxmlJson,true,true,true,true);
-        console.log("annotatedScxmlJson",annotatedScxmlJson);
+                //step 3 - transform the parsed JSON model so it is friendlier to interpretation
+                var annotatedScxmlJson = scion.annotator.transform(scxmlJson,true,true,true,true);
+                console.log("annotatedScxmlJson",annotatedScxmlJson);
 
-        //step 4 - initialize sc object model
-        var model = scion.json2model(annotatedScxmlJson);
-        console.log("model",model);
+                //step 4 - initialize sc object model
+                var model = scion.json2model(annotatedScxmlJson);
+                console.log("model",model);
 
-        //just for fun, random color generator, courtesy of http://stackoverflow.com/questions/1484506/random-color-generator-in-javascript
-        function get_random_color() {
-          var letters = '0123456789ABCDEF'.split('');
-          var color = '#';
-          for (var i = 0; i < 6; i++ ) {
-            color += letters[Math.round(Math.random() * 15)];
-          }
-          return color;
-        }
+                //just for fun, random color generator, courtesy of http://stackoverflow.com/questions/1484506/random-color-generator-in-javascript
+                function get_random_color() {
+                    var letters = '0123456789ABCDEF'.split('');
+                    var color = '#';
+                    for (var i = 0; i < 6; i++ ) {
+                        color += letters[Math.round(Math.random() * 15)];
+                    }
+                    return color;
+                }
 
-        //hook up button UI control
-        var interpreters = [];
-        elementButton.addEventListener("click",function(e){
+                //hook up button UI control
+                var interpreters = [];
+                elementButton.addEventListener("click",function(e){
 
-          //do DOM stuff- create new blue circle
-          var newGNode = document.createElementNS(SVG_NS,"g");
-          var newTextNode = document.createElementNS(SVG_NS,"text");
-          var newNode = document.createElementNS(SVG_NS,"circle");
-          newNode.setAttributeNS(null,"cx",50);
-          newNode.setAttributeNS(null,"cy",50);
-          newNode.setAttributeNS(null,"r",50);
-          newNode.setAttributeNS(null,"fill",get_random_color());
-          newNode.setAttributeNS(null,"stroke","black");
+                    //do DOM stuff- create new blue circle
+                    var newGNode = document.createElementNS(SVG_NS,"g");
+                    var newTextNode = document.createElementNS(SVG_NS,"text");
+                    var newNode = document.createElementNS(SVG_NS,"circle");
+                    newNode.setAttributeNS(null,"cx",50);
+                    newNode.setAttributeNS(null,"cy",50);
+                    newNode.setAttributeNS(null,"r",50);
+                    newNode.setAttributeNS(null,"fill",get_random_color());
+                    newNode.setAttributeNS(null,"stroke","black");
 
-          newGNode.appendChild(newNode);
-          newGNode.appendChild(newTextNode);
+                    newGNode.appendChild(newNode);
+                    newGNode.appendChild(newTextNode);
 
-          //step 5 - instantiate statechart
-          var interpreter = new scion.scxml.BrowserInterpreter(model,
-            {
-              //globalEval is used to execute any top-level script children of the scxml element
-              //use of jQuery's global-eval is optional
-              //TODO: cite that blog post about global-eval
-              globalEval : jQuery.globalEval  
-            });
-          console.log("interpreter",interpreter);
+                    //step 5 - instantiate statechart
+                    var interpreter = new scion.scxml.BrowserInterpreter(model,
+                        {
+                            //globalEval is used to execute any top-level script children of the scxml element
+                            //use of jQuery's global-eval is optional
+                            //TODO: cite that blog post about global-eval
+                            globalEval : jQuery.globalEval  
+                        });
+                    console.log("interpreter",interpreter);
 
-          //step 6 - connect all relevant event listeners
-          ["mousedown","mouseup"].forEach(function(eventName){
-            newGNode.addEventListener( eventName, function(e){
-              e.preventDefault();
-              interpreter.gen({name : eventName,data: e});
-            },false)
-          });
+                    //step 6 - connect all relevant event listeners
+                    newGNode.addEventListener("mousedown", function(e){
+                        e.preventDefault();
+                        interpreter.gen({name : "mousedown",data: e});
+                    },false)
 
-          interpreters.push(interpreter); 
+                    interpreters.push(interpreter); 
 
-          //step 7 - start statechart
-          interpreter.start()
+                    //step 7 - start statechart
+                    interpreter.start()
 
-          //step 8 - initialize his variables by sending an "init" event and passing the nodes in as data
-          interpreter.gen({name : "init", data : {rawNode:newGNode,textNode:newTextNode}});
+                    //step 8 - initialize his variables by sending an "init" event and passing the nodes in as data
+                    interpreter.gen({name : "init", data : {rawNode:newGNode,textNode:newTextNode}});
 
-          svgCanvas.appendChild(newGNode);
-        },false);
+                    svgCanvas.appendChild(newGNode);
+                },false);
 
-        //add mousemove listener on the root element which dispatches 
-        document.documentElement.addEventListener("mousemove", function(e){
-          e.preventDefault();
-          interpreters.forEach(function(interpreter){
-            interpreter.gen({name : "mousemove",data: e});
-          });
-        },true);
-    
-      },"xml");
-    ]]></script>
-  </body>
+
+                //the root element handles mousemove and mouseup events and dispatches the event to all individual statecharts
+                ["mousemove","mouseup"].forEach(function(eventName){
+                    document.documentElement.addEventListener( eventName, function(e){
+                        e.preventDefault();
+                        interpreters.forEach(function(interpreter){
+                            interpreter.gen({name : eventName,data: e});
+                        });
+                    },true)
+                });
+
+            },"xml");
+        ]]></script>
+    </body>
 </html>
 ```
 
@@ -374,7 +375,7 @@ See this demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/dr
 
 Drag and drop is a simple example of UI behaviour. Statecharts are most valuable for describing user interfaces that involve a more complex notion of state.
 
-A more advanced example can be seen [here](http://jbeard4.github.com/scion-demos/demos/drawing-tool/drawing-tool.html).
+A more advanced example can be seen [here](http://jbeard4.github.com/SCION/drawing-tool/drawing-tool.html).
 
 It is described in detail in the source code of the page.
 
@@ -434,7 +435,7 @@ xml2jsonml.parseFile('basic1.scxml',function(err,scxmlJson){
 
 ```
 
-See [src/demo/nodejs](https://github.com/jbeard4/scion-demos/tree/master/src/demo/nodejs) for a complete example of this, as well as [node-repl](https://github.com/jbeard4/scion-demos/tree/master/src/demo/node-repl) and [node-web-repl](https://github.com/jbeard4/scion-demos/tree/master/src/demo/node-web-repl) for other reduced demonstrations.
+See [scion-demos/nodejs](https://github.com/jbeard4/scion-demos/tree/master/src/nodejs) for a complete example of this, as well as [scion-demos/node-repl](https://github.com/jbeard4/scion-demos/tree/master/node-repl) and [scion-demos/node-web-repl](https://github.com/jbeard4/scion-demos/tree/master/node-web-repl) for other reduced demonstrations.
 
 
 
