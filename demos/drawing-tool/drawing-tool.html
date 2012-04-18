@@ -32,12 +32,12 @@
       }
 
 
-      div#toolbarDiv > svg > g > rect.background {
+      div#toolbarDiv svg g rect.background {
         fill : none;
         stroke : none;
       }
 
-      div#toolbarDiv > svg > g.selected > rect.background {
+      div#toolbarDiv svg g.selected rect.background {
         fill : #AAAAAA;
         stroke : none;
       }
@@ -189,7 +189,7 @@ $(document).ready(function(){
                                 //globalEval is used to execute any top-level script children of the scxml element
                                 //use of jQuery's global-eval is optional
                                 //TODO: cite that blog post about global-eval
-                                globalEval : jQuery.globalEval  
+                                globalEval : jQuery.globalEval
                             });
                         console.log("interpreter",interpreter);
 

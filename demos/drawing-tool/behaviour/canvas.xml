@@ -421,11 +421,12 @@ In both:
             <state id="after_mousedown" initial="after_mousedown_on_selected_nodes">
 
                 <state id="after_mousedown_on_selected_nodes">
-                    <transition target="ready" event="mouseup" >
-                        <if cond="In('transform_tool_selected')">
-                            <send event="TOGGLE_TRANSFORM"/>
-                        </if>
+                    <transition target="ready" event="mouseup" cond="In('transform_tool_selected')">
+                        <raise event="TOGGLE_TRANSFORM"/>
                     </transition>
+
+                    <!-- TODO: change this to use <if> action once it is supported -->
+                    <transition target="ready" event="mouseup" cond="In('drawing_tool_selected')"/>
 
                     <transition target="dragging" event="mousemove" cond="In('transform_tool_selected')">
                         <!-- TODO: add dragging behaviour -->
