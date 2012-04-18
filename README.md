@@ -19,12 +19,12 @@ Here are some reasons you might choose to use SCION:
 2\.  [Use in node.js](#useinnode.js)  
 2.1\.  [Installation](#installation)  
 2.2\.  [Example](#example)  
-4\.  [Use in Rhino](#useinrhino)  
-5\.  [SCION Semantics](#scionsemantics)  
-6\.  [License](#license)  
-7\.  [Support](#support)  
-8\.  [Other Resources](#otherresources)  
-9\.  [Related Work](#relatedwork)  
+3\.  [Use in Rhino](#useinrhino)  
+4\.  [SCION Semantics](#scionsemantics)  
+5\.  [License](#license)  
+6\.  [Support](#support)  
+7\.  [Other Resources](#otherresources)  
+8\.  [Related Work](#relatedwork)  
 
 <a name="useinthebrowser"></a>
 
