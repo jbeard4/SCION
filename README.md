@@ -150,7 +150,7 @@ In order to execute this on a web page, such that the state machine is instantia
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
     <script src="https://raw.github.com/mckamey/jsonml/master/jsonml-dom.js"></script>
-    <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/0.0.3/scion-min.js"></script>
+    <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/latest/scion-min.js"></script>
     <script type="text/javascript">
       var parsepage = require('util/browser/parsePage');
       $(document).ready(parsepage);
@@ -271,7 +271,7 @@ Here is an example. An SCXML document is downloaded with XMLHttpRequest and init
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
         <script src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
         <script src="https://raw.github.com/mckamey/jsonml/master/jsonml-dom.js"></script>
-        <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/0.0.3/scion-min.js"></script>
+        <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/latest/scion-min.js"></script>
     </head>
     <body>
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="99%" id="canvas"/>
