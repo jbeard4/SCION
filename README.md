@@ -65,318 +65,225 @@ One can add action code in order to script an SVG DOM element, so as to change i
 
 ```html
 <scxml 
-  xmlns="http://www.w3.org/2005/07/scxml"
-  version="1.0"
-  profile="ecmascript"
-  id="scxmlRoot"
-  initial="initial_default">
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0"
+    profile="ecmascript">
 
-  <script>
-    function computeTDelta(oldEvent,newEvent){
-      //summary:computes the offset between two events; to be later used with this.translate
-      var dx = newEvent.clientX - oldEvent.clientX;
-      var dy = newEvent.clientY - oldEvent.clientY;
+    <datamodel>
+        <data id="firstEvent"/>
+        <data id="eventStamp"/>
+        <data id="rectNode"/>
+        <data id="rectX"/>
+        <data id="rectY"/>
+    </datamodel>
 
-      return {'dx':dx,'dy':dy};
-    }
+    <state id="initial-default">
+        <transition event="init" target="idle">
+            <assign location="rectNode" expr="_event.data"/>
+            <assign location="rectX" expr="0"/>
+            <assign location="rectY" expr="0"/>
+        </transition>
+    </state>
 
-    function translate(rawNode,tDelta){
-      var tl = rawNode.transform.baseVal;
-      var t = tl.numberOfItems ? tl.getItem(0) : rawNode.ownerSVGElement.createSVGTransform();
-      var m = t.matrix;
-      var newM = rawNode.ownerSVGElement.createSVGMatrix().translate(tDelta.dx,tDelta.dy).multiply(m);
-      t.setMatrix(newM);
-      tl.initialize(t);
-      return newM;
-    }
-  </script>
+    <state id="idle">
+        <onentry>
+            <script>
+                rectNode.textContent='idle';
+            </script>
+        </onentry>
 
-  <datamodel>
-    <data id="firstEvent"/>
-    <data id="eventStamp"/>
-    <data id="tDelta"/>
-    <data id="rawNode"/>
-    <data id="textNode"/>
-  </datamodel>
+        <transition event="mousedown" target="dragging">
+            <assign location="firstEvent" expr="_event.data"/>
+            <assign location="eventStamp" expr="_event.data"/>
+        </transition>
+    </state>
 
-  <state id="initial_default">
-    <transition event="init" target="idle">
-      <script>
-        rawNode = _event.data.rawNode;
-        textNode = _event.data.textNode;
-      </script>
-    </transition>
-  </state>
+    <state id="dragging">
+        <onentry>
+            <script>
+                rectNode.textContent='dragging';
+            </script>
+        </onentry>
 
-  <state id="idle">
-    <onentry>
-      <script>
-        textNode.textContent='idle';
-      </script>
-    </onentry>
+        <transition event="mouseup" target="idle"/>
 
-    <transition event="mousedown" target="dragging">
-      <assign location="firstEvent" expr="_event.data"/>
-      <assign location="eventStamp" expr="_event.data"/>
-    </transition>
-  </state>
+        <transition event="mousemove" target="dragging">
+            <script>
+                var dx = eventStamp.clientX - _event.data.clientX;
+                var dy = eventStamp.clientY - _event.data.clientY;
 
-  <state id="dragging">
-    <onentry>
-      <script>
-        textNode.textContent='dragging';
-      </script>
-    </onentry>
+                //note that rectNode, rectX and rectY are all exposed
+                //from the datamodel as local variables
+                rectNode.style.left = rectX -= dx;
+                rectNode.style.top = rectY -= dy;
+            </script>
+            <assign location="eventStamp" expr="_event.data"/>
+        </transition>
+    </state>
 
-    <transition event="mouseup" target="idle"/>
-
-    <transition event="mousemove" target="dragging">
-      <script>
-        tDelta = computeTDelta(eventStamp,_event.data);
-        translate(rawNode,tDelta);
-      </script>
-      <assign location="eventStamp" expr="_event.data"/>
-    </transition>
-  </state>
 </scxml>
 ```
-
-In order to execute this on a web page, such that the state machine is instantiated, receives DOM events, and is able to script DOM nodes, one may use a tool included with SCION that allows one to embed the statechart directly into the content of the page. 
-
-
-``` html
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
-  <head>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
-    <script src="https://raw.github.com/mckamey/jsonml/master/jsonml-dom.js"></script>
-    <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/latest/scion-min.js"></script>
-    <script type="text/javascript">
-      var parsepage = require('util/browser/parsePage');
-      $(document).ready(parsepage);
-    </script>
-
-  </head>
-  <body>
-    <svg xmlns="http://www.w3.org/2000/svg" 
-        xmlns:xlink="http://www.w3.org/1999/xlink" 
-        xmlns:scion="https://github.com/jbeard4/SCION" 
-        width="100%" 
-        height="99%" >
-
-      <rect width="100" height="100" stroke="black" fill="red" id="rectToTranslate" >
-        <!-- the domEventsToConnect attribute is just some syntactic sugar provided by the scion parseOnLoad module -->
-        <scxml 
-          xmlns="http://www.w3.org/2005/07/scxml"
-          version="1.0"
-          profile="ecmascript"
-          initial="idle"
-          scion:domEventsToConnect="mousedown,mouseup,mousemove">
-
-          <script>
-            function computeTDelta(oldEvent,newEvent){
-              //summary:computes the offset between two events; to be later used with this.translate
-              var dx = newEvent.clientX - oldEvent.clientX;
-              var dy = newEvent.clientY - oldEvent.clientY;
-
-              return {'dx':dx,'dy':dy};
-            }
-
-            function translate(rawNode,tDelta){
-              var tl = rawNode.transform.baseVal;
-              var t = tl.numberOfItems ? tl.getItem(0) : rawNode.ownerSVGElement.createSVGTransform();
-              var m = t.matrix;
-              var newM = rawNode.ownerSVGElement.createSVGMatrix().translate(tDelta.dx,tDelta.dy).multiply(m);
-              t.setMatrix(newM);
-              tl.initialize(t);
-              return newM;
-            }
-          </script>
-
-          <datamodel>
-            <data id="firstEvent"/>
-            <data id="eventStamp"/>
-            <data id="tDelta"/>
-          </datamodel>
-
-          <state id="idle">
-            <transition event="mousedown" target="dragging">
-              <assign location="firstEvent" expr="_event.data"/>
-              <assign location="eventStamp" expr="_event.data"/>
-            </transition>
-          </state>
-
-          <state id="dragging">
-            <transition event="mouseup" target="idle"/>
-
-            <transition event="mousemove" target="dragging">
-              <script>
-                //This assignment to tDelta looks like it would assign to the global object, 
-                //but will in fact be assigned to the statechart's datamodel. Internally, the
-                //script block is being evaluated inside of a JavaScript "with" statement,
-                //where the datamodel object is the clause to "with".
-                tDelta = computeTDelta(eventStamp,_event.data);
-
-                //The "this" object hereis the parent rect node. 
-                //This is syntactic sugar, provided by the scion interpreter's evaluationContext 
-                //parameter, and the parseOnLoad script. See util/browser/parseOnLoad for more details.
-                translate(this,tDelta);
-              </script>
-              <assign location="eventStamp" expr="_event.data"/>
-            </transition>
-          </state>
-
-        </scxml>
-      </rect>
-    </svg>
-  </body>
-</html>
-```
-
-Note that, due to limitations in cross-browser compatibility of techniques for embedding XML data in HTML pages, this technique will currently only work for web browsers that support XHTML. In particular, this excludes versions of Internet Explorer before IE9, so this technique is primarily useful for experimentation and demo purposes. A technique that should work well across browsers, including older versions of IE, will be shown below.  The SCION interpreter itself does not have any browser-specific dependencies, and in fact, runs well in a number of JavaScript environments, including Rhino and NodeJS shell environments.
-
-You can run the demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop.xhtml).
-
-<a name="morecontrol"></a>
-
-## More Control
-
-What if we want to dynamically create state machine instances, and attach them to DOM nodes manually? This takes a bit more code.
-
-There are 7 steps that must be performed to go from an SCXML document to a working state machine instance that is consuming DOM events and scripting web content on a web page:
+There are then 7 steps that must be performed to go from an SCXML document to a working state machine instance that is consuming DOM events and scripting web content on a web page:
 
 1. Get the SCXML document.
-2. Convert the XML to a JsonML JSON document using XSLT or DOM, and parse the JsonML JSON document to a JsonML JavaScript Object.
-3. Annotate and transform the JsonML JavaScript Object so that it is in a more convenient form for interpretation, creating an annotated JsonML JavaScript Object
-4. Convert the annotated JsonML JavaScript Object to a Statecharts object model. This step essentially converts id labels to object references, parses JavaScript scripts and expressions embedded in the SCXML as JavaScript functions, and does some validation for correctness. 
-5. Use the Statecharts object model to instantiate the SCION interpreter. Optionally, one can pass to the SCION constructor an object to be used as the context object (the object bound to the `this` identifier) in script evaluation. There are many other parameters that can be passed to the constructor, none of which are currently documented.
+2. Convert the XML to a JsonML object.
+3. Transform the JsonML object so that it is in a more convenient form for interpretation.
+4. Initialize the transformed JsonML to a "model" object. This step essentially converts id labels to object references, parses JavaScript scripts and expressions embedded in the SCXML as JavaScript functions, and does some validation for correctness. 
+5. Use the Statecharts object model to instantiate the SCION interpreter.
 6. Connect relevant event listeners to the statechart instance.
 7. Call the `start` method on the new interpreter instance to start execution of the statechart.
 
-Note that steps 1-3 can be done ahead-of-time, such that the annotated JsonML document can be serialized and sent down the wire, before being downloaded to the browser and parsed, then converted to a Statecharts object model in step 4. 
-
-Here is an example. An SCXML document is downloaded with XMLHttpRequest and initialized. SVG circle nodes can be created dynamically, such that a new state machine is instantiated, listens to the circle node's DOM events, and scripts the circle node's DOM attributes.
-
-```html
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+``` html
+<html>
     <head>
-        <style type="text/css">
-            html, body {
-                height:100%;
-                margin: 0;
-                padding: 0;
-            }
-        </style>
-        <!-- we use jquery for jQuery.get and jQuery.globalEval (globalEval can optionally be used by the statechart) -->
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-        <script src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
         <script src="https://raw.github.com/mckamey/jsonml/master/jsonml-dom.js"></script>
-        <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/latest/scion-min.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"></script>
+        <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/latest/scion.js"></script>
+        <script>
+            var scion = require('scion');
+
+            $(document).ready(function(){
+                var rect = document.getElementById("rect");
+
+                //step 1 - get the scxml document
+                $.get("drag-and-drop.xml",function(scxmlToTransform){
+
+                    //step 2 - transform the scxml document to JSON
+                    var arr = JsonML.parseDOM(scxmlToTransform);
+                    var scxmlJson = arr[1];
+
+                    //step 3 - transform the parsed JSON model so it is friendlier to interpretation
+                    var annotatedScxmlJson = scion.annotator.transform(scxmlJson);
+
+                    //step 4 - initialize sc object model
+                    var model = scion.json2model(annotatedScxmlJson);
+
+                    //step 5 - instantiate statechart
+                    var interpreter = new scion.scxml.BrowserInterpreter(model);
+
+                    interpreter.start();
+                    interpreter.gen({name:"init",data:rect});
+
+                    function handleEvent(e){
+                        e.preventDefault();
+                        interpreter.gen({name : e.type,data: e});
+                    }
+
+                    //step 6 - connect all relevant event listeners
+                    $(rect).mousedown(handleEvent);
+                    $(document.documentElement).bind("mouseup mousemove",handleEvent);
+                },"xml");
+            });
+        </script>
     </head>
     <body>
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="99%" id="canvas"/>
-        <button id="elementButton" style="position:absolute;bottom:0px;left:0px;">Make draggable SVG Element</button>
-        <script><![CDATA[
+        <div id="rect"/>
+    </body>
+</html>
+```
+
+Note that while jQuery is used in this example to handle AJAX and DOM scripting, the SCION interpreter does not have any dependencies on jQuery or the browser environment in general, so any other JavaScript library could be used for this purpose instead. SCION does use ES5 features, such as functional array methods (e.g. Array.prototype.reduce), Object.create and Function.prototype.bind, so the ES5-shim library is needed in order to make SCION compatible with JavaScript interpreters that do not implement these features.
+
+You can run the demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop.html).
+
+<a name="morecontrol"></a>
+
+## Multiple Statechart Instances
+
+What if we want to , and attach them to DOM nodes manually? 
+
+Here is an example that dynamically creates a new DOM node and state machine instance in response to user events, and connects them together. Steps 1-4, mentioned above, only need to be performed once - once the model object is created, multiple statechart instances can be instantiated from it.
+
+```html
+<html>
+    <head>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script src="https://raw.github.com/mckamey/jsonml/master/jsonml-dom.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"></script>
+        <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/latest/scion-min.js"></script>
+        <script>
+            // just for fun, random color generator, courtesy of 
+            // http://stackoverflow.com/questions/1484506/random-color-generator-in-javascript
+            function get_random_color() {
+                var letters = '0123456789ABCDEF'.split('');
+                var color = '#';
+                for (var i = 0; i < 6; i++ ) {
+                    color += letters[Math.round(Math.random() * 15)];
+                }
+                return color;
+            }
+
+            function createNewRect(){
+                //do DOM stuff - create new div
+                var div = document.createElement("div");
+                div.style.backgroundColor = get_random_color();
+                document.body.appendChild(div);
+                
+                return div;
+            }
 
             var scion = require('scion');
 
-            var svgCanvas = document.getElementById("canvas"), 
-                elementButton = document.getElementById("elementButton"),
-                SVG_NS = "http://www.w3.org/2000/svg";
+            $(document).ready(function(){
 
-            //hook up minimal console api
-            if(typeof console == "undefined"){
-                console = {};
-                ["log","info","error"].forEach(function(m){console[m] = console[m] || function(){} });
-            } 
+                var elementButton = $("#elementButton");
 
-            //step 1 - get the scxml document
-            jQuery.get("drag-and-drop2.xml" , function(scxmlToTransform, textStatus, jqXHR){
+                //step 1 - get the scxml document
+                jQuery.get("drag-and-drop.xml" , function(scxmlToTransform){
 
-                console.log("scxmlToTransform",scxmlToTransform);
+                    //step 2 - transform scxmlToTransform to JSON
+                    var arr = JsonML.parseDOM(scxmlToTransform);
+                    var scxmlJson = arr[1];
 
-                //step 2 - transform scxmlToTransform to JSON
-                var arr = JsonML.parseDOM(scxmlToTransform);
-                var scxmlJson = arr[1];
-                console.log("scxmlJson",scxmlJson);
+                    //step 3 - transform the parsed JSON model so it is friendlier to interpretation
+                    var annotatedScxmlJson = scion.annotator.transform(scxmlJson);
 
-                //step 3 - transform the parsed JSON model so it is friendlier to interpretation
-                var annotatedScxmlJson = scion.annotator.transform(scxmlJson,true,true,true,true);
-                console.log("annotatedScxmlJson",annotatedScxmlJson);
+                    //step 4 - initialize sc object model
+                    var model = scion.json2model(annotatedScxmlJson);
 
-                //step 4 - initialize sc object model
-                var model = scion.json2model(annotatedScxmlJson);
-                console.log("model",model);
+                    //hook up button UI control
+                    var interpreters = [];
+                    elementButton.click(function(e){
 
-                //just for fun, random color generator, courtesy of http://stackoverflow.com/questions/1484506/random-color-generator-in-javascript
-                function get_random_color() {
-                    var letters = '0123456789ABCDEF'.split('');
-                    var color = '#';
-                    for (var i = 0; i < 6; i++ ) {
-                        color += letters[Math.round(Math.random() * 15)];
-                    }
-                    return color;
-                }
+                        //step 5 - instantiate statechart
+                        var interpreter = new scion.scxml.BrowserInterpreter(model);
 
-                //hook up button UI control
-                var interpreters = [];
-                elementButton.addEventListener("click",function(e){
+                        var div = createNewRect();
 
-                    //do DOM stuff- create new blue circle
-                    var newGNode = document.createElementNS(SVG_NS,"g");
-                    var newTextNode = document.createElementNS(SVG_NS,"text");
-                    var newNode = document.createElementNS(SVG_NS,"circle");
-                    newNode.setAttributeNS(null,"cx",50);
-                    newNode.setAttributeNS(null,"cy",50);
-                    newNode.setAttributeNS(null,"r",50);
-                    newNode.setAttributeNS(null,"fill",get_random_color());
-                    newNode.setAttributeNS(null,"stroke","black");
-
-                    newGNode.appendChild(newNode);
-                    newGNode.appendChild(newTextNode);
-
-                    //step 5 - instantiate statechart
-                    var interpreter = new scion.scxml.BrowserInterpreter(model,
-                        {
-                            //globalEval is used to execute any top-level script children of the scxml element
-                            //use of jQuery's global-eval is optional
-                            //TODO: cite that blog post about global-eval
-                            globalEval : jQuery.globalEval  
+                        //step 6 - connect relevant event listeners
+                        $(div).mousedown(function(e){
+                            e.preventDefault();
+                            interpreter.gen({name : e.type,data: e});
                         });
-                    console.log("interpreter",interpreter);
 
-                    //step 6 - connect all relevant event listeners
-                    newGNode.addEventListener("mousedown", function(e){
-                        e.preventDefault();
-                        interpreter.gen({name : "mousedown",data: e});
-                    },false)
+                        interpreters.push(interpreter); 
 
-                    interpreters.push(interpreter); 
+                        //step 7 - start statechart
+                        interpreter.start()
 
-                    //step 7 - start statechart
-                    interpreter.start()
+                        //step 8 - initialize his variables by sending an "init" event and passing the nodes in as data
+                        interpreter.gen({name : "init", data : div});
 
-                    //step 8 - initialize his variables by sending an "init" event and passing the nodes in as data
-                    interpreter.gen({name : "init", data : {rawNode:newGNode,textNode:newTextNode}});
+                    });
 
-                    svgCanvas.appendChild(newGNode);
-                },false);
-
-
-                //the root element handles mousemove and mouseup events and dispatches the event to all individual statecharts
-                ["mousemove","mouseup"].forEach(function(eventName){
-                    document.documentElement.addEventListener( eventName, function(e){
+                    //the root element handles mousemove and mouseup events and dispatches the event to all individual statecharts
+                    $(document.documentElement).bind("mousemove mouseup",function(e){
                         e.preventDefault();
                         interpreters.forEach(function(interpreter){
-                            interpreter.gen({name : eventName,data: e});
+                            interpreter.gen({name : e.type,data: e});
                         });
-                    },true)
-                });
-
-            },"xml");
-        ]]></script>
+                    });
+                },"xml");
+            });
+        </script>
+    </head>
+    <body>
+        <button id="elementButton" style="position:absolute;bottom:0px;left:0px;">Make draggable SVG Element</button>
     </body>
 </html>
+
+
 ```
 
 See this demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop2.xhtml).
