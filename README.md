@@ -191,8 +191,6 @@ You can run the demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-
 
 ## Multiple Statechart Instances
 
-What if we want to , and attach them to DOM nodes manually? 
-
 Here is an example that dynamically creates a new DOM node and state machine instance in response to user events, and connects them together. Steps 1-4, mentioned above, only need to be performed once - once the model object is created, multiple statechart instances can be instantiated from it.
 
 ```html
