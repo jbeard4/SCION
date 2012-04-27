@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <style type="text/css">
+            html, body {
+                height:100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            div#rect{ 
+                width:100px;
+                height:100px;
+                background-color:red;
+                border:2px solid black;
+                position:absolute;
+                left:0px;
+                top:0px;
+            }
+        </style>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script src="https://raw.github.com/mckamey/jsonml/master/jsonml-dom.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"></script>
+        <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/latest/scion.js"></script>
+        <script>
+            var scion = require('scion');
+
+            $(document).ready(function(){
+                var rect = document.getElementById("rect");
+
+                //step 1 - get the scxml document
+                $.get("drag-and-drop.xml",function(scxmlToTransform){
+
+                    //step 2 - transform the scxml document to JSON
+                    var arr = JsonML.parseDOM(scxmlToTransform);
+                    var scxmlJson = arr[1];
+
+                    //step 3 - transform the parsed JSON model so it is friendlier to interpretation
+                    var annotatedScxmlJson = scion.annotator.transform(scxmlJson);
+
+                    //step 4 - initialize sc object model
+                    var model = scion.json2model(annotatedScxmlJson);
+
+                    //step 5 - instantiate statechart
+                    var interpreter = new scion.scxml.BrowserInterpreter(model);
+
+                    interpreter.start();
+                    interpreter.gen({name:"init",data:rect});
+
+                    function handleEvent(e){
+                        e.preventDefault();
+                        interpreter.gen({name : e.type,data: e});
+                    }
+
+                    //step 6 - connect all relevant event listeners
+                    $(rect).mousedown(handleEvent);
+                    $(document.documentElement).bind("mouseup mousemove",handleEvent);
+                },"xml");
+            });
+        </script>
+    </head>
+    <body>
+        <div id="rect"/>
+    </body>
+</html>
