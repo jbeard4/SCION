@@ -1,7 +1,6 @@
 js = lib/scion.js lib/util/browser \
 	lib/util/browser/parsePage.js \
 	lib/util/annotate-scxml-json.js \
-	lib/util/underscore-wrapper.js \
 	lib/scxml/SCXML.js \
 	lib/scxml/default-transition-selector.js \
 	lib/scxml/state-kinds-enum.js \
