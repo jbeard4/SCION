@@ -14,7 +14,7 @@ Here are some reasons you might choose to use SCION:
 
 1\.  [Use in the Browser](#useinthebrowser)  
 1.1\.  [Quickstart](#quickstart)  
-1.2\.  [More Control](#morecontrol)  
+1.2\.  [Multiple Statechart Instances](#multiple_statechart_instances)  
 1.3\.  [Advanced Examples](#advancedexamples)  
 2\.  [Use in node.js](#useinnode.js)  
 2.1\.  [Installation](#installation)  
@@ -187,7 +187,7 @@ Note that while jQuery is used in this example to handle AJAX and DOM scripting,
 
 You can run the demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop.html).
 
-<a name="morecontrol"></a>
+<a name="multiple_statechart_instances"></a>
 
 ## Multiple Statechart Instances
 
@@ -311,7 +311,7 @@ npm install scion xml2jsonml
 
 ## Example 
 
-The same 7 steps are performed in node.js as those described in section [More Control](#morecontrol).
+The same 7 steps are performed in node.js as those described in section [Multiple Statechart Instances](#multiple_statechart_instances).
 
 ```javascript
 var xml2jsonml = require('xml2jsonml'),
