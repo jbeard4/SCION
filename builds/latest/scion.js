@@ -132,7 +132,7 @@ SCXMLInterpreter.prototype = {
         //initialize top-level datamodel expressions. simple eval
         for(var k in this._datamodel){
             var v = this._datamodel[k];
-            if (v) this._datamodel[k] = eval("(" + v + ")");
+            if (typeof v === 'string') this._datamodel[k] = eval("(" + v + ")");
         }
         this._performBigStep();
         return this.getConfiguration();
