@@ -284,7 +284,7 @@ Here is an example that dynamically creates and connects a new DOM node and stat
 
 ```
 
-See this demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop2.xhtml).
+See this demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop2.html).
 
 <a name="advancedexamples"></a>
 
