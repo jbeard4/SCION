@@ -311,7 +311,7 @@ npm install scion xml2jsonml
 
 ## Example 
 
-The same 7 steps are performed in node.js as those described in section [Multiple Statechart Instances](#multiple_statechart_instances).
+The same 7 steps are performed in node.js as those described in section [Quickstart](#quickstart).
 
 ```javascript
 var xml2jsonml = require('xml2jsonml'),
