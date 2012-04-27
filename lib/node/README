@@ -1,0 +1,1 @@
+This directory contains modules and utilities that are specific to nodejs. They are seperated out in their own directory so that they are not included when the project is built with stitch.

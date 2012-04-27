@@ -36,5 +36,5 @@
         "stitch" : "*"
     },
     "engines" : { "node" : ">=0.4.7" },
-    "main": "./lib/scion"
+    "main": "./lib/core/scion"
 }
