@@ -62,7 +62,7 @@ This state machine could be written in SCXML as follows:
 </scxml>
 ```
 
-One can add action code in order to script an SVG DOM element, so as to change its transform attribute on mousemove events:
+One can add action code in order to script an HTML DOM element, so as to change its position on mousemove events:
 
 ```html
 <scxml 
@@ -124,7 +124,7 @@ One can add action code in order to script an SVG DOM element, so as to change i
 
 </scxml>
 ```
-There are then 7 steps that must be performed to go from an SCXML document to a working state machine instance that is consuming DOM events and scripting web content on a web page:
+There are then 7 steps that must be performed to go from an SCXML document to a working state machine instance that is consuming DOM events and scripting web content:
 
 1. Get the SCXML document.
 2. Convert the XML to a JsonML object.
@@ -184,7 +184,7 @@ There are then 7 steps that must be performed to go from an SCXML document to a 
 </html>
 ```
 
-Note that while jQuery is used in this example to handle AJAX and DOM scripting, the SCION interpreter does not have any dependencies on jQuery or the browser environment in general, so any other JavaScript library could be used for this purpose instead. SCION does use ES5 features, such as functional array methods (e.g. Array.prototype.reduce), Object.create and Function.prototype.bind, so the ES5-shim library is needed in order to make SCION compatible with JavaScript interpreters that do not implement these features.
+Note that while jQuery is used in this example to handle AJAX and DOM scripting, the SCION interpreter does not have any dependencies on jQuery, or the browser environment in general, so any other JavaScript library could be used for this purpose instead. SCION does use ES5 features, such as functional array methods (e.g. Array.prototype.reduce), Object.create and Function.prototype.bind, so the ES5-shim library is needed in order to make SCION compatible with JavaScript interpreters that do not implement these features.
 
 You can run the demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop.html).
 
