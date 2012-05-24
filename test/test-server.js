@@ -17,7 +17,7 @@ function loadScxml(scxmlStr,cb){
 
         //console.log(JSON.stringify(scxmlJson,4,4));
 
-        var annotatedScxmlJson = scion.annotator.transform(scxmlJson,true,true,true,true);
+        var annotatedScxmlJson = scion.annotator.transform(scxmlJson);
         var model = scion.json2model(annotatedScxmlJson); 
         var interpreter = new scion.scxml.NodeInterpreter(model);
         interpreter.start();
