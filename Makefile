@@ -1,4 +1,4 @@
-js = lib/core/scion.js \
+js = lib/scion.js \
 	lib/core/util/annotate-scxml-json.js \
 	lib/core/scxml/SCXML.js \
 	lib/core/scxml/default-transition-selector.js \
@@ -10,7 +10,7 @@ js = lib/core/scion.js \
 	lib/core/scxml/set/ArraySet.js
 
 scion.js : $(js) 
-	node lib/build/stitch.js 
+	node lib/browser/build/stitch.js 
 
 scion-min.js : scion.js
 	uglifyjs scion.js > scion-min.js

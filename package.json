@@ -32,10 +32,13 @@
     "implements": [
         "http://www.w3.org/TR/scxml/"
     ],
+    "dependencies" : {
+        "xmldom" : "git://github.com/jbeard4/xmldom.git"
+    },
     "devDependencies":{
-        "stitch" : "*",
+        "stitch" : "git://github.com/jbeard4/stitch.git",
         "uglify-js" : "*"
     },
     "engines" : { "node" : ">=0.4.7" },
-    "main": "./lib/core/scion"
+    "main": "./lib/scion"
 }

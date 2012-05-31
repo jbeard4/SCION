@@ -3,31 +3,20 @@
 //send event to statechart with tokenid
 //clean up statechart
 
-var xml2jsonml = require('xml2jsonml'),
-    scion = require('../lib/core/scion'),
+var scion = require('scion'),
     http = require('http');
 
 var sessionCounter = 0, sessions = {}, timeouts = {}, timeoutMs = 5000;
 
-function loadScxml(scxmlStr,cb){
-    xml2jsonml.parseString(scxmlStr,function(err,scxmlJson){
-        if(err){
-            throw err;
-        }
+function loadScxml(scxmlStr){
+    var model = scion.documentStringToModel(scxmlStr);
+    var interpreter = new scion.SCXML(model);
 
-        //console.log(JSON.stringify(scxmlJson,4,4));
+    var sessionToken = sessionCounter;
+    sessionCounter++;
+    sessions[sessionToken] = interpreter; 
 
-        var annotatedScxmlJson = scion.annotator.transform(scxmlJson);
-        var model = scion.json2model(annotatedScxmlJson); 
-        var interpreter = new scion.scxml.NodeInterpreter(model);
-        interpreter.start();
-
-        var sessionToken = sessionCounter;
-        sessionCounter++;
-        sessions[sessionToken] = interpreter; 
-
-        cb(sessionToken,interpreter);
-    });
+    return [sessionToken,interpreter];
 }
 
 function cleanUp(sessionToken){
@@ -45,18 +34,23 @@ http.createServer(function (req, res) {
             var reqJson = JSON.parse(s);
             if(reqJson.load){
                 console.log("Loading new statechart");
-                loadScxml(reqJson.load,function(sessionToken,interpreter){
-                    res.writeHead(200, {'Content-Type': 'application/json'});
-                    res.end(JSON.stringify({
-                        sessionToken : sessionToken,
-                        nextConfiguration : interpreter.getConfiguration()
-                    }));
 
-                    timeouts[sessionToken] = setTimeout(function(){cleanUp(sessionToken);},timeoutMs);  
-                });
+                var tmp = loadScxml(reqJson.load),
+                    sessionToken = tmp[0], 
+                    interpreter = tmp[1];
+
+                var conf = interpreter.start(); 
+
+                res.writeHead(200, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify({
+                    sessionToken : sessionToken,
+                    nextConfiguration : conf
+                }));
+
+                timeouts[sessionToken] = setTimeout(function(){cleanUp(sessionToken);},timeoutMs);  
             }else if(reqJson.event && (typeof reqJson.sessionToken === "number")){
                 console.log("sending event to statechart",reqJson.event);
-                var sessionToken = reqJson.sessionToken;
+                sessionToken = reqJson.sessionToken;
                 var nextConfiguration = sessions[sessionToken].gen(reqJson.event);
                 console.log('nextConfiguration',nextConfiguration);
                 res.writeHead(200, {'Content-Type': 'application/json'});
