@@ -183,14 +183,14 @@ The SCXML constructor creates an interpreter instance from a model object.
 
 ## SCXML Interpreter Input
 
-### scxml.start() : <String>[]
+### scxml.start() : `<String>`[]
 
 `scxml.start` starts the SCXML interpreter. `scxml.start` should only be called once, and should be called before `scxml.gen` is called for the first time.
 
 Returns a "basic configuration", which is an Array of strings representing the ids all of the basic states the interpreter is in after the call to `scxml.start` completes.
 
-### scxml.gen(String eventName, Object eventData) : <String>[]
-### scxml.gen({name : String, data : Object}) : <String>[]
+### scxml.gen(String eventName, Object eventData) : `<String>`[]
+### scxml.gen({name : String, data : Object}) : `<String>`[]
 
 An SCXML interpreter takes SCXML events as input, where an SCXML event is an object with "name" and "data" properties. These can be passed to method `gen` as two positional arguments, or as a single object.
 
@@ -212,7 +212,7 @@ An SCXML interpreter has three forms of output:
 
 1. Notify listeners of state changes.
 2. Script JavaScript object references passed into the SCXML interpreter as event data. This technique is used to script the div DOM node in the drag-and-drop example above. 
-3. Use SCXML <send> element to send SCXML events to web services. See the [SCXML <send> specification](http://www.w3.org/TR/scxml/#send) for more details on this.
+3. Use SCXML `<send>` element to send SCXML events to web services. See the [SCXML `<send>` specification](http://www.w3.org/TR/scxml/#send) for more details on this.
     
 ### scxml.registerListener({onEntry : function(stateId){}, onExit : function(stateId){}, onTransition : function(sourceStateId,[targetStateIds,...]){}})
 
@@ -222,8 +222,10 @@ Registers a callback to receive notification of state changes, as described abov
 
 Add the following script tags to your web page:
 
+```html
 <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"></script>
 <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/latest/scion.js"></script>
+```
 
 Note that jQuery is optional. It is used in `scion.urlToModel` and `scion.pathToModel` in order to handle Ajax GET. As an alternative, you can use your own Ajax library to get and parse the SCXML document, and then use `scion.documentToModel(doc)` to create the model object. This would look something like the following:
 
