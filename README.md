@@ -212,7 +212,7 @@ An SCXML interpreter has three forms of output:
 
 1. Notify listeners of state changes.
 2. Script JavaScript object references passed into the SCXML interpreter as event data. This technique is used to script the div DOM node in the drag-and-drop example above. 
-3. Use SCXML `<send>` element to send SCXML events to web services. See the [SCXML `<send>` specification](http://www.w3.org/TR/scxml/#send) for more details on this.
+3. Use SCXML `<send>` element to send SCXML events to web services. Right now, the `<send>` tag is not supported by SCION out-of-the-box. This should be better supported by next release (v0.0.7).
     
 ### scxml.registerListener({onEntry : function(stateId){}, onExit : function(stateId){}, onTransition : function(sourceStateId,[targetStateIds,...]){}})
 
