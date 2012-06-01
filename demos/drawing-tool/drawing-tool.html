@@ -165,38 +165,23 @@ $(document).ready(function(){
                     }
 
 
-                    //step 1 - get the scxml document
-                    jQuery.get("behaviour/canvas.xml" , function(scxmlToTransform, textStatus, jqXHR){
+                    //get the scxml document
+                    scion.urlToModel("behaviour/canvas.xml" , function(err,model){
 
-                        console.log("scxmlToTransform",scxmlToTransform);
+                        if(err) throw err;
 
-                        //step 2 - transform scxmlToTransform to JSON
-                        var arr = JsonML.parseDOM(scxmlToTransform);
-                        var scxmlJson = arr[1];
-                        console.log("scxmlJson",scxmlJson);
-
-                        //step 3 - transform the parsed JSON model so it is friendlier to interpretation
-                        var annotatedScxmlJson = scion.annotator.transform(scxmlJson,true,true,true,true);
-                        console.log("annotatedScxmlJson",annotatedScxmlJson);
-
-                        //step 4 - initialize sc object model
-                        var model = scion.json2model(annotatedScxmlJson);
-                        console.log("model",model);
-
-                        //step 5 - instantiate statechart
-                        var interpreter = new scion.scxml.BrowserInterpreter(model,
+                        //instantiate statechart
+                        var interpreter = new scion.SCXML(model,
                             {
                                 //globalEval is used to execute any top-level script children of the scxml element
                                 //use of jQuery's global-eval is optional
                                 //TODO: cite that blog post about global-eval
                                 globalEval : jQuery.globalEval
                             });
-                        console.log("interpreter",interpreter);
-
                         
                         svg.statechart = interpreter;   //hook up dom node reference
 
-                        //step 7 - start statechart
+                        //start statechart
                         interpreter.start()
 
                         hookUpDOMEvents(svg.root(),interpreter);

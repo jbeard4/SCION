@@ -54,29 +54,20 @@
 
                 var elementButton = $("#elementButton");
 
-                //step 1 - get the scxml document
-                jQuery.get("drag-and-drop.xml" , function(scxmlToTransform){
+                scion.urlToModel("drag-and-drop.xml",function(err,model){
 
-                    //step 2 - transform scxmlToTransform to JSON
-                    var arr = JsonML.parseDOM(scxmlToTransform);
-                    var scxmlJson = arr[1];
-
-                    //step 3 - transform the parsed JSON model so it is friendlier to interpretation
-                    var annotatedScxmlJson = scion.annotator.transform(scxmlJson);
-
-                    //step 4 - initialize sc object model
-                    var model = scion.json2model(annotatedScxmlJson);
+                    if(err) throw err;
 
                     //hook up button UI control
                     var interpreters = [];
                     elementButton.click(function(e){
 
-                        //step 5 - instantiate statechart
-                        var interpreter = new scion.scxml.BrowserInterpreter(model);
+                        //instantiate statechart
+                        var interpreter = new scion.SCXML(model);
 
                         var div = createNewRect();
 
-                        //step 6 - connect relevant event listeners
+                        //connect relevant event listeners
                         $(div).mousedown(function(e){
                             e.preventDefault();
                             interpreter.gen({name : e.type,data: e});
@@ -84,10 +75,10 @@
 
                         interpreters.push(interpreter); 
 
-                        //step 7 - start statechart
+                        //start statechart
                         interpreter.start()
 
-                        //step 8 - initialize his variables by sending an "init" event and passing the nodes in as data
+                        //initialize his variables by sending an "init" event and passing the nodes in as data
                         interpreter.gen({name : "init", data : div});
 
                     });

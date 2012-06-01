@@ -22,7 +22,7 @@
     <state id="idle">
         <onentry>
             <script>
-                rectNode.textContent='idle';
+                $(rectNode).text('idle');
             </script>
         </onentry>
 
@@ -35,7 +35,7 @@
     <state id="dragging">
         <onentry>
             <script>
-                rectNode.textContent='dragging';
+                $(rectNode).text('dragging');
             </script>
         </onentry>
 

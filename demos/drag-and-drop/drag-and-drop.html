@@ -20,30 +20,24 @@
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
         <script src="http://jbeard4.github.com/SCION/lib/jsonml-dom.js"></script>
         <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"></script>
-        <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/latest/scion.js"></script>
+        <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/latest/scion-min.js"></script>
         <script>
             var scion = require('scion');
 
             $(document).ready(function(){
                 var rect = document.getElementById("rect");
 
-                //step 1 - get the scxml document
-                $.get("drag-and-drop.xml",function(scxmlToTransform){
+                scion.urlToModel("drag-and-drop.xml",function(err,model){
 
-                    //step 2 - transform the scxml document to JSON
-                    var arr = JsonML.parseDOM(scxmlToTransform);
-                    var scxmlJson = arr[1];
+                    if(err) throw err;
 
-                    //step 3 - transform the parsed JSON model so it is friendlier to interpretation
-                    var annotatedScxmlJson = scion.annotator.transform(scxmlJson);
+                    //instantiate the interpreter
+                    var interpreter = new scion.SCXML(model);
 
-                    //step 4 - initialize sc object model
-                    var model = scion.json2model(annotatedScxmlJson);
-
-                    //step 5 - instantiate statechart
-                    var interpreter = new scion.scxml.BrowserInterpreter(model);
-
+                    //start the interpreter
                     interpreter.start();
+
+                    //send the init event
                     interpreter.gen({name:"init",data:rect});
 
                     function handleEvent(e){
@@ -51,7 +45,7 @@
                         interpreter.gen({name : e.type,data: e});
                     }
 
-                    //step 6 - connect all relevant event listeners
+                    //connect all relevant event listeners
                     $(rect).mousedown(handleEvent);
                     $(document.documentElement).bind("mouseup mousemove",handleEvent);
                 },"xml");
