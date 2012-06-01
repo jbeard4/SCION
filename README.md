@@ -7,35 +7,13 @@ Here are some reasons you might choose to use SCION:
 - Liberally licensed (Apache 2.0)
 - Standards-based (SCXML)
 - **Small**: Only 6kb minified and gzipped.
-- **Robust**: automatically tested using a custom testing framework for SCXML implementations.
+- **Robust**: automatically tested using a [custom testing framework for SCXML implementations](https://github.com/jbeard4/scxml-test-framework).
 - Maximally **portable** across JavaScript environments: works well in IE6+, modern browsers, node.js, rhino, and various JavaScript shells. 
 - Aggressively **optimized** for performance, memory usage and payload size. More information on this will be forthcoming.
 
-# Table of Contents
+# Quickstart and Simple Use Case
 
-1\.  [Use in the Browser](#useinthebrowser)  
-1.1\.  [Quickstart](#quickstart)  
-1.2\.  [Multiple Statechart Instances](#multiple_statechart_instances)  
-1.3\.  [Advanced Examples](#advancedexamples)  
-2\.  [Use in node.js](#useinnode.js)  
-2.1\.  [Installation](#installation)  
-2.2\.  [Example](#example)  
-3\.  [Use in Rhino](#useinrhino)  
-4\.  [SCION Semantics](#scionsemantics)  
-5\.  [License](#license)  
-6\.  [Support](#support)  
-7\.  [Other Resources](#otherresources)  
-8\.  [Related Work](#relatedwork)  
-
-<a name="useinthebrowser"></a>
-
-# Use in the Browser
-
-<a name="quickstart"></a>
-
-## Quickstart
-
-Let's start with the simple example of drag-and-drop behaviour. An entity that can be dragged has two states: idle and dragging. If the entity is in an idle state, and it receives a mousedown event, then it starts dragging. While dragging, if it receives a mousemove event, then it changes its position. Also while dragging, when it receives a mouseup event, it returns to the idle state.
+Let's start with the simple example of drag-and-drop behaviour in the browser. An entity that can be dragged has two states: idle and dragging. If the entity is in an idle state, and it receives a mousedown event, then it starts dragging. While dragging, if it receives a mousemove event, then it changes its position. Also while dragging, when it receives a mouseup event, it returns to the idle state.
 
 This natural-language description of behaviour can be described using the following simple state machine:
 
@@ -124,46 +102,40 @@ One can add action code in order to script an HTML DOM element, so as to change 
 
 </scxml>
 ```
-There are then 7 steps that must be performed to go from an SCXML document to a working state machine instance that is consuming DOM events and scripting web content:
 
-1. Get the SCXML document.
-2. Convert the XML to a JsonML object.
-3. Transform the JsonML object so that it is in a more convenient form for interpretation.
-4. Initialize the transformed JsonML to a "model" object. This step essentially converts id labels to object references, parses JavaScript scripts and expressions embedded in the SCXML as JavaScript functions, and does some validation for correctness. 
-5. Use the Statecharts object model to instantiate the SCION interpreter.
-6. Connect relevant event listeners to the statechart instance.
-7. Call the `start` method on the new interpreter instance to start execution of the statechart.
+There are then **4 steps** that must be performed to go from an SCXML document to a working state machine instance that is consuming DOM events and scripting web content:
 
-``` html
+1. Get the SCXML document, and convert it to a SCXML "model" object for easier interpretation.
+2. Use the SCXML model object to instantiate the SCXML interpreter.
+3. Connect relevant event listeners to the SCXML interpreter.
+4. Call the `start` method on the SCXML interpreter to start execution of the statechart.
+
+
+```html
 <html>
     <head>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-        <script src="https://raw.github.com/mckamey/jsonml/master/jsonml-dom.js"></script>
+        <script src="http://jbeard4.github.com/SCION/lib/jsonml-dom.js"></script>
         <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"></script>
-        <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/latest/scion.js"></script>
+        <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/latest/scion-min.js"></script>
         <script>
             var scion = require('scion');
 
             $(document).ready(function(){
                 var rect = document.getElementById("rect");
 
-                //step 1 - get the scxml document
-                $.get("drag-and-drop.xml",function(scxmlToTransform){
+                //convert to model
+                scion.urlToModel("drag-and-drop.xml",function(err,model){
 
-                    //step 2 - transform the scxml document to JSON
-                    var arr = JsonML.parseDOM(scxmlToTransform);
-                    var scxmlJson = arr[1];
+                    if(err) throw err;
 
-                    //step 3 - transform the parsed JSON model so it is friendlier to interpretation
-                    var annotatedScxmlJson = scion.annotator.transform(scxmlJson);
+                    //instantiate the interpreter
+                    var interpreter = new scion.SCXML(model);
 
-                    //step 4 - initialize sc object model
-                    var model = scion.json2model(annotatedScxmlJson);
-
-                    //step 5 - instantiate statechart
-                    var interpreter = new scion.scxml.BrowserInterpreter(model);
-
+                    //start the interpreter
                     interpreter.start();
+
+                    //send the init event
                     interpreter.gen({name:"init",data:rect});
 
                     function handleEvent(e){
@@ -171,7 +143,7 @@ There are then 7 steps that must be performed to go from an SCXML document to a 
                         interpreter.gen({name : e.type,data: e});
                     }
 
-                    //step 6 - connect all relevant event listeners
+                    //connect all relevant event listeners
                     $(rect).mousedown(handleEvent);
                     $(document.documentElement).bind("mouseup mousemove",handleEvent);
                 },"xml");
@@ -184,184 +156,107 @@ There are then 7 steps that must be performed to go from an SCXML document to a 
 </html>
 ```
 
-Note that while jQuery is used in this example to handle AJAX and DOM scripting, the SCION interpreter does not have any dependencies on jQuery, or the browser environment in general, so any other JavaScript library could be used for this purpose instead. SCION does use ES5 features, such as functional array methods (e.g. Array.prototype.reduce), Object.create and Function.prototype.bind, so the ES5-shim library is needed in order to make SCION compatible with JavaScript interpreters that do not implement these features.
 
 You can run the demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop.html).
 
-<a name="multiple_statechart_instances"></a>
+# API
 
-## Multiple Statechart Instances
+## Instantiation
 
-Here is an example that dynamically creates and connects a new DOM node and state machine instance in response to user button click events. Steps 1-4, described above, only need to be performed once, as the model object can be used to instantiate multiple statechart instances.
+### scion.urlToModel(url,function(err, model){})
+### scion.pathToModel(path,function(err, model){})
+### scion.documentStringToModel(scxmlDocString) : model
+### scion.documentToModel(scxmlDocument) : model
 
-```html
-<html>
-    <head>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-        <script src="https://raw.github.com/mckamey/jsonml/master/jsonml-dom.js"></script>
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"></script>
-        <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/latest/scion-min.js"></script>
-        <script>
-            // just for fun, random color generator, courtesy of 
-            // http://stackoverflow.com/questions/1484506/random-color-generator-in-javascript
-            function get_random_color() {
-                var letters = '0123456789ABCDEF'.split('');
-                var color = '#';
-                for (var i = 0; i < 6; i++ ) {
-                    color += letters[Math.round(Math.random() * 15)];
-                }
-                return color;
-            }
+SCION allows you to instantiate SCXML interpreters from SCXML "model" objects, which are SCXML documents that have been processed for easier interpretation. 
+These methods allow you to create an SCXML model from an SCXML document, document string, or url/path to document.
 
-            function createNewRect(){
-                //do DOM stuff - create new div
-                var div = document.createElement("div");
-                div.style.backgroundColor = get_random_color();
-                document.body.appendChild(div);
-                
-                return div;
-            }
+### new scion.SCXML(model)
 
-            var scion = require('scion');
-
-            $(document).ready(function(){
-
-                var elementButton = $("#elementButton");
-
-                //step 1 - get the scxml document
-                jQuery.get("drag-and-drop.xml" , function(scxmlToTransform){
-
-                    //step 2 - transform scxmlToTransform to JSON
-                    var arr = JsonML.parseDOM(scxmlToTransform);
-                    var scxmlJson = arr[1];
-
-                    //step 3 - transform the parsed JSON model so it is friendlier to interpretation
-                    var annotatedScxmlJson = scion.annotator.transform(scxmlJson);
-
-                    //step 4 - initialize sc object model
-                    var model = scion.json2model(annotatedScxmlJson);
-
-                    //hook up button UI control
-                    var interpreters = [];
-                    elementButton.click(function(e){
-
-                        //step 5 - instantiate statechart
-                        var interpreter = new scion.scxml.BrowserInterpreter(model);
-
-                        var div = createNewRect();
-
-                        //step 6 - connect relevant event listeners
-                        $(div).mousedown(function(e){
-                            e.preventDefault();
-                            interpreter.gen({name : e.type,data: e});
-                        });
-
-                        interpreters.push(interpreter); 
-
-                        //step 7 - start statechart
-                        interpreter.start()
-
-                        //step 8 - initialize his variables by sending an "init" event and passing the nodes in as data
-                        interpreter.gen({name : "init", data : div});
-
-                    });
-
-                    //the root element handles mousemove and mouseup events and dispatches the event to all individual statecharts
-                    $(document.documentElement).bind("mousemove mouseup",function(e){
-                        e.preventDefault();
-                        interpreters.forEach(function(interpreter){
-                            interpreter.gen({name : e.type,data: e});
-                        });
-                    });
-                },"xml");
-            });
-        </script>
-    </head>
-    <body>
-        <button id="elementButton" style="position:absolute;bottom:0px;left:0px;">Make draggable SVG Element</button>
-    </body>
-</html>
-
-
-```
-
-See this demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop2.html).
-
-<a name="advancedexamples"></a>
-
-## Advanced Examples 
-
-Drag and drop is a simple example of UI behaviour. Statecharts are most valuable for describing user interfaces that involve a more complex notion of state.
-
-A more advanced example can be seen [here](http://jbeard4.github.com/SCION/demos/drawing-tool/drawing-tool.html).
-
-It is described in detail in the source code of the page.
-
-<a name="useinnode.js"></a>
-
-# Use in node.js 
-
-<a name="installation"></a>
-
-## Installation 
-
-```bash
-npm install scion xml2jsonml
-```
-<a name="example"></a>
-
-## Example 
-
-The same 7 steps are performed in node.js as those described in section [Quickstart](#quickstart).
+The SCXML constructor creates an interpreter instance from a model object.
 
 ```javascript
-var xml2jsonml = require('xml2jsonml'),
-    scion = require('scion');
-
-//1 - 2. get the xml file and convert it to jsonml
-xml2jsonml.parseFile('basic1.scxml',function(err,scxmlJson){
-
-    if(err){
-        throw err;
-    }
-
-    //3. annotate jsonml
-    var annotatedScxmlJson = scion.annotator.transform(scxmlJson);
-
-    //4. Convert the SCXML-JSON document to a statechart object model. This step essentially converts id labels to object references, parses JavaScript scripts and expressions embedded in the SCXML as js functions, and does some validation for correctness. 
-    var model = scion.json2model(annotatedScxmlJson); 
-    console.log("model",model);
-
-    //5. Use the statechart object model to instantiate an instance of the statechart interpreter. Optionally, we can pass to the construct an object to be used as the context object (the 'this' object) in script evaluation. Lots of other parameters are available.
-    var interpreter = new scion.scxml.NodeInterpreter(model);
-    console.log("interpreter",interpreter);
-
-    //6. We would connect relevant event listeners to the statechart instance here.
-
-    //7. Call the start method on the new intrepreter instance to start execution of the statechart.
-    interpreter.start();
-
-    //let's test it by printing current state
-    console.log("initial configuration",interpreter.getConfiguration());
-
-    //send an event, inspect new configuration
-    console.log("sending event t");
-    interpreter.gen({name : "t"});
-
-    console.log("next configuration",interpreter.getConfiguration());
-});
-
+    //same model can be used to create multiple interpreter instances
+    var scxml1 = new scion.SCXML(model),
+        scxml2 = new scion.SCXML(model);
 ```
 
-See [scion-demos/nodejs](https://github.com/jbeard4/scion-demos/tree/master/nodejs) for a complete example of this, as well as [scion-demos/node-repl](https://github.com/jbeard4/scion-demos/tree/master/node-repl) and [scion-demos/node-web-repl](https://github.com/jbeard4/scion-demos/tree/master/node-web-repl) for other reduced demonstrations.
+## SCXML Interpreter Input
+
+### scxml.start() : <String>[]
+
+`scxml.start` starts the SCXML interpreter. `scxml.start` should only be called once, and should be called before `scxml.gen` is called for the first time.
+
+Returns a "basic configuration", which is an Array of strings representing the ids all of the basic states the interpreter is in after the call to `scxml.start` completes.
+
+### scxml.gen(String eventName, Object eventData) : <String>[]
+### scxml.gen({name : String, data : Object}) : <String>[]
+
+An SCXML interpreter takes SCXML events as input, where an SCXML event is an object with "name" and "data" properties. These can be passed to method `gen` as two positional arguments, or as a single object.
+
+`scxml.gen` returns a "basic configuration", which is an Array of strings representing the ids all of the basic states the interpreter is in after the call to `scxml.gen` completes.
+
+```javascript
+    var scxml = new scion.SCXML(model),
+
+    var data = {foo:1};
+    var configuration = scxml.gen("eventName",data); 
+
+    //the following call is equivalent
+    var configuration = scxml.gen({name:"eventName",data:{foo:1}}); 
+```
+
+## SCXML Interpreter Output 
+
+An SCXML interpreter has three forms of output:
+
+1. Notify listeners of state changes.
+2. Script JavaScript object references passed into the SCXML interpreter as event data. This technique is used to script the div DOM node in the drag-and-drop example above. 
+3. Use SCXML <send> element to send SCXML events to web services. See the [SCXML <send> specification](http://www.w3.org/TR/scxml/#send) for more details on this.
+    
+### scxml.registerListener({onEntry : function(stateId){}, onExit : function(stateId){}, onTransition : function(sourceStateId,[targetStateIds,...]){}})
+
+Registers a callback to receive notification of state changes, as described above.
+
+# Usage in Browser
+
+Add the following script tags to your web page:
+
+<script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"></script>
+<script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/latest/scion.js"></script>
+
+Note that jQuery is optional. It is used in `scion.urlToModel` and `scion.pathToModel` in order to handle Ajax GET. As an alternative, you can use your own Ajax library to get and parse the SCXML document, and then use `scion.documentToModel(doc)` to create the model object. This would look something like the following:
 
 
+```javascript
+    //use some library to get the document via Ajax, parse it, and store in variable doc
+    myAjax.get("foo.scxml",function(doc){
+        var model = scion.documentToModel(doc);
+    },"xml");
+```
 
-<a name="useinrhino"></a>
+# Usage in Node.js
 
-# Use in Rhino 
+Install SCION via npm:
 
-SCION works well on Rhino, but this still needs to be documented.
+    npm install scion
+
+For example usage see [SCION Demos](https://github.com/jbeard4/scion-demos).
+
+# Usage in Rhino
+
+Get it with git:
+
+    git clone --recursive git://github.com/jbeard4/SCION.git
+
+Rhino 1.7R3 supports CommonJS modules, so SCION can be used as follows:
+
+```bash
+#just put SCION/lib on your modules path
+rhino -modules path/to/SCION/lib -main path/to/your/script.js
+```
+
+Note that SCION can be used from Java via Rhino. For this, see [SCION-Java](https://github.com/jbeard4/SCION-Java).
 
 <a name="scionsemantics"></a>
 
@@ -371,12 +266,6 @@ SCION takes many ideas from the SCXML standard. In particular, it reuses the syn
 
 * If you're already familiar with SCXML, and want a high-level overview of similarities and differences between SCION and SCXML, start here: [SCION vs. SCXML Comparison](https://github.com/jbeard4/SCION/wiki/SCION-vs.-SCXML-Comparison).
 * If you're a specification implementer or a semanticist, and would like the details of the SCION semantics, start here: [SCION Semantics](https://github.com/jbeard4/SCION/wiki/Scion-Semantics).
-
-<a name="license"></a>
-
-# License 
-
-Apache License, version 2.0.
 
 <a name="support"></a>
 
@@ -397,5 +286,6 @@ Apache License, version 2.0.
 # Related Projects
 
 * [SCXML Test Framework](https://github.com/jbeard4/scxml-test-framework)
+* [SCION-Java](https://github.com/jbeard4/SCION-Java)
 * [SCXML Commons](http://commons.apache.org/scxml/)
 * [PySCXML](http://code.google.com/p/pyscxml/) 
