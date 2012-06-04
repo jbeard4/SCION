@@ -9,6 +9,7 @@ Here are some reasons you might choose to use SCION:
 - **Small**: Only 6kb minified and gzipped.
 - **Robust**: automatically tested using a [custom testing framework for SCXML implementations](https://github.com/jbeard4/scxml-test-framework).
 - Maximally **portable** across JavaScript environments: works well in IE6+, modern browsers, node.js, rhino, and various JavaScript shells. 
+- **Easy** to learn and use: now with a simple, unified API for Rhino, Node.js and the browser.
 - Aggressively **optimized** for performance, memory usage and payload size. More information on this will be forthcoming.
 
 # Quickstart and Simple Use Case
