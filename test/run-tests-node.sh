@@ -1,5 +1,5 @@
 if [ ! -e node_modules ]; then mkdir node_modules; fi
-npm install request underscore ..   #install scion and stuff
+npm install request underscore nopt ..   #install scion as a dependency, and scxml-test-framework's dependencies
 
 #start the server
 node node-test-server.js &
