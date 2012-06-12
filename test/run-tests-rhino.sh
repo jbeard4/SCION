@@ -17,3 +17,4 @@ kill $serverpid
 
 if [ "$status" = '0' ]; then echo SUCCESS; else echo FAILURE; fi;
 
+exit $status
