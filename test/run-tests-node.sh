@@ -1,7 +1,7 @@
 npm install request
 
 #start the server
-node test-server.js &
+node node-test-server.js &
 #keep the pid (so we can kill it later)
 serverpid=$!
 
