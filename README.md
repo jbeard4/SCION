@@ -170,7 +170,7 @@ You can run the demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-
 ### scion.documentToModel(scxmlDocument) : model
 
 SCION allows you to instantiate SCXML interpreters from SCXML "model" objects, which are SCXML documents that have been processed for easier interpretation. 
-These methods allow you to create an SCXML model from an SCXML document, document string, or url/path to document.
+These methods allow you to create an SCXML model from an XML DOM document, document string, or url/path to document.
 
 ### new scion.SCXML(model)
 
