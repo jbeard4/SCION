@@ -40,5 +40,8 @@
         "uglify-js" : "*"
     },
     "engines" : { "node" : ">=0.4.7" },
-    "main": "./lib/scion"
+    "main": "./lib/scion",
+    "scripts" : {
+        "test" : "cd test && bash run-tests-node.sh"
+    }
 }
