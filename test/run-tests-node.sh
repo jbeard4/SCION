@@ -1,4 +1,5 @@
-npm install request
+if [ ! -e node_modules ]; then mkdir node_modules; fi
+npm install request underscore ..   #install scion and stuff
 
 #start the server
 node node-test-server.js &
