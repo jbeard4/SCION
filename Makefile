@@ -9,7 +9,7 @@ js = lib/scion.js \
 	lib/core/scxml/json2model.js \
 	lib/core/scxml/set/ArraySet.js
 
-scion-browser.js : $(js) 
+scion-browser.js : $(js) coffee
 	node lib/browser/build/stitch.js 
 
 scion-browser-min.js : scion-browser.js
@@ -18,4 +18,7 @@ scion-browser-min.js : scion-browser.js
 clean : 
 	rm scion-browser.js scion-browser-min.js
 
-.PHONY : clean
+.PHONY : clean coffee
+
+coffee : 
+	coffee -o lib/research/optimization -c src/research/optimization/*.coffee 
