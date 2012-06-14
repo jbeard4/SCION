@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<ns0:scxml xmlns:ns0="http://www.w3.org/2005/07/scxml" profile="ecmascript" initial="default-state" version="1.0" name="gen">
+  <ns0:state id="default-state"><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/><ns0:transition target="the-other-state" event="t"/>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  </ns0:state>
+  <ns0:state id="the-other-state"><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/><ns0:transition target="default-state" event="t"/>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  </ns0:state>
+</ns0:scxml>

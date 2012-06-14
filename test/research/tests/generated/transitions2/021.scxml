@@ -1,0 +1,48 @@
+<ns0:scxml xmlns:ns0="http://www.w3.org/2005/07/scxml" profile="ecmascript" initial="default-state" version="1.0" name="gen">
+  <ns0:state id="default-state">
+    <ns0:transition target="the-other-state" event="t-0"/>
+    <ns0:transition target="the-other-state" event="t-1"/>
+    <ns0:transition target="the-other-state" event="t-2"/>
+    <ns0:transition target="the-other-state" event="t-3"/>
+    <ns0:transition target="the-other-state" event="t-4"/>
+    <ns0:transition target="the-other-state" event="t-5"/>
+    <ns0:transition target="the-other-state" event="t-6"/>
+    <ns0:transition target="the-other-state" event="t-7"/>
+    <ns0:transition target="the-other-state" event="t-8"/>
+    <ns0:transition target="the-other-state" event="t-9"/>
+    <ns0:transition target="the-other-state" event="t-10"/>
+    <ns0:transition target="the-other-state" event="t-11"/>
+    <ns0:transition target="the-other-state" event="t-12"/>
+    <ns0:transition target="the-other-state" event="t-13"/>
+    <ns0:transition target="the-other-state" event="t-14"/>
+    <ns0:transition target="the-other-state" event="t-15"/>
+    <ns0:transition target="the-other-state" event="t-16"/>
+    <ns0:transition target="the-other-state" event="t-17"/>
+    <ns0:transition target="the-other-state" event="t-18"/>
+    <ns0:transition target="the-other-state" event="t-19"/>
+    <ns0:transition target="the-other-state" event="t-20"/>
+  </ns0:state>
+  <ns0:state id="the-other-state">
+    <ns0:transition target="default-state" event="t-0"/>
+    <ns0:transition target="default-state" event="t-1"/>
+    <ns0:transition target="default-state" event="t-2"/>
+    <ns0:transition target="default-state" event="t-3"/>
+    <ns0:transition target="default-state" event="t-4"/>
+    <ns0:transition target="default-state" event="t-5"/>
+    <ns0:transition target="default-state" event="t-6"/>
+    <ns0:transition target="default-state" event="t-7"/>
+    <ns0:transition target="default-state" event="t-8"/>
+    <ns0:transition target="default-state" event="t-9"/>
+    <ns0:transition target="default-state" event="t-10"/>
+    <ns0:transition target="default-state" event="t-11"/>
+    <ns0:transition target="default-state" event="t-12"/>
+    <ns0:transition target="default-state" event="t-13"/>
+    <ns0:transition target="default-state" event="t-14"/>
+    <ns0:transition target="default-state" event="t-15"/>
+    <ns0:transition target="default-state" event="t-16"/>
+    <ns0:transition target="default-state" event="t-17"/>
+    <ns0:transition target="default-state" event="t-18"/>
+    <ns0:transition target="default-state" event="t-19"/>
+    <ns0:transition target="default-state" event="t-20"/>
+  </ns0:state>
+</ns0:scxml>

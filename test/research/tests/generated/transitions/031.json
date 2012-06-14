@@ -1,0 +1,1 @@
+{"events": [{"event": {"name": "t"}, "nextConfiguration": ["the-other-state"]}, {"event": {"name": "t"}, "nextConfiguration": ["default-state"]}], "initialConfiguration": ["default-state"]}

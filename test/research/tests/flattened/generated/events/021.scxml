@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<ns0:scxml xmlns:ns0="http://www.w3.org/2005/07/scxml" profile="ecmascript" initial="default-state" version="1.0" name="gen">
+  <ns0:state id="default-state"><ns0:transition target="state-0" event="t-0"/>
+    
+  </ns0:state>
+  <ns0:state id="state-0"><ns0:transition target="state-1" event="t-1"/>
+    
+  </ns0:state>
+  <ns0:state id="state-1"><ns0:transition target="state-2" event="t-2"/>
+    
+  </ns0:state>
+  <ns0:state id="state-2"><ns0:transition target="state-3" event="t-3"/>
+    
+  </ns0:state>
+  <ns0:state id="state-3"><ns0:transition target="state-4" event="t-4"/>
+    
+  </ns0:state>
+  <ns0:state id="state-4"><ns0:transition target="state-5" event="t-5"/>
+    
+  </ns0:state>
+  <ns0:state id="state-5"><ns0:transition target="state-6" event="t-6"/>
+    
+  </ns0:state>
+  <ns0:state id="state-6"><ns0:transition target="state-7" event="t-7"/>
+    
+  </ns0:state>
+  <ns0:state id="state-7"><ns0:transition target="state-8" event="t-8"/>
+    
+  </ns0:state>
+  <ns0:state id="state-8"><ns0:transition target="state-9" event="t-9"/>
+    
+  </ns0:state>
+  <ns0:state id="state-9"><ns0:transition target="state-10" event="t-10"/>
+    
+  </ns0:state>
+  <ns0:state id="state-10"><ns0:transition target="state-11" event="t-11"/>
+    
+  </ns0:state>
+  <ns0:state id="state-11"><ns0:transition target="state-12" event="t-12"/>
+    
+  </ns0:state>
+  <ns0:state id="state-12"><ns0:transition target="state-13" event="t-13"/>
+    
+  </ns0:state>
+  <ns0:state id="state-13"><ns0:transition target="state-14" event="t-14"/>
+    
+  </ns0:state>
+  <ns0:state id="state-14"><ns0:transition target="state-15" event="t-15"/>
+    
+  </ns0:state>
+  <ns0:state id="state-15"><ns0:transition target="state-16" event="t-16"/>
+    
+  </ns0:state>
+  <ns0:state id="state-16"><ns0:transition target="state-17" event="t-17"/>
+    
+  </ns0:state>
+  <ns0:state id="state-17"><ns0:transition target="state-18" event="t-18"/>
+    
+  </ns0:state>
+  <ns0:state id="state-18"><ns0:transition target="state-19" event="t-19"/>
+    
+  </ns0:state>
+  <ns0:state id="state-19"><ns0:transition target="default-state" event="t-20"/>
+    
+  </ns0:state>
+</ns0:scxml>

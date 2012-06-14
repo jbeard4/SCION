@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<ns0:scxml xmlns:ns0="http://www.w3.org/2005/07/scxml" profile="ecmascript" initial="default-state" version="1.0" name="gen">
+  <ns0:state id="default-state"><ns0:transition target="composite-10" event="t"/>
+    
+  </ns0:state>
+  <ns0:state id="composite-0">
+    <ns0:state id="composite-1">
+      <ns0:state id="composite-2">
+        <ns0:state id="composite-3">
+          <ns0:state id="composite-4">
+            <ns0:state id="composite-5">
+              <ns0:state id="composite-6">
+                <ns0:state id="composite-7">
+                  <ns0:state id="composite-8">
+                    <ns0:state id="composite-9">
+                      <ns0:state id="composite-10"><ns0:transition target="default-state" event="t"/>
+                        
+                      </ns0:state>
+                    </ns0:state>
+                  </ns0:state>
+                </ns0:state>
+              </ns0:state>
+            </ns0:state>
+          </ns0:state>
+        </ns0:state>
+      </ns0:state>
+    </ns0:state>
+  </ns0:state>
+</ns0:scxml>

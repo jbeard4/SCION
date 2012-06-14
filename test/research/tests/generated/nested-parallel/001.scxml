@@ -1,0 +1,14 @@
+<ns0:scxml xmlns:ns0="http://www.w3.org/2005/07/scxml" profile="ecmascript" version="1.0" name="gen">
+  <ns0:parallel id="parallel">
+    <ns0:parallel id="ortho-a">
+      <ns0:state id="ortho-a-a">
+        <ns0:state id="substate-1-a-a">
+          <ns0:transition target="substate-2-a-a" event="t"/>
+        </ns0:state>
+        <ns0:state id="substate-2-a-a">
+          <ns0:transition target="substate-1-a-a" event="t"/>
+        </ns0:state>
+      </ns0:state>
+    </ns0:parallel>
+  </ns0:parallel>
+</ns0:scxml>

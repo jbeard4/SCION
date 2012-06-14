@@ -1,0 +1,411 @@
+<?xml version="1.0"?>
+<ns0:scxml xmlns:ns0="http://www.w3.org/2005/07/scxml" profile="ecmascript" version="1.0" name="gen">
+  <ns0:parallel id="parallel">
+    <ns0:parallel id="ortho-a">
+      <ns0:state id="ortho-a-a">
+        <ns0:state id="substate-1-a-a"><ns0:transition target="substate-2-a-a" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-a-a"><ns0:transition target="substate-1-a-a" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-a-b">
+        <ns0:state id="substate-1-a-b"><ns0:transition target="substate-2-a-b" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-a-b"><ns0:transition target="substate-1-a-b" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-a-c">
+        <ns0:state id="substate-1-a-c"><ns0:transition target="substate-2-a-c" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-a-c"><ns0:transition target="substate-1-a-c" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-a-d">
+        <ns0:state id="substate-1-a-d"><ns0:transition target="substate-2-a-d" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-a-d"><ns0:transition target="substate-1-a-d" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-a-e">
+        <ns0:state id="substate-1-a-e"><ns0:transition target="substate-2-a-e" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-a-e"><ns0:transition target="substate-1-a-e" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-a-f">
+        <ns0:state id="substate-1-a-f"><ns0:transition target="substate-2-a-f" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-a-f"><ns0:transition target="substate-1-a-f" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-a-g">
+        <ns0:state id="substate-1-a-g"><ns0:transition target="substate-2-a-g" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-a-g"><ns0:transition target="substate-1-a-g" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+    </ns0:parallel>
+    <ns0:parallel id="ortho-b">
+      <ns0:state id="ortho-b-a">
+        <ns0:state id="substate-1-b-a"><ns0:transition target="substate-2-b-a" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-b-a"><ns0:transition target="substate-1-b-a" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-b-b">
+        <ns0:state id="substate-1-b-b"><ns0:transition target="substate-2-b-b" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-b-b"><ns0:transition target="substate-1-b-b" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-b-c">
+        <ns0:state id="substate-1-b-c"><ns0:transition target="substate-2-b-c" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-b-c"><ns0:transition target="substate-1-b-c" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-b-d">
+        <ns0:state id="substate-1-b-d"><ns0:transition target="substate-2-b-d" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-b-d"><ns0:transition target="substate-1-b-d" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-b-e">
+        <ns0:state id="substate-1-b-e"><ns0:transition target="substate-2-b-e" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-b-e"><ns0:transition target="substate-1-b-e" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-b-f">
+        <ns0:state id="substate-1-b-f"><ns0:transition target="substate-2-b-f" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-b-f"><ns0:transition target="substate-1-b-f" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-b-g">
+        <ns0:state id="substate-1-b-g"><ns0:transition target="substate-2-b-g" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-b-g"><ns0:transition target="substate-1-b-g" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+    </ns0:parallel>
+    <ns0:parallel id="ortho-c">
+      <ns0:state id="ortho-c-a">
+        <ns0:state id="substate-1-c-a"><ns0:transition target="substate-2-c-a" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-c-a"><ns0:transition target="substate-1-c-a" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-c-b">
+        <ns0:state id="substate-1-c-b"><ns0:transition target="substate-2-c-b" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-c-b"><ns0:transition target="substate-1-c-b" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-c-c">
+        <ns0:state id="substate-1-c-c"><ns0:transition target="substate-2-c-c" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-c-c"><ns0:transition target="substate-1-c-c" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-c-d">
+        <ns0:state id="substate-1-c-d"><ns0:transition target="substate-2-c-d" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-c-d"><ns0:transition target="substate-1-c-d" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-c-e">
+        <ns0:state id="substate-1-c-e"><ns0:transition target="substate-2-c-e" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-c-e"><ns0:transition target="substate-1-c-e" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-c-f">
+        <ns0:state id="substate-1-c-f"><ns0:transition target="substate-2-c-f" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-c-f"><ns0:transition target="substate-1-c-f" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-c-g">
+        <ns0:state id="substate-1-c-g"><ns0:transition target="substate-2-c-g" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-c-g"><ns0:transition target="substate-1-c-g" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+    </ns0:parallel>
+    <ns0:parallel id="ortho-d">
+      <ns0:state id="ortho-d-a">
+        <ns0:state id="substate-1-d-a"><ns0:transition target="substate-2-d-a" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-d-a"><ns0:transition target="substate-1-d-a" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-d-b">
+        <ns0:state id="substate-1-d-b"><ns0:transition target="substate-2-d-b" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-d-b"><ns0:transition target="substate-1-d-b" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-d-c">
+        <ns0:state id="substate-1-d-c"><ns0:transition target="substate-2-d-c" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-d-c"><ns0:transition target="substate-1-d-c" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-d-d">
+        <ns0:state id="substate-1-d-d"><ns0:transition target="substate-2-d-d" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-d-d"><ns0:transition target="substate-1-d-d" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-d-e">
+        <ns0:state id="substate-1-d-e"><ns0:transition target="substate-2-d-e" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-d-e"><ns0:transition target="substate-1-d-e" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-d-f">
+        <ns0:state id="substate-1-d-f"><ns0:transition target="substate-2-d-f" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-d-f"><ns0:transition target="substate-1-d-f" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-d-g">
+        <ns0:state id="substate-1-d-g"><ns0:transition target="substate-2-d-g" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-d-g"><ns0:transition target="substate-1-d-g" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+    </ns0:parallel>
+    <ns0:parallel id="ortho-e">
+      <ns0:state id="ortho-e-a">
+        <ns0:state id="substate-1-e-a"><ns0:transition target="substate-2-e-a" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-e-a"><ns0:transition target="substate-1-e-a" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-e-b">
+        <ns0:state id="substate-1-e-b"><ns0:transition target="substate-2-e-b" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-e-b"><ns0:transition target="substate-1-e-b" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-e-c">
+        <ns0:state id="substate-1-e-c"><ns0:transition target="substate-2-e-c" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-e-c"><ns0:transition target="substate-1-e-c" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-e-d">
+        <ns0:state id="substate-1-e-d"><ns0:transition target="substate-2-e-d" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-e-d"><ns0:transition target="substate-1-e-d" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-e-e">
+        <ns0:state id="substate-1-e-e"><ns0:transition target="substate-2-e-e" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-e-e"><ns0:transition target="substate-1-e-e" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-e-f">
+        <ns0:state id="substate-1-e-f"><ns0:transition target="substate-2-e-f" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-e-f"><ns0:transition target="substate-1-e-f" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-e-g">
+        <ns0:state id="substate-1-e-g"><ns0:transition target="substate-2-e-g" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-e-g"><ns0:transition target="substate-1-e-g" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+    </ns0:parallel>
+    <ns0:parallel id="ortho-f">
+      <ns0:state id="ortho-f-a">
+        <ns0:state id="substate-1-f-a"><ns0:transition target="substate-2-f-a" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-f-a"><ns0:transition target="substate-1-f-a" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-f-b">
+        <ns0:state id="substate-1-f-b"><ns0:transition target="substate-2-f-b" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-f-b"><ns0:transition target="substate-1-f-b" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-f-c">
+        <ns0:state id="substate-1-f-c"><ns0:transition target="substate-2-f-c" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-f-c"><ns0:transition target="substate-1-f-c" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-f-d">
+        <ns0:state id="substate-1-f-d"><ns0:transition target="substate-2-f-d" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-f-d"><ns0:transition target="substate-1-f-d" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-f-e">
+        <ns0:state id="substate-1-f-e"><ns0:transition target="substate-2-f-e" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-f-e"><ns0:transition target="substate-1-f-e" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-f-f">
+        <ns0:state id="substate-1-f-f"><ns0:transition target="substate-2-f-f" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-f-f"><ns0:transition target="substate-1-f-f" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-f-g">
+        <ns0:state id="substate-1-f-g"><ns0:transition target="substate-2-f-g" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-f-g"><ns0:transition target="substate-1-f-g" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+    </ns0:parallel>
+    <ns0:parallel id="ortho-g">
+      <ns0:state id="ortho-g-a">
+        <ns0:state id="substate-1-g-a"><ns0:transition target="substate-2-g-a" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-g-a"><ns0:transition target="substate-1-g-a" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-g-b">
+        <ns0:state id="substate-1-g-b"><ns0:transition target="substate-2-g-b" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-g-b"><ns0:transition target="substate-1-g-b" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-g-c">
+        <ns0:state id="substate-1-g-c"><ns0:transition target="substate-2-g-c" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-g-c"><ns0:transition target="substate-1-g-c" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-g-d">
+        <ns0:state id="substate-1-g-d"><ns0:transition target="substate-2-g-d" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-g-d"><ns0:transition target="substate-1-g-d" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-g-e">
+        <ns0:state id="substate-1-g-e"><ns0:transition target="substate-2-g-e" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-g-e"><ns0:transition target="substate-1-g-e" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-g-f">
+        <ns0:state id="substate-1-g-f"><ns0:transition target="substate-2-g-f" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-g-f"><ns0:transition target="substate-1-g-f" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+      <ns0:state id="ortho-g-g">
+        <ns0:state id="substate-1-g-g"><ns0:transition target="substate-2-g-g" event="t"/>
+          
+        </ns0:state>
+        <ns0:state id="substate-2-g-g"><ns0:transition target="substate-1-g-g" event="t"/>
+          
+        </ns0:state>
+      </ns0:state>
+    </ns0:parallel>
+  </ns0:parallel>
+</ns0:scxml>

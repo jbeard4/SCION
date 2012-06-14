@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<ns0:scxml xmlns:ns0="http://www.w3.org/2005/07/scxml" profile="ecmascript" initial="default-state" version="1.0" name="gen">
+  <ns0:state id="default-state"><ns0:transition target="composite-70" event="t"/>
+    
+  </ns0:state>
+  <ns0:state id="composite-0">
+    <ns0:state id="composite-1">
+      <ns0:state id="composite-2">
+        <ns0:state id="composite-3">
+          <ns0:state id="composite-4">
+            <ns0:state id="composite-5">
+              <ns0:state id="composite-6">
+                <ns0:state id="composite-7">
+                  <ns0:state id="composite-8">
+                    <ns0:state id="composite-9">
+                      <ns0:state id="composite-10">
+                        <ns0:state id="composite-11">
+                          <ns0:state id="composite-12">
+                            <ns0:state id="composite-13">
+                              <ns0:state id="composite-14">
+                                <ns0:state id="composite-15">
+                                  <ns0:state id="composite-16">
+                                    <ns0:state id="composite-17">
+                                      <ns0:state id="composite-18">
+                                        <ns0:state id="composite-19">
+                                          <ns0:state id="composite-20">
+                                            <ns0:state id="composite-21">
+                                              <ns0:state id="composite-22">
+                                                <ns0:state id="composite-23">
+                                                  <ns0:state id="composite-24">
+                                                    <ns0:state id="composite-25">
+                                                      <ns0:state id="composite-26">
+                                                        <ns0:state id="composite-27">
+                                                          <ns0:state id="composite-28">
+                                                            <ns0:state id="composite-29">
+                                                            <ns0:state id="composite-30">
+                                                            <ns0:state id="composite-31">
+                                                            <ns0:state id="composite-32">
+                                                            <ns0:state id="composite-33">
+                                                            <ns0:state id="composite-34">
+                                                            <ns0:state id="composite-35">
+                                                            <ns0:state id="composite-36">
+                                                            <ns0:state id="composite-37">
+                                                            <ns0:state id="composite-38">
+                                                            <ns0:state id="composite-39">
+                                                            <ns0:state id="composite-40">
+                                                            <ns0:state id="composite-41">
+                                                            <ns0:state id="composite-42">
+                                                            <ns0:state id="composite-43">
+                                                            <ns0:state id="composite-44">
+                                                            <ns0:state id="composite-45">
+                                                            <ns0:state id="composite-46">
+                                                            <ns0:state id="composite-47">
+                                                            <ns0:state id="composite-48">
+                                                            <ns0:state id="composite-49">
+                                                            <ns0:state id="composite-50">
+                                                            <ns0:state id="composite-51">
+                                                            <ns0:state id="composite-52">
+                                                            <ns0:state id="composite-53">
+                                                            <ns0:state id="composite-54">
+                                                            <ns0:state id="composite-55">
+                                                            <ns0:state id="composite-56">
+                                                            <ns0:state id="composite-57">
+                                                            <ns0:state id="composite-58">
+                                                            <ns0:state id="composite-59">
+                                                            <ns0:state id="composite-60">
+                                                            <ns0:state id="composite-61">
+                                                            <ns0:state id="composite-62">
+                                                            <ns0:state id="composite-63">
+                                                            <ns0:state id="composite-64">
+                                                            <ns0:state id="composite-65">
+                                                            <ns0:state id="composite-66">
+                                                            <ns0:state id="composite-67">
+                                                            <ns0:state id="composite-68">
+                                                            <ns0:state id="composite-69">
+                                                            <ns0:state id="composite-70"><ns0:transition target="default-state" event="t"/>
+                                                            
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                            </ns0:state>
+                                                          </ns0:state>
+                                                        </ns0:state>
+                                                      </ns0:state>
+                                                    </ns0:state>
+                                                  </ns0:state>
+                                                </ns0:state>
+                                              </ns0:state>
+                                            </ns0:state>
+                                          </ns0:state>
+                                        </ns0:state>
+                                      </ns0:state>
+                                    </ns0:state>
+                                  </ns0:state>
+                                </ns0:state>
+                              </ns0:state>
+                            </ns0:state>
+                          </ns0:state>
+                        </ns0:state>
+                      </ns0:state>
+                    </ns0:state>
+                  </ns0:state>
+                </ns0:state>
+              </ns0:state>
+            </ns0:state>
+          </ns0:state>
+        </ns0:state>
+      </ns0:state>
+    </ns0:state>
+  </ns0:state>
+</ns0:scxml>

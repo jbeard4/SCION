@@ -1,0 +1,1 @@
+{"events": [{"event": {"name": "t"}, "nextConfiguration": ["substate-2-a-a"]}, {"event": {"name": "t"}, "nextConfiguration": ["substate-1-a-a"]}], "initialConfiguration": ["substate-1-a-a"]}

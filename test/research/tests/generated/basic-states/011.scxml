@@ -1,0 +1,35 @@
+<ns0:scxml xmlns:ns0="http://www.w3.org/2005/07/scxml" profile="ecmascript" version="1.0" name="gen">
+  <ns0:state id="state-0">
+    <ns0:transition target="state-1" event="t"/>
+  </ns0:state>
+  <ns0:state id="state-1">
+    <ns0:transition target="state-2" event="t"/>
+  </ns0:state>
+  <ns0:state id="state-2">
+    <ns0:transition target="state-3" event="t"/>
+  </ns0:state>
+  <ns0:state id="state-3">
+    <ns0:transition target="state-4" event="t"/>
+  </ns0:state>
+  <ns0:state id="state-4">
+    <ns0:transition target="state-5" event="t"/>
+  </ns0:state>
+  <ns0:state id="state-5">
+    <ns0:transition target="state-6" event="t"/>
+  </ns0:state>
+  <ns0:state id="state-6">
+    <ns0:transition target="state-7" event="t"/>
+  </ns0:state>
+  <ns0:state id="state-7">
+    <ns0:transition target="state-8" event="t"/>
+  </ns0:state>
+  <ns0:state id="state-8">
+    <ns0:transition target="state-9" event="t"/>
+  </ns0:state>
+  <ns0:state id="state-9">
+    <ns0:transition target="state-10" event="t"/>
+  </ns0:state>
+  <ns0:state id="state-10">
+    <ns0:transition target="state-0" event="t"/>
+  </ns0:state>
+</ns0:scxml>
