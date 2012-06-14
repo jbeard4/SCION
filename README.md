@@ -259,9 +259,15 @@ Rhino 1.7R3 supports CommonJS modules, so SCION can be used as follows:
 rhino -modules path/to/SCION/lib -main path/to/your/script.js
 ```
 
-Note that SCION can be used from Java via Rhino. For this, see [SCION-Java](https://github.com/jbeard4/SCION-Java).
-
 <a name="scionsemantics"></a>
+
+# Using SCION from Other Languages
+
+Because SCION is implemented in ECMAScript, it has been fairly easy to embed in other programming environments, including:
+
+* Java : [SCION-Java](https://github.com/jbeard4/SCION-Java)
+* C# : [SCION.NET](https://github.com/jbeard4/SCION.NET)
+* Python : [pySCION](https://github.com/jbeard4/pySCION)
 
 # SCION Semantics 
 
