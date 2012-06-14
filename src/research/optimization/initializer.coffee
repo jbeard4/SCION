@@ -17,7 +17,7 @@ module.exports =
 
 	genOuterInitializerStr : (scxmlJson,innerFnStr) ->
 		toReturn = 	"""
-				function(transitions,eventMap){
+				(function(transitions,eventMap){
 					var 
 				"""
 
@@ -28,7 +28,7 @@ module.exports =
 				
 		toReturn +=	"""
 					#{innerFnStr}
-				}
+				})
 				"""
 
 	transitionFilterString :  	"""

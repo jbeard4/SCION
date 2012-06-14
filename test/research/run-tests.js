@@ -1,3 +1,7 @@
+/*jsl:import common.js*/
+/*jsl:import tests/tests.registry.js*/
+             
+
 //TODO: registry of tests to run
 //then, run through all combinations
 
@@ -44,25 +48,27 @@ var scxml = require('core/scxml/SCXML'),
 //maps short names to constructors/initializers
 var opts = {
     sets : {
-        "class" : require("research/optimization/class"),
-        "switch" : require("research/optimization/switch"),
-        "table" : require("research/optimization/state-table")
-    },
-    selectors : {
         'arraySet' : require("core/scxml/set/ArraySet"),
         'bitVector' : require("core/scxml/set/BitVector"),
         'boolArray' : require("core/scxml/set/BooleanArray"),
         'objectSet' : require("core/scxml/set/ObjectSet")
+    },
+    selectors : {
+        "class" : require("research/optimization/class"),
+        "switch" : require("research/optimization/switch"),
+        "table" : require("research/optimization/state-table"),
+        "default" : require('core/scxml/scxml-dynamic-name-match-transition-selector')
     }
 };
 
 //ok, now that we have our test descriptor
 async.forEachSeries(testDescriptors,function(test,cb){
     //now the fun part. we have to initialize these things.
+    console.log("Running test",test);
 
     //first get your tests with jquery
     //TODO: we should maybe get the flattened one if flattened?
-    var root = test.flattened ? "tests/flattend" : "tests";
+    var root = test.flattened ? "tests/flattened" : "tests";
     $.get( root + test.testScxmlUrl,function(doc){
         $.get(root + test.testScriptUrl,function(jsonTest){
 
@@ -79,13 +85,17 @@ async.forEachSeries(testDescriptors,function(test,cb){
             
             //set type is all set up. 
             //TODO: augment interpreter to pass in the standard info that he needs
-            var set = opts.selectors[test.setType]; 
+            var set = opts.sets[test.setType]; 
 
             //get the generation function. then call it to get the string and eval him to get the constructor, then call the constructor with the transitions.
-            var transitionSelector = opts.selectors[test.transitionSelector]; 
-            var s = transitionSelector(model); 
-            var selectorInitializer = eval(s);
-            var selectorFn = selectorInitializer(model.transitions,model.events)   //takes transitions,eventMap 
+            var selectorFn, transitionSelector = opts.selectors[test.transitionSelector]; 
+            if(test.transitionSelector !== 'default'){
+                var s = transitionSelector(model); 
+                var selectorInitializer = eval(s);
+                selectorFn = selectorInitializer(model.transitions,model.events);   //takes transitions,eventMap 
+            }else{
+                selectorFn = transitionSelector;    //no setup necessary
+            }
             
             //then we instantiate an interpreter, and pass stuff in as options
             var interpreter = new scxml.SimpleInterpreter(model,{
@@ -100,10 +110,12 @@ async.forEachSeries(testDescriptors,function(test,cb){
             //then we run through stuff and compare stuff and stuff
             var initialConfiguration = interpreter.start();
             if(_.difference(initialConfiguration,jsonTest.initialConfiguration).length){
+                var m = "Received " + JSON.stringify(initialConfiguration) + " and expected " + JSON.stringify(jsonTest.initialConfiguration);
                 test.result = {
                     passed : false,
-                    message : "Received " + JSON.stringify(initialConfiguration) + " and expected " + JSON.stringify(jsonTest.initialConfiguration)
+                    message : m
                 };
+                console.error(m);
                 cb();
                 return;
             }
@@ -112,13 +124,17 @@ async.forEachSeries(testDescriptors,function(test,cb){
             //TODO: run for a while and collect stats
             var eventTuple;
             var events = jsonTest.events.slice();
-            while(eventTuple = events.dequeue()){
+            /*jsl:ignore*/
+            while(eventTuple = events.shift()){
+            /*jsl:end*/
                 var nextConfiguration = interpreter.gen(eventTuple.event); 
                 if(_.difference(nextConfiguration,eventTuple.nextConfiguration).length){
+                    m = "Received " + JSON.stringify(nextConfiguration) + " and expected " + JSON.stringify(eventTuple.nextConfiguration);
                     test.result = {
                         passed : false,
-                        message : "Received " + JSON.stringify(nextConfiguration) + " and expected " + JSON.stringify(eventTuple.nextConfiguration)
+                        message : m
                     };
+                    console.error(m);
                     cb();
                     return;
                 }
@@ -127,12 +143,18 @@ async.forEachSeries(testDescriptors,function(test,cb){
             test.result = {
                 passed : true
             };
+            console.info("Test passed");
             cb();
         },"json");
     },"xml");
 },function(){
     //everything complete. post results to server, or something
+    /*
     $.post("/",testDescriptors,function(r){
         console.log(r);
     });
+    */
+    console.log("All done!");
+    results = testDescriptors; 
+    console.log(testDescriptors);
 });

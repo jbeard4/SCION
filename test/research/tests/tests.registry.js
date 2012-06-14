@@ -1,29 +1,6 @@
 var tests = [
-    "/generated/nested-parallel/010.scxml",
-    "/generated/nested-parallel/009.scxml",
-    "/generated/nested-parallel/005.scxml",
-    "/generated/nested-parallel/001.scxml",
-    "/generated/nested-parallel/003.scxml",
-    "/generated/nested-parallel/007.scxml",
-    "/generated/basic-states/061.scxml",
-    "/generated/basic-states/091.scxml",
-    "/generated/basic-states/901.scxml",
-    "/generated/basic-states/301.scxml",
-    "/generated/basic-states/081.scxml",
-    "/generated/basic-states/201.scxml",
-    "/generated/basic-states/071.scxml",
-    "/generated/basic-states/601.scxml",
-    "/generated/basic-states/701.scxml",
-    "/generated/basic-states/021.scxml",
-    "/generated/basic-states/801.scxml",
     "/generated/basic-states/001.scxml",
-    "/generated/basic-states/051.scxml",
-    "/generated/basic-states/011.scxml",
-    "/generated/basic-states/031.scxml",
-    "/generated/basic-states/401.scxml",
-    "/generated/basic-states/501.scxml",
-    "/generated/basic-states/101.scxml",
-    "/generated/basic-states/041.scxml",
+/*
     "/generated/depth/061.scxml",
     "/generated/depth/091.scxml",
     "/generated/depth/081.scxml",
@@ -87,4 +64,5 @@ var tests = [
     "/generated/transitions2/011.scxml",
     "/generated/transitions2/031.scxml",
     "/generated/transitions2/041.scxml"
+*/
 ];

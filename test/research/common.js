@@ -1,25 +1,31 @@
 //these should simply map to those modules...
 //maybe we want a map, with a short, canonical name mapping to the module object
 var transitionSelectors = [
-    "default",
-    "class",
+//    "default",
+//    "class",
     "switch",
-    "table",
-]
+//    "table"
+];
 
 //same here. map to constructor functions
 var setTypes = [
     'arraySet',
-    'bitVector',
-    'boolArray',
-    'objectSet'
-]
+//    'bitVector',
+//    'boolArray',
+//    'objectSet'
+];
 
 //this gets passed ot the annotator. Easy.
-var extraModelInfo = [true,false];
+var extraModelInfo = [
+    true,
+    //false
+];
 
 //this can be used to do the XSLT in the browser.
-var flattened = [true,false];
+var flattened = [
+    //true,
+    false
+];
 
 
 /*
