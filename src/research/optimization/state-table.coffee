@@ -70,8 +70,8 @@ defaultTableToString = (table) ->
     return toReturn
     
 module.exports = (scxmlJson) ->
-    stateTransitionTable = (((initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event or transition.event == event.name) for eventName,event of scxmlJson.events ) for state in scxmlJson.states)
-    defaultTransitionsForStates = ((initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event) for state in scxmlJson.states)
+    stateTransitionTable = (((initializer.transitionToVarLabel transition for transition in state.transitions when (not transition.events) or event.name in transition.events ) for eventName,event of scxmlJson.events ) for state in scxmlJson.states)
+    defaultTransitionsForStates = ((initializer.transitionToVarLabel transition for transition in state.transitions when not transition.events) for state in scxmlJson.states)
     toReturn = initializer.genOuterInitializerStr scxmlJson,"""
     var stateTransitionTable = #{tableToString stateTransitionTable};
     var defaultTransitionTable = #{defaultTableToString defaultTransitionsForStates};

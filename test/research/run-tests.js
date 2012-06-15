@@ -156,5 +156,6 @@ async.forEachSeries(testDescriptors,function(test,cb){
     */
     console.log("All done!");
     results = testDescriptors; 
-    console.log(testDescriptors);
+    var failed = testDescriptors.filter(function(test){return !test.result;}).length;
+    console.log(failed ? "FAILURE" : "SUCCESS" );
 });

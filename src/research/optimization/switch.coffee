@@ -34,7 +34,7 @@ module.exports = (scxmlJson) ->
 					"""
 
 			for eventName,event of scxmlJson.events
-				transitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event or transition.event == event.name)
+				transitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when (not transition.events) or event.name in transition.events )
 				if transitionsForEvent.length
 					toReturn += 	"""
 									case '#{util.escapeEvent event.name}':
@@ -56,7 +56,7 @@ module.exports = (scxmlJson) ->
 					switch(state.id){
 				"""
 		for state in scxmlJson.states when state.transitions.length
-			defaultTransitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event)
+			defaultTransitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when not transition.events)
 			if defaultTransitionsForEvent.length
 				toReturn += 	"""
 							case '#{state.id}':

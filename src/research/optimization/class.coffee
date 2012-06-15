@@ -27,12 +27,12 @@ module.exports = (scxmlJson) ->
         """
         if state.parent
             for own eventName,event of scxmlJson.events
-                transitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event or transition.event == event.name)
+                transitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when (not transition.events) or event.name in transition.events )
 
                 if transitionsForEvent.length
                     classStr += 	"""
                             this['#{util.escapeEvent event.name}'] = function(evaluator){
-                                var toReturn = []
+                                var toReturn = [];
                                 var transitions = #{initializer.arrayToIdentifierListString transitionsForEvent};
                                 for(var i = 0,l=transitions.length; i < l; i++){
                                     var transition = transitions[i];
@@ -41,24 +41,24 @@ module.exports = (scxmlJson) ->
                                     }
                                 }
 
-                                return toReturn.length ? toReturn : #{if state.parent then "instances['#{state.parent.id}']['#{util.escapeEvent event.name}'](evaluator)" else "null"};
-                            }
+                                return toReturn.length ? toReturn : #{if state.parent then "instances['#{state.parent.id}']['#{util.escapeEvent event.name}'](evaluator);" else "null"};
+                            };
                             """
 
-            defaultTransitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when not transition.event)
+            defaultTransitionsForEvent = (initializer.transitionToVarLabel transition for transition in state.transitions when not transition.events)
             if defaultTransitionsForEvent.length
                 classStr += 	"""
                         this['#{DEFAULT_EVENT_NAME}']  = function(evaluator){
-                            var toReturn = []
+                            var toReturn = [];
                             var transitions = #{initializer.arrayToIdentifierListString defaultTransitionsForEvent };
                             for(var i = 0,l=transitions.length; i < l; i++){
                                 var transition = transitions[i];
                                 if(!transition.cond || evaluator(transition)){
                                     toReturn.push(transition); 
                                 }
-                            }
+                            };
 
-                            return toReturn.length ? toReturn : #{if state.parent then "instances['#{state.parent.id}']['#{DEFAULT_EVENT_NAME}'](evaluator)" else "null"};
+                            return toReturn.length ? toReturn : #{if state.parent then "instances['#{state.parent.id}']['#{DEFAULT_EVENT_NAME}'](evaluator);" else "null"};
                         }
                         """
         else
@@ -69,7 +69,7 @@ module.exports = (scxmlJson) ->
                 
         classStr += """
                 }
-            } 
+            }; 
         """
         classStr += if state.parent then "o['#{state.id}'].prototype = instances['#{state.parent.id}'];" else ""
         classStr += """
