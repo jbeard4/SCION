@@ -127,6 +127,7 @@ function requestTestAndRun(){
                     result.passed = true;
                     result.eventCount = eventCount;
                     result.elapsedtime = endTime - startTime;
+                    result.eventsPerMs = result.eventCount/result.elapsedtime;
                     console.info("Test passed");
                     finish();
 

@@ -20,13 +20,22 @@ var testGroupsNames = fs.readdirSync(testRoot);
 
 function getTestGroups(){
     var testGroups = [];
-    testGroupsNames.sort().forEach(function(groupName){
-        testGroups.push({
-            groupName : groupName,
-            testNames : fs.readdirSync(path.join(testRoot,groupName)).filter(function(f){return f.search(/\.scxml$/) > -1;}).sort(),
-            tests : []
-        });
-    }); 
+
+    common.browsers.forEach(function(browser){ 
+        testGroupsNames.sort().forEach(function(groupName){
+            testGroups.push({
+                browser : browser,
+                groupName : groupName,
+                testNames : fs.readdirSync(path.join(testRoot,groupName)).
+                                map(function(f){return f.match(/(.*)\.scxml$/);}).
+                                filter(function(m){return m;}).
+                                map(function(m){return m[1];}).
+                                sort(),
+                tests : []
+            });
+        }); 
+    });
+
 
     testGroups.forEach(function(testGroup){
         console.log(testGroup.groupName);
@@ -36,11 +45,18 @@ function getTestGroups(){
                 common.setTypes.forEach(function(setType){
                     common.extraModelInfo.forEach(function(modelInfo){ 
                         common.flattened.forEach(function(flat){
-                            var testScxmlUrl = path.join((flat ? "/tests/flattened/generated" : "/" + testRoot),   //TODO: transform in-browser
-                                                    testGroup.groupName,testName);
+                            var groupPath = path.join((flat ? "/tests/flattened/generated" : "/" + testRoot),   //TODO: transform in-browser
+                                                    testGroup.groupName);
+
+                            var testScxmlUrl = path.join(groupPath,testName + ".scxml"); 
+                            var testScriptUrl = path.join(groupPath,testName + ".json"); 
+
                             testGroup.tests.push({
+                                group : testGroup.groupName,
+                                name : parseInt(testName,10),
+                                browser : testGroup.browser,
                                 testScxmlUrl : testScxmlUrl,
-                                testScriptUrl : testScxmlUrl.split(".")[0] + ".json",
+                                testScriptUrl : testScriptUrl, 
                                 transitionSelector : transitionSelector,
                                 setType : setType,
                                 extraModelInfo : modelInfo,
@@ -49,7 +65,7 @@ function getTestGroups(){
                         }); 
                     });
                 }); 
-            });
+            })
         });
     });
 
@@ -59,7 +75,7 @@ function getTestGroups(){
 //TODO: loop repeatedly. run in other browsers.
 var testGroups = getTestGroups();
 
-var numTests = testGroups.reduce(function(a,b){return a.tests.length + b.tests.length}); 
+var numTests = testGroups.reduce(function(a,b){return a + b.tests.length},0); 
 console.log("Preparing to run " + numTests  + " tests.");
 
 var fileCount = 0;
@@ -68,12 +84,16 @@ var fileCount = 0;
 var currentTest;
 var currentGroup;
 
-var browserName = "firefox";
 var browserProc;
 
-function startBrowser(){
+function startBrowser(browserName){
     console.log("starting browser");
-    browserProc = spawn(browserName,["http://localhost:8080/run-tests.html"]);
+    var args = ["http://localhost:8080/run-tests.html"];
+    if(browserName === 'chromium'){
+        args = ['--disable-hang-monitor'].concat(args);
+    }
+    console.log(browserName,args);
+    browserProc = spawn(browserName,args);
 }
 
 var server = http.createServer(function (request, response) {
@@ -107,7 +127,7 @@ var server = http.createServer(function (request, response) {
                 currentTest.result = result;
 
                 //dump the test result to disk... or direct to database?
-                fs.writeFile( "data/" + browserName + "/" + (fileCount++) + ".json", JSON.stringify(currentTest,4,4), "utf8",function(err){
+                fs.writeFile( "data/" + currentTest.browser + "/" + (fileCount++) + ".json", JSON.stringify(currentTest,4,4), "utf8",function(err){
                     if(err){
                         throw err;
                         return
@@ -123,9 +143,9 @@ var server = http.createServer(function (request, response) {
                             if(response) response.end();
                             if(testGroups.length){
                                 //start up browser again
-                                startBrowser();
+                                startBrowser(testGroups[0].browser);
                             }else{
-                                console.log("that's all... wrapping up");
+                                console.log("that's all folks... wrapping up");
                                 //if that was our last test in our last group, then we're done, stop listening, and terminate gracefully
                                 server.close();
                             }
@@ -171,8 +191,4 @@ var server = http.createServer(function (request, response) {
     }
 }).listen(8080);
 
-startBrowser();
-
-//chromium --disable-hang-monitor 
-//as chromium is multiprocess, it might be difficult to kill... we'll have to see.
-//webkit
+startBrowser(testGroups[0].browser);   //kick him off

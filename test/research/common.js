@@ -3,31 +3,39 @@
 
 exports.transitionSelectors = [
     "default",
-    "class",
-    "switch",
-    "table"
+//    "class",
+//    "switch",
+//    "table"
 ];
 
 //same here. map to constructor functions
 exports.setTypes = [
     'arraySet',
-    'bitVector',
-    'boolArray',
-    'objectSet'
+//    'bitVector',
+//    'boolArray',
+//    'objectSet'
 ];
 
 //this gets passed ot the annotator. Easy.
 exports.extraModelInfo = [
     true,
-    false
+//    false
 ];
 
 //this can be used to do the XSLT in the browser.
 exports.flattened = [
     true,
-    false
+//    false
 ];
 
+
+exports.browsers = [
+//   "firefox",
+//    "chromium-browser",
+//    "opera",
+    "webkit"
+//    "uzbl"
+];
 
 /*
 //we use the registry instead of a group
