@@ -82,10 +82,12 @@ function requestTestAndRun(){
                         BasicStateSet : set
                     });
 
-                    var passed = true;
+
+                    var startTime = new Date();
 
                     //then we run through stuff and compare stuff and stuff
                     var initialConfiguration = interpreter.start();
+                    /*
                     if(_.difference(initialConfiguration,jsonTest.initialConfiguration).length){
                         var m = "Received " + JSON.stringify(initialConfiguration) + " and expected " + JSON.stringify(jsonTest.initialConfiguration);
                         result.passed = false;
@@ -95,27 +97,36 @@ function requestTestAndRun(){
                         finish();
                         return;
                     }
+                    */
                     
 
-                    //TODO: run for a while, collect stats, don't check for correctness
                     var eventTuple;
-                    var events = jsonTest.events.slice();
-                    /*jsl:ignore*/
-                    while(eventTuple = events.shift()){
-                    /*jsl:end*/
-                        var nextConfiguration = interpreter.gen(eventTuple.event); 
-                        if(_.difference(nextConfiguration,eventTuple.nextConfiguration).length){
-                            m = "Received " + JSON.stringify(nextConfiguration) + " and expected " + JSON.stringify(eventTuple.nextConfiguration);
-                            result.passed = false;
-                            result.message = m;
+                    var eventCount = 0;
+                    do{
+                        var events = jsonTest.events.slice();
+                        /*jsl:ignore*/
+                        while(eventTuple = events.shift()){
+                        /*jsl:end*/
+                            var nextConfiguration = interpreter.gen(eventTuple.event); 
+                            /*
+                            if(_.difference(nextConfiguration,eventTuple.nextConfiguration).length){
+                                m = "Received " + JSON.stringify(nextConfiguration) + " and expected " + JSON.stringify(eventTuple.nextConfiguration);
+                                result.passed = false;
+                                result.message = m;
 
-                            console.error(m);
-                            finish();
-                            return;
+                                console.error(m);
+                                finish();
+                                return;
+                            }
+                            */
+                            eventCount++; 
                         }
-                    }
+                        var endTime = new Date();
+                    }while( (endTime - startTime) < 100 )
 
                     result.passed = true;
+                    result.eventCount = eventCount;
+                    result.elapsedtime = endTime - startTime;
                     console.info("Test passed");
                     finish();
 
