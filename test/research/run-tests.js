@@ -66,87 +66,100 @@ async.forEachSeries(testDescriptors,function(test,cb){
     //now the fun part. we have to initialize these things.
     console.log("Running test",test);
 
-    //first get your tests with jquery
-    //TODO: we should maybe get the flattened one if flattened?
-    var root = test.flattened ? "tests/flattened" : "tests";
-    $.get( root + test.testScxmlUrl,function(doc){
-        $.get(root + test.testScriptUrl,function(jsonTest){
+    function finish(){
+        $.getJSON("/get-memory",function(memFinish){
+            test.result.memFinish = memFinish;
 
-            //ok, now we need to make SCION available, so we can use its APIs
-            //first parse the document to a model
-            var arr = JsonML.parseDOM(doc);
-            var scxmlJson = arr[1];
-
-            var annotatedScxmlJson = annotator.transform(scxmlJson);
-
-            var model = json2model(annotatedScxmlJson,!test.extraModelInfo);    //note the optimization argument here
-
-            //take the annotated JSON and use it to generate transition selectors and sets
-            
-            //set type is all set up. 
-            //TODO: augment interpreter to pass in the standard info that he needs
-            var set = opts.sets[test.setType]; 
-
-            //get the generation function. then call it to get the string and eval him to get the constructor, then call the constructor with the transitions.
-            var selectorFn, transitionSelector = opts.selectors[test.transitionSelector]; 
-            if(test.transitionSelector !== 'default'){
-                var s = transitionSelector(model); 
-                var selectorInitializer = eval(s);
-                selectorFn = selectorInitializer(model.transitions,model.events);   //takes transitions,eventMap 
-            }else{
-                selectorFn = transitionSelector;    //no setup necessary
-            }
-            
-            //then we instantiate an interpreter, and pass stuff in as options
-            var interpreter = new scxml.SimpleInterpreter(model,{
-                transitionSelector : selectorFn,
-                TransitionSet : set,
-                StateSet : set,
-                BasicStateSet : set
-            });
-
-            var passed = true;
-
-            //then we run through stuff and compare stuff and stuff
-            var initialConfiguration = interpreter.start();
-            if(_.difference(initialConfiguration,jsonTest.initialConfiguration).length){
-                var m = "Received " + JSON.stringify(initialConfiguration) + " and expected " + JSON.stringify(jsonTest.initialConfiguration);
-                test.result = {
-                    passed : false,
-                    message : m
-                };
-                console.error(m);
+            //save results to server
+            $.post("/result",test,function(){
                 cb();
-                return;
-            }
-            
+            })
+        });
+    }
 
-            //TODO: run for a while and collect stats
-            var eventTuple;
-            var events = jsonTest.events.slice();
-            /*jsl:ignore*/
-            while(eventTuple = events.shift()){
-            /*jsl:end*/
-                var nextConfiguration = interpreter.gen(eventTuple.event); 
-                if(_.difference(nextConfiguration,eventTuple.nextConfiguration).length){
-                    m = "Received " + JSON.stringify(nextConfiguration) + " and expected " + JSON.stringify(eventTuple.nextConfiguration);
-                    test.result = {
-                        passed : false,
-                        message : m
-                    };
+    $.getJSON("/get-memory",function(memStart){
+
+        test.result = {memStart : memStart};
+
+        //first get your tests with jquery
+        //TODO: we should maybe get the flattened one if flattened?
+        var root = test.flattened ? "tests/flattened" : "tests";
+        $.get( root + test.testScxmlUrl,function(doc){
+            $.get(root + test.testScriptUrl,function(jsonTest){
+
+                //ok, now we need to make SCION available, so we can use its APIs
+                //first parse the document to a model
+                var arr = JsonML.parseDOM(doc);
+                var scxmlJson = arr[1];
+
+                var annotatedScxmlJson = annotator.transform(scxmlJson);
+
+                var model = json2model(annotatedScxmlJson,!test.extraModelInfo);    //note the optimization argument here
+
+                //take the annotated JSON and use it to generate transition selectors and sets
+                
+                //set type is all set up. 
+                //TODO: augment interpreter to pass in the standard info that he needs
+                var set = opts.sets[test.setType]; 
+
+                //get the generation function. then call it to get the string and eval him to get the constructor, then call the constructor with the transitions.
+                var selectorFn, transitionSelector = opts.selectors[test.transitionSelector]; 
+                if(test.transitionSelector !== 'default'){
+                    var s = transitionSelector(model); 
+                    var selectorInitializer = eval(s);
+                    selectorFn = selectorInitializer(model.transitions,model.events);   //takes transitions,eventMap 
+                }else{
+                    selectorFn = transitionSelector;    //no setup necessary
+                }
+                
+                //then we instantiate an interpreter, and pass stuff in as options
+                var interpreter = new scxml.SimpleInterpreter(model,{
+                    transitionSelector : selectorFn,
+                    TransitionSet : set,
+                    StateSet : set,
+                    BasicStateSet : set
+                });
+
+                var passed = true;
+
+                //then we run through stuff and compare stuff and stuff
+                var initialConfiguration = interpreter.start();
+                if(_.difference(initialConfiguration,jsonTest.initialConfiguration).length){
+                    var m = "Received " + JSON.stringify(initialConfiguration) + " and expected " + JSON.stringify(jsonTest.initialConfiguration);
+                    test.result.passed = false;
+                    test.result.message = m;
+
                     console.error(m);
-                    cb();
+                    finish();
                     return;
                 }
-            }
+                
 
-            test.result = {
-                passed : true
-            };
-            console.info("Test passed");
-            cb();
-        },"json");
-    },"xml");
+                //TODO: run for a while and collect stats
+                var eventTuple;
+                var events = jsonTest.events.slice();
+                /*jsl:ignore*/
+                while(eventTuple = events.shift()){
+                /*jsl:end*/
+                    var nextConfiguration = interpreter.gen(eventTuple.event); 
+                    if(_.difference(nextConfiguration,eventTuple.nextConfiguration).length){
+                        m = "Received " + JSON.stringify(nextConfiguration) + " and expected " + JSON.stringify(eventTuple.nextConfiguration);
+                        test.result.passed = false;
+                        test.result.message = m;
+
+                        console.error(m);
+                        finish();
+                        return;
+                    }
+                }
+
+                test.result.passed = true;
+                console.info("Test passed");
+                finish();
+
+            },"json");
+        },"xml");
+    });
 },function(){
     //everything complete. post results to server, or something
     /*
@@ -158,4 +171,6 @@ async.forEachSeries(testDescriptors,function(test,cb){
     results = testDescriptors; 
     var failed = testDescriptors.filter(function(test){return !test.result;}).length;
     console.log(failed ? "FAILURE" : "SUCCESS" );
+    
+    $.post("/done");
 });
