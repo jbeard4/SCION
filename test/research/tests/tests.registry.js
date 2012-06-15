@@ -1,4 +1,4 @@
-var tests = [
+export.tests = [
 "/generated/basic-states/001.scxml",
 "/generated/basic-states/011.scxml",
 /*
