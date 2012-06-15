@@ -42,7 +42,6 @@
     "engines" : { "node" : ">=0.4.7" },
     "main": "./lib/scion",
     "scripts" : {
-        "preinstall" : "git submodule update -i -r",
         "test" : "cd test && bash run-tests-node.sh"
     }
 }
