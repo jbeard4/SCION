@@ -94,6 +94,8 @@ function startBrowser(browserName){
     var args = ["http://localhost:8080/run-tests.html"];
     if(browserName === 'chromium'){
         args = ['--disable-hang-monitor'].concat(args);
+    }else if(browserName === 'firefox'){
+        args = ['-P','performance testing','-no-remote'].concat(args);
     }
     console.log(browserName,args);
     browserProc = spawn(browserName,args);

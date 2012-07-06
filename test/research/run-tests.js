@@ -54,9 +54,9 @@ function requestTestAndRun(){
                     var arr = JsonML.parseDOM(doc);
                     var scxmlJson = arr[1];
 
-                    var annotatedScxmlJson = annotator.transform(scxmlJson);
+                    var annotatedScxmlJson = annotator.transform(scxmlJson,!test.extraModelInfo);
 
-                    var model = json2model(annotatedScxmlJson,!test.extraModelInfo);    //note the optimization argument here
+                    var model = json2model(annotatedScxmlJson);    //note the optimization argument here
 
                     //take the annotated JSON and use it to generate transition selectors and sets
                     
@@ -79,7 +79,8 @@ function requestTestAndRun(){
                         transitionSelector : selectorFn,
                         TransitionSet : set,
                         StateSet : set,
-                        BasicStateSet : set
+                        BasicStateSet : set,
+                        onlySelectFromBasicStates : test.flattened 
                     });
 
 
