@@ -15,14 +15,19 @@ var server = HttpServer.create(addr, 0);
 var sessionCounter = 0, sessions = {}, timeouts = {}, timeoutMs = 5000;
 
 function loadScxml(scxmlStr,cb){
-    var model = scion.documentStringToModel(scxmlStr);
-    var interpreter = new scion.SCXML(model);
+    scion.documentStringToModel(scxmlStr,function(err,model){
+        if(err){
+            throw err;
+        }
 
-    var sessionToken = sessionCounter;
-    sessionCounter++;
-    sessions[sessionToken] = interpreter; 
+        var interpreter = new scion.SCXML(model);
 
-    return [sessionToken,interpreter];
+        var sessionToken = sessionCounter;
+        sessionCounter++;
+        sessions[sessionToken] = interpreter; 
+
+        cb(sessionToken,interpreter);
+    });
 }
 
 function cleanUp(sessionToken){
@@ -52,23 +57,23 @@ var handler = new HttpHandler({handle : function(exchange){
         var reqJson = JSON.parse(s);
         if(reqJson.load){
             print("Loading new statechart");
-            var tmp = loadScxml(reqJson.load), sessionToken = tmp[0], interpreter = tmp[1];
+            loadScxml(reqJson.load,function(sessionToken,interpreter){
+                var conf = interpreter.start();
 
-            var conf = interpreter.start();
+                responseHeaders.set("Content-Type", "application/json");
+                exchange.sendResponseHeaders(200, 0);
+                responseBody.write(toBytes({
+                    sessionToken : sessionToken,
+                    nextConfiguration : conf 
+                }));
 
-            responseHeaders.set("Content-Type", "application/json");
-            exchange.sendResponseHeaders(200, 0);
-            responseBody.write(toBytes({
-                sessionToken : sessionToken,
-                nextConfiguration : conf 
-            }));
+                responseBody.close();
 
-            responseBody.close();
-
-            //timeouts[sessionToken] = setTimeout(function(){cleanUp(sessionToken);},timeoutMs);  
+                //timeouts[sessionToken] = setTimeout(function(){cleanUp(sessionToken);},timeoutMs);  
+            });
         }else if(reqJson.event && (typeof reqJson.sessionToken === "number")){
             print("sending event to statechart",JSON.stringify(reqJson.event,4,4));
-            sessionToken = reqJson.sessionToken;
+            var sessionToken = reqJson.sessionToken;
             var nextConfiguration = sessions[sessionToken].gen(reqJson.event);
             responseHeaders.set("Content-Type", "application/json");
             exchange.sendResponseHeaders(200, 0);
