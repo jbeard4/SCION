@@ -29,15 +29,11 @@ var tests = [
         });
     },
     function(){
-        go(scion.documentStringToModel(s));
-    },
-    function(){
-        go(scion.documentToModel(scion.parseDocumentString(s)));
+        scion.documentStringToModel(s,function(err,model){
+            go(model);
+        });
     }
 ];
-
-
-
 
 function go(model){
     var scxml = new scion.SCXML(model);
@@ -46,8 +42,3 @@ function go(model){
 }
 
 tests.forEach(function(fn){fn();});
-
-//for rhino to finish:
-if(typeof quit !== 'undefined'){
-    quit(0);
-}
