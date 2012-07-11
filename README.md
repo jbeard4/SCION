@@ -244,6 +244,12 @@ Install SCION via npm:
 
     npm install scion
 
+Or, to get the latest and greatest from Github master:
+
+    cd node_modules/    #cd into wherever your node_modules directory lives
+    git clone --recursive git://github.com/jbeard4/SCION.git scion  #this fetches SCION and its git submodule dependencies into directory "scion"
+    cd scion && npm install     #this fetches npm package dependencies    
+
 For example usage see [SCION Demos](https://github.com/jbeard4/scion-demos).
 
 # Usage in Rhino
