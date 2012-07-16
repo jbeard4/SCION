@@ -1,6 +1,6 @@
 {
     "name": "scion",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "description": "StateCharts Interpretation and Optimization eNgine (SCION) is an implementation of SCXML/Statecharts in JavaScript.",
     "keywords": [
         "scxml",
