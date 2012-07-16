@@ -166,8 +166,8 @@ You can run the demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-
 
 ### scion.urlToModel(url,function(err, model){})
 ### scion.pathToModel(path,function(err, model){})
-### scion.documentStringToModel(scxmlDocString) : model
-### scion.documentToModel(scxmlDocument) : model
+### scion.documentStringToModel(scxmlDocString,function(err, model){})
+### scion.documentToModel(scxmlDocument,function(err, model){})
 
 SCION allows you to instantiate SCXML interpreters from SCXML "model" objects, which are SCXML documents that have been processed for easier interpretation. 
 These methods allow you to create an SCXML model from an XML DOM document, document string, or url/path to document.
