@@ -14,21 +14,6 @@ var server = HttpServer.create(addr, 0);
 
 var sessionCounter = 0, sessions = {}, timeouts = {}, timeoutMs = 5000;
 
-function loadScxml(scxmlStr,cb){
-    scion.documentStringToModel(scxmlStr,function(err,model){
-        if(err){
-            throw err;
-        }
-
-        var interpreter = new scion.SCXML(model);
-
-        var sessionToken = sessionCounter;
-        sessionCounter++;
-        sessions[sessionToken] = interpreter; 
-
-        cb(sessionToken,interpreter);
-    });
-}
 
 function cleanUp(sessionToken){
     delete sessions[sessionToken];
@@ -57,16 +42,29 @@ var handler = new HttpHandler({handle : function(exchange){
         var reqJson = JSON.parse(s);
         if(reqJson.load){
             print("Loading new statechart");
-            loadScxml(reqJson.load,function(sessionToken,interpreter){
-                var conf = interpreter.start();
 
-                responseHeaders.set("Content-Type", "application/json");
-                exchange.sendResponseHeaders(200, 0);
-                responseBody.write(toBytes({
-                    sessionToken : sessionToken,
-                    nextConfiguration : conf 
-                }));
+            scion.urlToModel(reqJson.load,function(err,model){
 
+                if(err){
+                    exchange.sendResponseHeaders(500, 0);
+                    responseBody.write(toBytes(err.message));
+                }else{
+                    var interpreter = new scion.SCXML(model);
+
+                    var sessionToken = sessionCounter;
+                    sessionCounter++;
+                    sessions[sessionToken] = interpreter; 
+
+                    var conf = interpreter.start(); 
+
+                    responseHeaders.set("Content-Type", "application/json");
+                    exchange.sendResponseHeaders(200, 0);
+                    responseBody.write(toBytes({
+                        sessionToken : sessionToken,
+                        nextConfiguration : conf 
+                    }));
+
+                }
                 responseBody.close();
 
                 //timeouts[sessionToken] = setTimeout(function(){cleanUp(sessionToken);},timeoutMs);  
