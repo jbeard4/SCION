@@ -28,7 +28,7 @@ http.createServer(function (req, res) {
             if(reqJson.load){
                 console.log("Loading new statechart");
 
-                scion.documentStringToModel(reqJson.load,function(err,model){
+                scion.urlToModel(reqJson.load,function(err,model){
                     if(err){
                         console.error(err);
                         res.writeHead(500, {'Content-Type': 'text/plain'});
