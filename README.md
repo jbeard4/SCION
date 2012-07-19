@@ -116,7 +116,6 @@ There are then **4 steps** that must be performed to go from an SCXML document t
 <html>
     <head>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-        <script src="http://jbeard4.github.com/SCION/lib/jsonml-dom.js"></script>
         <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"></script>
         <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/latest/scion-min.js"></script>
         <script>
@@ -147,7 +146,7 @@ There are then **4 steps** that must be performed to go from an SCXML document t
                     //connect all relevant event listeners
                     $(rect).mousedown(handleEvent);
                     $(document.documentElement).bind("mouseup mousemove",handleEvent);
-                },"xml");
+                });
             });
         </script>
     </head>
