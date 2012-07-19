@@ -32,7 +32,7 @@ http.createServer(function (req, res) {
                     if(err){
                         console.error(err);
                         res.writeHead(500, {'Content-Type': 'text/plain'});
-                        res.end(err);
+                        res.end(err.message);
                     }else{
                         var interpreter = new scion.SCXML(model);
 
