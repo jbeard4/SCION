@@ -2,7 +2,9 @@ v0.0.7
 ------
 
 * Improved handling of platform dependencies, such that each "blessed" platform (currently node.js, Rhino, and the browser) declares an adapter which exposes a standard API for network, filesystem, and DOM. This allows the portable interpreter core to be cleanly separated out from platform dependencies.
-* Changed script evaluation semantics so that each SCXML document instance declares its own scope. Global scripts are evaluated at the top level of that scope, and all other action code is evaluated in separate function contexts within that scope. 
+* Changed script evaluation semantics so that each SCXML document instance declares its own scope. 
+    * Global scripts are evaluated at the top level of that scope, and all other action code is evaluated in separate function contexts within that scope. 
+    * Variables declared in the SCXML document datamodel are visible to the entire document scope, including inside of functions declared in top-level scripts, and all other action code. Furthermore, datamodel variables now MUST be legal ECMAScript identifiers. 
 * Better support for Rhino delayed send: fixed a bug where a reference kept to a Timer instance would keep the timer thread running and not allow the process to terminate.
 * Added integration with travis-ci continuous integration service.
 * Added support for @src attribute on data and script tags. 
