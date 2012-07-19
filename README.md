@@ -228,9 +228,10 @@ Add the following script tags to your web page:
 <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/latest/scion.js"></script>
 ```
 
-Note that SCION assumes the presence of jQuery to handle cross-browser XMLHTTPRequest, however an alternative library could instead be used, in the following way:
+Note that SCION assumes the presence of jQuery to handle cross-browser XMLHTTPRequest, however an alternative Ajax library could instead be used. This is set up in the following way:
 
 ```javascript
+    //perform this setup once, before SCION is used
     var platform = require('platform');
     platform.ajax = {
         get : function(url,successCallback,dataType){
