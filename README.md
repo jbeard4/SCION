@@ -223,19 +223,27 @@ Registers a callback to receive notification of state changes, as described abov
 Add the following script tags to your web page:
 
 ```html
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"></script>
 <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/latest/scion.js"></script>
 ```
 
-Note that jQuery is optional. It is used in `scion.urlToModel` and `scion.pathToModel` in order to handle Ajax GET. As an alternative, you can use your own Ajax library to get and parse the SCXML document, and then use `scion.documentToModel(doc)` to create the model object. This would look something like the following:
-
+Note that SCION assumes the presence of jQuery to handle cross-browser XMLHTTPRequest, however an alternative library could instead be used, in the following way:
 
 ```javascript
-    //use some library to get the document via Ajax, parse it, and store in variable doc
-    myAjax.get("foo.scxml",function(doc){
-        var model = scion.documentToModel(doc);
-    },"xml");
+    var platform = require('platform');
+    platform.ajax = {
+        get : function(url,successCallback,dataType){
+            //call your preferred Ajax library here to do HTTP GET
+            //if dataType is 'xml', the Ajax response must be parsed as DOM
+        },
+        post : function(url, data, successCallback, dataType){
+            //call your preferred Ajax library here to do HTTP POST
+        }
+    }; 
 ```
+
+SCION does not currently use `platform.ajax.post`, but there are plans to use this API in the future to implement SCXML `<send>`.
 
 # Usage in Node.js
 
