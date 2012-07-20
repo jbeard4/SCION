@@ -30,7 +30,7 @@ http.createServer(function (req, res) {
 
                 scion.urlToModel(reqJson.load,function(err,model){
                     if(err){
-                        console.error(err);
+                        console.error(err.stack);
                         res.writeHead(500, {'Content-Type': 'text/plain'});
                         res.end(err.message);
                     }else{
@@ -70,8 +70,8 @@ http.createServer(function (req, res) {
                 res.end("Unrecognized request.\n");
             }
         }catch(e){
-            console.error(e);
             console.error(e.stack);
+            console.error(e);
             res.writeHead(500, {'Content-Type': 'text/plain'});
             res.end(e.message);
         }
