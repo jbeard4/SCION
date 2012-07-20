@@ -1,3 +1,9 @@
+v0.0.8
+------
+
+* Added support for <if>, <elseif>, <else> action tags.
+* Refactored architecture by which action code gets evaluated, such that all action code is evaluated within the document scope. This should provide more efficient execution, as datamodel variables can be referenced as local variables and strings expressions can be referenced as string constants. The disadvantage is that some some datamodel variable names must be reserved for the interpreter. These currently are: `$log`, `$cancel`, `$send`, and `$origin`
+
 v0.0.7
 ------
 
