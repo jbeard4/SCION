@@ -39,7 +39,6 @@
     }, dirname = function(path) {
       return path.split('/').slice(0, -1).join('/');
     };
-    /** @expose */
     this.require = function(name) {
       return require(name, '');
     }
@@ -179,7 +178,12 @@ SCXMLInterpreter.prototype = {
         this._configuration.add(this.model.root.initial);
 
         //set up scope for action code embedded in the document
-        var tmp = this.model.actionFactory(this.isIn.bind(this)); 
+        var tmp = this.model.actionFactory(
+            this.opts.log,
+            this._cancel.bind(this),
+            this._send.bind(this),
+            this.opts.origin,
+            this.isIn.bind(this)); 
         this._actions = tmp.actions;
         this._datamodel = tmp.datamodel;
 
@@ -189,7 +193,7 @@ SCXMLInterpreter.prototype = {
 
     _getOrSetData : function(fnName,name,value){
         var data = this._datamodel[name];
-        if(!data) throw new Error("Variable " + name + " not declared in datamodel.")
+        if(!data) throw new Error("Variable " + name + " not declared in datamodel.");
         return data[fnName](value);
     },
 
@@ -280,9 +284,7 @@ SCXMLInterpreter.prototype = {
                    if(l.onExit) l.onExit(state.id); 
                 });
 
-                state.onexit.forEach(function(action){
-                    this._evaluateAction(action, eventSet, datamodelForNextStep, eventsToAddToInnerQueue);
-                },this);
+                if(state.onexit !== undefined) this._evaluateAction(state.onexit,eventSet, datamodelForNextStep, eventsToAddToInnerQueue);
 
                 var f;
                 if (state.history) {
@@ -318,9 +320,7 @@ SCXMLInterpreter.prototype = {
                    if(l.onTransition) l.onTransition(transition.source.id,targetIds); 
                 });
 
-                transition.actions.forEach(function(action){
-                    this._evaluateAction(action, eventSet, datamodelForNextStep, eventsToAddToInnerQueue);
-                },this);
+                if(transition.actions !== undefined) this._evaluateAction(transition.actions,eventSet, datamodelForNextStep, eventsToAddToInnerQueue);
             },this);
  
             if (printTrace) platform.log("executing state enter actions");
@@ -331,9 +331,7 @@ SCXMLInterpreter.prototype = {
                    if(l.onEntry) l.onEntry(state.id); 
                 });
 
-                state.onentry.forEach(function(action){
-                    this._evaluateAction(action, eventSet, datamodelForNextStep, eventsToAddToInnerQueue);
-                },this);
+                if(state.onentry !== undefined) this._evaluateAction(state.onentry, eventSet, datamodelForNextStep, eventsToAddToInnerQueue);
             },this);
 
             if (printTrace) platform.log("updating configuration ");
@@ -355,7 +353,6 @@ SCXMLInterpreter.prototype = {
             
             //update the datamodel
             for (var key in datamodelForNextStep) {
-                //console.log("datamodelForNextStep",key,datamodelForNextStep[key])
                 this._setData(key,datamodelForNextStep[key]);
             }
         }
@@ -365,74 +362,13 @@ SCXMLInterpreter.prototype = {
     },
 
     /** @private */
-    _evaluateAction : function(action, eventSet, datamodelForNextStep, eventsToAddToInnerQueue) {
-        var _constructEventData = (function(){
-            var data = {};
-
-            if(action.content){
-                //content
-                data = action.content;
-            }else if(action.contentexpr){
-                data = this._eval(action.contentexpr, datamodelForNextStep, eventSet);
-            }else{
-                //namelist
-                if (action.namelist) {
-                    action.namelist.forEach(function(name){
-                        data[name] = this._getData(name);
-                    },this);
-                }
-
-                //params
-                action.params.forEach(function(param){
-                    if(param.expr){
-                        data[param.name] = this._eval(param.expr, datamodelForNextStep, eventSet);
-                    }else if(param.location){
-                        data[param.name] = this._getData(param.location);
-                    }
-                },this);
-            }
-
-            return data;
-        }).bind(this);
-
-        switch (action.type) {
-            case "raise":
-                eventsToAddToInnerQueue.add({ name: action.event, data : {}});
-                break;
-            case "assign":
-                this._setData(action.location,this._eval(action, datamodelForNextStep, eventSet));
-                break;
-            case "script":
-                this._eval(action, datamodelForNextStep, eventSet, true);
-                break;
-            case "log":
-                this.opts.log(this._eval(action, datamodelForNextStep, eventSet));
-                break;
-            case "send":
-                if (this._send) {
-                    this._send({
-                        target: action.targetexpr ? this._eval(action.targetexpr, datamodelForNextStep, eventSet) : action.target,
-                        name: action.eventexpr ? this._eval(action.eventexpr, datamodelForNextStep, eventSet) : action.event,
-                        data: _constructEventData(),
-                        origin: this.opts.origin,
-                        type: action.typeexpr ? this._eval(action.typeexpr, datamodelForNextStep, eventSet) : action.sendType
-                    }, {
-                        delay: action.delayexpr ? this._eval(action.delayexpr, datamodelForNextStep, eventSet) : action.delay,
-                        sendId: action.idlocation ? this._getData(action.idlocation) : action.id
-                    });
-                }
-                break;
-            case "cancel":
-                if (this._cancel) this._cancel(action.sendid);
-                break;
-            default : break;
+    _evaluateAction : function(actionRef, eventSet, datamodelForNextStep, eventsToAddToInnerQueue) {
+        function $raise(event){
+            eventsToAddToInnerQueue.add({ name: event, data : {}});
         }
-    },
 
-    /** @private */
-    _eval : function(action, datamodelForNextStep, eventSet, allowWrite) {
-        var n = this._getScriptingInterface(datamodelForNextStep, eventSet, allowWrite);
-        return this._actions[action.actionRef].call(this.opts.evaluationContext, n.getData,n.setData, n.events);
+        var n = this._getScriptingInterface(datamodelForNextStep, eventSet, true);
+        return this._actions[actionRef].call(this.opts.evaluationContext, n.getData, n.setData, n.events, $raise);
     },
 
     /** @private */
@@ -818,20 +754,6 @@ module.exports = function(state,eventNames,evaluator){
 //     See the License for the specific language governing permissions and
 //     limitations under the License.
 
-function getDelayInMs(delayString){
-    if (!delayString) {
-        return 0;
-    } else {
-        if (delayString.slice(-2) === "ms") {
-            return parseFloat(delayString.slice(0, -2));
-        } else if (delayString.slice(-1) === "s") {
-            return parseFloat(delayString.slice(0, -1)) * 1000;
-        } else {
-            return parseFloat(delayString);
-        }
-    }
-}
-
 //this creates the string which declares the datamodel in the document scope
 function makeDatamodelDeclaration(datamodel){
     var s = "var ";
@@ -870,7 +792,7 @@ function makeActionFactory(topLevelScripts,actionStrings,datamodel){
 
     //JScript doesn't return functions from evaled function expression strings, 
     //so we wrap it here in a trivial self-executing function which gets evaled
-    var fnStr = "(function(){\nreturn function(In){\n" + fnBody + "\n};\n})()";
+    var fnStr = "(function(){\nreturn function($log,$cancel,$send,$origin,In){\n" + fnBody + "\n};\n})()";
     //console.log(fnStr); 
     return eval(fnStr); 
 }
@@ -878,9 +800,10 @@ function makeActionFactory(topLevelScripts,actionStrings,datamodel){
 module.exports = function(json) {
 
     function makeEvaluationFn(action,isExpression){
-        return actionStrings.push( "function(getData,setData,_events){var _event = _events[0];\n" +
+        return actionStrings.push( "function(getData,setData,_events,$raise){var _event = _events[0];\n" +
             (isExpression ? "return" : "") + " " + action + 
         "\n}" ) - 1;
+
     }
 
     function stateIdToReference(stateId){
@@ -900,53 +823,17 @@ module.exports = function(json) {
     json.states.forEach(function(state){
         state.transitions = state.transitions.map(function(transitionNum){ return json.transitions[transitionNum];});
 
-        var actions = state.onentry.concat(state.onexit);
+        var actions = [];
+
+        if(state.onentry) state.onentry = makeEvaluationFn(state.onentry); 
+        if(state.onexit) state.onexit = makeEvaluationFn(state.onexit);
 
         state.transitions.forEach(function(transition){
-            transition.actions.forEach(function(action){
-                actions.push(action);
-            });
+            if(transition.actions) transition.actions = makeEvaluationFn(transition.actions);
 
             if(transition.lca){
                 transition.lca = idToStateMap[transition.lca];
             }
-        });
-
-        actions.forEach(function(action){
-            switch (action.type) {
-                case "script":
-                    action.actionRef = makeEvaluationFn(action.script);
-                    break;
-                case "assign":
-                    action.actionRef = makeEvaluationFn(action.expr, true);
-                    break;
-                case "send":
-                    ['contentexpr', 'eventexpr', 'targetexpr', 'typeexpr', 'delayexpr'].
-                        filter(function(attributeName){return action[attributeName];}).
-                        forEach(function(attributeName){
-                            action[attributeName] = {
-                                actionRef: makeEvaluationFn(action[attributeName], true)
-                            };
-                        });
-
-                    action.params.forEach(function(param){
-                        if (param.expr) {
-                            param.expr = {
-                                actionRef: makeEvaluationFn(param.expr, true)
-                            };
-                        }
-                    });
-                    break;
-                case "log":
-                    action.actionRef = makeEvaluationFn(action.expr, true);
-                    break;
-                default : break;
-            }
-
-            if (action.type === "send" && action.delay) {
-                action.delay = getDelayInMs(action.delay);
-            }
-             
         });
 
         state.initial = idToStateMap[state.initial];
@@ -1209,6 +1096,199 @@ module.exports = {
     INITIAL: 4,
     FINAL: 5
 };
+}, "core/util/action-code-generator": function(exports, require, module) {//this model handles code generation for action code
+//it should be possible to extend this to support custom actions
+
+var util = require('./jsonml');
+
+function generateCode(actions){
+    return actions.map(_generateCode).join("\n;;\n");
+}
+
+function _generateCode(action){
+    var tuple = util.deconstructNode(action), 
+        tagName = tuple[0], 
+        attributes = tuple[1], 
+        children = tuple[2];
+
+    var generator = codeGenerators[tagName];
+
+    if(!generator) throw new Error("Element " + tagName + " not yet supported");
+
+    return generator(attributes,children); 
+}
+
+var codeGenerators = {
+    "script" : function(attributes,children){
+        return children.join("\n;;\n");
+    },
+
+    "assign" : function(attributes,children){
+        return attributes.location + " = " + attributes.expr + ";";
+    },
+
+    "if" : function(attributes,children){
+        var s = "";
+        s += "if(" + attributes.cond + "){\n";
+
+        for(var i = 0; i < children.length; i++){
+            var child = children[i];
+
+            if(child[0] === "elseif" || child[0] === "else"){ 
+                break;
+            }else if(Array.isArray(child)){
+                s += _generateCode(child) + "\n;;\n";
+            }
+        }
+
+        //process if/else-if, and recurse
+        for(; i < children.length; i++){
+            child = children[i];
+
+            if(child[0] === "elseif"){
+                s+= "}else if(" + child[1].cond + "){\n";
+            }else if(child[0] === "else"){
+                s += "}";
+                break;
+            }else if(Array.isArray(child)){
+                s+= _generateCode(child)  + "\n;;\n";
+            }
+        }
+
+        for(; i < children.length; i++){
+            child = children[i];
+
+            //this should get encountered first
+            if(child[0] === "else"){
+                s+= "else{\n";
+            }else if(Array.isArray(child)){
+                s+= _generateCode(child)  + "\n;;\n";
+            }
+        }
+        s+= "}";
+
+        return s;
+    },
+
+    "elseif" : function(){
+        throw new Error("Encountered unexpected elseif tag.");
+    },
+
+    "else" : function(){
+        throw new Error("Encountered unexpected else tag.");
+    },
+
+    "log" : function(attributes,children){
+        var params = [];
+
+        if(attributes.label) params.push( JSON.stringify(attributes.label));
+        if(attributes.expr) params.push( attributes.expr);
+
+        return "$log(" + params.join(",") + ");";
+    },
+
+    "raise" : function(attributes,children){
+        return "$raise(" + JSON.stringify(attributes.event) + ");";
+    },
+
+    "cancel" : function(attributes,children){
+        return "$cancel(" + JSON.stringify(attributes.sendid) + ");";
+    },
+
+    "send" : function(attributes,children){
+        return "$send({\n" + 
+            "target: " + (attributes.targetexpr ? attributes.targetexpr : JSON.stringify(attributes.target)) + ",\n" +
+            "name: " + (attributes.eventexpr ? attributes.eventexpr : JSON.stringify(attributes.event)) + ",\n" + 
+            "type: " + (attributes.typeexpr ? attributes.typeexpr : JSON.stringify(attributes.type)) + ",\n" +
+            "data: " + constructSendEventData(attributes,children) + ",\n" +
+            "origin: $origin\n" +
+        "}, {\n" + 
+            "delay: " + (attributes.delayexpr ? attributes.delayexpr : getDelayInMs(attributes.delay)) + ",\n" + 
+            "sendId: " + (attributes.idlocation ? attributes.idlocation : JSON.stringify(attributes.id)) + "\n" + 
+        "});";
+    },
+
+    "foreach" : function(attributes,children){
+        var isIndexDefined = attributes.index,
+            index = attributes.index || "$i",        //FIXME: the index variable could shadow the datamodel. We should pick a unique temperorary variable name
+            item = attributes.item,
+            arr = attributes.array;
+
+        return "(function(){\n" + 
+            "for(" + (isIndexDefined  ? "" : "var " + index + " = 0") + "; " + index + " < " + arr + ".length; " + index + "++){\n" + 
+                item + " = " + arr + "[" + index + "];\n" + 
+                children.filter(Array.isArray).map(_generateCode).join("\n;;\n") + 
+            "\n}\n" + 
+        "})();";
+    }
+};
+
+function getDelayInMs(delayString){
+    if (!delayString) {
+        return 0;
+    } else {
+        if (delayString.slice(-2) === "ms") {
+            return parseFloat(delayString.slice(0, -2));
+        } else if (delayString.slice(-1) === "s") {
+            return parseFloat(delayString.slice(0, -1)) * 1000;
+        } else {
+            return parseFloat(delayString);
+        }
+    }
+}
+
+function constructSendEventData(attributes,children){
+
+    var namelist = attributes && attributes.namelist && attributes.namelist.trim().split(/ +/),
+        params = children.filter(function(child){return child[0] === 'param';}).map(function(child){return processParam(child);}),
+        content = children.filter(function(child){return child[0] === 'content';}).map(function(child){return util.deconstructNode(child)[2][0];})[0];
+
+    if(content){
+        return JSON.stringify(content);
+    }else if(attributes.contentexpr){
+        return attributes.contentexpr;
+    }else{
+        var s = "{";
+        //namelist
+        if(namelist){
+            namelist.forEach(function(name){
+                s += '"' + name + '"' + ":" + name + ",\n";
+            });
+        }
+
+        //params
+        if(params){
+            params.forEach(function(param){
+                if(param.expr){
+                    s += '"' + param.name + '"' + ":" + param.expr + ",\n";
+                }else if(param.location){
+                    s += '"' + param.name + '"' + ":" + param.location + ",\n";
+                }
+            });
+        }
+
+        s += "}";
+        return s;
+    }
+}
+
+function processParam(param) {
+    var tuple = util.deconstructNode(param), 
+        tagName = tuple[0], 
+        attributes = tuple[1], 
+        children = tuple[2];
+    return {
+        name: attributes.name,
+        expr: attributes.expr,
+        location: attributes.location
+    };
+}
+
+
+module.exports = {
+    generateCode : generateCode,
+    codeGenerators : codeGenerators 
+};
 }, "core/util/annotate-scxml-json": function(exports, require, module) {
 /*
      Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
@@ -1274,7 +1354,8 @@ Example SCXML document basic1.scxml stripped of whitespace and converted to Json
 ]
 */
 
-var util = require('./jsonml');
+var util = require('./jsonml'),
+    codeGen = require('./action-code-generator');
 
 var stateKinds = require("../scxml/state-kinds-enum");
 
@@ -1413,99 +1494,16 @@ function transformTransitionNode (transitionNode, parentState) {
         source: parentState.id,
         cond: attributes.cond,
         events: events,
-        actions: children.map(function(child){return transformActionNode(child);}),
         targets: attributes && attributes.target && attributes.target.trim().split(/\s+/)
     };
+
+    if(children.length) transition.actions = codeGen.generateCode(children);
+
     transitions.push(transition);
 
     //set up LCA later
     
     return transition;
-}
-
-function processParam(param) {
-    var tuple = util.deconstructNode(param), 
-        tagName = tuple[0], 
-        attributes = tuple[1], 
-        children = tuple[2];
-    return {
-        name: attributes.name,
-        expr: attributes.expr,
-        location: attributes.location
-    };
-}
-
-function transformActionNode(node) {
-    var tuple = util.deconstructNode(node), tagName = tuple[0], attributes = tuple[1], children = tuple[2];
-
-    switch (tagName) {
-        case "if":
-            return {
-                "type": "if",
-                "cond": attributes.cond,
-                "actions": children.map(function(child){return transformActionNode(child);})
-            };
-        case "elseif":
-            return {
-                "type": "elseif",
-                "cond": attributes.cond,
-                "actions": children.map(function(child){return transformActionNode(child);})
-            };
-        case "else":
-            return {
-                "type": "else",
-                "actions": children.map(function(child){return transformActionNode(child);})
-            };
-        case "log":
-            return {
-                "type": "log",
-                "expr": attributes.expr,
-                "label": attributes.label
-            };
-        case "script":
-            return {
-                "type": "script",
-                "script": children.join("\n")
-            };
-        case "send":
-            return {
-                "type": "send",
-                "sendType": attributes.type,
-                "delay": attributes.delay,
-                "id": attributes.id,
-                "event": attributes.event,
-                "target": attributes.target,
-                "idlocation": attributes.idlocation,
-                //data
-                "namelist": attributes && attributes.namelist && attributes.namelist.trim().split(/ +/),
-                "params": children.filter(function(child){return child[0] === 'param';}).map(function(child){return processParam(child);}),
-                "content": children.filter(function(child){return child[0] === 'content';}).map(function(child){return util.deconstructNode(child)[2][0];})[0],
-                //exprs
-                "contentexpr": attributes.contentexpr, 
-                "eventexpr": attributes.eventexpr,
-                "targetexpr": attributes.targetexpr,
-                "typeexpr": attributes.typeexpr,
-                "delayexpr": attributes.delayexpr
-            };
-        case "cancel":
-            return {
-                "type": "cancel",
-                "sendid": attributes.sendid
-            };
-        case "assign":
-            return {
-                "type": "assign",
-                "location": attributes.location,
-                "expr": attributes.expr
-            };
-        case "raise":
-            return {
-                "type": "raise",
-                "event": attributes.event
-            };
-        default : 
-            throw new Error("Element " + tagName + " not yet supported");
-    }
 }
 
 function transformDatamodel(node, ancestors) {
@@ -1574,8 +1572,8 @@ function transformStateNode(node, ancestors) {
     });
 
     //need to do some work on his children
-    var onExitChildren = [];
-    var onEntryChildren = [];
+    var onExitChildren,
+        onEntryChildren;
     var transitionChildren = [];
     var stateChildren = [];
 
@@ -1599,14 +1597,10 @@ function transformStateNode(node, ancestors) {
                 transitionChildren.push(transformTransitionNode(child, state));
                 break;
             case "onentry":
-                childChildren.forEach(function(actionNode){
-                    onEntryChildren.push(transformActionNode(actionNode));
-                });
+                onEntryChildren = codeGen.generateCode(childChildren);
                 break;
             case "onexit":
-                childChildren.forEach(function(actionNode){
-                    onExitChildren.push(transformActionNode(actionNode));
-                });
+                onExitChildren = codeGen.generateCode(childChildren);
                 break;
             case "initial":
                 if (!processedInitial) {
