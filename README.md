@@ -218,6 +218,10 @@ An SCXML interpreter has three forms of output:
 
 Registers a callback to receive notification of state changes, as described above.
 
+Each `onEntry`, `onExit` and `onTransition` callback is optional - if the property is not present, it will be ignored.
+
+Furthermore, for the `onTransition` callback, argument `targetStateIds` will be `null` for targetless transitions, rather than, e.g. an empty array.
+
 # Usage in Browser
 
 Add the following script tags to your web page:
