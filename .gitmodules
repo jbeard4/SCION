@@ -4,3 +4,6 @@
 [submodule "lib/external/xmldom"]
 	path = lib/external/xmldom
 	url = git://github.com/jbeard4/xmldom.git
+[submodule "lib/external/jsUri"]
+	path = lib/external/jsUri
+	url = git://github.com/jbeard4/jsUri.git
