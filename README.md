@@ -235,9 +235,9 @@ Add the following script tags to your web page:
 Note that SCION assumes the presence of jQuery to handle cross-browser XMLHTTPRequest, however an alternative Ajax library could instead be used. This is set up in the following way:
 
 ```javascript
-    //perform this setup once
-    var scion = require('scion');
-    scion.ext.platform.ajax = {
+    //perform this setup once, before SCION is used
+    var platform = require('platform');
+    platform.ajax = {
         get : function(url,successCallback,dataType){
             //call your preferred Ajax library here to do HTTP GET
             //if dataType is 'xml', the Ajax response must be parsed as DOM
