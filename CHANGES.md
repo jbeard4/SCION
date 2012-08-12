@@ -1,3 +1,9 @@
+v0.0.9
+------
+
+* Removed use of JsonML internally. Instead, DOM is now used directly to transform SCXML to JSON. To see the internal JSON representation of an SCXML document, you can run node `node lib/core/util/annotate-scxml-json.js path/to/document.scxml`
+* Improved the platform API so that it can be exposed as part of the SCION API, and used to more easily embed SCION in other languages and environments. 
+
 v0.0.8
 ------
 
