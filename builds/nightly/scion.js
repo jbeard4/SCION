@@ -39,6 +39,7 @@
     }, dirname = function(path) {
       return path.split('/').slice(0, -1).join('/');
     };
+    /** @expose */
     this.require = function(name) {
       return require(name, '');
     }
@@ -49,12 +50,79 @@
   }
   return this.require.define;
 }).call(this)({"browser/browser-listener-client": function(exports, require, module) {//TODO: this will be like node-listener-client.js, except will use jquery/AJAX for its remoting
-}, "browser/platform": function(exports, require, module) {var platform = {
+}, "browser/dom": function(exports, require, module) {/*
+     Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+             http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+*/
+
+"use strict";
+
+var baseDom = require('../embedded/dom');
+
+function getItem(nodeList,index){
+    return "item" in nodeList ? nodeList.item(index) : nodeList[index];
+} 
+
+var dom = Object.create(baseDom);
+
+dom.hasAttribute = function(node,attribute){
+    return node.hasAttribute ? node.hasAttribute(attribute) : node.getAttribute(attribute);
+};
+
+dom.localName = function(node){
+    return node.localName || node.tagName;
+};
+
+dom.createElementNS = function(doc,ns,localName){
+    return doc.createElementNS ? doc.createElementNS(ns,localName) : doc.createElement(localName);
+};
+
+dom.getChildren = function(node){
+    var toReturn = [];
+    for(var i = 0; i < node.childNodes.length; i++){
+        toReturn.push(getItem(node.childNodes,i));
+    }
+    return toReturn;
+};
+
+module.exports = dom;
+}, "browser/platform": function(exports, require, module) {/*
+     Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+             http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+*/
+
+"use strict";
+
+var util = require('../core/util/util'),
+    basePlatform = require('../embedded/platform').platform;
+
+//browser mostly just inherits path from basePlatform
+exports.platform = util.merge(Object.create(basePlatform),{
 
     /** @expose */
-    ajax : jQuery,   //this can be overridden
-
-    pathSeparator : "/",
+    ajax : window.jQuery,   //this can be overridden
 
     //used in parsing
 
@@ -103,11 +171,73 @@
 
     clearTimeout : function(timeoutId){
         window.clearTimeout(timeoutId);
-    }
+    },
 
+    url : require('./url'),
+    dom : require('./dom')
+
+});
+
+}, "browser/url": function(exports, require, module) {/*
+     Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+             http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+*/
+
+"use strict";
+
+//this url parsing technique is derived from http://james.padolsey.com/javascript/parsing-urls-with-the-dom/
+
+function createAnchor(url){
+    var a =  document.createElement('a');
+    a.href = url;
+    return a;
+}
+
+module.exports = {
+    getPathFromUrl : function(url){
+        var a = createAnchor(url);
+        return a.pathname;
+    },
+
+    changeUrlPath : function(url,newPath){
+        var a = createAnchor(url);
+        return a.protocol + "//" + a.hostname + ":" + a.port + newPath;
+    }
 };
 
-module.exports = platform;
+
+}, "core/constants": function(exports, require, module) {/*
+     Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+             http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+*/
+
+"use strict";
+
+module.exports = {
+    SCXML_NS : "http://www.w3.org/2005/07/scxml"
+};
 }, "core/scxml/SCXML": function(exports, require, module) {//   Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
@@ -122,11 +252,13 @@ module.exports = platform;
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
+"use strict";
+
 var ArraySet = require('./set/ArraySet'),
     stateKinds = require('./state-kinds-enum'),
     setupDefaultOpts = require('./setup-default-opts'),
     scxmlPrefixTransitionSelector = require('./scxml-dynamic-name-match-transition-selector'),
-    platform = require('../../platform');
+    pm = require('../../platform');
 
 function getTransitionWithHigherSourceChildPriority(model) {
     return function(_arg) {
@@ -154,7 +286,7 @@ function SCXMLInterpreter(model, opts){
     this.model = model;
     this.opts = opts;
 
-    this.opts.log = this.opts.log || platform.log;   //rely on global console if this console is undefined
+    this.opts.log = this.opts.log || pm.platform.log;   //rely on global console if this console is undefined
     this.opts.StateIdSet = this.opts.StateIdSet || ArraySet;
     this.opts.EventSet = this.opts.EventSet || ArraySet;
     this.opts.TransitionPairSet = this.opts.TransitionPairSet || ArraySet;
@@ -174,8 +306,19 @@ SCXMLInterpreter.prototype = {
     /** @expose */
     start : function() {
         //perform big step without events to take all default transitions and reach stable initial state
-        if (printTrace) platform.log("performing initial big step");
+        if (printTrace) pm.platform.log("performing initial big step");
         this._configuration.add(this.model.root.initial);
+
+        //figure out which require to use when evaluating action code, in the following order:
+            //the one specified when instantiating the interpreter
+            //the require of the module importing SCION
+            //the require of the main module
+            //this module's require
+        var actionCodeRequire = 
+            this.opts.require || 
+                (module.parent && module.parent.parent && module.parent.parent.require) || 
+                (require.main && require.main.require) ||
+                require;
 
         //set up scope for action code embedded in the document
         var tmp = this.model.actionFactory(
@@ -183,7 +326,8 @@ SCXMLInterpreter.prototype = {
             this._cancel.bind(this),
             this._send.bind(this),
             this.opts.origin,
-            this.isIn.bind(this)); 
+            this.isIn.bind(this),
+            actionCodeRequire);
         this._actions = tmp.actions;
         this._datamodel = tmp.datamodel;
 
@@ -243,15 +387,15 @@ SCXMLInterpreter.prototype = {
     /** @private */
     _performSmallStep : function(eventSet, datamodelForNextStep) {
 
-        if (printTrace) platform.log("selecting transitions with eventSet: ", eventSet);
+        if (printTrace) pm.platform.log("selecting transitions with eventSet: ", eventSet);
 
         var selectedTransitions = this._selectTransitions(eventSet, datamodelForNextStep);
 
-        if (printTrace) platform.log("selected transitions: ", selectedTransitions);
+        if (printTrace) pm.platform.log("selected transitions: ", selectedTransitions);
 
         if (!selectedTransitions.isEmpty()) {
 
-            if (printTrace) platform.log("sorted transitions: ", selectedTransitions);
+            if (printTrace) pm.platform.log("sorted transitions: ", selectedTransitions);
 
             //we only want to enter and exit states from transitions with targets
             //filter out targetless transitions here - we will only use these to execute transition actions
@@ -265,19 +409,19 @@ SCXMLInterpreter.prototype = {
                 basicStatesEntered = enteredTuple[0], 
                 statesEntered = enteredTuple[1];
 
-            if (printTrace) platform.log("basicStatesExited ", basicStatesExited);
-            if (printTrace) platform.log("basicStatesEntered ", basicStatesEntered);
-            if (printTrace) platform.log("statesExited ", statesExited);
-            if (printTrace) platform.log("statesEntered ", statesEntered);
+            if (printTrace) pm.platform.log("basicStatesExited ", basicStatesExited);
+            if (printTrace) pm.platform.log("basicStatesEntered ", basicStatesEntered);
+            if (printTrace) pm.platform.log("statesExited ", statesExited);
+            if (printTrace) pm.platform.log("statesEntered ", statesEntered);
 
             var eventsToAddToInnerQueue = new this.opts.EventSet();
 
             //update history states
-            if (printTrace) platform.log("executing state exit actions");
+            if (printTrace) pm.platform.log("executing state exit actions");
 
             statesExited.forEach(function(state){
 
-                if (printTrace) platform.log("exiting ", state);
+                if (printTrace) pm.platform.log("exiting ", state);
 
                 //invoke listeners
                 this._listeners.forEach(function(l){
@@ -309,7 +453,7 @@ SCXMLInterpreter.prototype = {
                 return t1.documentOrder - t2.documentOrder;
             });
 
-            if (printTrace) platform.log("executing transitition actions");
+            if (printTrace) pm.platform.log("executing transitition actions");
 
 
             sortedTransitions.forEach(function(transition){
@@ -323,7 +467,7 @@ SCXMLInterpreter.prototype = {
                 if(transition.actions !== undefined) this._evaluateAction(transition.actions,eventSet, datamodelForNextStep, eventsToAddToInnerQueue);
             },this);
  
-            if (printTrace) platform.log("executing state enter actions");
+            if (printTrace) pm.platform.log("executing state enter actions");
 
             statesEntered.forEach(function(state){
 
@@ -334,22 +478,22 @@ SCXMLInterpreter.prototype = {
                 if(state.onentry !== undefined) this._evaluateAction(state.onentry, eventSet, datamodelForNextStep, eventsToAddToInnerQueue);
             },this);
 
-            if (printTrace) platform.log("updating configuration ");
-            if (printTrace) platform.log("old configuration ", this._configuration);
+            if (printTrace) pm.platform.log("updating configuration ");
+            if (printTrace) pm.platform.log("old configuration ", this._configuration);
 
             //update configuration by removing basic states exited, and adding basic states entered
             this._configuration.difference(basicStatesExited);
             this._configuration.union(basicStatesEntered);
 
-            if (printTrace) platform.log("new configuration ", this._configuration);
+            if (printTrace) pm.platform.log("new configuration ", this._configuration);
             
             //add set of generated events to the innerEventQueue -> Event Lifelines: Next small-step
             if (!eventsToAddToInnerQueue.isEmpty()) {
-                if (printTrace) platform.log("adding triggered events to inner queue ", eventsToAddToInnerQueue);
+                if (printTrace) pm.platform.log("adding triggered events to inner queue ", eventsToAddToInnerQueue);
                 this._innerEventQueue.push(eventsToAddToInnerQueue);
             }
 
-            if (printTrace) platform.log("updating datamodel for next small step :");
+            if (printTrace) pm.platform.log("updating datamodel for next small step :");
             
             //update the datamodel
             for (var key in datamodelForNextStep) {
@@ -528,7 +672,7 @@ SCXMLInterpreter.prototype = {
 
         var priorityEnabledTransitions = this._selectPriorityEnabledTransitions(enabledTransitions);
 
-        if (printTrace) platform.log("priorityEnabledTransitions", priorityEnabledTransitions);
+        if (printTrace) pm.platform.log("priorityEnabledTransitions", priorityEnabledTransitions);
         
         return priorityEnabledTransitions;
     },
@@ -543,10 +687,10 @@ SCXMLInterpreter.prototype = {
 
         priorityEnabledTransitions.union(consistentTransitions);
 
-        if (printTrace) platform.log("enabledTransitions", enabledTransitions);
-        if (printTrace) platform.log("consistentTransitions", consistentTransitions);
-        if (printTrace) platform.log("inconsistentTransitionsPairs", inconsistentTransitionsPairs);
-        if (printTrace) platform.log("priorityEnabledTransitions", priorityEnabledTransitions);
+        if (printTrace) pm.platform.log("enabledTransitions", enabledTransitions);
+        if (printTrace) pm.platform.log("consistentTransitions", consistentTransitions);
+        if (printTrace) pm.platform.log("inconsistentTransitionsPairs", inconsistentTransitionsPairs);
+        if (printTrace) pm.platform.log("priorityEnabledTransitions", priorityEnabledTransitions);
         
         while (!inconsistentTransitionsPairs.isEmpty()) {
             enabledTransitions = new this.opts.TransitionSet(
@@ -558,10 +702,10 @@ SCXMLInterpreter.prototype = {
 
             priorityEnabledTransitions.union(consistentTransitions);
 
-            if (printTrace) platform.log("enabledTransitions", enabledTransitions);
-            if (printTrace) platform.log("consistentTransitions", consistentTransitions);
-            if (printTrace) platform.log("inconsistentTransitionsPairs", inconsistentTransitionsPairs);
-            if (printTrace) platform.log("priorityEnabledTransitions", priorityEnabledTransitions);
+            if (printTrace) pm.platform.log("enabledTransitions", enabledTransitions);
+            if (printTrace) pm.platform.log("consistentTransitions", consistentTransitions);
+            if (printTrace) pm.platform.log("inconsistentTransitionsPairs", inconsistentTransitionsPairs);
+            if (printTrace) pm.platform.log("priorityEnabledTransitions", priorityEnabledTransitions);
             
         }
         return priorityEnabledTransitions;
@@ -573,7 +717,7 @@ SCXMLInterpreter.prototype = {
         var inconsistentTransitionsPairs = new this.opts.TransitionPairSet();
         var transitionList = transitions.iter();
 
-        if (printTrace) platform.log("transitions", transitionList);
+        if (printTrace) pm.platform.log("transitions", transitionList);
 
         for(var i = 0; i < transitionList.length; i++){
             for(var j = i+1; j < transitionList.length; j++){
@@ -603,8 +747,8 @@ SCXMLInterpreter.prototype = {
         var isOrthogonal = this.opts.model.isOrthogonalTo(t1LCA, t2LCA);
 
         if (printTrace) {
-            platform.log("transition LCAs", t1LCA.id, t2LCA.id);
-            platform.log("transition LCAs are orthogonal?", isOrthogonal);
+            pm.platform.log("transition LCAs", t1LCA.id, t2LCA.id);
+            pm.platform.log("transition LCAs are orthogonal?", isOrthogonal);
         }
 
         return isOrthogonal;
@@ -688,14 +832,14 @@ SimpleInterpreter.prototype.gen = function(evtObjOrName,optionalData) {
 SimpleInterpreter.prototype._send = function(event, options) {
     var callback, timeoutId,
         _this = this;
-    if (platform.setTimeout) {
+    if (pm.platform.setTimeout) {
         if (printTrace) {
-            platform.log("sending event", event.name, "with content", event.data, "after delay", options.delay);
+            pm.platform.log("sending event", event.name, "with content", event.data, "after delay", options.delay);
         }
         callback = function() {
             return _this.gen(event);
         };
-        timeoutId = platform.setTimeout(callback, options.delay);
+        timeoutId = pm.platform.setTimeout(callback, options.delay);
         if (options.sendid) return this._timeoutMap[options.sendid] = timeoutId;
     } else {
         throw new Error("setTimeout function not set");
@@ -704,12 +848,12 @@ SimpleInterpreter.prototype._send = function(event, options) {
 
 /** @private */
 SimpleInterpreter.prototype._cancel = function(sendid){
-    if (platform.clearTimeout) {
+    if (pm.platform.clearTimeout) {
         if (sendid in this._timeoutMap) {
             if (printTrace) {
-                platform.log("cancelling ", sendid, " with timeout id ", this._timeoutMap[sendid]);
+                pm.platform.log("cancelling ", sendid, " with timeout id ", this._timeoutMap[sendid]);
             }
-            return platform.clearTimeout(this._timeoutMap[sendid]);
+            return pm.platform.clearTimeout(this._timeoutMap[sendid]);
         }
     } else {
         throw new Error("clearTimeout function not set");
@@ -734,6 +878,7 @@ module.exports = {
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
+"use strict";
 
 module.exports = function(state,eventNames,evaluator){
     return state.transitions.filter(function(t){
@@ -754,56 +899,15 @@ module.exports = function(state,eventNames,evaluator){
 //     See the License for the specific language governing permissions and
 //     limitations under the License.
 
-//this creates the string which declares the datamodel in the document scope
-function makeDatamodelDeclaration(datamodel){
-    var s = "var ";
-    var vars = [];
-    for(var id in datamodel){
-        var expr = datamodel[id];
-        vars.push(expr ? id + " = " + expr : id);
-    }
-    return vars.length ? s + vars.join(", ") + ";" : "";
-}
+"use strict";
 
-//this exposes a getter and setter API on the datamodel in the document scope
-function makeDatamodelClosures(datamodel){
-    var vars = [];
-    for(var id in datamodel){
-        vars.push( '"' + id + '" : {\n' + 
-            '"set" : function(v){ return ' + id + ' = v; },\n' + 
-            '"get" : function(){ return ' + id + ';}' + 
-        '\n}');
-    }
-    return '{\n' + vars.join(',\n') + '\n}';
-}
+var pm = require('../../platform'),
+    cg = require('../util/code-gen');
 
-//this function ensures that the code in each SCXML document will run in "document scope".
-//SCXML embeds js code as strings in the document, hence the use of "eval" to dynamically evaluate things.
-//This function ensures that eval() is only called once, when the model is parsed. It will not be called during execution of the statechart.
-//However, each SCXML interpreter instance will have its own copies of the functions declared in the document. 
-//This is similar to the way HTML works - each page has its own copies of evaluated scripts.
-function makeActionFactory(topLevelScripts,actionStrings,datamodel){
-    var fnBody = makeDatamodelDeclaration(datamodel) + 
-                (topLevelScripts.length ? topLevelScripts.join("\n") : "") + 
-                "return {\n" + 
-                    "datamodel:" +  makeDatamodelClosures(datamodel) + "," + 
-                    "actions:[\n" + actionStrings.join(",\n") + "\n]" +   //return all functions which get called during execution
-                "\n};";
-
-    //JScript doesn't return functions from evaled function expression strings, 
-    //so we wrap it here in a trivial self-executing function which gets evaled
-    var fnStr = "(function(){\nreturn function($log,$cancel,$send,$origin,In){\n" + fnBody + "\n};\n})()";
-    //console.log(fnStr); 
-    return eval(fnStr); 
-}
-
-module.exports = function(json) {
+function linkReferencesAndGenerateActionFactory(json){
 
     function makeEvaluationFn(action,isExpression){
-        return actionStrings.push( "function(getData,setData,_events,$raise){var _event = _events[0];\n" +
-            (isExpression ? "return" : "") + " " + action + 
-        "\n}" ) - 1;
-
+        return actionStrings.push(cg.gen.util.wrapFunctionBodyInDeclaration(action,isExpression)) - 1;
     }
 
     function stateIdToReference(stateId){
@@ -859,11 +963,48 @@ module.exports = function(json) {
 
     json.root = idToStateMap[json.root];
 
-    json.actionFactory = makeActionFactory(json.scripts,actionStrings,json.datamodel); 
+    var actionFactoryString = cg.gen.util.makeActionFactory(json.scripts,actionStrings,json.datamodel); 
 
+    return actionFactoryString;
+}
+
+function annotatedJsonToModel(json,documentUrl) {
+    var actionFactoryString = linkReferencesAndGenerateActionFactory(json);
+    json.actionFactory = pm.platform.eval(actionFactoryString,documentUrl); 
+}
+
+module.exports = function(json,documentUrl){
+    annotatedJsonToModel(json,documentUrl);
     return json;
 };
 
+//TODO: get google closure to compile this out as dead code in the browser build
+if(require.main === module){
+    var fileName = process.argv[2];
+
+    //this prints out the generated code from a json file which is the output of annotate-scxml-json
+    var done = function(err,annotatedJsonStr){
+        if(err) throw err;
+        process.stdout.write(linkReferencesAndGenerateActionFactory(JSON.parse(annotatedJsonStr)));
+    };
+
+    if(fileName === "-"){
+        //read from stdin
+        var s = "";
+        process.stdin.resume();
+        process.stdin.on("data",function(data){
+            s += data;
+        });
+        process.stdin.on("end",function(data){
+            done(null,s); 
+        });
+    }else{
+        //read from fs
+        var fs = require('fs');  
+        fs.readFile(fileName,'utf8',done);
+    }
+
+}
 }, "core/scxml/model": function(exports, require, module) {//   Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
@@ -877,6 +1018,8 @@ module.exports = function(json) {
 //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
+
+"use strict";
 
 var stateKinds = require('./state-kinds-enum');
 
@@ -932,6 +1075,8 @@ module.exports = model;
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
+"use strict";
+
 var eventNameReCache = {};
 
 function eventNameToRe(name) {
@@ -973,6 +1118,8 @@ module.exports = function(state, eventNames, evaluator) {
 //     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //     See the License for the specific language governing permissions and
 //     limitations under the License.
+
+"use strict";
 
 /** @constructor */
 function ArraySet(l) {
@@ -1060,6 +1207,8 @@ module.exports = ArraySet;
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
+"use strict";
+
 var selector = require('./scxml-dynamic-name-match-transition-selector'),
     ArraySet = require('./set/ArraySet'),
     m = require('./model');
@@ -1088,6 +1237,8 @@ module.exports = function(opts) {
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
+"use strict";
+
 module.exports = {
     BASIC: 0,
     COMPOSITE: 1,
@@ -1096,201 +1247,7 @@ module.exports = {
     INITIAL: 4,
     FINAL: 5
 };
-}, "core/util/action-code-generator": function(exports, require, module) {//this model handles code generation for action code
-//it should be possible to extend this to support custom actions
-
-var util = require('./jsonml');
-
-function generateCode(actions){
-    return actions.map(_generateCode).join("\n;;\n");
-}
-
-function _generateCode(action){
-    var tuple = util.deconstructNode(action), 
-        tagName = tuple[0], 
-        attributes = tuple[1], 
-        children = tuple[2];
-
-    var generator = codeGenerators[tagName];
-
-    if(!generator) throw new Error("Element " + tagName + " not yet supported");
-
-    return generator(attributes,children); 
-}
-
-var codeGenerators = {
-    "script" : function(attributes,children){
-        return children.join("\n;;\n");
-    },
-
-    "assign" : function(attributes,children){
-        return attributes.location + " = " + attributes.expr + ";";
-    },
-
-    "if" : function(attributes,children){
-        var s = "";
-        s += "if(" + attributes.cond + "){\n";
-
-        for(var i = 0; i < children.length; i++){
-            var child = children[i];
-
-            if(child[0] === "elseif" || child[0] === "else"){ 
-                break;
-            }else if(Array.isArray(child)){
-                s += _generateCode(child) + "\n;;\n";
-            }
-        }
-
-        //process if/else-if, and recurse
-        for(; i < children.length; i++){
-            child = children[i];
-
-            if(child[0] === "elseif"){
-                s+= "}else if(" + child[1].cond + "){\n";
-            }else if(child[0] === "else"){
-                s += "}";
-                break;
-            }else if(Array.isArray(child)){
-                s+= _generateCode(child)  + "\n;;\n";
-            }
-        }
-
-        for(; i < children.length; i++){
-            child = children[i];
-
-            //this should get encountered first
-            if(child[0] === "else"){
-                s+= "else{\n";
-            }else if(Array.isArray(child)){
-                s+= _generateCode(child)  + "\n;;\n";
-            }
-        }
-        s+= "}";
-
-        return s;
-    },
-
-    "elseif" : function(){
-        throw new Error("Encountered unexpected elseif tag.");
-    },
-
-    "else" : function(){
-        throw new Error("Encountered unexpected else tag.");
-    },
-
-    "log" : function(attributes,children){
-        var params = [];
-
-        if(attributes.label) params.push( JSON.stringify(attributes.label));
-        if(attributes.expr) params.push( attributes.expr);
-
-        return "$log(" + params.join(",") + ");";
-    },
-
-    "raise" : function(attributes,children){
-        return "$raise(" + JSON.stringify(attributes.event) + ");";
-    },
-
-    "cancel" : function(attributes,children){
-        return "$cancel(" + JSON.stringify(attributes.sendid) + ");";
-    },
-
-    "send" : function(attributes,children){
-        return "$send({\n" + 
-            "target: " + (attributes.targetexpr ? attributes.targetexpr : JSON.stringify(attributes.target)) + ",\n" +
-            "name: " + (attributes.eventexpr ? attributes.eventexpr : JSON.stringify(attributes.event)) + ",\n" + 
-            "type: " + (attributes.typeexpr ? attributes.typeexpr : JSON.stringify(attributes.type)) + ",\n" +
-            "data: " + constructSendEventData(attributes,children) + ",\n" +
-            "origin: $origin\n" +
-        "}, {\n" + 
-            "delay: " + (attributes.delayexpr ? attributes.delayexpr : getDelayInMs(attributes.delay)) + ",\n" + 
-            "sendId: " + (attributes.idlocation ? attributes.idlocation : JSON.stringify(attributes.id)) + "\n" + 
-        "});";
-    },
-
-    "foreach" : function(attributes,children){
-        var isIndexDefined = attributes.index,
-            index = attributes.index || "$i",        //FIXME: the index variable could shadow the datamodel. We should pick a unique temperorary variable name
-            item = attributes.item,
-            arr = attributes.array;
-
-        return "(function(){\n" + 
-            "for(" + (isIndexDefined  ? "" : "var " + index + " = 0") + "; " + index + " < " + arr + ".length; " + index + "++){\n" + 
-                item + " = " + arr + "[" + index + "];\n" + 
-                children.filter(Array.isArray).map(_generateCode).join("\n;;\n") + 
-            "\n}\n" + 
-        "})();";
-    }
-};
-
-function getDelayInMs(delayString){
-    if (!delayString) {
-        return 0;
-    } else {
-        if (delayString.slice(-2) === "ms") {
-            return parseFloat(delayString.slice(0, -2));
-        } else if (delayString.slice(-1) === "s") {
-            return parseFloat(delayString.slice(0, -1)) * 1000;
-        } else {
-            return parseFloat(delayString);
-        }
-    }
-}
-
-function constructSendEventData(attributes,children){
-
-    var namelist = attributes && attributes.namelist && attributes.namelist.trim().split(/ +/),
-        params = children.filter(function(child){return child[0] === 'param';}).map(function(child){return processParam(child);}),
-        content = children.filter(function(child){return child[0] === 'content';}).map(function(child){return util.deconstructNode(child)[2][0];})[0];
-
-    if(content){
-        return JSON.stringify(content);
-    }else if(attributes.contentexpr){
-        return attributes.contentexpr;
-    }else{
-        var s = "{";
-        //namelist
-        if(namelist){
-            namelist.forEach(function(name){
-                s += '"' + name + '"' + ":" + name + ",\n";
-            });
-        }
-
-        //params
-        if(params){
-            params.forEach(function(param){
-                if(param.expr){
-                    s += '"' + param.name + '"' + ":" + param.expr + ",\n";
-                }else if(param.location){
-                    s += '"' + param.name + '"' + ":" + param.location + ",\n";
-                }
-            });
-        }
-
-        s += "}";
-        return s;
-    }
-}
-
-function processParam(param) {
-    var tuple = util.deconstructNode(param), 
-        tagName = tuple[0], 
-        attributes = tuple[1], 
-        children = tuple[2];
-    return {
-        name: attributes.name,
-        expr: attributes.expr,
-        location: attributes.location
-    };
-}
-
-
-module.exports = {
-    generateCode : generateCode,
-    codeGenerators : codeGenerators 
-};
-}, "core/util/annotate-scxml-json": function(exports, require, module) {
-/*
+}, "core/util/annotate-scxml-json": function(exports, require, module) {/*
      Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
 
      Licensed under the Apache License, Version 2.0 (the "License");
@@ -1307,68 +1264,34 @@ module.exports = {
 */
 
 /*
-This file transforms an SCXML document converted to JsonML so that it is easier for a JavaScript-based SCXML interpreter to parse and interpret.
+This module transforms an SCXML document to a proprietary JSON-based intermediate representation.
 */
 
-/*
-Example SCXML document basic1.scxml stripped of whitespace and converted to JsonML.
 
-[
-        "scxml", 
-        {
-                "id": "root", 
-                "profile": "ecmascript", 
-                "version": "1.0"
-        }, 
-        [
-                "initial", 
-                {
-                        "id": "intitial1"
-                }, 
-                [
-                        "transition", 
-                        {
-                                "target": "a"
-                        }
-                ]
-        ], 
-        [
-                "state", 
-                {
-                        "id": "a"
-                }, 
-                [
-                        "transition", 
-                        {
-                                "event": "t", 
-                                "target": "b"
-                        }
-                ]
-        ], 
-        [
-                "state", 
-                {
-                        "id": "b"
-                }
-        ]
-]
-*/
+"use strict";
 
-var util = require('./jsonml'),
-    codeGen = require('./action-code-generator');
+var codeGen = require('./code-gen'),
+    constants = require('../constants'),
+    pm = require('../../platform');
 
 var stateKinds = require("../scxml/state-kinds-enum");
 
 var STATES_THAT_CAN_BE_CHILDREN = ["state", "parallel", "history", "final", "initial"],
     STATE_TAGS = STATES_THAT_CAN_BE_CHILDREN.concat("scxml");
 
-var states, basicStates, uniqueEvents, transitions, idToStateMap, onFoundStateIdCallbacks, datamodel;
+
+var states, basicStates, uniqueEvents, transitions, idToStateMap, onFoundStateIdCallbacks, datamodel, doc;
 
 var transformAndSerialize = exports.transformAndSerialize = transformAndSerialize = function(root) {
     return JSON.stringify(transform(root));
 };
 
-var transform = exports.transform = function(root) {
+var transform = exports.transform = function(scxmlDoc) {
+
+    doc = scxmlDoc;
+
+    var root = doc.documentElement;
+
     states = [];
     basicStates = [];
     uniqueEvents = {};
@@ -1378,11 +1301,6 @@ var transform = exports.transform = function(root) {
     datamodel = {};
 
     var rootState = transformStateNode(root, []);
-
-    var tuple = util.deconstructNode(root), 
-        tagName = tuple[0], 
-        attributes = tuple[1], 
-        children = tuple[2];
 
     states.forEach(function(state){
         state.ancestors.reverse();
@@ -1410,29 +1328,15 @@ var transform = exports.transform = function(root) {
         transitions: transitions,
         root: rootState.id,
         events: genEventsEnum(uniqueEvents),
-        scripts: genRootScripts(children),
-        profile: attributes.profile,
-        version: attributes.version,
+        scripts: genRootScripts(root),
+        profile: pm.platform.dom.getAttribute(root,"profile"),
+        version: pm.platform.dom.getAttribute(root,"version"),
         datamodel: datamodel
     };
 };
 
-function genRootScripts(rootChildren) {
-    var toReturn = [];
-    rootChildren.forEach(function(child){
-
-        var tuple = util.deconstructNode(child), 
-            tagName = tuple[0], 
-            attributes = tuple[1], 
-            grandChildren = tuple[2];
-
-        if (tagName === "script") {
-            toReturn.push.apply(toReturn,
-                grandChildren.filter(
-                    function(scriptNode){return typeof scriptNode === "string";}));
-        }
-    });
-    return toReturn;
+function genRootScripts(root) {
+    return pm.platform.dom.getChildren(root).filter(function(c){return pm.platform.dom.localName(c) === "script";}).map(function(c){return c.textContent;});
 }
 
 function genEventsEnum(uniqueEvents) {
@@ -1453,20 +1357,16 @@ var stripStarFromEventNameRe = /^((([^.]+)\.)*([^.]+))(\.\*)?$/;
 
 function transformTransitionNode (transitionNode, parentState) {
 
-    var tuple = util.deconstructNode(transitionNode, true), 
-        tagName = tuple[0], 
-        attributes = tuple[1], 
-        children = tuple[2];
-
     //wildcard "*" event will show up on transition.events, but will not show up in uniqueEvents
     //default transitions (those without events) will have events set to undefined (rather than empty array)
-    if (attributes.event) {
+    if (pm.platform.dom.hasAttribute(transitionNode,'event')) {
         var events;
 
-        if (attributes.event === "*") {
-            events = [attributes.event];
+        var event = pm.platform.dom.getAttribute(transitionNode,'event');
+        if (event === "*") {
+            events = [event];
         } else {
-            events = attributes.event.trim().split(/\s+/).map(function(event){
+            events = event.trim().split(/\s+/).map(function(event){
                 var m = event.match(stripStarFromEventNameRe);
                 if (m) {
                     var normalizedEvent = m[1];
@@ -1492,12 +1392,12 @@ function transformTransitionNode (transitionNode, parentState) {
         documentOrder: transitions.length,
         id: transitions.length,
         source: parentState.id,
-        cond: attributes.cond,
+        cond: pm.platform.dom.getAttribute(transitionNode,"cond"),
         events: events,
-        targets: attributes && attributes.target && attributes.target.trim().split(/\s+/)
+        targets: pm.platform.dom.hasAttribute(transitionNode,"target") ? pm.platform.dom.getAttribute(transitionNode,"target").trim().split(/\s+/) : null
     };
 
-    if(children.length) transition.actions = codeGen.generateCode(children);
+    if(pm.platform.dom.getElementChildren(transitionNode).length) transition.actions = codeGen.gen.parentToFnBody(transitionNode);
 
     transitions.push(transition);
 
@@ -1507,24 +1407,20 @@ function transformTransitionNode (transitionNode, parentState) {
 }
 
 function transformDatamodel(node, ancestors) {
-    var tuple = util.deconstructNode(node, true), tagName = tuple[0], attributes = tuple[1], children = tuple[2];
-
-    children.filter(function(child){return child[0] === 'data';}).forEach(function(child){
-        var tuple = util.deconstructNode(child, true), childTagName = tuple[0], childAttributes = tuple[1], childChildren = tuple[2];
-        if (childAttributes.id) {
-            datamodel[childAttributes.id] = childAttributes.expr || null;
+    pm.platform.dom.getChildren(node).filter(function(child){return pm.platform.dom.localName(child) === 'data';}).forEach(function(child){
+        if (pm.platform.dom.hasAttribute(child,"id")) {
+            datamodel[pm.platform.dom.getAttribute(child,"id")] = pm.platform.dom.hasAttribute(child,"expr") ? pm.platform.dom.getAttribute(child,"expr") : null;
         }
     });
 }
 
 function transformStateNode(node, ancestors) {
-    var tuple = util.deconstructNode(node, true), tagName = tuple[0], attributes = tuple[1], children = tuple[2];
-    var id = (attributes && attributes.id) || genId(tagName);
+    var id = pm.platform.dom.hasAttribute(node,"id") ? pm.platform.dom.getAttribute(node,"id") :  genId(pm.platform.dom.localName(node));
     var kind; 
 
-    switch (tagName) {
+    switch (pm.platform.dom.localName(node)) {
         case "state":
-            if( children.filter(function(child){return STATE_TAGS.indexOf(child[0]) > -1;}).length){
+            if( pm.platform.dom.getChildren(node).filter(function(child){return STATE_TAGS.indexOf(pm.platform.dom.localName(child)) > -1;}).length){
                 kind = stateKinds.COMPOSITE;
             } else {
                 kind = stateKinds.BASIC;
@@ -1555,7 +1451,7 @@ function transformStateNode(node, ancestors) {
     idToStateMap[id] = state;
     if (ancestors.length) state.parent = ancestors[ancestors.length - 1];
     if (kind === stateKinds.HISTORY) {
-        state.isDeep = attributes.type === "deep" ? true : false;
+        state.isDeep = pm.platform.dom.getAttribute(node,"type") === "deep" ? true : false;
     }
     state.documentOrder = states.length;
     states.push(state);
@@ -1589,18 +1485,19 @@ function transformStateNode(node, ancestors) {
         return processedInitial = true;
     };
 
-    children.filter(function(child){return Array.isArray(child);}).forEach(function(child){
+    //process all sub-elements
+    pm.platform.dom.getElementChildren(node).forEach(function(child){
 
-        var tuple = util.deconstructNode(child, true), childTagName = tuple[0], childAttributes = tuple[1], childChildren = tuple[2];
-        switch (childTagName) {
+        //var tuple = util.deconstructNode(child, true), childTagName = tuple[0], childAttributes = tuple[1], childChildren = tuple[2];
+        switch (pm.platform.dom.localName(child)) {
             case "transition":
                 transitionChildren.push(transformTransitionNode(child, state));
                 break;
             case "onentry":
-                onEntryChildren = codeGen.generateCode(childChildren);
+                onEntryChildren = codeGen.gen.parentToFnBody(child);
                 break;
             case "onexit":
-                onExitChildren = codeGen.generateCode(childChildren);
+                onExitChildren = codeGen.gen.parentToFnBody(child);
                 break;
             case "initial":
                 if (!processedInitial) {
@@ -1618,7 +1515,7 @@ function transformStateNode(node, ancestors) {
                 transformDatamodel(child, nextAncestors);
                 break;
             default:
-                if(STATES_THAT_CAN_BE_CHILDREN.indexOf(childTagName) > -1){
+                if(STATES_THAT_CAN_BE_CHILDREN.indexOf(pm.platform.dom.localName(child)) > -1){
                     var transformedStateNode = transformStateNode(child, nextAncestors);
                     //this is used to set default initial state, if initial state is not specified
                     if (firstStateChild === null) firstStateChild = transformedStateNode;
@@ -1629,24 +1526,21 @@ function transformStateNode(node, ancestors) {
 
     });
 
-    if (!processedInitial && tagName !== "parallel") {
-        var hasInitialAttribute = attributes && attributes.initial; 
+    if (!processedInitial && pm.platform.dom.localName(node) !== "parallel") {
+        var hasInitialAttribute = pm.platform.dom.hasAttribute(node,"initial");
 
         //create a fake initial state and process him
-        function generateFakeInitialState(targetId) {
-            var fakeInitialState;
-            fakeInitialState = [
-                "initial", [
-                    "transition", {
-                        target: targetId
-                    }
-                ]
-            ];
-            return processInitialState(fakeInitialState);
-        }
+        var generateFakeInitialState = function(targetId) {
+            var initial = pm.platform.dom.createElementNS(doc,constants.SCXML_NS,"initial");
+            var transition = pm.platform.dom.createElementNS(doc,constants.SCXML_NS,"transition");
+            pm.platform.dom.setAttribute(transition,"target",targetId); 
+            pm.platform.dom.appendChild(initial,transition);
+
+            return processInitialState(initial);
+        };
 
         if (hasInitialAttribute) {
-            generateFakeInitialState(attributes.initial);
+            generateFakeInitialState(pm.platform.dom.getAttribute(node,"initial"));
         } else {
             if (firstStateChild) generateFakeInitialState(firstStateChild.id);
         }
@@ -1681,68 +1575,370 @@ function getLCA(s1, s2) {
     if(!commonAncestors.length) throw new Error("Could not find LCA for states.");
     return commonAncestors[0];
 }
-}, "core/util/docToModel": function(exports, require, module) {var JsonML = require('../../external/jsonml/jsonml-dom'),
-    annotator = require('./annotate-scxml-json'),
-    json2model = require('../scxml/json2model'),
-    platform = require('../../platform'),
-    util = require('./jsonml');
 
-function documentToModel(url,doc,cb){
-    var arr = JsonML.parseDOM(doc);
-    var scxmlJson = arr[1];
+//epic one-liner
+//this script can be called as a main script to convert an xml file to annotated scxml.
+//TODO: get google closure to compile this out as dead code in the browser build
+if(require.main === module) console.log(JSON.stringify(transform((new (require('xmldom').DOMParser)).parseFromString(require('fs').readFileSync(process.argv[2],'utf8'))),4,4));
+}, "core/util/code-gen": function(exports, require, module) {/*
+     Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
 
-    //do whatever transforms
-    //inline script tags
-    //platformGet may be undefined, and we can continue without it, hence the guard
-    if(platform && platform.getResourceFromUrl){
-        inlineSrcs(url,scxmlJson,function(errors){
-            if(errors){ 
-                //I think we should probably just log any of these errors
-                platform.log("Errors downloading src attributes",errors);
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+             http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+*/
+
+//this model handles code generation for action code
+//it should be possible to extend this to support custom actions
+
+"use strict";
+
+var pm = require('../../platform'),
+    constants = require('../constants');
+
+function parentToFnBody(action){
+    return pm.platform.dom.getElementChildren(action).map(actionTagToFnBody).join("\n;;\n");
+}
+
+function actionTagToFnBody(action){
+
+    var generator = actionTags[pm.platform.dom.namespaceURI(action)];
+    var generatorFn = generator && generator[pm.platform.dom.localName(action)];
+
+    if(!(generator && generatorFn)) throw new Error("Element " + pm.platform.dom.namespaceURI(action) + ':' + pm.platform.dom.localName(action) + " not yet supported");
+
+    return generatorFn(action); 
+}
+
+var actionTags = {
+    "" : {
+        "script" : function(action){
+            return pm.platform.dom.getChildren(action).map(function(c){return pm.platform.dom.textContent(c);}).join("\n;;\n");
+        },
+
+        "assign" : function(action){
+            return pm.platform.dom.getAttribute(action,"location") + " = " + pm.platform.dom.getAttribute(action,"expr") + ";";
+        },
+
+        "if" : function(action){
+            var s = "";
+            s += "if(" + pm.platform.dom.getAttribute(action,"cond") + "){\n";
+
+            var childNodes = pm.platform.dom.getElementChildren(action);
+
+            for(var i = 0; i < childNodes.length; i++){
+                var child = childNodes[i];
+
+                if(pm.platform.dom.localName(child) === "elseif" || pm.platform.dom.localName(child) === "else"){ 
+                    break;
+                }else{
+                    s += actionTagToFnBody(child) + "\n;;\n";
+                }
             }
-            scxmlJsonToModel(scxmlJson,cb);
-        });
-    }else{
-        scxmlJsonToModel(scxmlJson,cb);
+
+            //process if/else-if, and recurse
+            for(; i < childNodes.length; i++){
+                child = childNodes[i];
+
+                if(pm.platform.dom.localName(child) === "elseif"){
+                    s+= "}else if(" + pm.platform.dom.getAttribute(child,"cond") + "){\n";
+                }else if(pm.platform.dom.localName(child) === "else"){
+                    s += "}";
+                    break;
+                }else{
+                    s+= actionTagToFnBody(child)  + "\n;;\n";
+                }
+            }
+
+            for(; i < childNodes.length; i++){
+                child = childNodes[i];
+
+                //this should get encountered first
+                if(pm.platform.dom.localName(child) === "else"){
+                    s+= "else{\n";
+                }else{
+                    s+= actionTagToFnBody(child)  + "\n;;\n";
+                }
+            }
+            s+= "}";
+
+            return s;
+        },
+
+        "elseif" : function(){
+            throw new Error("Encountered unexpected elseif tag.");
+        },
+
+        "else" : function(){
+            throw new Error("Encountered unexpected else tag.");
+        },
+
+        "log" : function(action){
+            var params = [];
+
+            if(pm.platform.dom.hasAttribute(action,"label")) params.push( JSON.stringify(pm.platform.dom.getAttribute(action,"label")));
+            if(pm.platform.dom.hasAttribute(action,"expr")) params.push( pm.platform.dom.getAttribute(action,"expr"));
+
+            return "$log(" + params.join(",") + ");";
+        },
+
+        "raise" : function(action){
+            return "$raise(" + JSON.stringify(pm.platform.dom.getAttribute(action,"event")) + ");";
+        },
+
+        "cancel" : function(action){
+            return "$cancel(" + JSON.stringify(pm.platform.dom.getAttribute(action,"sendid")) + ");";
+        },
+
+        "send" : function(action){
+            return "$send({\n" + 
+                "target: " + (pm.platform.dom.hasAttribute(action,"targetexpr") ? pm.platform.dom.getAttribute(action,"targetexpr") : JSON.stringify(pm.platform.dom.getAttribute(action,"target"))) + ",\n" +
+                "name: " + (pm.platform.dom.hasAttribute(action,"eventexpr") ? pm.platform.dom.getAttribute(action,"eventexpr") : JSON.stringify(pm.platform.dom.getAttribute(action,"event"))) + ",\n" + 
+                "type: " + (pm.platform.dom.hasAttribute(action,"typeexpr") ? pm.platform.dom.getAttribute(action,"typeexpr") : JSON.stringify(pm.platform.dom.getAttribute(action,"type"))) + ",\n" +
+                "data: " + constructSendEventData(action) + ",\n" +
+                "origin: $origin\n" +
+            "}, {\n" + 
+                "delay: " + (pm.platform.dom.hasAttribute(action,"delayexpr") ? pm.platform.dom.getAttribute(action,"delayexpr") : getDelayInMs(pm.platform.dom.getAttribute(action,"delay"))) + ",\n" + 
+                "sendId: " + (pm.platform.dom.hasAttribute(action,"idlocation") ? pm.platform.dom.getAttribute(action,"idlocation") : JSON.stringify(pm.platform.dom.getAttribute(action,"id"))) + "\n" + 
+            "});";
+        },
+
+        "foreach" : function(action){
+            var isIndexDefined = pm.platform.dom.hasAttribute(action,"index"),
+                index = pm.platform.dom.getAttribute(action,"index") || "$i",        //FIXME: the index variable could shadow the datamodel. We should pick a unique temperorary variable name
+                item = pm.platform.dom.getAttribute(action,"item"),
+                arr = pm.platform.dom.getAttribute(action,"array");
+
+            return "(function(){\n" + 
+                "for(" + (isIndexDefined  ? "" : "var " + index + " = 0") + "; " + index + " < " + arr + ".length; " + index + "++){\n" + 
+                    item + " = " + arr + "[" + index + "];\n" + 
+                    pm.platform.dom.getElementChildren(action).map(actionTagToFnBody).join("\n;;\n") + 
+                "\n}\n" + 
+            "})();";
+        }
+    }
+};
+
+actionTags[constants.SCXML_NS] = actionTags[""];   //alias SCXML namespace to default namespace
+
+function getDelayInMs(delayString){
+    if (!delayString) {
+        return 0;
+    } else {
+        if (delayString.slice(-2) === "ms") {
+            return parseFloat(delayString.slice(0, -2));
+        } else if (delayString.slice(-1) === "s") {
+            return parseFloat(delayString.slice(0, -1)) * 1000;
+        } else {
+            return parseFloat(delayString);
+        }
     }
 }
 
-function scxmlJsonToModel(scxmlJson,cb){
+//utility functions
+//this creates the string which declares the datamodel in the document scope
+function makeDatamodelDeclaration(datamodel){
+    var s = "var ";
+    var vars = [];
+    for(var id in datamodel){
+        var expr = datamodel[id];
+        vars.push(expr ? id + " = " + expr : id);
+    }
+    return vars.length ? (s + vars.join(", ") + ";") : "";
+}
+
+//this exposes a getter and setter API on the datamodel in the document scope
+function makeDatamodelClosures(datamodel){
+    var vars = [];
+    for(var id in datamodel){
+        vars.push( '"' + id + '" : {\n' + 
+            '"set" : function(v){ return ' + id + ' = v; },\n' + 
+            '"get" : function(){ return ' + id + ';}' + 
+        '\n}');
+    }
+    return '{\n' + vars.join(',\n') + '\n}';
+}
+
+function wrapFunctionBodyInDeclaration(action,isExpression){
+    return "function(getData,setData,_events,$raise){var _event = _events[0];\n" +
+        (isExpression ? "return" : "") + " " + action + 
+    "\n}";
+}
+
+
+function makeTopLevelFunctionBody(datamodelDeclaration,topLevelScripts,datamodelClosures,actionStrings){
+    return  datamodelDeclaration + 
+            (topLevelScripts.length ? topLevelScripts.join("\n") : "") + 
+            "return {\n" + 
+                "datamodel:" + datamodelClosures + "," + 
+                "actions:[\n" + actionStrings.join(",\n") + "\n]" +   //return all functions which get called during execution
+            "\n};";
+}
+
+function wrapTopLevelFunctionBodyInDeclaration(fnBody){
+    return "function($log,$cancel,$send,$origin,In,require){\n" + fnBody + "\n}";
+}
+
+//this function ensures that the code in each SCXML document will run in "document scope".
+//SCXML embeds js code as strings in the document, hence the use of "eval" to dynamically evaluate things.
+//This function ensures that eval() is only called once, when the model is parsed. It will not be called during execution of the statechart.
+//However, each SCXML interpreter instance will have its own copies of the functions declared in the document. 
+//This is similar to the way HTML works - each page has its own copies of evaluated scripts.
+function makeActionFactory(topLevelScripts,actionStrings,datamodel){
+    var datamodelDeclaration = makeDatamodelDeclaration(datamodel);
+    var datamodelClosures = makeDatamodelClosures(datamodel);
+    var topLevelFnBody = makeTopLevelFunctionBody(datamodelDeclaration,topLevelScripts,datamodelClosures,actionStrings);
+    var fnStr = wrapTopLevelFunctionBodyInDeclaration(topLevelFnBody);
+    return fnStr; 
+}
+
+
+function constructSendEventData(action){
+
+    var namelist = pm.platform.dom.hasAttribute(action,"namelist") ? pm.platform.dom.getAttribute(action,"namelist").trim().split(/ +/) : null,
+        params = pm.platform.dom.getChildren(action).filter(function(child){return pm.platform.dom.localName(child) === 'param';}),
+        content = pm.platform.dom.getChildren(action).filter(function(child){return pm.platform.dom.localName(child) === 'content';});
+        
+    if(content.length){
+        //TODO: instead of using textContent, serialize the XML
+        return JSON.stringify(content.map(function(child){return pm.platform.dom.textContent(child);})[0]);
+    }else if(pm.platform.dom.hasAttribute(action,"contentexpr")){
+        return pm.platform.dom.getAttribute(action,"contentexpr");
+    }else{
+        var s = "{";
+        //namelist
+        if(namelist){
+            namelist.forEach(function(name){
+                s += '"' + name + '"' + ":" + name + ",\n";
+            });
+        }
+
+        //params
+        if(params.length){
+            params.map(function(child){return processParam(child);}).forEach(function(param){
+                if(param.expr){
+                    s += '"' + param.name + '"' + ":" + param.expr + ",\n";
+                }else if(param.location){
+                    s += '"' + param.name + '"' + ":" + param.location + ",\n";
+                }
+            });
+        }
+
+        s += "}";
+        return s;
+    }
+}
+
+function processParam(param) {
+    return {
+        name: pm.platform.dom.getAttribute(param,"name"),
+        expr: pm.platform.dom.getAttribute(param,"expr"),
+        location: pm.platform.dom.getAttribute(param,"location")
+    };
+}
+
+
+module.exports = {
+    gen : {
+        parentToFnBody : parentToFnBody,
+        actionTagToFnBody  : actionTagToFnBody,
+        actionTags : actionTags,
+        util : {
+            makeDatamodelDeclaration : makeDatamodelDeclaration,
+            makeDatamodelClosures : makeDatamodelClosures,
+            wrapFunctionBodyInDeclaration : wrapFunctionBodyInDeclaration,
+            makeTopLevelFunctionBody : makeTopLevelFunctionBody,
+            wrapTopLevelFunctionBodyInDeclaration : wrapTopLevelFunctionBodyInDeclaration,
+            makeActionFactory : makeActionFactory
+        }
+    }
+};
+}, "core/util/docToModel": function(exports, require, module) {/*
+     Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+             http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+*/
+
+"use strict";
+
+var annotator = require('./annotate-scxml-json'),
+    json2model = require('../scxml/json2model'),
+    pm = require('../../platform');
+
+function documentToModel(url,doc,cb){
+    //do whatever transforms
+    //inline script tags
+    //platformGet may be undefined, and we can continue without it, hence the guard
+    if(pm.platform.getResourceFromUrl){
+        inlineSrcs(url,doc,function(errors){
+            if(errors){ 
+                //I think we should probably just log any of these errors
+                pm.platform.log("Errors downloading src attributes",errors);
+            }
+            docToModel(doc,url,cb);
+        });
+    }else{
+        docToModel(doc,url,cb);
+    }
+}
+
+function docToModel(doc,url,cb){
     try {
-        var annotatedScxmlJson = annotator.transform(scxmlJson);
-        var model = json2model(annotatedScxmlJson); 
+        var annotatedScxmlJson = annotator.transform(doc);
+        var model = json2model(annotatedScxmlJson,url); 
         cb(null,model);
     }catch(e){
         cb(e);
     }
 }
 
-function inlineSrcs(url,jsonml,cb){
+function inlineSrcs(url,doc,cb){
     //console.log('inlining scripts');
     
     var scriptActionsWithSrcAttributes = [], errors = [];
 
-    traverse(jsonml,scriptActionsWithSrcAttributes); 
+    traverse(doc.documentElement,scriptActionsWithSrcAttributes); 
 
     //async forEach
     function retrieveScripts(){
         var script = scriptActionsWithSrcAttributes.pop();
         if(script){
             //quick and dirty for now:
+            //to be totally correct, what we need to do here is: 
+            //parse the url, extract the pathname, call dirname on path, and join that with the path to the file
+            var scriptUrl = pm.platform.dom.getAttribute(script,"src");
             if(url){
-                var root = url.split(platform.pathSeparator).slice(0,-1).join(platform.pathSeparator);
-                var src = root  + platform.pathSeparator + script[1].src;
-            }else{
-                src = script[1].src;
+                var documentUrlPath = pm.platform.url.getPathFromUrl(url);
+                var documentDir = pm.platform.path.dirname(documentUrlPath);
+                var scriptPath = pm.platform.path.join(documentDir,scriptUrl);
+                scriptUrl = pm.platform.url.changeUrlPath(url,scriptPath);
             }
-            //console.log('fetching script src',src);
-            platform.getResourceFromUrl(src,function(err,text){
+            //platform.log('fetching script src',scriptUrl);
+            pm.platform.getResourceFromUrl(scriptUrl,function(err,text){
                 if(err){
                     //just capture the error, and continue on
                     errors.push(err); 
                 }
 
-                script.push(text);  //this is how we append a text node
+                pm.platform.dom.textContent(script,text);
                 retrieveScripts();
             });
         }else{
@@ -1753,273 +1949,277 @@ function inlineSrcs(url,jsonml,cb){
 }
 
 function traverse(node,nodeList){
-    var tuple = util.deconstructNode(node, true), tagName = tuple[0], attrs = tuple[1], children = tuple[2];
-    if((tagName === 'script' || tagName === 'data') && attrs && attrs.src){
+    if((pm.platform.dom.localName(node) === 'script' || pm.platform.dom.localName(node) === 'data') && pm.platform.dom.hasAttribute(node,"src")){
         nodeList.push(node); 
     } 
 
-    children.forEach(function(child){traverse(child,nodeList);});
+    pm.platform.dom.getElementChildren(node).forEach(function(child){traverse(child,nodeList);});
 }
 
 
 module.exports = documentToModel;
-}, "core/util/inline-src-attribute": function(exports, require, module) {}, "core/util/jsonml": function(exports, require, module) {/*
- * Some utilities functions for working with jsonml.
- * Right now, there's only one.
- */
+}, "core/util/util": function(exports, require, module) {/*
+     Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
 
-module.exports = {
-    deconstructNode : function(node, filterText) {
-        var attributes, child, children, n1, tagName;
-        tagName = node[0];
-        n1 = node[1];
-        if (n1 && typeof n1 === "object" && !(Array.isArray(n1) || typeof n1 === "string")) {
-            attributes = n1;
-            children = node.slice(2);
-        } else {
-            attributes = {};
-            children = node.slice(1);
-        }
-        if (filterText) {
-            children = children.filter(function(child){return typeof child !== "string";});
-        }
-        return [tagName, attributes, children];
-    }
-};
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
 
-}, "external/jsonml/jsonml-dom": function(exports, require, module) {/*
-    jsonml-dom.js
-    DOM to JsonML utility
+             http://www.apache.org/licenses/LICENSE-2.0
 
-    Created: 2007-02-15-2235
-    Modified: 2008-08-31-2206
-
-    Copyright (c)2006-2010 Stephen M. McKamey
-    Distributed under The MIT License: http://jsonml.org/license
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
 */
 
-var JsonML = JsonML || {};
+"use strict";
 
-(function(JsonML){
-    'use strict';
-
-    function getItem(nodeList,index){
-        //this works in IE, other browsers, Rhino, and nodejs xmldom library
-        return "item" in nodeList ? nodeList.item(index) : nodeList[index];
-    } 
-
-    function getLocalName(node){
-        return node.localName || node.tagName;
-    }
-
-    function toStr(s){
-        if(s){
-            return typeof s !== "string" ? String(s) : s;
-        }
-        else{
-            return "";
-        }
-    }
-
-    /*JsonML*/ JsonML.parseDOM = function(/*DOM*/ elem, /*function*/ filter) {
-        if (!elem || !elem.nodeType) {
-            // free references
-            return (elem = null);
-        }
-
-        function addChildren(/*DOM*/ elem, /*function*/ filter, /*JsonML*/ jml) {
-            if (elem.hasChildNodes()) {
-                for (var i=0; i<elem.childNodes.length; i++) {
-                    var child = getItem(elem.childNodes,i);
-                    child = JsonML.parseDOM(child, filter);
-                    if (child) {
-                        jml.push(child);
-                    }
+module.exports = {
+    merge : function(target){
+        for(var i=1; i < arguments.length; i++){
+            var from = arguments[i];
+            for(var k in from){
+                if(from.hasOwnProperty(k)){
+                    target[k] = from[k];
                 }
-                return true;
             }
-            return false;
+        }
+        return target;
+    }
+};
+}, "embedded/dom": function(exports, require, module) {/*
+     Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+             http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+*/
+
+"use strict";
+
+//a small DOM helper/compatibility layer
+
+module.exports = {
+
+    getChildren : function(node){
+        return Array.prototype.slice.call(node.childNodes);
+    },
+
+    localName : function(node){
+        return node.localName;
+    },
+
+    getAttribute : function(node,attribute){
+        return node.getAttribute(attribute);  
+    },
+
+    hasAttribute : function(node,attribute){
+        return node.hasAttribute(attribute);
+    },
+
+    namespaceURI : function(node){
+        return node.namespaceURI;
+    },
+
+    createElementNS : function(doc,ns,localName){
+        return doc.createElementNS(ns,localName); 
+    },
+
+    setAttribute : function(node,name,value){
+        return node.setAttribute(name,value);
+    },
+
+    appendChild : function(parent,child){
+        return parent.appendChild(child);
+    },
+
+    textContent : function(node,txt){
+        if(txt === undefined){
+            if(node.nodeType === 1){
+                //element
+                return node.textContent;
+            }else if(node.nodeType === 3){
+                //textnode
+                return node.data;
+            }
+            return "";
+        }else{
+            if(node.nodeType === 1){
+                //element node
+                return node.textContent = txt;
+            }else if(node.nodeType === 3){
+                //textnode
+                return node.data = txt;
+            }
+        }
+    },
+
+    getElementChildren : function(node){
+        return this.getChildren(node).filter(function(c){return c.nodeType === 1;});
+    }
+
+};
+}, "embedded/path": function(exports, require, module) {/*
+     Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+             http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+*/
+
+"use strict";
+
+//these are quick-and-dirty implementations
+//there may be missing edge cases
+module.exports = {
+
+    sep : "/",
+
+    join : function(path1,path2){
+        return path1 + "/" + path2;
+    },
+
+    dirname : function(path){
+        path.split(this.sep).slice(0,-1).join(this.sep);
+    },
+
+    basename : function(path,ext){
+        var name = path.split(this.sep).slice(-1);
+        if(ext){
+            var names = this.extname(name);
+            if(names[1] === ext){
+                name = names[1];
+            }
         }
 
-        var i, jml;
-        switch (elem.nodeType) {
-            case 1:  // element
-            case 9:  // document
-            case 11: // documentFragment
-                jml = [toStr(getLocalName(elem))];
+        return name;
+    },
 
-                var attr = elem.attributes,
-                    props = {},
-                    hasAttrib = false;
+    extname : function(path){
+        //http://stackoverflow.com/a/4546093/366856
+        return path.split(/\\.(?=[^\\.]+$)/)[1];
+    }
+};
+}, "embedded/platform": function(exports, require, module) {/*
+     Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
 
-                for (i=0; attr && i<attr.length; i++) {
-                    var a = getItem(attr,i);
-                    if (a.specified) {
-                        if (a.name === 'style') {
-                            props.style = elem.style.cssText || a.value;
-                        } else { 
-                            //assume string
-                            props[a.name] = toStr(a.value);
-                        }
-                        hasAttrib = true;
-                    }
-                }
-                if (hasAttrib) {
-                    jml.push(props);
-                }
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
 
-                var child;
-                switch (jml[0].toLowerCase()) {
-                    case 'frame':
-                    case 'iframe':
-                        try {
-                            if ('undefined' !== typeof elem.contentDocument) {
-                                // W3C
-                                child = elem.contentDocument;
-                            } else if ('undefined' !== typeof elem.contentWindow) {
-                                // Microsoft
-                                child = elem.contentWindow.document;
-                            } else if ('undefined' !== typeof elem.document) {
-                                // deprecated
-                                child = elem.document;
-                            }
-    
-                            child = JsonML.parseDOM(child, filter);
-                            if (child) {
-                                jml.push(child);
-                            }
-                        } catch (ex) {}
-                        break;
-                    case 'style':
-                        child = elem.styleSheet && elem.styleSheet.cssText;
-                        if (child && 'string' === typeof child) {
-                            // unwrap comment blocks
-                            child = child.replace('<!--', '').replace('-->', '');
-                            jml.push(child);
-                        } else if (elem.hasChildNodes()) {
-                            for (i=0; i<elem.childNodes.length; i++) {
-                                child = elem.childNodes[i];
-                                child = JsonML.parseDOM(child, filter);
-                                if (child && 'string' === typeof child) {
-                                    // unwrap comment blocks
-                                    child = child.replace('<!--', '').replace('-->', '');
-                                    jml.push(child);
-                                }
-                            }
-                        }
-                        break;
-                    case 'input':
-                        addChildren(elem, filter, jml);
-                        child = (elem.type !== 'password') && elem.value;
-                        if (child) {
-                            if (!hasAttrib) {
-                                // need to add an attribute object
-                                jml.shift();
-                                props = {};
-                                jml.unshift(props);
-                                jml.unshift(elem.tagName||'');
-                            }
-                            props.value = child;
-                        }
-                        break;
-                    case 'textarea':
-                        if (!addChildren(elem, filter, jml)) {
-                            child = elem.value || elem.innerHTML;
-                            if (child && 'string' === typeof child) {
-                                jml.push(child);
-                            }
-                        }
-                        break;
-                    default:
-                        addChildren(elem, filter, jml);
-                        break;
-                }
+             http://www.apache.org/licenses/LICENSE-2.0
 
-                // filter result
-                if ('function' === typeof filter) {
-                    jml = filter(jml, elem);
-                }
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+*/
 
-                // free references
-                elem = null;
-                return jml;
-            case 3: // text node
-            case 4: // CDATA node
-                var str = String(elem.nodeValue);
-                // free references
-                elem = null;
-                return str;
-            case 10: // doctype
-                jml = ['!'];
+"use strict";
 
-                var type = ['DOCTYPE', (elem.name || 'html').toLowerCase()];
+//this provides an incomplete base platform implementation
+//other platform implementations can optionally extend it. 
 
-                if (elem.publicId) {
-                    type.push('PUBLIC', '"' + elem.publicId + '"');
-                }
-
-                if (elem.systemId) {
-                    type.push('"' + elem.systemId + '"');
-                }
-
-                jml.push(type.join(' '));
-
-                // filter result
-                if ('function' === typeof filter) {
-                    jml = filter(jml, elem);
-                }
-
-                // free references
-                elem = null;
-                return jml;
-            case 8: // comment node
-                if ((elem.nodeValue||'').indexOf('DOCTYPE') !== 0) {
-                    // free references
-                    elem = null;
-                    return null;
-                }
-
-                jml = ['!',
-                        elem.nodeValue];
-
-                // filter result
-                if ('function' === typeof filter) {
-                    jml = filter(jml, elem);
-                }
-
-                // free references
-                elem = null;
-                return jml;
-            default: // etc.
-                // free references
-                return (elem = null);
-        }
-    };
-
-    /*JsonML*/ JsonML.parseHTML = function(/*string*/ html, /*function*/ filter) {
-        var elem = document.createElement('div');
-        elem.innerHTML = html;
-        var jml = JsonML.parseDOM(elem, filter);
-
-        // free references
-        elem = null;
-
-        if (jml.length === 2) {
-            return jml[1];
-        }
-
-        // make wrapper a document fragment
-        jml[0] = '';
-        return jml;
-    };
-
-})(JsonML);
-
-//commonjs supprt
-if(typeof module !== undefined && module.exports){
-    module.exports = JsonML;
+function parseDocumentFromString(str){
+    var xmldom = require('../../external/xmldom/dom-parser');
+    return (new xmldom.DOMParser()).parseFromString(str);
 }
-}, "platform": function(exports, require, module) {function isRhino(){
+
+//most shells will also at least be able to implement: getDocumentFromFilesystem and log 
+
+exports.platform = {
+    parseDocumentFromString : parseDocumentFromString,
+
+    eval : function(content,name){
+        //JScript doesn't return functions from evaled function expression strings, 
+        //so we wrap it here in a trivial self-executing function which gets eval'd
+        return eval('(function(){\nreturn ' + content + ';})()');
+    },
+
+    path : require('./path'),
+
+    url : require('./url'),
+
+    dom : require('./dom')
+    
+};
+}, "embedded/url": function(exports, require, module) {/*
+     Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+             http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+*/
+
+"use strict";
+
+//this base module could be used with jsuri [http://code.google.com/p/jsuri/], a portable, pure-js URI parser implemenation
+//currently, none of the "blessed" environments use it, but it could simplify things for embedding
+//assume global Uri object
+//require('external/jsUri/dist/jsuri');   //this is just to load up a global Uri object
+
+function parseUri(uri){
+    /*jsl:ignore*/
+    if(typeof Uri === undefined) throw new Error("URI parser not loaded");
+    return new Uri(url);
+    /*jsl:end*/
+}
+
+module.exports = {
+    getPathFromUrl : function(url){
+        return parseUri(url).path();
+    },
+
+    changeUrlPath : function(url,newPath){
+        return parseUri(url).path(newPath).toString();
+    }
+};
+}, "platform": function(exports, require, module) {/*
+     Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+             http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+*/
+
+"use strict";
+
+function isRhino(){
     return typeof Packages !== "undefined";
 }
 
@@ -2031,6 +2231,8 @@ function isBrowser(){
     return typeof window !== "undefined" && typeof document !== "undefined";
 }
 
+var platform;
+
 if(isRhino()){
     module.exports = require('./rhino/platform');
 }else if(isNode()){
@@ -2038,61 +2240,70 @@ if(isRhino()){
 }else if(isBrowser()){
     module.exports = require('./browser/platform');
 }else{
-    module.exports = null;
+    module.exports = require('./embedded/platform');
 }
-}, "scion": function(exports, require, module) {var platform = require('./platform'),
+}, "scion": function(exports, require, module) {/*
+     Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+             http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+*/
+
+"use strict";
+
+var pm = require('./platform'),
     scxml = require('./core/scxml/SCXML'),
     documentToModel = require('./core/util/docToModel');
 
-if(platform){
+function urlToModel(url,cb){
+    if(!pm.platform.getDocumentFromUrl) throw new Error("Platform does not support getDocumentFromUrl");
 
-    function urlToModel(url,cb){
-        platform.getDocumentFromUrl(url,function(err,doc){
-            if(err){
-                cb(err);
-            }else{
-                documentToModel(url,doc,cb);
-            }
-        });
-    }
-
-    function pathToModel(url,cb){
-        platform.getDocumentFromFilesystem(url,function(err,doc){
-            if(err){
-                cb(err);
-            }else{
-                documentToModel(url,doc,cb);
-            }
-        });
-    }
-
-    function documentStringToModel(s,cb){
-        documentToModel(null,platform.parseDocumentFromString(s),cb);
-    }
-
-    //export standard interface
-    var scion = module.exports = {
-        /** @expose */
-        pathToModel : pathToModel,
-        /** @expose */
-        urlToModel : urlToModel, 
-        /** @expose */
-        documentStringToModel : documentStringToModel, 
-        /** @expose */
-        documentToModel : documentToModel,
-        /** @expose */
-        SCXML : scxml.SimpleInterpreter
-    };
-    
-}else{
-    //export interface for something else, perhaps a spartan shell environment
-    module.exports = {
-        /** @expose */
-        annotator : require('./core/util/annotate-scxml-json'),
-        /** @expose */
-        json2model : require('./core/scxml/json2model'),
-        /** @expose */
-        scxml : require('./core/scxml/SCXML')
-    };
+    pm.platform.getDocumentFromUrl(url,function(err,doc){
+        if(err){
+            cb(err,null);
+        }else{
+            documentToModel(url,doc,cb);
+        }
+    });
 }
+
+function pathToModel(url,cb){
+    if(!pm.platform.getDocumentFromFilesystem) throw new Error("Platform does not support getDocumentFromFilesystem");
+
+    pm.platform.getDocumentFromFilesystem(url,function(err,doc){
+        if(err){
+            cb(err,null);
+        }else{
+            documentToModel(url,doc,cb);
+        }
+    });
+}
+
+function documentStringToModel(s,cb){
+    if(!pm.platform.parseDocumentFromString) throw new Error("Platform does not support parseDocumentFromString");
+
+    documentToModel(null,pm.platform.parseDocumentFromString(s),cb);
+}
+
+//export standard interface
+var scion = module.exports = {
+    pathToModel : pathToModel,
+    urlToModel : urlToModel, 
+    documentStringToModel : documentStringToModel, 
+    documentToModel : documentToModel,
+    SCXML : scxml.SimpleInterpreter,
+    ext : {
+        platformModule : pm,
+        actionCodeGeneratorModule : require('./core/util/code-gen')
+    }
+};
 }});
