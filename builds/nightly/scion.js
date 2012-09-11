@@ -173,6 +173,8 @@ exports.platform = util.merge(Object.create(basePlatform),{
         window.clearTimeout(timeoutId);
     },
 
+    log : window.console.log.bind(console),
+
     url : require('./url'),
     dom : require('./dom')
 
@@ -316,8 +318,13 @@ SCXMLInterpreter.prototype = {
             //this module's require
         var actionCodeRequire = 
             this.opts.require || 
-                (module.parent && module.parent.parent && module.parent.parent.require) || 
-                (require.main && require.main.require) ||
+                (module.parent && 
+                    module.parent.parent && 
+                    module.parent.parent.require &&
+                    module.parent.parent.require.bind(module.parent.parent)) || 
+                (require.main && 
+                    require.main.require &&
+                    require.main.require.bind(require.main)) ||
                 require;
 
         //set up scope for action code embedded in the document
@@ -421,7 +428,7 @@ SCXMLInterpreter.prototype = {
 
             statesExited.forEach(function(state){
 
-                if (printTrace) pm.platform.log("exiting ", state);
+                if (printTrace || this.opts.logStatesEnteredAndExited) pm.platform.log("exiting ", state.id);
 
                 //invoke listeners
                 this._listeners.forEach(function(l){
@@ -470,6 +477,8 @@ SCXMLInterpreter.prototype = {
             if (printTrace) pm.platform.log("executing state enter actions");
 
             statesEntered.forEach(function(state){
+
+                if (printTrace || this.opts.logStatesEnteredAndExited) pm.platform.log("entering", state.id);
 
                 this._listeners.forEach(function(l){
                    if(l.onEntry) l.onEntry(state.id); 
@@ -970,7 +979,14 @@ function linkReferencesAndGenerateActionFactory(json){
 
 function annotatedJsonToModel(json,documentUrl) {
     var actionFactoryString = linkReferencesAndGenerateActionFactory(json);
-    json.actionFactory = pm.platform.eval(actionFactoryString,documentUrl); 
+    try {
+        json.actionFactory = pm.platform.eval(actionFactoryString,documentUrl); 
+    }catch(e){
+        pm.platform.log("Failed to evaluate action factory.");
+        pm.platform.log("Generated js code to evaluate\n",actionFactoryString);
+        //require('fs').writeFileSync('out.js',actionFactoryString,'utf8');
+        throw e;
+    }
 }
 
 module.exports = function(json,documentUrl){
@@ -1312,13 +1328,11 @@ var transform = exports.transform = function(scxmlDoc) {
 
     transitions.filter(function(t){return t.targets;}).forEach(function(transition){
         var source = idToStateMap[transition.source];
-        var targets = transition.targets.map(function(target){return idToStateMap[target];});
-
-        if (!source) {
-            throw new Error("source missing");
-        } else if (!targets.length) {
-            throw new Error("target missing");
-        }
+        var targets = transition.targets.map(function(target){
+            var state = idToStateMap[target];
+            if(!state) throw new Error("Transition targets state id '" + target + "' but state does not exist.");
+            return state;
+        });
 
         transition.lca = getLCA(source, targets[0]);
     });
@@ -1621,7 +1635,7 @@ function actionTagToFnBody(action){
 var actionTags = {
     "" : {
         "script" : function(action){
-            return pm.platform.dom.getChildren(action).map(function(c){return pm.platform.dom.textContent(c);}).join("\n;;\n");
+            return pm.platform.dom.textContent(action);
         },
 
         "assign" : function(action){
@@ -1715,13 +1729,21 @@ var actionTags = {
             var isIndexDefined = pm.platform.dom.hasAttribute(action,"index"),
                 index = pm.platform.dom.getAttribute(action,"index") || "$i",        //FIXME: the index variable could shadow the datamodel. We should pick a unique temperorary variable name
                 item = pm.platform.dom.getAttribute(action,"item"),
-                arr = pm.platform.dom.getAttribute(action,"array");
+                arr = pm.platform.dom.getAttribute(action,"array"),
+                foreachBody = pm.platform.dom.getElementChildren(action).map(actionTagToFnBody).join("\n;;\n");
 
             return "(function(){\n" + 
-                "for(" + (isIndexDefined  ? "" : "var " + index + " = 0") + "; " + index + " < " + arr + ".length; " + index + "++){\n" + 
-                    item + " = " + arr + "[" + index + "];\n" + 
-                    pm.platform.dom.getElementChildren(action).map(actionTagToFnBody).join("\n;;\n") + 
-                "\n}\n" + 
+                "if(Array.isArray(" + arr + ")){\n" +
+                    arr + ".forEach(function(" + item + "," + index + "){\n" +
+                        foreachBody +
+                    "\n});\n" + 
+                "}else{\n" +
+                    //assume object
+                    "Object.keys(" + arr + ").forEach(function(" + index + "){\n" +
+                        item + " = " + arr + "[" + index + "];\n" + 
+                        foreachBody +
+                    "\n});\n" + 
+                "}\n" + 
             "})();";
         }
     }
@@ -1809,7 +1831,12 @@ function constructSendEventData(action){
         
     if(content.length){
         //TODO: instead of using textContent, serialize the XML
-        return JSON.stringify(content.map(function(child){return pm.platform.dom.textContent(child);})[0]);
+        content = content[0];
+        if(pm.platform.dom.getAttribute(content,'type') === 'application/json'){
+            return pm.platform.dom.textContent(content);
+        }else{
+            return JSON.stringify(pm.platform.dom.textContent(content));
+        }
     }else if(pm.platform.dom.hasAttribute(action,"contentexpr")){
         return pm.platform.dom.getAttribute(action,"contentexpr");
     }else{
@@ -1935,10 +1962,11 @@ function inlineSrcs(url,doc,cb){
             pm.platform.getResourceFromUrl(scriptUrl,function(err,text){
                 if(err){
                     //just capture the error, and continue on
+                    pm.platform.log("Error downloading document " + scriptUrl + " : " + err.message);
                     errors.push(err); 
+                }else{
+                    pm.platform.dom.textContent(script,text);
                 }
-
-                pm.platform.dom.textContent(script,text);
                 retrieveScripts();
             });
         }else{
@@ -2048,7 +2076,7 @@ module.exports = {
             if(node.nodeType === 1){
                 //element
                 return node.textContent;
-            }else if(node.nodeType === 3){
+            }else if(node.nodeType === 3 || node.nodeType === 4){
                 //textnode
                 return node.data;
             }
@@ -2098,7 +2126,7 @@ module.exports = {
     },
 
     dirname : function(path){
-        path.split(this.sep).slice(0,-1).join(this.sep);
+        return path.split(this.sep).slice(0,-1).join(this.sep);
     },
 
     basename : function(path,ext){
@@ -2233,12 +2261,12 @@ function isBrowser(){
 
 var platform;
 
-if(isRhino()){
-    module.exports = require('./rhino/platform');
+if(isBrowser()){
+    module.exports = require('./browser/platform');
 }else if(isNode()){
     module.exports = require('./node/platform');
-}else if(isBrowser()){
-    module.exports = require('./browser/platform');
+}else if(isRhino()){
+    module.exports = require('./rhino/platform');
 }else{
     module.exports = require('./embedded/platform');
 }
