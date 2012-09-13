@@ -39,7 +39,6 @@
     }, dirname = function(path) {
       return path.split('/').slice(0, -1).join('/');
     };
-    /** @expose */
     this.require = function(name) {
       return require(name, '');
     }
