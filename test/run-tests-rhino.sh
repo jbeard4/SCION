@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #start the server
-java -cp ~/Downloads/rhino1_7R3/js.jar org.mozilla.javascript.tools.shell.Main -debug -modules ../lib -main rhino-test-server.js &
+#assume rhino version 1.7R3
+rhino -debug -modules ../lib -main rhino-test-server.js &
 
 #keep the pid (so we can kill it later)
 serverpid=$!
