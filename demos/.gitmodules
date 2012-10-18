@@ -1,0 +1,6 @@
+[submodule "drawing-tool-viz/lib/d3"]
+	path = drawing-tool-viz/lib/d3
+	url = git://github.com/jbeard4/d3.git
+[submodule "drawing-tool-viz/lib/scxml-viz"]
+	path = drawing-tool-viz/lib/scxml-viz
+	url = git://github.com/jbeard4/scxml-viz.git

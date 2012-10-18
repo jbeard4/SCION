@@ -1,0 +1,37 @@
+{
+    "name": "scion-demos",
+    "version": "0.0.1",
+    "description": "A collection of demos illustrating use of SCXML/SCION in the browser and in nodejs.",
+    "keywords": [
+        "scxml",
+        "statecharts",
+        "w3c",
+        "javascript"
+    ],
+    "maintainers": [{
+        "name": "Jacob Beard",
+        "email": "jbeard4@cs.mcgill.ca",
+        "url": "http://echo-flow.com"
+    }],
+    "bugs": {
+        "email": "jbeard4@cs.mcgill.ca",
+        "url": "https://github.com/jbeard4/scion-demos/issues"
+    },
+    "licenses": [
+        {
+            "type": "Apache-2.0",
+            "url": "https://github.com/jbeard4/scion-demos/blob/master/LICENSE.txt"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/jbeard4/scion-demos.git"
+        }
+    ],
+    "dependencies": {
+        "scion" : ">=0.0.3",
+        "xml2jsonml" : ">=0.0.1"
+    },
+    "engines" : { "node" : ">=0.4.7" }
+}

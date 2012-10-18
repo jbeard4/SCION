@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+-->
+<!-- 
+Natural-language behavioural specification:
+
+We have a canvas, nodes, rotation and scale handles. 
+
+Canvas has three tools: drawing rects, drawing ellipses, and transforming them.
+Selects between tools by clicking buttons on a toolbar.
+
+Only one tool can be selected at a time. 
+
+Nodes can be selected or not selected. When selected, they are surrounded by a dashed rect.
+
+When transform tool is selected:
+    If there are selected nodes, then either the rotate or translate handles will be visible, and will eb psoitioned on the aggregate bbox of all selected nodes; otherwise, if no nodes are selected, then neither rotate nor transform handles will be shown.
+
+    Dragging rotation handle rotates the nodes about the center point of their aggregate bbox. On mouseup, handle positions are reset.
+    Dragging scale handle scales the nodes.
+    Dragging selected node results in all selected nodes being dragged.
+    Dragging non-selected node results in node being selected, and all other nodes being deselected.
+    Dragging (no shift) on canvas results in marquee being drawn, all nodes inside of marquee being selected, and all other nodes being deselected,
+    Dragging (with shift) on canvas results in marquee being drawn, all nodes inside of marquee being selected (added to selection). 
+
+    Mouseclick (no shift) on selected node results in rotation/scale handles being toggled.
+
+    Dragging node (no shift) will deselect other nodes, drag the node, and select this node.
+    Dragging node (with shift) has same effect as dragging on canvas.
+
+    Additionally, when no nodes are selected, and nodes are first selected, then the scale rotation handles will be shown first
+        UNLESS, the last time nodes were selected, rotation handles were shown when they were deselected; 
+            AND, the way the nodes are being selected now is via a drag (not a click)
+
+When rect or ellipse drawing tools are selected:
+    Rotate and translate handles will never be visible.
+    When only one node is selected, then that node's resize/roundness controls will be shown.
+
+    Mouseclick (no shift) on selected node HAS NO EFFECT.
+
+    Dragging (on canvas, rect, wherever) results in a new element being draw, created and selected. On mouseup, all other elements are deselect.
+
+In both:
+    Mouseclick (no shift) on canvas results in all nodes being selected.
+    Mouseclick (with shift) on node results in node's selection state being toggled.
+
+    Mouseclick (no shift) on non-selected node results in node being selected, and all other nodes being deselected.
+
+    Ctrl+A selects all
+    Delete deletes selected nodes (and deselects them in the process, natch)
+-->
+
+<scxml 
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0"
+    profile="ecmascript"
+    id="scxmlRoot"
+    initial="initial_default"
+    name="Canvas">
+
+    <script src="canvas.js"/>
+    <script src="../transform.js" type="text/javascript"/>
+
+    <datamodel>
+        <!-- these get passed in on initiation -->
+        <data id="svg"/>
+        <data id="scaleHandle"/>
+        <data id="rotationHandle"/>
+
+        <!-- toolbar stuff -->
+        <data id="ellipseButton"/>
+        <data id="ellipseIcon"/>
+        <data id="rectButton"/>
+        <data id="rectIcon"/>
+        <data id="transformButton"/>
+        <data id="transformIcon"/>
+
+        <!-- constant expression -->
+        <data id="svgNs" expr="'http://www.w3.org/2000/svg'"/>
+
+        <!-- dynamically changing data -->
+        <data id="selectedNodes" expr="[]"/>
+        <data id="allNodes" expr="[]"/>
+
+    </datamodel>
+
+    <state id="initial_default">
+        <transition event="init" target="main">
+            <assign location="svg" expr="_event.data.svg"/>
+            <assign location="scaleHandle" expr="_event.data.scaleHandle"/>
+            <assign location="rotationHandle" expr="_event.data.rotationHandle"/>
+
+            <assign location="ellipseButton" expr="_event.data.ellipseButton"/>
+            <assign location="ellipseIcon" expr="_event.data.ellipseIcon"/>
+            <assign location="rectButton" expr="_event.data.rectButton"/>
+            <assign location="rectIcon" expr="_event.data.rectIcon"/>
+            <assign location="transformButton" expr="_event.data.transformButton"/>
+            <assign location="transformIcon" expr="_event.data.transformIcon"/>
+        </transition>
+    </state>
+
+
+    <parallel id="main">
+
+        <state id="presentation_state" initial="rect_tool_selected">
+
+            <state id="transform_tool_selected">
+                <onentry>
+                    <script>
+                        //$(transformButton).addClass("selected");
+                        transformButton.setAttributeNS(null,"class","selected");
+                    </script>
+                </onentry>
+                <onexit>
+                    <script>
+                        //$(transformButton).removeClass("selected");
+                        transformButton.removeAttributeNS(null,"class");
+                    </script>
+                </onexit>
+
+
+                <initial id="transform_tool_selected_initial">
+                    <transition target="no_nodes_selected" cond="selectedNodes.length === 0"/> 
+                    <transition target="nodes_selected" cond="selectedNodes.length !== 0"/> 
+                </initial>
+
+                <state id="no_nodes_selected">
+                    <transition target="nodes_selected" event="NODES_SELECTED_WITH_CLICK"/>
+                    <transition target="nodes_selected_history" event="NODES_SELECTED_WITH_DRAG"/>
+                </state>
+
+                <state id="nodes_selected" initial="ready_to_scale">
+
+                    <onentry>
+                        <assign location="cachedCenterPoint" expr="getAggregateCenterPoint(selectedNodes)"/>
+                        <assign location="cachedBBox" expr="getAggregateBBox(selectedNodes)"/>
+                        <script>
+                            updateTransformHandles(selectedNodes);
+                        </script>
+                    </onentry>
+
+                    <history type="shallow" id="nodes_selected_history">
+                        <transition target="ready_to_scale"/>
+                    </history>
+
+                    <state id="ready_to_rotate">
+                        <onentry>
+                            <script>
+                                rotationHandle.setAttributeNS(null,"visibility","visible");
+                            </script>
+                        </onentry>
+                        <onexit>
+                            <script>
+                                rotationHandle.setAttributeNS(null,"visibility","hidden");
+                            </script>
+                        </onexit>
+                        <transition target="ready_to_scale" event="TOGGLE_TRANSFORM"/>
+                    </state>
+
+                    <state id="ready_to_scale">
+                        <onentry>
+                            <script>
+                                scaleHandle.setAttributeNS(null,"visibility","visible");
+                            </script>
+                        </onentry>
+                        <onexit>
+                            <script>
+                                scaleHandle.setAttributeNS(null,"visibility","hidden");
+                            </script>
+                        </onexit>
+                        <transition target="ready_to_rotate" event="TOGGLE_TRANSFORM"/>
+                    </state>
+
+                    <transition target="no_nodes_selected" event="CHECK_NODES" cond="selectedNodes.length === 0"/>
+
+                </state>
+        
+                <transition target="ellipse_tool_selected" event="mousedown" cond="_event.data.target === ellipseIcon"/>
+                <transition target="rect_tool_selected" event="mousedown" cond="_event.data.target === rectIcon"/>
+            </state>
+
+            <state id="drawing_tool_selected">
+                <state id="ellipse_tool_selected">
+                    <onentry>
+                        <script>
+                            //$(ellipseButton).addClass("selected");
+                            ellipseButton.setAttributeNS(null,"class","selected");
+                        </script>
+                    </onentry>
+                    <onexit>
+                        <script>
+                            //$(ellipseButton).removeClass("selected");
+                            ellipseButton.removeAttributeNS(null,"class");
+                        </script>
+                    </onexit>
+
+                    <transition target="rect_tool_selected" event="mousedown" cond="_event.data.target === rectIcon"/>
+                </state>
+
+                <state id="rect_tool_selected">
+                    <onentry>
+                        <script>
+                            //$(rectButton).addClass("selected");
+                            rectButton.setAttributeNS(null,"class","selected");
+                        </script>
+                    </onentry>
+                    <onexit>
+                        <script>
+                            //$(rectButton).removeClass("selected");
+                            rectButton.removeAttributeNS(null,"class");
+                        </script>
+                    </onexit>
+
+                    <transition target="ellipse_tool_selected" event="mousedown" cond="_event.data.target === ellipseIcon"/>
+                </state>
+
+                <!-- TODO: add reference to transform button handle -->
+                <transition target="transform_tool_selected" event="mousedown" cond="_event.data.target === transformIcon"/>
+            </state>
+        </state>
+
+        <state id="processing_events" initial="ready">
+            <datamodel>
+                <data id="clickedNode"/>
+
+                <data id="firstEvent"/>
+                <data id="eventStamp"/>
+                <data id="tDelta"/>
+                <data id="rDelta"/>
+                <data id="cachedCenterPoint"/>
+                <data id="cachedBBox"/>
+
+                <data id="nodeBeingDrawn"/>
+            </datamodel>
+
+            <state id="ready">
+                <onexit>
+                    <assign location="clickedNode" expr="_event.data.target"/>
+
+                    <assign location="firstEvent" expr="_event.data"/>
+                    <assign location="eventStamp" expr="_event.data"/>
+                </onexit>
+                <onentry>
+                    <script>
+                        updateTransformHandles(selectedNodes);
+                    </script>
+                </onentry>
+
+                <transition target="after_mousedown_on_selected_nodes" event="mousedown" 
+                    cond="selectedNodes.indexOf(_event.data.target) !== -1 
+                        &amp;&amp; !_event.data.shiftKey"/>
+
+                <transition target="after_mousedown_with_shift_key_on_selected_nodes" event="mousedown" 
+                    cond="selectedNodes.indexOf(_event.data.target) !== -1 
+                        &amp;&amp; _event.data.shiftKey"/>
+
+                <transition target="after_mousedown_on_nonselected_nodes" event="mousedown"
+                    cond="allNodes.indexOf(_event.data.target) !== -1 
+                        &amp;&amp; !_event.data.shiftKey"/>
+
+                <transition target="after_mousedown_with_shift_key_on_nonselected_nodes" event="mousedown"
+                    cond="allNodes.indexOf(_event.data.target) !== -1 
+                        &amp;&amp; _event.data.shiftKey"/>
+
+                <transition target="after_mousedown_on_canvas" event="mousedown" cond="_event.data.target === svg.root()"/>
+
+                <transition target="rotating" event="mousedown" 
+                    cond="_event.data.target === rotationHandle 
+                        &amp;&amp; In('ready_to_rotate')"/>
+
+                <transition target="scaling" event="mousedown" 
+                    cond="_event.data.target === scaleHandle 
+                        &amp;&amp; In('ready_to_scale')"/>
+            </state>
+
+            <state id="after_mousedown" initial="after_mousedown_on_selected_nodes">
+
+                <state id="after_mousedown_on_selected_nodes">
+                    <transition target="ready" event="mouseup" cond="In('transform_tool_selected')">
+                        <raise event="TOGGLE_TRANSFORM"/>
+                    </transition>
+
+                    <!-- TODO: change this to use <if> action once it is supported -->
+                    <transition target="ready" event="mouseup" cond="In('drawing_tool_selected')"/>
+
+                    <transition target="dragging" event="mousemove" cond="In('transform_tool_selected')">
+                        <!-- TODO: add dragging behaviour -->
+                        <assign location="tDelta" expr="computeTDelta(eventStamp,_event.data)"/>
+                    </transition>
+                </state>
+
+                <state id="after_mousedown_with_shift_key_on_selected_nodes">
+                    <transition target="ready" event="mouseup">
+                        <script>
+                            //$(clickedNode).removeClass("selected");
+                            clickedNode.removeAttributeNS(null,"class");
+
+                            selectedNodes.splice(selectedNodes.indexOf(clickedNode),1);
+                        </script>
+                        <send event="CHECK_NODES"/>
+                    </transition>
+
+                    <!-- TODO: add marquee-drawing logic -->
+                    <transition target="drawing_marquee" event="mousemove" cond="In('transform_tool_selected')">
+                        <assign location="tDelta" expr="computeTDelta(eventStamp,_event.data)"/>
+                    </transition>
+
+                </state>
+
+                <state id="after_mousedown_on_nonselected_nodes">
+                    <transition target="ready" event="mouseup">
+                        <script>
+                            //$(selectedNodes).removeClass("selected");
+                            //$(clickedNode).addClass("selected");
+                            selectedNodes.forEach(function(n){n.removeAttributeNS(null,"class")})
+                            clickedNode.setAttributeNS(null,"class","selected");
+                        </script>
+                        <assign location="selectedNodes" expr="[clickedNode]"/>
+                        <send event="NODES_SELECTED_WITH_CLICK"/>
+                    </transition>
+                    <transition target="dragging" event="mousemove" cond="In('transform_tool_selected')">
+                        <script>
+                            //$(selectedNodes).removeClass("selected");
+                            //$(clickedNode).addClass("selected");
+                            selectedNodes.forEach(function(n){n.removeAttributeNS(null,"class","selected")})
+                            clickedNode.setAttributeNS(null,"class","selected");
+                        </script>
+                        <assign location="selectedNodes" expr="[clickedNode]"/>
+                        <send event="NODES_SELECTED_WITH_DRAG"/>
+                        <!-- TODO: add dragging logic -->
+
+                        <assign location="tDelta" expr="computeTDelta(eventStamp,_event.data)"/>
+                    </transition>
+
+                </state>
+
+                <!-- TODO-->
+                <state id="after_mousedown_with_shift_key_on_nonselected_nodes">
+                    <transition target="ready" event="mouseup">
+                        <script>
+                            //$(clickedNode).addClass("selected");
+                            clickedNode.setAttributeNS(null,"class","selected");
+
+                            selectedNodes.push(clickedNode);
+                        </script>
+                        <send event="NODES_SELECTED_WITH_CLICK"/>
+                    </transition>
+
+                    <!-- TODO: add marquee-drawing logic -->
+                    <transition target="drawing_marquee" event="mousemove" cond="In('transform_tool_selected')">
+                        <assign location="tDelta" expr="computeTDelta(eventStamp,_event.data)"/>
+                    </transition>
+
+                </state>
+
+                <state id="after_mousedown_on_canvas">
+                    <transition target="ready" event="mouseup">
+                        <script>
+                            //$(selectedNodes).removeClass("selected");
+                            selectedNodes.forEach(function(n){n.removeAttributeNS(null,"class")});
+                        </script>
+                        <assign location="selectedNodes" expr="[]"/>
+                        <send event="CHECK_NODES"/>
+                    </transition>
+
+                    <transition target="drawing_marquee" event="mousemove" cond="In('transform_tool_selected')">
+                        <assign location="tDelta" expr="computeTDelta(eventStamp,_event.data)"/>
+                    </transition>
+
+                </state>
+
+                <transition target="drawing_rect" event="mousemove" cond="In('rect_tool_selected')">
+                    <assign location="tDelta" expr="computeTDelta(eventStamp,_event.data)"/>
+                    <assign location="nodeBeingDrawn" expr="svg.rect(_event.data.clientX,_event.data.clientY,1,1,{'fill':'red','stroke':'black'})"/>
+                </transition>
+                <transition target="drawing_ellipse" event="mousemove" cond="In('ellipse_tool_selected')">
+                    <assign location="tDelta" expr="computeTDelta(eventStamp,_event.data)"/>
+                    <assign location="nodeBeingDrawn" expr="svg.ellipse(_event.data.clientX,_event.data.clientY,1,1,{'fill':'blue','stroke':'black'})"/>
+                </transition>
+
+            </state>
+
+            <state id="dragging">
+                <transition target="dragging" event="mousemove">
+                    <assign location="tDelta" expr="computeTDelta(eventStamp,_event.data)"/>
+                    <assign location="eventStamp" expr="_event.data"/>
+                    <script><![CDATA[
+                        for(var i=0,l=selectedNodes.length; i < l; i++){
+                            var n = selectedNodes[i];
+
+                            transformModule.translate(n,tDelta);
+                        }
+                    ]]></script>
+                </transition>
+                <transition target="ready" event="mouseup">
+                    <assign location="tDelta" expr="computeTDelta(firstEvent,eventStamp)"/>
+                    <assign location="cachedCenterPoint" expr="getAggregateCenterPoint(selectedNodes)"/>
+                    <assign location="cachedBBox" expr="getAggregateBBox(selectedNodes)"/>
+                    <!-- TODO -->
+                    <script>
+                        updateTransformHandles(selectedNodes);
+                    </script>
+                </transition>
+            </state>
+
+            <state id="rotating">
+                <transition target="ready" event="mouseup">
+                    <assign location="cachedBBox" expr="getAggregateBBox(selectedNodes)"/>
+                    <script>
+                        updateTransformHandles(selectedNodes);
+                    </script>
+                </transition>
+
+                <transition target="rotating" event="mousemove">
+                    <assign location="rDelta" expr="computeRDelta(eventStamp,_event.data,cachedCenterPoint)"/>
+                    <assign location="eventStamp" expr="_event.data"/>
+                    <script><![CDATA[
+                        for(var i=0,l=selectedNodes.length; i < l; i++){
+                            var n = selectedNodes[i];
+
+                            transformModule.rotateRadians(n,rDelta,cachedCenterPoint.x,cachedCenterPoint.y);
+                        }
+
+                        transformModule.rotateRadians(rotationHandle,rDelta,cachedCenterPoint.x,cachedCenterPoint.y);
+                    ]]></script>
+                </transition>
+            </state>
+
+            <state id="scaling">
+                <transition target="ready" event="mouseup">
+                    <assign location="cachedCenterPoint" expr="getAggregateCenterPoint(selectedNodes)"/>
+                    <assign location="cachedBBox" expr="getAggregateBBox(selectedNodes)"/>
+                    <script>
+                        updateTransformHandles(selectedNodes);
+                    </script>
+                </transition>
+                <transition target="scaling" event="mousemove">
+                    <script><![CDATA[
+                        for(var i=0,l=selectedNodes.length; i < l; i++){
+                            var n = selectedNodes[i];
+
+                            transformModule.scale(n,eventStamp,_event.data,cachedBBox)
+                        }
+                    ]]></script>
+                    <assign location="cachedBBox" expr="getAggregateBBox(selectedNodes)"/>
+                    <assign location="eventStamp" expr="_event.data"/>
+                    <script>
+                        updateTransformHandles(selectedNodes);
+                    </script>
+                </transition>
+            </state>
+
+
+            <!-- TODO: add marquee-drawing logic -->
+            <state id="drawing_marquee">
+                <transition target="ready" event="mouseup">
+                    <!-- TODO: select what is inside marquee -->
+                    <send event="CHECK_NODES"/>
+                </transition>
+
+                <transition target="drawing_marquee" event="mousemove"/>
+            </state>
+
+            <state id="drawing">
+                <state id="drawing_ellipse">
+                    <transition target="drawing_ellipse" event="mousemove">
+                        <script>
+                            updateCircle(nodeBeingDrawn,eventStamp,_event.data);
+                        </script>
+                    </transition>
+                </state>
+
+                <state id="drawing_rect">
+                    <transition target="drawing_rect" event="mousemove">
+                        <assign location="tDelta" expr="computeTDelta(eventStamp,_event.data)"/>
+                        <script>
+                            updateRect(nodeBeingDrawn,tDelta);
+                        </script>
+                    </transition>
+                </state>
+                
+                <transition target="ready" event="mouseup">
+                    <script>
+                        //$(selectedNodes).removeClass("selected");
+                        selectedNodes.forEach(function(n){n.removeAttributeNS(null,"class")});
+                    </script>
+                    <script>
+                        selectedNodes = [nodeBeingDrawn];
+
+                        allNodes.push(nodeBeingDrawn);
+
+                        //$(nodeBeingDrawn).addClass("selected");
+                        nodeBeingDrawn.setAttributeNS(null,"class","selected");
+                    </script>
+                </transition>
+            </state>
+        </state>
+    </parallel>
+
+</scxml>
+
