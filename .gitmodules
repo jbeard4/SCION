@@ -7,3 +7,6 @@
 [submodule "lib/external/jsUri"]
 	path = lib/external/jsUri
 	url = git://github.com/jbeard4/jsUri.git
+[submodule "lib/external/sax-js"]
+	path = lib/external/sax-js
+	url = git://github.com/isaacs/sax-js.git
