@@ -289,8 +289,6 @@ Because SCION is implemented in ECMAScript, it has been fairly easy to embed in 
 
 This guide describes how to embed SCION in other JavaScript environments: [Embedding SCION](https://github.com/jbeard4/SCION/wiki/Embedding-SCION)
 
-* 
-
 # SCION Semantics 
 
 SCION takes many ideas from the SCXML standard. In particular, it reuses the syntax of SCXML, but changes some of the semantics.
