@@ -304,6 +304,7 @@ SCION takes many ideas from the SCXML standard. In particular, it reuses the syn
 
 # Other Resources
 
+* [Embedding SCION](https://github.com/jbeard4/SCION/wiki/Embedding-SCION)
 * [Custom Actions](https://github.com/jbeard4/SCION/wiki/Custom-Action-Tags)
 * [Action Tag Scripting APIs](https://github.com/jbeard4/SCION/wiki/Action-Tag-Scripting-API)
 * [SCION Demos](https://github.com/jbeard4/scion-demos)
