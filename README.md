@@ -287,6 +287,10 @@ Because SCION is implemented in ECMAScript, it has been fairly easy to embed in 
 * C# : [SCION.NET](https://github.com/jbeard4/SCION.NET)
 * Python : [pySCION](https://github.com/jbeard4/pySCION)
 
+This guide describes how to embed SCION in other JavaScript environments: [Embedding SCION](https://github.com/jbeard4/SCION/wiki/Embedding-SCION)
+
+* 
+
 # SCION Semantics 
 
 SCION takes many ideas from the SCXML standard. In particular, it reuses the syntax of SCXML, but changes some of the semantics.
@@ -304,7 +308,6 @@ SCION takes many ideas from the SCXML standard. In particular, it reuses the syn
 
 # Other Resources
 
-* [Embedding SCION](https://github.com/jbeard4/SCION/wiki/Embedding-SCION)
 * [Custom Actions](https://github.com/jbeard4/SCION/wiki/Custom-Action-Tags)
 * [Action Tag Scripting APIs](https://github.com/jbeard4/SCION/wiki/Action-Tag-Scripting-API)
 * [SCION Demos](https://github.com/jbeard4/scion-demos)
