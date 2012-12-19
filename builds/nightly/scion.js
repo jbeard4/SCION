@@ -39,6 +39,7 @@
     }, dirname = function(path) {
       return path.split('/').slice(0, -1).join('/');
     };
+    /** @expose */
     this.require = function(name) {
       return require(name, '');
     }
@@ -48,7 +49,154 @@
     };
   }
   return this.require.define;
-}).call(this)({"browser/browser-listener-client": function(exports, require, module) {//TODO: this will be like node-listener-client.js, except will use jquery/AJAX for its remoting
+}).call(this)({"base-platform/dom": function(exports, require, module) {/*
+     Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+             http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+*/
+
+"use strict";
+
+//a small DOM helper/compatibility layer
+
+module.exports = {
+
+    getChildren : function(node){
+        return Array.prototype.slice.call(node.childNodes);
+    },
+
+    localName : function(node){
+        return node.localName;
+    },
+
+    getAttribute : function(node,attribute){
+        return node.getAttribute(attribute);  
+    },
+
+    hasAttribute : function(node,attribute){
+        return node.hasAttribute(attribute);
+    },
+
+    namespaceURI : function(node){
+        return node.namespaceURI;
+    },
+
+    createElementNS : function(doc,ns,localName){
+        return doc.createElementNS(ns,localName); 
+    },
+
+    setAttribute : function(node,name,value){
+        return node.setAttribute(name,value);
+    },
+
+    appendChild : function(parent,child){
+        return parent.appendChild(child);
+    },
+
+    textContent : function(node,txt){
+        if(txt === undefined){
+            if(node.nodeType === 1){
+                //element
+                if(node.textContent !== undefined){
+                    return node.textContent;
+                }else{
+                    //IE
+                    return this.getChildren(node).
+                                map(function(textNode){return this.textContent(textNode);},this).join("");
+                }
+            }else if(node.nodeType === 3 || node.nodeType === 4){
+                //textnode
+                return node.data;
+            }
+            return "";
+        }else{
+            if(node.nodeType === 1){
+                //element node
+                if(node.textContent !== undefined){
+                    return node.textContent = txt;
+                }else{
+                    //IE
+                    var textNode = node.ownerDocument.createTextNode(txt);
+                    node.appendChild(textNode); 
+                    return txt;
+                }
+            }else if(node.nodeType === 3){
+                //textnode
+                return node.data = txt;
+            }
+        }
+    },
+
+    getElementChildren : function(node){
+        return this.getChildren(node).filter(function(c){return c.nodeType === 1;});
+    }
+
+};
+}, "base-platform/eval": function(exports, require, module) {module.exports = function(content,name){
+    //JScript doesn't return functions from evaled function expression strings, 
+    //so we wrap it here in a trivial self-executing function which gets eval'd
+    return eval('(function(){\nreturn ' + content + ';})()');
+};
+}, "base-platform/path": function(exports, require, module) {/*
+     Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+             http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+*/
+
+"use strict";
+
+//these are quick-and-dirty implementations
+//there may be missing edge cases
+module.exports = {
+
+    sep : "/",
+
+    join : function(path1,path2){
+        return path1 + "/" + path2;
+    },
+
+    dirname : function(path){
+        return path.split(this.sep).slice(0,-1).join(this.sep);
+    },
+
+    basename : function(path,ext){
+        var name = path.split(this.sep).slice(-1);
+        if(ext){
+            var names = this.extname(name);
+            if(names[1] === ext){
+                name = names[1];
+            }
+        }
+
+        return name;
+    },
+
+    extname : function(path){
+        //http://stackoverflow.com/a/4546093/366856
+        return path.split(/\\.(?=[^\\.]+$)/)[1];
+    }
+};
+}, "browser/browser-listener-client": function(exports, require, module) {//TODO: this will be like node-listener-client.js, except will use jquery/AJAX for its remoting
 }, "browser/dom": function(exports, require, module) {/*
      Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
 
@@ -67,7 +215,7 @@
 
 "use strict";
 
-var baseDom = require('../embedded/dom');
+var baseDom = require('../base-platform/dom');
 
 function getItem(nodeList,index){
     return "item" in nodeList ? nodeList.item(index) : nodeList[index];
@@ -95,6 +243,10 @@ dom.getChildren = function(node){
     return toReturn;
 };
 
+dom.serializeToString = function(node){
+    return node.xml || (new XMLSerializer()).serializeToString(node);
+};
+
 module.exports = dom;
 }, "browser/platform": function(exports, require, module) {/*
      Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
@@ -114,16 +266,16 @@ module.exports = dom;
 
 "use strict";
 
-var util = require('../core/util/util'),
-    basePlatform = require('../embedded/platform').platform;
+var util = require('../core/util/util');
 
 //browser mostly just inherits path from basePlatform
-exports.platform = util.merge(Object.create(basePlatform),{
+exports.platform = {
 
     /** @expose */
     ajax : window.jQuery,   //this can be overridden
 
     //used in parsing
+    eval : require('../base-platform/eval'),
 
     /** @this {platform} */
     getDocumentFromUrl : function(url,cb){
@@ -172,13 +324,14 @@ exports.platform = util.merge(Object.create(basePlatform),{
         window.clearTimeout(timeoutId);
     },
 
-    log : window.console.log.bind(console),
+    log : window.console && window.console.log && (window.console.log.bind ? window.console.log.bind(window.console) : window.console.log),
+
+    path : require('../base-platform/path'),
 
     url : require('./url'),
     dom : require('./dom')
 
-});
-
+};
 }, "browser/url": function(exports, require, module) {/*
      Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
 
@@ -333,7 +486,8 @@ SCXMLInterpreter.prototype = {
             this._send.bind(this),
             this.opts.origin,
             this.isIn.bind(this),
-            actionCodeRequire);
+            actionCodeRequire,
+            pm.platform.parseDocumentFromString);
         this._actions = tmp.actions;
         this._datamodel = tmp.datamodel;
 
@@ -516,7 +670,7 @@ SCXMLInterpreter.prototype = {
     /** @private */
     _evaluateAction : function(actionRef, eventSet, datamodelForNextStep, eventsToAddToInnerQueue) {
         function $raise(event){
-            eventsToAddToInnerQueue.add({ name: event, data : {}});
+            eventsToAddToInnerQueue.add(event);
         }
 
         var n = this._getScriptingInterface(datamodelForNextStep, eventSet, true);
@@ -1422,7 +1576,43 @@ function transformTransitionNode (transitionNode, parentState) {
 function transformDatamodel(node, ancestors) {
     pm.platform.dom.getChildren(node).filter(function(child){return pm.platform.dom.localName(child) === 'data';}).forEach(function(child){
         if (pm.platform.dom.hasAttribute(child,"id")) {
-            datamodel[pm.platform.dom.getAttribute(child,"id")] = pm.platform.dom.hasAttribute(child,"expr") ? pm.platform.dom.getAttribute(child,"expr") : null;
+
+            var datamodelObject;
+
+            var id = pm.platform.dom.getAttribute(child,"id");
+
+            if(pm.platform.dom.hasAttribute(child,"expr")){ 
+                datamodelObject = {
+                    content : pm.platform.dom.getAttribute(child,"expr"),
+                    type : 'expr'
+                };
+            }else{
+                var hasType = pm.platform.dom.hasAttribute(child,'type');
+
+
+                //fetch the first text node to get the text content
+                if(hasType){
+                    var type = pm.platform.dom.getAttribute(child,'type');
+
+                    var textContent = type === 'xml' ? 
+                                        pm.platform.dom.serializeToString(child) : 
+                                        pm.platform.dom.textContent(child);
+
+                    datamodelObject = {
+                        content : textContent,
+                        type : type 
+                    };
+                }else{
+                    textContent = pm.platform.dom.textContent(child);
+                    datamodelObject = textContent.length ? 
+                                        {
+                                            content : textContent,
+                                            type : 'text' 
+                                        } : null;
+                }
+            }
+
+            datamodel[id] = datamodelObject;
         }
     });
 }
@@ -1704,7 +1894,7 @@ var actionTags = {
         },
 
         "raise" : function(action){
-            return "$raise(" + JSON.stringify(pm.platform.dom.getAttribute(action,"event")) + ");";
+            return "$raise({ name:" + JSON.stringify(pm.platform.dom.getAttribute(action,"event")) + ", data : {}});";
         },
 
         "cancel" : function(action){
@@ -1712,16 +1902,26 @@ var actionTags = {
         },
 
         "send" : function(action){
-            return "$send({\n" + 
-                "target: " + (pm.platform.dom.hasAttribute(action,"targetexpr") ? pm.platform.dom.getAttribute(action,"targetexpr") : JSON.stringify(pm.platform.dom.getAttribute(action,"target"))) + ",\n" +
+            var target = (pm.platform.dom.hasAttribute(action,"targetexpr") ? pm.platform.dom.getAttribute(action,"targetexpr") : JSON.stringify(pm.platform.dom.getAttribute(action,"target")));
+            var event = "{\n" + 
+                "target: " + target  + ",\n" +
                 "name: " + (pm.platform.dom.hasAttribute(action,"eventexpr") ? pm.platform.dom.getAttribute(action,"eventexpr") : JSON.stringify(pm.platform.dom.getAttribute(action,"event"))) + ",\n" + 
                 "type: " + (pm.platform.dom.hasAttribute(action,"typeexpr") ? pm.platform.dom.getAttribute(action,"typeexpr") : JSON.stringify(pm.platform.dom.getAttribute(action,"type"))) + ",\n" +
                 "data: " + constructSendEventData(action) + ",\n" +
                 "origin: $origin\n" +
-            "}, {\n" + 
-                "delay: " + (pm.platform.dom.hasAttribute(action,"delayexpr") ? pm.platform.dom.getAttribute(action,"delayexpr") : getDelayInMs(pm.platform.dom.getAttribute(action,"delay"))) + ",\n" + 
-                "sendId: " + (pm.platform.dom.hasAttribute(action,"idlocation") ? pm.platform.dom.getAttribute(action,"idlocation") : JSON.stringify(pm.platform.dom.getAttribute(action,"id"))) + "\n" + 
-            "});";
+            "}";
+
+            var send = 
+                "if(" + target + " === '#_internal'){\n" + 
+                     "$raise(" + event  + ");\n" + 
+                "}else{\n" +
+                    "$send(" + event + ", {\n" + 
+                        "delay: " + (pm.platform.dom.hasAttribute(action,"delayexpr") ? pm.platform.dom.getAttribute(action,"delayexpr") : getDelayInMs(pm.platform.dom.getAttribute(action,"delay"))) + ",\n" + 
+                        "sendId: " + (pm.platform.dom.hasAttribute(action,"idlocation") ? pm.platform.dom.getAttribute(action,"idlocation") : JSON.stringify(pm.platform.dom.getAttribute(action,"id"))) + "\n" + 
+                    "});" + 
+                "}";
+
+            return send;
         },
 
         "foreach" : function(action){
@@ -1764,14 +1964,39 @@ function getDelayInMs(delayString){
     }
 }
 
+function getDatamodelExpression(id, datamodelObject){
+    var s = id;
+
+    if(datamodelObject){
+        s += ' = ';
+
+        switch(datamodelObject.type){
+            case 'xml' : 
+                s += '$parseXml(' + JSON.stringify(datamodelObject.content) + ')';
+                break;
+            case 'json' : 
+                s += 'JSON.parse(' + JSON.stringify(datamodelObject.content) + ')';
+                break;
+            case 'expr' : 
+                s += datamodelObject.content;
+                break;
+            default :
+                s += JSON.stringify(datamodelObject.content);
+                break;
+        }
+    }
+
+    return s;
+}
+
 //utility functions
 //this creates the string which declares the datamodel in the document scope
 function makeDatamodelDeclaration(datamodel){
     var s = "var ";
     var vars = [];
     for(var id in datamodel){
-        var expr = datamodel[id];
-        vars.push(expr ? id + " = " + expr : id);
+        var datamodelObject = datamodel[id];
+        vars.push(getDatamodelExpression(id,datamodelObject));
     }
     return vars.length ? (s + vars.join(", ") + ";") : "";
 }
@@ -1798,14 +2023,15 @@ function wrapFunctionBodyInDeclaration(action,isExpression){
 function makeTopLevelFunctionBody(datamodelDeclaration,topLevelScripts,datamodelClosures,actionStrings){
     return  datamodelDeclaration + 
             (topLevelScripts.length ? topLevelScripts.join("\n") : "") + 
+            "var $datamodel = " + datamodelClosures + ";\n" + 
             "return {\n" + 
-                "datamodel:" + datamodelClosures + "," + 
+                "datamodel:$datamodel,\n" + 
                 "actions:[\n" + actionStrings.join(",\n") + "\n]" +   //return all functions which get called during execution
             "\n};";
 }
 
 function wrapTopLevelFunctionBodyInDeclaration(fnBody){
-    return "function($log,$cancel,$send,$origin,In,require){\n" + fnBody + "\n}";
+    return "function($log,$cancel,$send,$origin,In,require,$parseXml){\n" + fnBody + "\n}";
 }
 
 //this function ensures that the code in each SCXML document will run in "document scope".
@@ -1818,6 +2044,7 @@ function makeActionFactory(topLevelScripts,actionStrings,datamodel){
     var datamodelClosures = makeDatamodelClosures(datamodel);
     var topLevelFnBody = makeTopLevelFunctionBody(datamodelDeclaration,topLevelScripts,datamodelClosures,actionStrings);
     var fnStr = wrapTopLevelFunctionBodyInDeclaration(topLevelFnBody);
+    //require('fs').writeFileSync('out.js',fnStr);
     return fnStr; 
 }
 
@@ -2016,218 +2243,6 @@ module.exports = {
         return target;
     }
 };
-}, "embedded/dom": function(exports, require, module) {/*
-     Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-             http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
-*/
-
-"use strict";
-
-//a small DOM helper/compatibility layer
-
-module.exports = {
-
-    getChildren : function(node){
-        return Array.prototype.slice.call(node.childNodes);
-    },
-
-    localName : function(node){
-        return node.localName;
-    },
-
-    getAttribute : function(node,attribute){
-        return node.getAttribute(attribute);  
-    },
-
-    hasAttribute : function(node,attribute){
-        return node.hasAttribute(attribute);
-    },
-
-    namespaceURI : function(node){
-        return node.namespaceURI;
-    },
-
-    createElementNS : function(doc,ns,localName){
-        return doc.createElementNS(ns,localName); 
-    },
-
-    setAttribute : function(node,name,value){
-        return node.setAttribute(name,value);
-    },
-
-    appendChild : function(parent,child){
-        return parent.appendChild(child);
-    },
-
-    textContent : function(node,txt){
-        if(txt === undefined){
-            if(node.nodeType === 1){
-                //element
-                return node.textContent;
-            }else if(node.nodeType === 3 || node.nodeType === 4){
-                //textnode
-                return node.data;
-            }
-            return "";
-        }else{
-            if(node.nodeType === 1){
-                //element node
-                return node.textContent = txt;
-            }else if(node.nodeType === 3){
-                //textnode
-                return node.data = txt;
-            }
-        }
-    },
-
-    getElementChildren : function(node){
-        return this.getChildren(node).filter(function(c){return c.nodeType === 1;});
-    }
-
-};
-}, "embedded/path": function(exports, require, module) {/*
-     Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-             http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
-*/
-
-"use strict";
-
-//these are quick-and-dirty implementations
-//there may be missing edge cases
-module.exports = {
-
-    sep : "/",
-
-    join : function(path1,path2){
-        return path1 + "/" + path2;
-    },
-
-    dirname : function(path){
-        return path.split(this.sep).slice(0,-1).join(this.sep);
-    },
-
-    basename : function(path,ext){
-        var name = path.split(this.sep).slice(-1);
-        if(ext){
-            var names = this.extname(name);
-            if(names[1] === ext){
-                name = names[1];
-            }
-        }
-
-        return name;
-    },
-
-    extname : function(path){
-        //http://stackoverflow.com/a/4546093/366856
-        return path.split(/\\.(?=[^\\.]+$)/)[1];
-    }
-};
-}, "embedded/platform": function(exports, require, module) {/*
-     Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-             http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
-*/
-
-"use strict";
-
-//this provides an incomplete base platform implementation
-//other platform implementations can optionally extend it. 
-
-function parseDocumentFromString(str){
-    var xmldom = require('../../external/xmldom/dom-parser');
-    return (new xmldom.DOMParser()).parseFromString(str);
-}
-
-//most shells will also at least be able to implement: getDocumentFromFilesystem and log 
-
-exports.platform = {
-    parseDocumentFromString : parseDocumentFromString,
-
-    eval : function(content,name){
-        //JScript doesn't return functions from evaled function expression strings, 
-        //so we wrap it here in a trivial self-executing function which gets eval'd
-        return eval('(function(){\nreturn ' + content + ';})()');
-    },
-
-    path : require('./path'),
-
-    url : require('./url'),
-
-    dom : require('./dom')
-    
-};
-}, "embedded/url": function(exports, require, module) {/*
-     Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-             http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
-*/
-
-"use strict";
-
-//this base module could be used with jsuri [http://code.google.com/p/jsuri/], a portable, pure-js URI parser implemenation
-//currently, none of the "blessed" environments use it, but it could simplify things for embedding
-//assume global Uri object
-//require('external/jsUri/dist/jsuri');   //this is just to load up a global Uri object
-
-function parseUri(uri){
-    /*jsl:ignore*/
-    if(typeof Uri === undefined) throw new Error("URI parser not loaded");
-    return new Uri(url);
-    /*jsl:end*/
-}
-
-module.exports = {
-    getPathFromUrl : function(url){
-        return parseUri(url).path();
-    },
-
-    changeUrlPath : function(url,newPath){
-        return parseUri(url).path(newPath).toString();
-    }
-};
 }, "platform": function(exports, require, module) {/*
      Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
 
@@ -2266,8 +2281,6 @@ if(isBrowser()){
     module.exports = require('./node/platform');
 }else if(isRhino()){
     module.exports = require('./rhino/platform');
-}else{
-    module.exports = require('./embedded/platform');
 }
 }, "scion": function(exports, require, module) {/*
      Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
