@@ -1,13 +1,12 @@
 js = $(shell find lib/ -name "*.js")
 
+dist/scion.js : $(js) 
+	mkdir -p dist && node lib/browser/build/stitch.js dist/scion.js
 
-scion-browser.js : $(js) 
-	node lib/browser/build/stitch.js 
-
-scion-browser-min.js : scion-browser.js
-	uglifyjs scion-browser.js > scion-browser-min.js
+dist/scion-min.js : dist/scion.js
+	uglifyjs dist/scion.js > dist/scion-min.js
 
 clean : 
-	rm scion-browser.js scion-browser-min.js
+	rm -rf dist
 
 .PHONY : clean
