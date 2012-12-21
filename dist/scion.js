@@ -529,6 +529,11 @@ SCXMLInterpreter.prototype = {
         return this.getFullConfiguration().indexOf(stateName) > -1;
     },
 
+    /** @expose */
+    isFinal : function(stateName) {
+        return this._isInFinalState;
+    },
+
     /** @private */
     _performBigStep : function(e) {
         if (e) this._innerEventQueue.push(new this.opts.EventSet([e]));
