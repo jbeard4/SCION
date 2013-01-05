@@ -39,7 +39,7 @@
         "stitch" : "git://github.com/jbeard4/stitch.git",
         "uglify-js" : "*"
     },
-    "engines" : { "node" : ">=0.4.7" },
+    "engines" : { "node" : ">=0.6" },
     "main": "./lib/scion",
     "scripts" : {
         "test" : "cd test && bash run-tests-node.sh"
