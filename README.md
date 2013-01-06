@@ -14,7 +14,9 @@ Here are some reasons you might choose to use SCION:
 
 # Quickstart and Simple Use Case
 
-Let's start with the simple example of drag-and-drop behaviour in the browser. An entity that can be dragged has two states: idle and dragging. If the entity is in an idle state, and it receives a mousedown event, then it starts dragging. While dragging, if it receives a mousemove event, then it changes its position. Also while dragging, when it receives a mouseup event, it returns to the idle state.
+Let's start with the simple example of drag-and-drop behaviour in the browser. You can run this demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop.html), or on jsfiddle [here](http://jsfiddle.net/jbeard4/mjm72/).
+
+An entity that can be dragged has two states: idle and dragging. If the entity is in an idle state, and it receives a mousedown event, then it starts dragging. While dragging, if it receives a mousemove event, then it changes its position. Also while dragging, when it receives a mouseup event, it returns to the idle state.
 
 This natural-language description of behaviour can be described using the following simple state machine:
 
@@ -155,9 +157,6 @@ There are then **4 steps** that must be performed to go from an SCXML document t
     </body>
 </html>
 ```
-
-
-You can run the demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop.html), or on jsfiddle [here](http://jsfiddle.net/jbeard4/mjm72/).
 
 # API
 
