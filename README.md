@@ -157,7 +157,7 @@ There are then **4 steps** that must be performed to go from an SCXML document t
 ```
 
 
-You can run the demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop.html).
+You can run the demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop.html), or on jsfiddle [here](http://jsfiddle.net/jbeard4/mjm72/).
 
 # API
 
