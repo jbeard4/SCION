@@ -39,7 +39,6 @@
     }, dirname = function(path) {
       return path.split('/').slice(0, -1).join('/');
     };
-    /** @expose */
     this.require = function(name) {
       return require(name, '');
     }
@@ -278,7 +277,7 @@ exports.platform = {
     eval : require('../base-platform/eval'),
 
     /** @this {platform} */
-    getDocumentFromUrl : function(url,cb){
+    getDocumentFromUrl : function(url,cb,context){
         this.ajax.get(url,function(r){
             cb(null,r);
         },"xml").error(function(e){
@@ -291,13 +290,13 @@ exports.platform = {
     },
 
     /** @this {platform} */
-    getDocumentFromFilesystem : function(url,cb){
-        this.getDocumentFromUrl(url,cb); 
+    getDocumentFromFilesystem : function(url,cb,context){
+        this.getDocumentFromUrl(url,cb,context);
     },
 
     //TODO: the callback is duplicate code. move this out.
     /** @this {platform} */
-    getResourceFromUrl : function(url,cb){
+    getResourceFromUrl : function(url,cb,context){
         this.ajax.get(url,function(r){
             cb(null,r);
         }).error(function(e){
@@ -446,6 +445,8 @@ function SCXMLInterpreter(model, opts){
     this.opts.TransitionPairSet = this.opts.TransitionPairSet || ArraySet;
     this.opts.priorityComparisonFn = this.opts.priorityComparisonFn || getTransitionWithHigherSourceChildPriority(this.opts.model);
 
+    this._sessionid = this.opts.sessionid || "";
+
     this._configuration = new this.opts.BasicStateSet();
     this._historyValue = {};
     this._innerEventQueue = [];
@@ -487,7 +488,8 @@ SCXMLInterpreter.prototype = {
             this.opts.origin,
             this.isIn.bind(this),
             actionCodeRequire,
-            pm.platform.parseDocumentFromString);
+            pm.platform.parseDocumentFromString,
+            this._sessionid);
         this._actions = tmp.actions;
         this._datamodel = tmp.datamodel;
 
@@ -560,7 +562,7 @@ SCXMLInterpreter.prototype = {
 
         if (!selectedTransitions.isEmpty()) {
 
-            if (printTrace) pm.platform.log("sorted transitions: ", selectedTransitions);
+            if (printTrace) pm.platform.log("sorted transitions: ", require('util').inspect(selectedTransitions,false,4));
 
             //we only want to enter and exit states from transitions with targets
             //filter out targetless transitions here - we will only use these to execute transition actions
@@ -698,15 +700,22 @@ SCXMLInterpreter.prototype = {
         var statesExited = new this.opts.StateSet();
         var basicStatesExited = new this.opts.BasicStateSet();
 
+        //States exited are defined to be active states that are
+        //descendants of the scope of each priority-enabled transition.
+        //Here, we iterate through the transitions, and collect states
+        //that match this condition. 
         transitions.iter().forEach(function(transition){
-            var lca = transition.lca;
-            var desc = lca.descendants;
+            var scope = transition.scope,
+                desc = scope.descendants;
 
+            //For each state in the configuration
+            //is that state a descendant of the transition scope?
+            //Store ancestors of that state up to but not including the scope.
             this._configuration.iter().forEach(function(state){
                 if(desc.indexOf(state) > -1){
                     basicStatesExited.add(state);
                     statesExited.add(state);
-                    this.opts.model.getAncestors(state,lca).forEach(function(anc){
+                    this.opts.model.getAncestors(state,scope).forEach(function(anc){
                         statesExited.add(anc);
                     });
                 }
@@ -722,82 +731,86 @@ SCXMLInterpreter.prototype = {
     /** @private */
     _getStatesEntered : function(transitions) {
 
-        var statesToEnter = new this.opts.StateSet();
-        var basicStatesToEnter = new this.opts.BasicStateSet();
-        var statesProcessed  = new this.opts.StateSet();
-        var statesToProcess = [];
-
-        var processTransitionSourceAndTarget = (function(source,target){
-            //process each target
-            processState(target);
-
-            //and process ancestors of targets up to LCA, but according to special rules
-            var lca = this.opts.model.getLCA(source,target);
-            this.opts.model.getAncestors(target,lca).forEach(function(s){
-                if (s.kind === stateKinds.COMPOSITE) {
-                    //just add him to statesToEnter, and declare him processed
-                    //this is to prevent adding his initial state later on
-                    statesToEnter.add(s);
-
-                    statesProcessed.add(s);
-                }else{
-                    //everything else can just be passed through as normal
-                    processState(s);
-                } 
-            });
-        }).bind(this);
-
-        var processState = (function(s){
-
-            if(statesProcessed.contains(s)) return;
-
-            if (s.kind === stateKinds.HISTORY) {
-                if (s.id in this._historyValue) {
-                    this._historyValue[s.id].forEach(function(stateFromHistory){
-                        processTransitionSourceAndTarget(s,stateFromHistory);
-                    });
-                } else {
-                    statesToEnter.add(s);
-                    basicStatesToEnter.add(s);
-                }
-            } else {
-                statesToEnter.add(s);
-
-                if (s.kind === stateKinds.PARALLEL) {
-                    statesToProcess.push.apply(statesToProcess,
-                        s.children.filter(function(s){return s.kind !== stateKinds.HISTORY;}));
-                } else if (s.kind === stateKinds.COMPOSITE) {
-                    statesToProcess.push(s.initial); 
-                } else if (s.kind === stateKinds.INITIAL || s.kind === stateKinds.BASIC || s.kind === stateKinds.FINAL) {
-                    basicStatesToEnter.add(s);
-                }
-            }
-
-            statesProcessed.add(s); 
-
-        }).bind(this);
+        var o = {
+            statesToEnter : new this.opts.StateSet(),
+            basicStatesToEnter : new this.opts.BasicStateSet(),
+            statesProcessed  : new this.opts.StateSet(),
+            statesToProcess : []
+        };
 
         //do the initial setup
         transitions.iter().forEach(function(transition){
             transition.targets.forEach(function(target){
-                processTransitionSourceAndTarget(transition.source,target);
-            });
-        });
+                this._addStateAndAncestors(target,transition.scope,o);
+            },this);
+        },this);
 
         //loop and add states until there are no more to add (we reach a stable state)
         var s;
         /*jsl:ignore*/
-        while(s = statesToProcess.pop()){
+        while(s = o.statesToProcess.pop()){
             /*jsl:end*/
-            processState(s);
+            this._addStateAndDescendants(s,o);
         }
 
         //sort based on depth
-        var sortedStatesEntered = statesToEnter.iter().sort(function(s1, s2) {
+        var sortedStatesEntered = o.statesToEnter.iter().sort(function(s1, s2) {
             return s1.depth - s2.depth;
         });
 
-        return [basicStatesToEnter, sortedStatesEntered];
+        return [o.basicStatesToEnter, sortedStatesEntered];
+    },
+
+    /** @private */
+    _addStateAndAncestors : function(target,scope,o){
+
+        //process each target
+        this._addStateAndDescendants(target,o);
+
+        //and process ancestors of targets up to the scope, but according to special rules
+        this.opts.model.getAncestors(target,scope).forEach(function(s){
+
+            if (s.kind === stateKinds.COMPOSITE) {
+                //just add him to statesToEnter, and declare him processed
+                //this is to prevent adding his initial state later on
+                o.statesToEnter.add(s);
+
+                o.statesProcessed.add(s);
+            }else{
+                //everything else can just be passed through as normal
+                this._addStateAndDescendants(s,o);
+            } 
+        },this);
+    },
+
+    /** @private */
+    _addStateAndDescendants : function(s,o){
+
+        if(o.statesProcessed.contains(s)) return;
+
+        if (s.kind === stateKinds.HISTORY) {
+            if (s.id in this._historyValue) {
+                this._historyValue[s.id].forEach(function(stateFromHistory){
+                    this._addStateAndAncestors(stateFromHistory,s.parent,o);
+                },this);
+            } else {
+                o.statesToEnter.add(s);
+                o.basicStatesToEnter.add(s);
+            }
+        } else {
+            o.statesToEnter.add(s);
+
+            if (s.kind === stateKinds.PARALLEL) {
+                o.statesToProcess.push.apply(o.statesToProcess,
+                    s.children.filter(function(s){return s.kind !== stateKinds.HISTORY;}));
+            } else if (s.kind === stateKinds.COMPOSITE) {
+                o.statesToProcess.push(s.initial); 
+            } else if (s.kind === stateKinds.INITIAL || s.kind === stateKinds.BASIC || s.kind === stateKinds.FINAL) {
+                o.basicStatesToEnter.add(s);
+            }
+        }
+
+        o.statesProcessed.add(s); 
     },
 
     /** @private */
@@ -909,13 +922,11 @@ SCXMLInterpreter.prototype = {
 
     /** @private */
     _isArenaOrthogonal : function(t1, t2) {
-        var t1LCA = t1.targets ? t1.lca : t1.source;
-        var t2LCA = t2.targets ? t2.lca : t2.source;
-        var isOrthogonal = this.opts.model.isOrthogonalTo(t1LCA, t2LCA);
+        var isOrthogonal = this.opts.model.isOrthogonalTo(t1.scope, t2.scope);
 
         if (printTrace) {
-            pm.platform.log("transition LCAs", t1LCA.id, t2LCA.id);
-            pm.platform.log("transition LCAs are orthogonal?", isOrthogonal);
+            pm.platform.log("transition scopes", t1.scope.id, t1.scope.id);
+            pm.platform.log("transition scopes are orthogonal?", isOrthogonal);
         }
 
         return isOrthogonal;
@@ -1102,9 +1113,11 @@ function linkReferencesAndGenerateActionFactory(json){
         state.transitions.forEach(function(transition){
             if(transition.actions) transition.actions = makeEvaluationFn(transition.actions);
 
-            if(transition.lca){
-                transition.lca = idToStateMap[transition.lca];
+            if(transition.lcca){
+                transition.lcca = idToStateMap[transition.lcca];
             }
+
+            transition.scope = idToStateMap[transition.scope];
         });
 
         state.initial = idToStateMap[state.initial];
@@ -1492,7 +1505,11 @@ var transform = exports.transform = function(scxmlDoc) {
             return state;
         });
 
-        transition.lca = getLCA(source, targets[0]);
+        transition.lcca = getLCCA(source, targets[0]);
+    });
+    
+    transitions.forEach(function(transition){
+        transition.scope = getScope(transition);
     });
 
     return {
@@ -1561,6 +1578,7 @@ function transformTransitionNode (transitionNode, parentState) {
     }
 
     var transition = {
+        internal : pm.platform.dom.getAttribute(transitionNode,"type") === 'internal',
         documentOrder: transitions.length,
         id: transitions.length,
         source: parentState.id,
@@ -1573,7 +1591,7 @@ function transformTransitionNode (transitionNode, parentState) {
 
     transitions.push(transition);
 
-    //set up LCA later
+    //set up LCCA later
     
     return transition;
 }
@@ -1771,17 +1789,40 @@ function genId(tagName) {
     return "" + idRoot + "-" + tagName + "-" + (idCounter[tagName]++);
 }
 
-function getLCA(s1, s2) {
-    var a, anc, commonAncestors, _i, _len, _ref, _ref2;
-    commonAncestors = [];
+function getLCCA(s1, s2) {
+    var a, anc, commonCompoundAncestors;
+    commonCompoundAncestors = [];
     s1.ancestors.forEach(function(a){
         anc = idToStateMap[a];
-        if(anc.descendants.indexOf(s2.id) > -1){
-            commonAncestors.push(a);
+        if(anc.kind === stateKinds.COMPOSITE && 
+            anc.descendants.indexOf(s2.id) > -1){
+            commonCompoundAncestors.push(a);
         }
     });
-    if(!commonAncestors.length) throw new Error("Could not find LCA for states.");
-    return commonAncestors[0];
+    if(!commonCompoundAncestors.length) throw new Error("Could not find LCCA for states.");
+    return commonCompoundAncestors[0];
+}
+
+function getScope(transition){
+    //Transition scope is normally the least common compound ancestor (lcca).
+    //Internal transitions have a scope equal to the source state.
+
+    var source = idToStateMap[transition.source];
+
+    var transitionIsReallyInternal = 
+            transition.internal &&
+                source.parent &&    //root state won't have parent
+                    transition.targets && //does it target its descendants
+                        transition.targets.map(function(targetId){return idToStateMap[targetId];}).every(
+                        function(target){ return source.descendants.map(function(id){return idToStateMap[id];}).indexOf(target) > -1;});
+
+    if(!transition.targets){
+        return transition.source; 
+    }else if(transitionIsReallyInternal){
+        return transition.source; 
+    }else{
+        return transition.lcca;
+    }
 }
 
 //epic one-liner
@@ -1823,7 +1864,7 @@ function actionTagToFnBody(action){
 
     if(!(generator && generatorFn)) throw new Error("Element " + pm.platform.dom.namespaceURI(action) + ':' + pm.platform.dom.localName(action) + " not yet supported");
 
-    return generatorFn(action); 
+    return generatorFn(action);
 }
 
 var actionTags = {
@@ -1845,7 +1886,7 @@ var actionTags = {
             for(var i = 0; i < childNodes.length; i++){
                 var child = childNodes[i];
 
-                if(pm.platform.dom.localName(child) === "elseif" || pm.platform.dom.localName(child) === "else"){ 
+                if(pm.platform.dom.localName(child) === "elseif" || pm.platform.dom.localName(child) === "else"){
                     break;
                 }else{
                     s += actionTagToFnBody(child) + "\n;;\n";
@@ -1907,23 +1948,27 @@ var actionTags = {
         },
 
         "send" : function(action){
-            var target = (pm.platform.dom.hasAttribute(action,"targetexpr") ? pm.platform.dom.getAttribute(action,"targetexpr") : JSON.stringify(pm.platform.dom.getAttribute(action,"target")));
-            var event = "{\n" + 
-                "target: " + target  + ",\n" +
-                "name: " + (pm.platform.dom.hasAttribute(action,"eventexpr") ? pm.platform.dom.getAttribute(action,"eventexpr") : JSON.stringify(pm.platform.dom.getAttribute(action,"event"))) + ",\n" + 
+            var target = (pm.platform.dom.hasAttribute(action,"targetexpr") ? pm.platform.dom.getAttribute(action,"targetexpr") : JSON.stringify(pm.platform.dom.getAttribute(action,"target"))),
+                targetVariableName = '_scionTargetRef',
+                targetDeclaration = 'var ' + targetVariableName + ' = ' + target + ';\n';
+
+            var event = "{\n" +
+                "target: " + targetVariableName + ",\n" +
+                "name: " + (pm.platform.dom.hasAttribute(action,"eventexpr") ? pm.platform.dom.getAttribute(action,"eventexpr") : JSON.stringify(pm.platform.dom.getAttribute(action,"event"))) + ",\n" +
                 "type: " + (pm.platform.dom.hasAttribute(action,"typeexpr") ? pm.platform.dom.getAttribute(action,"typeexpr") : JSON.stringify(pm.platform.dom.getAttribute(action,"type"))) + ",\n" +
                 "data: " + constructSendEventData(action) + ",\n" +
                 "origin: $origin\n" +
             "}";
 
-            var send = 
-                "if(" + target + " === '#_internal'){\n" + 
-                     "$raise(" + event  + ");\n" + 
+            var send =
+                targetDeclaration +
+                "if(" + targetVariableName + " === '#_internal'){\n" +
+                     "$raise(" + event  + ");\n" +
                 "}else{\n" +
-                    "$send(" + event + ", {\n" + 
-                        "delay: " + (pm.platform.dom.hasAttribute(action,"delayexpr") ? pm.platform.dom.getAttribute(action,"delayexpr") : getDelayInMs(pm.platform.dom.getAttribute(action,"delay"))) + ",\n" + 
-                        "sendId: " + (pm.platform.dom.hasAttribute(action,"idlocation") ? pm.platform.dom.getAttribute(action,"idlocation") : JSON.stringify(pm.platform.dom.getAttribute(action,"id"))) + "\n" + 
-                    "});" + 
+                    "$send(" + event + ", {\n" +
+                        "delay: " + (pm.platform.dom.hasAttribute(action,"delayexpr") ? pm.platform.dom.getAttribute(action,"delayexpr") : getDelayInMs(pm.platform.dom.getAttribute(action,"delay"))) + ",\n" +
+                        "sendId: " + (pm.platform.dom.hasAttribute(action,"idlocation") ? pm.platform.dom.getAttribute(action,"idlocation") : JSON.stringify(pm.platform.dom.getAttribute(action,"id"))) + "\n" +
+                    "}, $raise);" +
                 "}";
 
             return send;
@@ -1936,18 +1981,18 @@ var actionTags = {
                 arr = pm.platform.dom.getAttribute(action,"array"),
                 foreachBody = pm.platform.dom.getElementChildren(action).map(actionTagToFnBody).join("\n;;\n");
 
-            return "(function(){\n" + 
+            return "(function(){\n" +
                 "if(Array.isArray(" + arr + ")){\n" +
                     arr + ".forEach(function(" + item + "," + index + "){\n" +
                         foreachBody +
-                    "\n});\n" + 
+                    "\n});\n" +
                 "}else{\n" +
                     //assume object
                     "Object.keys(" + arr + ").forEach(function(" + index + "){\n" +
-                        item + " = " + arr + "[" + index + "];\n" + 
+                        item + " = " + arr + "[" + index + "];\n" +
                         foreachBody +
-                    "\n});\n" + 
-                "}\n" + 
+                    "\n});\n" +
+                "}\n" +
             "})();";
         }
     }
@@ -1976,13 +2021,13 @@ function getDatamodelExpression(id, datamodelObject){
         s += ' = ';
 
         switch(datamodelObject.type){
-            case 'xml' : 
+            case 'xml' :
                 s += '$parseXml(' + JSON.stringify(datamodelObject.content) + ')';
                 break;
-            case 'json' : 
+            case 'json' :
                 s += 'JSON.parse(' + JSON.stringify(datamodelObject.content) + ')';
                 break;
-            case 'expr' : 
+            case 'expr' :
                 s += datamodelObject.content;
                 break;
             default :
@@ -2010,9 +2055,9 @@ function makeDatamodelDeclaration(datamodel){
 function makeDatamodelClosures(datamodel){
     var vars = [];
     for(var id in datamodel){
-        vars.push( '"' + id + '" : {\n' + 
-            '"set" : function(v){ return ' + id + ' = v; },\n' + 
-            '"get" : function(){ return ' + id + ';}' + 
+        vars.push( '"' + id + '" : {\n' +
+            '"set" : function(v){ return ' + id + ' = v; },\n' +
+            '"get" : function(){ return ' + id + ';}' +
         '\n}');
     }
     return '{\n' + vars.join(',\n') + '\n}';
@@ -2020,29 +2065,29 @@ function makeDatamodelClosures(datamodel){
 
 function wrapFunctionBodyInDeclaration(action,isExpression){
     return "function(getData,setData,_events,$raise){var _event = _events[0];\n" +
-        (isExpression ? "return" : "") + " " + action + 
+        (isExpression ? "return" : "") + " " + action +
     "\n}";
 }
 
 
 function makeTopLevelFunctionBody(datamodelDeclaration,topLevelScripts,datamodelClosures,actionStrings){
-    return  datamodelDeclaration + 
-            (topLevelScripts.length ? topLevelScripts.join("\n") : "") + 
-            "var $datamodel = " + datamodelClosures + ";\n" + 
-            "return {\n" + 
-                "datamodel:$datamodel,\n" + 
+    return  datamodelDeclaration +
+            (topLevelScripts.length ? topLevelScripts.join("\n") : "") +
+            "var $datamodel = " + datamodelClosures + ";\n" +
+            "return {\n" +
+                "datamodel:$datamodel,\n" +
                 "actions:[\n" + actionStrings.join(",\n") + "\n]" +   //return all functions which get called during execution
             "\n};";
 }
 
 function wrapTopLevelFunctionBodyInDeclaration(fnBody){
-    return "function($log,$cancel,$send,$origin,In,require,$parseXml){\n" + fnBody + "\n}";
+    return "function($log,$cancel,$send,$origin,In,require,$parseXml,_sessionid,_ioprocessors,_x){\n" + fnBody + "\n}";
 }
 
 //this function ensures that the code in each SCXML document will run in "document scope".
 //SCXML embeds js code as strings in the document, hence the use of "eval" to dynamically evaluate things.
 //This function ensures that eval() is only called once, when the model is parsed. It will not be called during execution of the statechart.
-//However, each SCXML interpreter instance will have its own copies of the functions declared in the document. 
+//However, each SCXML interpreter instance will have its own copies of the functions declared in the document.
 //This is similar to the way HTML works - each page has its own copies of evaluated scripts.
 function makeActionFactory(topLevelScripts,actionStrings,datamodel){
     var datamodelDeclaration = makeDatamodelDeclaration(datamodel);
@@ -2050,7 +2095,7 @@ function makeActionFactory(topLevelScripts,actionStrings,datamodel){
     var topLevelFnBody = makeTopLevelFunctionBody(datamodelDeclaration,topLevelScripts,datamodelClosures,actionStrings);
     var fnStr = wrapTopLevelFunctionBodyInDeclaration(topLevelFnBody);
     //require('fs').writeFileSync('out.js',fnStr);
-    return fnStr; 
+    return fnStr;
 }
 
 
@@ -2059,7 +2104,7 @@ function constructSendEventData(action){
     var namelist = pm.platform.dom.hasAttribute(action,"namelist") ? pm.platform.dom.getAttribute(action,"namelist").trim().split(/ +/) : null,
         params = pm.platform.dom.getChildren(action).filter(function(child){return pm.platform.dom.localName(child) === 'param';}),
         content = pm.platform.dom.getChildren(action).filter(function(child){return pm.platform.dom.localName(child) === 'content';});
-        
+
     if(content.length){
         //TODO: instead of using textContent, serialize the XML
         content = content[0];
@@ -2141,76 +2186,96 @@ var annotator = require('./annotate-scxml-json'),
     json2model = require('../scxml/json2model'),
     pm = require('../../platform');
 
-function documentToModel(url,doc,cb){
+function documentToModel(url,doc,cb,context){
     //do whatever transforms
     //inline script tags
     //platformGet may be undefined, and we can continue without it, hence the guard
     if(pm.platform.getResourceFromUrl){
-        inlineSrcs(url,doc,function(errors){
-            if(errors){ 
-                //I think we should probably just log any of these errors
-                pm.platform.log("Errors downloading src attributes",errors);
+        inlineSrcs(url,doc,context,function(errors){
+            if(errors){
+                //treat script download errors as fatal
+                //pass through a single error - aggregate if there's more than one
+                cb(errors.length === 1 ?
+                        errors[0].err :
+                        new Error(
+                            'Script download errors : \n' +
+                                errors.map(function(oErr){return oErr.url + ': ' + oErr.err.message;}).join('\n')));
+            }else{
+                //otherwise, attempt to convert document to model object
+                docToModel(url,doc,cb);
             }
-            docToModel(doc,url,cb);
         });
     }else{
-        docToModel(doc,url,cb);
+        docToModel(url,doc,cb);
     }
 }
 
-function docToModel(doc,url,cb){
+function docToModel(url,doc,cb){
     try {
         var annotatedScxmlJson = annotator.transform(doc);
-        var model = json2model(annotatedScxmlJson,url); 
+        var model = json2model(annotatedScxmlJson,url);
         cb(null,model);
     }catch(e){
         cb(e);
     }
 }
 
-function inlineSrcs(url,doc,cb){
+function fixupUrl(baseUrl, targetUrl) {
+    var newUrl;
+    if (pm.platform.url.resolve) {
+        newUrl = pm.platform.url.resolve(baseUrl, targetUrl);
+    } else {
+        var documentUrlPath = pm.platform.url.getPathFromUrl(baseUrl);
+        var documentDir = pm.platform.path.dirname(documentUrlPath);
+        var scriptPath = pm.platform.path.join(documentDir,targetUrl);
+        newUrl = pm.platform.url.changeUrlPath(baseUrl,scriptPath);
+    }
+
+    return newUrl;
+}
+
+function inlineSrcs(docUrl,doc,context,cb){
     //console.log('inlining scripts');
-    
-    var scriptActionsWithSrcAttributes = [], errors = [];
 
-    traverse(doc.documentElement,scriptActionsWithSrcAttributes); 
+    var nodesWithSrcAttributes = [], errors = [], resultCount = 0;
 
-    //async forEach
-    function retrieveScripts(){
-        var script = scriptActionsWithSrcAttributes.pop();
-        if(script){
-            //quick and dirty for now:
-            //to be totally correct, what we need to do here is: 
-            //parse the url, extract the pathname, call dirname on path, and join that with the path to the file
-            var scriptUrl = pm.platform.dom.getAttribute(script,"src");
-            if(url){
-                var documentUrlPath = pm.platform.url.getPathFromUrl(url);
-                var documentDir = pm.platform.path.dirname(documentUrlPath);
-                var scriptPath = pm.platform.path.join(documentDir,scriptUrl);
-                scriptUrl = pm.platform.url.changeUrlPath(url,scriptPath);
+    traverse(doc.documentElement,nodesWithSrcAttributes);
+
+    if (nodesWithSrcAttributes.length) {
+        // kick off fetches in parallel
+        nodesWithSrcAttributes.forEach(function(node, idx) {
+            var nodeUrl = pm.platform.dom.getAttribute(node,"src");
+            if(docUrl) {
+                nodeUrl = fixupUrl(docUrl, nodeUrl);
             }
-            //platform.log('fetching script src',scriptUrl);
-            pm.platform.getResourceFromUrl(scriptUrl,function(err,text){
+
+           /* TBD: For data elements, use mimeType (aka Content-Type returned by HTTP server (if any))
+                     *  to determine how to process the external resource.
+                     *  e.g. treat application/json as JSON per hint in C.2.1 of http://www.w3.org/TR/scxml/#profiles
+                     */
+            pm.platform.getResourceFromUrl(nodeUrl,function(err,text,mimeType){
                 if(err){
                     //just capture the error, and continue on
-                    pm.platform.log("Error downloading document " + scriptUrl + " : " + err.message);
-                    errors.push(err); 
+                    pm.platform.log("Error downloading document " + nodeUrl + " : " + err.message);
+                    errors.push({url : nodeUrl, err : err});
                 }else{
-                    pm.platform.dom.textContent(script,text);
+                    pm.platform.dom.textContent(node,text);
                 }
-                retrieveScripts();
-            });
-        }else{
-            cb(errors.length ? errors : null);
-        }
+                ++resultCount;
+                if (resultCount == nodesWithSrcAttributes.length) {
+                    cb(errors.length ? errors : null);
+                }
+            },context);
+        });
+    } else {
+        cb();
     }
-    retrieveScripts();  //kick him off
 }
 
 function traverse(node,nodeList){
     if((pm.platform.dom.localName(node) === 'script' || pm.platform.dom.localName(node) === 'data') && pm.platform.dom.hasAttribute(node,"src")){
-        nodeList.push(node); 
-    } 
+        nodeList.push(node);
+    }
 
     pm.platform.dom.getElementChildren(node).forEach(function(child){traverse(child,nodeList);});
 }
@@ -2309,41 +2374,56 @@ var pm = require('./platform'),
     scxml = require('./core/scxml/SCXML'),
     documentToModel = require('./core/util/docToModel');
 
-function urlToModel(url,cb){
+/*
+  *@url URL of the SCXML document to retrieve and convert to a model
+  *@cb callback to invoke with an error or the model
+  *@context Optional. host-specific data passed along to the platform-specific resource-fetching API (e.g. to provide better traceability)
+  */
+function urlToModel(url,cb,context){
     if(!pm.platform.getDocumentFromUrl) throw new Error("Platform does not support getDocumentFromUrl");
 
     pm.platform.getDocumentFromUrl(url,function(err,doc){
         if(err){
             cb(err,null);
         }else{
-            documentToModel(url,doc,cb);
+            documentToModel(url,doc,cb,context);
         }
-    });
+    },context);
 }
 
-function pathToModel(url,cb){
+/*
+  *@url file system path of the SCXML document to retrieve and convert to a model
+  *@cb callback to invoke with an error or the model
+  *@context Optional. host-specific data passed along to the platform-specific resource-fetching API (e.g. to provide better traceability)
+  */
+function pathToModel(url,cb,context){
     if(!pm.platform.getDocumentFromFilesystem) throw new Error("Platform does not support getDocumentFromFilesystem");
 
     pm.platform.getDocumentFromFilesystem(url,function(err,doc){
         if(err){
             cb(err,null);
         }else{
-            documentToModel(url,doc,cb);
+            documentToModel(url,doc,cb,context);
         }
-    });
+    },context);
 }
 
-function documentStringToModel(s,cb){
+/*
+  *@s SCXML document string to convert to a model
+  *@cb callback to invoke with an error or the model
+  *@context Optional. host-specific data passed along to the platform-specific resource-fetching API (e.g. to provide better traceability)
+  */
+function documentStringToModel(s,cb,context){
     if(!pm.platform.parseDocumentFromString) throw new Error("Platform does not support parseDocumentFromString");
 
-    documentToModel(null,pm.platform.parseDocumentFromString(s),cb);
+    documentToModel(null,pm.platform.parseDocumentFromString(s),cb,context);
 }
 
 //export standard interface
 var scion = module.exports = {
     pathToModel : pathToModel,
-    urlToModel : urlToModel, 
-    documentStringToModel : documentStringToModel, 
+    urlToModel : urlToModel,
+    documentStringToModel : documentStringToModel,
     documentToModel : documentToModel,
     SCXML : scxml.SimpleInterpreter,
     ext : {
