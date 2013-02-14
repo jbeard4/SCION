@@ -7,7 +7,7 @@ Here are some reasons you might choose to use SCION:
 - Liberally licensed (Apache 2.0)
 - Standards-based (SCXML)
 - **Small**: Only 8kb minified and gzipped.
-- **Robust**: automatically tested using a [custom testing framework for SCXML implementations](https://github.com/jbeard4/scxml-test-framework), and uses [travis-ci](http://travis-ci.org/) for continuous integration: [![Build Status](https://secure.travis-ci.org/jbeard4/SCION.png)](http://travis-ci.org/jbeard4/SCION)
+- **Robust**: automatically tested using a [custom testing framework for SCXML implementations](https://github.com/jbeard4/scxml-test-framework). 
 - Maximally **portable** across JavaScript environments: works well in IE6+, modern browsers, node.js, rhino, and various JavaScript shells. 
 - **Easy** to learn and use: now with a simple, unified API for Rhino, Node.js and the browser.
 - Aggressively **optimized** for performance, memory usage and payload size. More information on this will be forthcoming.
