@@ -1,0 +1,20 @@
+{
+    "datamodel": {},
+    "xmlns": "http://www.w3.org/2005/07/scxml",
+    "version": "1.0",
+    "type": "scxml",
+    "states": [
+        {
+            "id": "p",
+            "type": "parallel",
+            "states": [
+                {
+                    "id": "a"
+                },
+                {
+                    "id": "b"
+                }
+            ]
+        }
+    ]
+}
