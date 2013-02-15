@@ -40,7 +40,7 @@ var tests = testModulePaths.map(function(testModulePath){
 
                 console.log('next configuration',actualNextConf);
 
-                assert.deepEqual(actualNextConf.sort(),nextEvent.nextConfiguration.sort(),'next configuration after sending event ' + nextEvent.event);
+                assert.deepEqual(actualNextConf.sort(),nextEvent.nextConfiguration.sort(),'next configuration after sending event ' + JSON.stringify(nextEvent));
             });
 
             report.result = 'success';
@@ -49,7 +49,10 @@ var tests = testModulePaths.map(function(testModulePath){
                 report.result = 'failure';
             }else{
                 report.result = 'error';
-                if(!swallowErrors) throw e;
+                if(!swallowErrors){
+                    console.error('Crashed on',testModulePath);
+                    throw e;
+                }
             }
             report.exception = e;
         }
