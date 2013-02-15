@@ -4,7 +4,9 @@ var assert = require('assert'), path = require('path');
 //path to test cases is passed in via argv
 var testModulePaths = process.argv.slice(2);      //assume these are of the form *.test.json
 
-console.log('testModulePaths',testModulePaths); 
+//console.log('testModulePaths',testModulePaths); 
+
+var swallowErrors = false;
 
 var tests = testModulePaths.map(function(testModulePath){
 
@@ -26,12 +28,19 @@ var tests = testModulePaths.map(function(testModulePath){
 
             var actualInitialConf = sc.getConfiguration();
 
-            assert.deepEqual(actualInitialConf,testModule.initialConfiguration,'initial configuration');
+            console.log('initial configuration',actualInitialConf);
+
+            assert.deepEqual(actualInitialConf.sort(),testModule.initialConfiguration.sort(),'initial configuration');
 
             testModule.events.forEach(function(nextEvent){
+
+                console.log('sending event',nextEvent.event);
+
                 var actualNextConf = sc.gen(nextEvent.event);
 
-                assert.deepEqual(actualNextConf,nextEvent.nextConfiguration,'next configuration after sending event ' + nextEvent.event);
+                console.log('next configuration',actualNextConf);
+
+                assert.deepEqual(actualNextConf.sort(),nextEvent.nextConfiguration.sort(),'next configuration after sending event ' + nextEvent.event);
             });
 
             report.result = 'success';
@@ -40,6 +49,7 @@ var tests = testModulePaths.map(function(testModulePath){
                 report.result = 'failure';
             }else{
                 report.result = 'error';
+                if(!swallowErrors) throw e;
             }
             report.exception = e;
         }
@@ -48,7 +58,7 @@ var tests = testModulePaths.map(function(testModulePath){
     };
 }); 
 
-console.log('tests',tests);
+//console.log('tests',tests);
 
 var reports = tests.map(function(test){return test();});
 
