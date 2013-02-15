@@ -85,4 +85,6 @@ process.stdout.write(JSON.stringify(testsFailed,4,4) + '\n');
 process.stdout.write('tests errored\n');
 process.stdout.write(JSON.stringify(testsErrored,4,4) + '\n');
 
+process.stdout.write((testsFailed.length || testsErrored.length ? 'SOME TESTS FAILED' : 'ALL TESTS PASSED') + '\n');
+
 process.exit(testsFailed.length + testsErrored.length);
