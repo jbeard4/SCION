@@ -1,0 +1,45 @@
+{
+    "datamodel": {},
+    "xmlns": "http://www.w3.org/2005/07/scxml",
+    "version": "1.0",
+    "initial": "a",
+    "type": "scxml",
+    "states": [
+        {
+            "id": "a",
+            "initial": "b",
+            "states": [
+                {
+                    "id": "b",
+                    "type": "parallel",
+                    "states": [
+                        {
+                            "id": "b1",
+                            "transitions": [
+                                {
+                                    "event": "t",
+                                    "target": "c"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "b2"
+                        }
+                    ]
+                },
+                {
+                    "id": "c",
+                    "type": "parallel",
+                    "states": [
+                        {
+                            "id": "c1"
+                        },
+                        {
+                            "id": "c2"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
