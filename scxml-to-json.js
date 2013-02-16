@@ -50,6 +50,14 @@ function transform(){
         return currentJson = action;
     }
 
+    function createDataJson(node){
+        return merge({
+                    $line : parser.line,
+                    $column : parser.column
+                },
+                node.attributes);
+    }
+
     function createStateJson(node){
         var state = clone(node.attributes);
 
@@ -98,7 +106,7 @@ function transform(){
         return {
             $line : parser.line,
             $column : parser.column,
-            expr : value
+            expr : value.trim()
         };
     }
 
@@ -150,10 +158,12 @@ function transform(){
 
         //data
         "datamodel":function(node){
-            currentJson = [];
+            console.log('datamodel currentJson',currentJson);
+            currentJson = currentJson.datamodel = [];
         },
         "data":function(node){
-            currentJson = currentJson.push(node.attributes);
+            console.log('data currentJson',currentJson);
+            currentJson.push(createDataJson(node));
         }
 
         //TODO: these
@@ -189,8 +199,7 @@ function transform(){
     };
 
     var EXPRESSION_ATTRS = [ 'cond',
-                            'array',
-                            'location'];
+                            'array'];
 
     parser.onattribute = function (attr) {
         //if attribute name ends with 'expr' or is one of the other ones enumerated above
@@ -217,17 +226,11 @@ function transform(){
         }
     };
 
-    //TODO: it may be better to move this logic into the parsing step, and just keep datamodels separated out.
-    function constructFinalDatamodel(){
-        var datamodel = {};
-        datamodels.forEach(function(data){
-            datamodel[data.id] = data.expr || null;
-        }); 
-        return datamodel;
-    }
-
     parser.onend = function () {
-        rootJson.datamodel = constructFinalDatamodel();
+        //do some scrubbing of root attributes
+        delete rootJson.xmlns;
+        delete rootJson.type;
+        delete rootJson.version;
     };
 
 
