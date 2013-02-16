@@ -34,7 +34,7 @@ function transform(){
                     {
                         $line : parser.line,
                         $column : parser.column,
-                        name:node.name,
+                        name:node.name
                     },
                     node.attributes);
 
@@ -53,8 +53,12 @@ function transform(){
     function createStateJson(node){
         var state = clone(node.attributes);
 
+        if(state.type){
+            state.isDeep = state.type === 'deep' ? true : false;
+        }
+
         //"state" is the default, so you don't need to explicitly write it
-        if(node.name !== "state") state.type = node.name;
+        if(node.name !== 'state' && node.name !== 'schema') state.type = node.name;
 
         if(currentJson){ 
             if(!currentJson.states){
@@ -102,14 +106,8 @@ function transform(){
         "scxml": function(node){
             return rootJson = createStateJson(node);
         },
-        "initial":function(node){
-            currentJson.initial = node.attributes.id;
-            return createStateJson(node);
-        },
-        "history":function(node){
-            currentJson.history = node.attributes.id;
-            return createStateJson(node);
-        },
+        "initial": createStateJson,
+        "history":createStateJson,
         "state":createStateJson,
         "parallel":createStateJson,
         "final":createStateJson,
@@ -152,10 +150,10 @@ function transform(){
 
         //data
         "datamodel":function(node){
-            currentJson = []
+            currentJson = [];
         },
         "data":function(node){
-            currentJson = currentJson.push(node.attributes)
+            currentJson = currentJson.push(node.attributes);
         }
 
         //TODO: these
@@ -265,3 +263,11 @@ fs.createReadStream("file.xml")
 */
 
 console.log(JSON.stringify(transform(),4,4));
+
+/*
+ * we want the data model to be versatile. So, state.onentry, state.onexit, transition.actions, and all other <action.actions should either be
+ * a string, representing a function
+ * an actual function
+ * an array containing either of the above
+ * an object containing "$line" and "$column" properties
+ */
