@@ -13,10 +13,13 @@
 var actionTags = require('./action-tags');
 
 function generateActionFunction(action){
+    var isExpression = !action.type;
+
     //TODO: pretty-print the generated code? might be a good command-line option
-    var fnName = '$' + action.type + '_line_' + action.$line + '_column_' + action.$column;
+    var fnName = '$' + (isExpression  ? 'expression' : action.type) + '_line_' + action.$line + '_column_' + action.$column;
+    var fnBody = isExpression ? action.expr : actionTags[action.type](action);
     var fnDec = 'function  ' + fnName + '(){\n' +
-        actionTags[action.type](action) + '\n' +
+        fnBody  + '\n' +
     '}';
 
     return {
@@ -71,7 +74,9 @@ function markAsReference(fnName){
 
 function replaceActions(actionContainer,actionPropertyName,fnDecAccumulator){
     if(actionContainer[actionPropertyName]){
-        var actionDescriptors = actionContainer[actionPropertyName].map(generateActionFunction);
+        var actions = Array.isArray(actionContainer[actionPropertyName]) ? actionContainer[actionPropertyName] : [actionContainer[actionPropertyName]] ;
+        
+        var actionDescriptors = actions.map(generateActionFunction);
         actionContainer[actionPropertyName] = actionDescriptors.map(function(o){return  REFERENCE_MARKER + o.fnName + REFERENCE_MARKER;});
         fnDecAccumulator.push.apply(fnDecAccumulator,actionDescriptors.map(function(o){return o.fnDec;}));
 
@@ -94,7 +99,7 @@ function visitState(state,datamodelAccumulator,fnDecAccumulator){
         state.transitions.forEach(function(transition){
             replaceActions(transition,'onTransition',fnDecAccumulator);
 
-            //TODO: deal with cond
+            replaceActions(transition,'cond',fnDecAccumulator);
         });
     }
 
