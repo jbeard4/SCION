@@ -2,7 +2,7 @@ var fs = require('fs');
 
 var sax = require("sax"),
     strict = true, // set to false for html-mode
-    parser = sax.parser(strict);
+    parser = sax.parser(strict,{trim : true});
 
 function merge(o1,o2){
     Object.keys(o2).forEach(function(k){
@@ -34,17 +34,20 @@ function transform(){
                     {
                         $line : parser.line,
                         $column : parser.column,
-                        name:node.name
+                        type:node.name
                     },
                     node.attributes);
 
+        //console.log('action node',node);
+
         if(Array.isArray(currentJson)){
+            //this will be onExit and onEntry
             currentJson.push(action);
         }else{
-            if(!currentJson.actions){
-                currentJson.actions = [];
+            if(!currentJson.onTransition){
+                currentJson.onTransition = [];
             }
-            currentJson.actions.push(action);
+            currentJson.onTransition.push(action);
         }
 
         return currentJson = action;
@@ -106,7 +109,7 @@ function transform(){
         return {
             $line : parser.line,
             $column : parser.column,
-            expr : value.trim()
+            expr : value
         };
     }
 
@@ -124,10 +127,10 @@ function transform(){
         "transition" : createTransitionJson,
 
         "onentry":function(node){
-            currentJson = currentJson.onentry = [];
+            currentJson = currentJson.onEntry = [];
         },
         "onexit":function(node){
-            currentJson = currentJson.onexit = [];
+            currentJson = currentJson.onExit = [];
         },
 
         //actions
@@ -158,11 +161,11 @@ function transform(){
 
         //data
         "datamodel":function(node){
-            console.log('datamodel currentJson',currentJson);
+            //console.log('datamodel currentJson',currentJson);
             currentJson = currentJson.datamodel = [];
         },
         "data":function(node){
-            console.log('data currentJson',currentJson);
+            //console.log('data currentJson',currentJson);
             currentJson.push(createDataJson(node));
         }
 
@@ -217,10 +220,10 @@ function transform(){
 
     parser.ontext = function (t) {
         //the only text we care about is that inside of <script> and <content>
-        if(currentJson && currentJson.name){
-            if(currentJson.name === 'script'){
-                currentJson.content = createExpression(t);
-            }else if(currentJson.name === 'send'){
+        if(currentJson && currentJson.type){
+            if(currentJson.type === 'script'){
+                currentJson.content = t;        //I don't think we need a separate expression for this w/ line/col mapping
+            }else if(currentJson.type === 'send'){
                 currentJson.content = t;
             }
         }
@@ -268,7 +271,7 @@ fs.createReadStream("file.xml")
 console.log(JSON.stringify(transform(),4,4));
 
 /*
- * we want the data model to be versatile. So, state.onentry, state.onexit, transition.actions, and all other <action.actions should either be
+ * we want the data model to be versatile. So, state.onentry, state.onexit, transition.onTransition, and all other <action.onTransition should either be
  * a string, representing a function
  * an actual function
  * an array containing either of the above
