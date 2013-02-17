@@ -1,3 +1,3 @@
 #!/bin/bash
 
-node harness.js */*.test.json
+node harness.js */*.sm.js*
