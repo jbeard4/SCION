@@ -25,9 +25,9 @@ function transform(){
         expressionAttributeCache,      //we cache them because in sax-js attributes get processed before the nodes they're attached to,
                                             //and this is the only way we can capture their row/col numbers.
                                             //so when we finally find one, it gets popped off the stack. 
-        jsonStack = [];
+        jsonStack = [],
+        allTransitions = [];                 //we keep a reference to these so we can clean up the onTransition property later
 
-    var datamodels = [];            //later on these will get consolidated, so we have one top-level datamodel which gets hung off the root state
 
     function createActionJson(node){
         var action = merge(
@@ -44,9 +44,6 @@ function transform(){
         if(Array.isArray(currentJson)){
             //this will be onExit and onEntry
             actionContainer = currentJson;
-        }else if(currentJson.event || currentJson.cond || currentJson.target){
-            //if it's a transition
-            actionContainer = currentJson.onTransition = currentJson.onTransition || [];
         }else{
             //if it's any other action
             actionContainer = currentJson.actions = currentJson.actions || [];
@@ -105,6 +102,8 @@ function transform(){
 
             currentJson.transitions.push(transition);
         }
+
+        allTransitions.push(transition);
 
         return currentJson = transition;
     }
@@ -240,6 +239,12 @@ function transform(){
         delete rootJson.version;
 
         if(typeof rootJson.datamodel === 'string') delete rootJson.datamodel;       //this would happen if we have, e.g. state.datamodel === 'ecmascript'
+
+        //change the property name of transition event to something nicer
+        allTransitions.forEach(function(transition){
+            transition.onTransition = transition.actions;
+            delete transition.actions;
+        });
     };
 
 

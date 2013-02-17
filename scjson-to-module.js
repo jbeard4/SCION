@@ -135,21 +135,28 @@ var actionTags = {
         return "console.log(" + params.join(",") + ");";
     },
 
-    //TODO: other SCXML actions
-    /*
     "if" : function(action){
-        var s = "";
-        s += "if(" + pm.platform.dom.getAttribute(action,"cond") + "){\n";
+        var s = "", fnDecs = [];
 
-        var childNodes = pm.platform.dom.getElementChildren(action);
+        s += "if(" + action.cond.expr + "){\n";
+
+        var childNodes = action.actions;
+
+        function processChild(child){
+            var nameDecObj = generateActionFunction(child);
+            s += nameDecObj.fnName + '();\n';
+
+            fnDecs.push(nameDecObj.fnDec);
+        }
+
 
         for(var i = 0; i < childNodes.length; i++){
             var child = childNodes[i];
 
-            if(pm.platform.dom.localName(child) === "elseif" || pm.platform.dom.localName(child) === "else"){
+            if(child.type === "elseif" || child.type === "else"){
                 break;
             }else{
-                s += actionTagToFnBody(child) + "\n;;\n";
+                processChild(child);
             }
         }
 
@@ -157,13 +164,13 @@ var actionTags = {
         for(; i < childNodes.length; i++){
             child = childNodes[i];
 
-            if(pm.platform.dom.localName(child) === "elseif"){
-                s+= "}else if(" + pm.platform.dom.getAttribute(child,"cond") + "){\n";
-            }else if(pm.platform.dom.localName(child) === "else"){
+            if(child.type === "elseif"){
+                s+= "}else if(" + child.cond.expr + "){\n";
+            }else if(child.type === "else"){
                 s += "}";
                 break;
             }else{
-                s+= actionTagToFnBody(child)  + "\n;;\n";
+                processChild(child);
             }
         }
 
@@ -171,15 +178,15 @@ var actionTags = {
             child = childNodes[i];
 
             //this should get encountered first
-            if(pm.platform.dom.localName(child) === "else"){
+            if(child.type === "else"){
                 s+= "else{\n";
             }else{
-                s+= actionTagToFnBody(child)  + "\n;;\n";
+                processChild(child);
             }
         }
         s+= "}";
 
-        return s;
+        return [fnDecs.join('\n\n'),s].join('\n\n');
     },
 
     "elseif" : function(){
@@ -190,6 +197,7 @@ var actionTags = {
         throw new Error("Encountered unexpected else tag.");
     },
 
+    /*
     "log" : function(action){
         var params = [];
 
