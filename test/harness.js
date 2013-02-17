@@ -1,90 +1,52 @@
 var scion = require('../lib/scion');
-var assert = require('assert'), path = require('path');
+var addTest = require('tape');
+var path = require('path');
 
 //path to test cases is passed in via argv
-var testModulePaths = process.argv.slice(2);      //assume these are of the form *.test.json
+var statechartModulePaths = process.argv.slice(2);      //assume these are of the form *.test.json
 
-//console.log('testModulePaths',testModulePaths); 
+//console.log('statechartModulePaths',statechartModulePaths); 
 
 var swallowErrors = false;
 
-var tests = testModulePaths.map(function(testModulePath){
+//if we've specified individual tests via argv, get them
+//otherwise, pull it from the registry
+var tests = statechartModulePaths.length ? 
+        statechartModulePaths.map(function(statechartModulePath){
 
-    return function(){
+            //try to find a .test.json file
+            var testModulePath = statechartModulePath.replace(/\.sm\.js(on)?$/,'.test.json');
+            var sm = require(path.resolve('.',statechartModulePath));
 
-        var report = { name : testModulePath};
+            return {
+                name : testModulePath,
+                sm : sm,
+                test : require(path.resolve('.',testModulePath))
+            };
+        }) : require('./tests.js');
 
-        console.log('Running test',testModulePath);
+tests.forEach(function(test){
+    addTest(test.name,function(t){
 
-        var stateMachineModulePath = testModulePath.replace('.test.json','.sm.json');        //TODO: later, we will also look for a .js file, which will be a regular js module
+        t.plan(test.test.events.length + 1);
 
-        var smModule = require(path.resolve('.',stateMachineModulePath)),
-            testModule = require(path.resolve('.',testModulePath));
+        var sc = new scion.Statechart(test.sm);
 
-        try {
-            var sc = new scion.Statechart(smModule);
+        var actualInitialConf = sc.start();
 
-            sc.start();
+        console.log('initial configuration',actualInitialConf);
 
-            var actualInitialConf = sc.getConfiguration();
+        t.deepEqual(actualInitialConf.sort(),test.test.initialConfiguration.sort(),'initial configuration');
 
-            console.log('initial configuration',actualInitialConf);
+        test.test.events.forEach(function(nextEvent){
 
-            assert.deepEqual(actualInitialConf.sort(),testModule.initialConfiguration.sort(),'initial configuration');
+            console.log('sending event',nextEvent.event);
 
-            testModule.events.forEach(function(nextEvent){
+            var actualNextConf = sc.gen(nextEvent.event);
 
-                console.log('sending event',nextEvent.event);
+            console.log('next configuration',actualNextConf);
 
-                var actualNextConf = sc.gen(nextEvent.event);
-
-                console.log('next configuration',actualNextConf);
-
-                assert.deepEqual(actualNextConf.sort(),nextEvent.nextConfiguration.sort(),'next configuration after sending event ' + JSON.stringify(nextEvent));
-            });
-
-            report.result = 'success';
-        }catch(e){
-            if(e.name === 'AssertionError'){
-                report.result = 'failure';
-            }else{
-                report.result = 'error';
-                if(!swallowErrors){
-                    console.error('Crashed on',testModulePath);
-                    throw e;
-                }
-            }
-            report.exception = e;
-        }
-
-        return report;
-    };
-}); 
-
-//console.log('tests',tests);
-
-var reports = tests.map(function(test){return test();});
-
-var 
-    testsPassed = reports.filter(function(report){
-        return report.result === 'success';
-    }), 
-    testsFailed = reports.filter(function(report){
-        return report.result === 'failure';
-    }), 
-    testsErrored = reports.filter(function(report){
-        return report.result === 'error';
+            t.deepEqual(actualNextConf.sort(),nextEvent.nextConfiguration.sort(),'next configuration after sending event ' + JSON.stringify(nextEvent));
+        });
     });
-
-process.stdout.write('tests passed\n');
-process.stdout.write(JSON.stringify(testsPassed,4,4) + '\n');
-
-process.stdout.write('tests failed\n');
-process.stdout.write(JSON.stringify(testsFailed,4,4) + '\n');
-
-process.stdout.write('tests errored\n');
-process.stdout.write(JSON.stringify(testsErrored,4,4) + '\n');
-
-process.stdout.write((testsFailed.length || testsErrored.length ? 'SOME TESTS FAILED' : 'ALL TESTS PASSED') + '\n');
-
-process.exit(testsFailed.length + testsErrored.length);
+});
