@@ -1,6 +1,6 @@
 {
     "name": "scion",
-    "version": "0.0.10",
+    "version": "0.1.0",
     "description": "StateCharts Interpretation and Optimization eNgine (SCION) is an implementation of Statecharts in JavaScript.",
     "keywords": [
         "scxml",
@@ -30,11 +30,21 @@
         }
     ],
     "devDependencies":{
-        "uglify-js" : "*"
+        "tape" : "*"
     },
     "engines" : { "node" : ">=0.6" },
-    "main": "./lib/SCION",
+    "main": "./lib/scion",
     "scripts" : {
-        "test" : "cd test && bash run-tests-node.sh"
+        "test" : "node test/harness.js"
+    },  
+    "testling": {
+        "files": "test/harness.js",
+        "browsers": {
+            "ie": [ 8, 9 ],
+            "firefox": [ 13 ],
+            "chrome": [ 20 ],
+            "safari": [ 5.1 ],
+            "opera": [ 12 ]
+        }
     }
 }
