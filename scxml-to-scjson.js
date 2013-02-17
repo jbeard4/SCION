@@ -40,15 +40,19 @@ function transform(){
 
         //console.log('action node',node);
 
+        var actionContainer;
         if(Array.isArray(currentJson)){
             //this will be onExit and onEntry
-            currentJson.push(action);
+            actionContainer = currentJson;
+        }else if(currentJson.event || currentJson.cond || currentJson.target){
+            //if it's a transition
+            actionContainer = currentJson.onTransition = currentJson.onTransition || [];
         }else{
-            if(!currentJson.onTransition){
-                currentJson.onTransition = [];
-            }
-            currentJson.onTransition.push(action);
+            //if it's any other action
+            actionContainer = currentJson.actions = currentJson.actions || [];
         }
+
+        actionContainer.push(action);
 
         return currentJson = action;
     }
@@ -234,6 +238,8 @@ function transform(){
         delete rootJson.xmlns;
         delete rootJson.type;
         delete rootJson.version;
+
+        if(typeof rootJson.datamodel === 'string') delete rootJson.datamodel;       //this would happen if we have, e.g. state.datamodel === 'ecmascript'
     };
 
 
