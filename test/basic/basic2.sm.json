@@ -10,7 +10,16 @@
             ]
         },
         {
-            "id": "b"
+            "id": "b",
+            "transitions": [
+                {
+                    "target": "c",
+                    "event": "t2"
+                }
+            ]
+        },
+        {
+            "id": "c"
         }
     ]
 }
