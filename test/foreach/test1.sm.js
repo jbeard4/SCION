@@ -1,3 +1,5 @@
+//Generated on Monday, February 18, 2013 19:23:56 by the SCION SCXML compiler
+
 var myArray = [1,3,5,7,9], myItem = 0, myIndex = 0, sum = 0, indexSum = 0;
 
 function $log_line_34_column_55(){
@@ -5,39 +7,33 @@ function $log_line_34_column_55(){
 }
 
 function $foreach_line_35_column_67(){
-    var myItem ,myIndex;
-    
-    function $assign_line_36_column_60(){
-        sum = sum + myItem;
-    }
-    function $assign_line_37_column_71(){
-        indexSum = indexSum + myIndex;
-    }
-    
     if(Array.isArray(myArray)){
         for(myIndex = 0; myIndex < myArray.length;myIndex++){
            myItem = myArray[myIndex];
            $assign_line_36_column_60();
-    $assign_line_37_column_71();
+           $assign_line_37_column_71();
         }
     } else{
         for(myIndex in myArray){
             if(myArray.hasOwnProperty(myIndex)){
                myItem = myArray[myIndex];
                $assign_line_36_column_60();
-    $assign_line_37_column_71();
+               $assign_line_37_column_71();
             }
         }
     }
 }
 
+function $assign_line_36_column_60(){
+    sum = sum + myItem;
+}
+
+function $assign_line_37_column_71(){
+    indexSum = indexSum + myIndex;
+}
+
 function $foreach_line_39_column_51(){
-    var myItem ,$i;
-    
-    function $assign_line_40_column_60(){
-        sum = sum + myItem;
-    }
-    
+    var $i;
     if(Array.isArray(myArray)){
         for($i = 0; $i < myArray.length;$i++){
            myItem = myArray[$i];
@@ -51,6 +47,10 @@ function $foreach_line_39_column_51(){
             }
         }
     }
+}
+
+function $assign_line_40_column_60(){
+    sum = sum + myItem;
 }
 
 function $log_line_42_column_54(){

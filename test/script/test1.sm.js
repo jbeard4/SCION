@@ -1,18 +1,20 @@
+//Generated on Monday, February 18, 2013 19:28:55 by the SCION SCXML compiler
+
 var x;
 
-function  $script_line_27_column_20(){
+function $script_line_27_column_20(){
     x = 0;
 }
 
-function  $script_line_35_column_20(){
+function $script_line_35_column_20(){
     x = x + 1;
 }
 
-function  $expression_line_34_column_48(){
+function $expression_line_34_column_48(){
     return x < 100;
 }
 
-function  $expression_line_39_column_47(){
+function $expression_line_39_column_47(){
     return x === 100;
 }
 
