@@ -1,6 +1,8 @@
+//Generated on Monday, February 18, 2013 23:15:36 by the SCION SCXML compiler
 
 
-function  $expression_line_22_column_52(){
+
+function $cond_line_22_column_52(_event, In, _sessionId, _name, _ioprocessors, _x){
     return true;
 }
 
@@ -12,7 +14,7 @@ module.exports = {
                 {
                     "target": "b",
                     "event": "t",
-                    "cond": $expression_line_22_column_52
+                    "cond": $cond_line_22_column_52
                 }
             ]
         },
