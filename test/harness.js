@@ -1,6 +1,7 @@
 var scion = require('../lib/scion');
 var addTest = require('tape');
 var path = require('path');
+var async = require('async');
 
 //path to test cases is passed in via argv
 var statechartModulePaths = process.argv.slice(2);      //assume these are of the form *.test.json
@@ -38,15 +39,27 @@ tests.forEach(function(test){
 
         t.deepEqual(actualInitialConf.sort(),test.test.initialConfiguration.sort(),'initial configuration');
 
-        test.test.events.forEach(function(nextEvent){
+        async.eachSeries(test.test.events,function(nextEvent,cb){
 
-            console.log('sending event',nextEvent.event);
+            function ns(){
+                console.log('sending event',nextEvent.event);
 
-            var actualNextConf = sc.gen(nextEvent.event);
+                var actualNextConf = sc.gen(nextEvent.event);
 
-            console.log('next configuration',actualNextConf);
+                console.log('next configuration',actualNextConf);
 
-            t.deepEqual(actualNextConf.sort(),nextEvent.nextConfiguration.sort(),'next configuration after sending event ' + JSON.stringify(nextEvent));
+                t.deepEqual(actualNextConf.sort(),nextEvent.nextConfiguration.sort(),'next configuration after sending event ' + JSON.stringify(nextEvent));
+
+                cb();
+            }
+
+            if(nextEvent.delay){
+                setTimeout(ns,nextEvent.delay);
+            }else{
+                ns();
+            }
+        },function(){
+            //we could explicitly end here by calling t.end(), but we don't need to - t.plan() should take care of it automatically
         });
     });
 });
