@@ -23,7 +23,7 @@ function generateActionFunction(action){
         (isExpression ? 'return ' : '' ) + 
             fnBody  + 
             (isExpression ? ';' : '' );
-    var fnDec = 'function ' + fnName + '(){\n' +
+    var fnDec = 'function ' + fnName + '(_event, In, _sessionId, _name, _ioprocessors, _x){\n' +
         fullFnBody.split('\n').map(function(line){return '    ' + line;}).join('\n') + '\n' +   //do some lightweight formatting
     '}';
 
@@ -212,12 +212,11 @@ var actionTags = {
         throw new Error("Encountered unexpected else tag.");
     },
 
-    /*
-
     "raise" : function(action){
-        return "$raise({ name:" + JSON.stringify(pm.platform.dom.getAttribute(action,"event")) + ", data : {}});";
+        return "this.raise({ name:" + JSON.stringify(action.event) + ", data : {}});";
     },
 
+    /*
     "cancel" : function(action){
         return "$cancel(" + JSON.stringify(pm.platform.dom.getAttribute(action,"sendid")) + ");";
     },
