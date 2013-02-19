@@ -1,36 +1,36 @@
-//Generated on Monday, February 18, 2013 19:28:55 by the SCION SCXML compiler
+//Generated on Monday, February 18, 2013 23:38:31 by the SCION SCXML compiler
 
 var x;
 
-function $script_line_27_column_20(){
+function $script_line_27_column_20(_event, In, _sessionId, _name, _ioprocessors, _x){
     x = 0;
 }
 
-function $script_line_52_column_20(){
+function $script_line_52_column_20(_event, In, _sessionId, _name, _ioprocessors, _x){
     x = x * 2;
 }
 
-function $expression_line_51_column_47(){
+function $cond_line_51_column_47(_event, In, _sessionId, _name, _ioprocessors, _x){
     return x === 100;
 }
 
-function $script_line_37_column_24(){
+function $script_line_37_column_24(_event, In, _sessionId, _name, _ioprocessors, _x){
     x = x + 1;
 }
 
-function $expression_line_36_column_52(){
+function $cond_line_36_column_52(_event, In, _sessionId, _name, _ioprocessors, _x){
     return x < 100;
 }
 
-function $script_line_45_column_24(){
+function $script_line_45_column_24(_event, In, _sessionId, _name, _ioprocessors, _x){
     x = x + 1;
 }
 
-function $expression_line_44_column_52(){
+function $cond_line_44_column_52(_event, In, _sessionId, _name, _ioprocessors, _x){
     return x < 100;
 }
 
-function $expression_line_60_column_47(){
+function $cond_line_60_column_47(_event, In, _sessionId, _name, _ioprocessors, _x){
     return x === 200;
 }
 
@@ -54,7 +54,7 @@ module.exports = {
                     "transitions": [
                         {
                             "target": "c",
-                            "cond": $expression_line_36_column_52,
+                            "cond": $cond_line_36_column_52,
                             "onTransition": $script_line_37_column_24
                         }
                     ]
@@ -64,7 +64,7 @@ module.exports = {
                     "transitions": [
                         {
                             "target": "b",
-                            "cond": $expression_line_44_column_52,
+                            "cond": $cond_line_44_column_52,
                             "onTransition": $script_line_45_column_24
                         }
                     ]
@@ -73,7 +73,7 @@ module.exports = {
             "transitions": [
                 {
                     "target": "d",
-                    "cond": $expression_line_51_column_47,
+                    "cond": $cond_line_51_column_47,
                     "onTransition": $script_line_52_column_20
                 }
             ]
@@ -83,7 +83,7 @@ module.exports = {
             "transitions": [
                 {
                     "target": "e",
-                    "cond": $expression_line_60_column_47
+                    "cond": $cond_line_60_column_47
                 },
                 {
                     "target": "f"

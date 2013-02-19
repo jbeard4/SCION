@@ -1,34 +1,36 @@
+//Generated on Monday, February 18, 2013 23:15:36 by the SCION SCXML compiler
 
 
-function  $expression_line_55_column_55(){
+
+function $cond_line_55_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
     return false;
 }
 
-function  $expression_line_56_column_54(){
+function $cond_line_56_column_54(_event, In, _sessionId, _name, _ioprocessors, _x){
     return true;
 }
 
-function  $expression_line_65_column_55(){
+function $cond_line_65_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
     return false;
 }
 
-function  $expression_line_66_column_55(){
+function $cond_line_66_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
     return false;
 }
 
-function  $expression_line_67_column_54(){
+function $cond_line_67_column_54(_event, In, _sessionId, _name, _ioprocessors, _x){
     return true;
 }
 
-function  $expression_line_92_column_56(){
+function $cond_line_92_column_56(_event, In, _sessionId, _name, _ioprocessors, _x){
     return true;
 }
 
-function  $expression_line_82_column_57(){
+function $cond_line_82_column_57(_event, In, _sessionId, _name, _ioprocessors, _x){
     return true;
 }
 
-function  $expression_line_87_column_58(){
+function $cond_line_87_column_58(_event, In, _sessionId, _name, _ioprocessors, _x){
     return false;
 }
 
@@ -85,12 +87,12 @@ module.exports = {
                 {
                     "target": "f1",
                     "event": "t3",
-                    "cond": $expression_line_55_column_55
+                    "cond": $cond_line_55_column_55
                 },
                 {
                     "target": "f2",
                     "event": "t3",
-                    "cond": $expression_line_56_column_54
+                    "cond": $cond_line_56_column_54
                 }
             ]
         },
@@ -106,17 +108,17 @@ module.exports = {
                 {
                     "target": "g1",
                     "event": "t4",
-                    "cond": $expression_line_65_column_55
+                    "cond": $cond_line_65_column_55
                 },
                 {
                     "target": "g2",
                     "event": "t4",
-                    "cond": $expression_line_66_column_55
+                    "cond": $cond_line_66_column_55
                 },
                 {
                     "target": "g3",
                     "event": "t4",
-                    "cond": $expression_line_67_column_54
+                    "cond": $cond_line_67_column_54
                 }
             ]
         },
@@ -143,7 +145,7 @@ module.exports = {
                         {
                             "target": "i",
                             "event": "t5",
-                            "cond": $expression_line_82_column_57
+                            "cond": $cond_line_82_column_57
                         }
                     ]
                 },
@@ -153,7 +155,7 @@ module.exports = {
                         {
                             "target": "j",
                             "event": "t5",
-                            "cond": $expression_line_87_column_58
+                            "cond": $cond_line_87_column_58
                         }
                     ]
                 },
@@ -165,7 +167,7 @@ module.exports = {
                 {
                     "target": "last",
                     "event": "t5",
-                    "cond": $expression_line_92_column_56
+                    "cond": $cond_line_92_column_56
                 }
             ]
         },

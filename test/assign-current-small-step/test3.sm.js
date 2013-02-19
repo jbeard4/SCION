@@ -1,19 +1,33 @@
+//Generated on Monday, February 18, 2013 23:14:47 by the SCION SCXML compiler
+
 var i;
 
-function  $assign_line_30_column_43(){
-    i = 0;
+function $assign_line_30_column_43(_event, In, _sessionId, _name, _ioprocessors, _x){
+    i = $expr_line_30_column_41.apply(this, arguments);
 }
 
-function  $expression_line_58_column_56(){
+function $expr_line_30_column_41(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return 0;
+}
+
+function $cond_line_58_column_56(_event, In, _sessionId, _name, _ioprocessors, _x){
     return i === 0;
 }
 
-function  $assign_line_39_column_55(){
-    i = i + 1;
+function $assign_line_39_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
+    i = $expr_line_39_column_53.apply(this, arguments);
 }
 
-function  $assign_line_50_column_55(){
-    i = i - 1;
+function $expr_line_39_column_53(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return i + 1;
+}
+
+function $assign_line_50_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
+    i = $expr_line_50_column_53.apply(this, arguments);
+}
+
+function $expr_line_50_column_53(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return i - 1;
 }
 
 module.exports = {
@@ -75,7 +89,7 @@ module.exports = {
                 {
                     "event": "t3",
                     "target": "d",
-                    "cond": $expression_line_58_column_56
+                    "cond": $cond_line_58_column_56
                 },
                 {
                     "event": "t3",

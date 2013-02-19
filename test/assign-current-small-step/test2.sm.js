@@ -1,34 +1,52 @@
+//Generated on Monday, February 18, 2013 23:14:47 by the SCION SCXML compiler
+
 var i;
 
-function  $assign_line_30_column_43(){
-    i = 0;
+function $assign_line_30_column_43(_event, In, _sessionId, _name, _ioprocessors, _x){
+    i = $expr_line_30_column_41.apply(this, arguments);
 }
 
-function  $assign_line_49_column_47(){
-    i = i * 2;
+function $expr_line_30_column_41(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return 0;
 }
 
-function  $expression_line_48_column_47(){
+function $assign_line_49_column_47(_event, In, _sessionId, _name, _ioprocessors, _x){
+    i = $expr_line_49_column_45.apply(this, arguments);
+}
+
+function $expr_line_49_column_45(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return i * 2;
+}
+
+function $cond_line_48_column_47(_event, In, _sessionId, _name, _ioprocessors, _x){
     return i === 100;
 }
 
-function  $assign_line_38_column_51(){
-    i = i + 1;
+function $assign_line_38_column_51(_event, In, _sessionId, _name, _ioprocessors, _x){
+    i = $expr_line_38_column_49.apply(this, arguments);
 }
 
-function  $expression_line_37_column_52(){
+function $expr_line_38_column_49(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return i + 1;
+}
+
+function $cond_line_37_column_52(_event, In, _sessionId, _name, _ioprocessors, _x){
     return i < 100;
 }
 
-function  $assign_line_44_column_51(){
-    i = i + 1;
+function $assign_line_44_column_51(_event, In, _sessionId, _name, _ioprocessors, _x){
+    i = $expr_line_44_column_49.apply(this, arguments);
 }
 
-function  $expression_line_43_column_52(){
+function $expr_line_44_column_49(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return i + 1;
+}
+
+function $cond_line_43_column_52(_event, In, _sessionId, _name, _ioprocessors, _x){
     return i < 100;
 }
 
-function  $expression_line_55_column_47(){
+function $cond_line_55_column_47(_event, In, _sessionId, _name, _ioprocessors, _x){
     return i === 200;
 }
 
@@ -52,7 +70,7 @@ module.exports = {
                     "transitions": [
                         {
                             "target": "c",
-                            "cond": $expression_line_37_column_52,
+                            "cond": $cond_line_37_column_52,
                             "onTransition": $assign_line_38_column_51
                         }
                     ]
@@ -62,7 +80,7 @@ module.exports = {
                     "transitions": [
                         {
                             "target": "b",
-                            "cond": $expression_line_43_column_52,
+                            "cond": $cond_line_43_column_52,
                             "onTransition": $assign_line_44_column_51
                         }
                     ]
@@ -71,7 +89,7 @@ module.exports = {
             "transitions": [
                 {
                     "target": "d",
-                    "cond": $expression_line_48_column_47,
+                    "cond": $cond_line_48_column_47,
                     "onTransition": $assign_line_49_column_47
                 }
             ]
@@ -81,7 +99,7 @@ module.exports = {
             "transitions": [
                 {
                     "target": "e",
-                    "cond": $expression_line_55_column_47
+                    "cond": $cond_line_55_column_47
                 },
                 {
                     "target": "f"

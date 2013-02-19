@@ -1,12 +1,12 @@
-//Generated on Monday, February 18, 2013 19:28:55 by the SCION SCXML compiler
+//Generated on Monday, February 18, 2013 23:38:31 by the SCION SCXML compiler
 
 var x;
 
-function $script_line_27_column_20(){
+function $script_line_27_column_20(_event, In, _sessionId, _name, _ioprocessors, _x){
     x = 100;
 }
 
-function $expression_line_34_column_57(){
+function $cond_line_34_column_57(_event, In, _sessionId, _name, _ioprocessors, _x){
     return x === 100;
 }
 
@@ -27,7 +27,7 @@ module.exports = {
                 {
                     "target": "b",
                     "event": "t",
-                    "cond": $expression_line_34_column_57
+                    "cond": $cond_line_34_column_57
                 },
                 {
                     "target": "f",
