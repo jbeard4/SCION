@@ -15,7 +15,10 @@ function generateActionFunction(action){
 
     //TODO: pretty-print the generated code? might be a good command-line option
     var fnName = '$' + (isExpression  ? 'expression' : action.type) + '_line_' + action.$line + '_column_' + action.$column;
-    var fnBody = isExpression ? action.expr : actionTags[action.type](action);
+    var stringOrFnBodyAndDecsObj = isExpression ? action.expr : actionTags[action.type](action);
+
+    var fnBody = stringOrFnBodyAndDecsObj.fnBody || stringOrFnBodyAndDecsObj;
+
     var fullFnBody = 
         (isExpression ? 'return ' : '' ) + 
             fnBody  + 
@@ -24,9 +27,11 @@ function generateActionFunction(action){
         fullFnBody.split('\n').map(function(line){return '    ' + line;}).join('\n') + '\n' +   //do some lightweight formatting
     '}';
 
+    var fnDecs = [fnDec].concat(stringOrFnBodyAndDecsObj.fnDecs || []);
+
     return {
         fnName : fnName,
-        fnDec : fnDec 
+        fnDecs : fnDecs 
     };
 }
 
@@ -58,9 +63,16 @@ function dumpFunctionDeclarations(fnDecAccumulator){
     return fnDecAccumulator.join('\n\n');
 }
 
+function dumpHeader(){
+    var d = new Date();
+    return '//Generated on ' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString() + ' by the SCION SCXML compiler';
+}
+
 function generateModule(rootState,datamodelAccumulator,fnDecAccumulator){
     //only commonjs module for now
     var sm = [
+        dumpHeader(),
+        '',
         generateDatamodelDeclaration(datamodelAccumulator),
         '',
         dumpFunctionDeclarations(fnDecAccumulator),
@@ -80,7 +92,7 @@ function replaceActions(actionContainer,actionPropertyName,fnDecAccumulator){
         
         var actionDescriptors = actions.map(generateActionFunction);
         actionContainer[actionPropertyName] = actionDescriptors.map(function(o){return  REFERENCE_MARKER + o.fnName + REFERENCE_MARKER;});
-        fnDecAccumulator.push.apply(fnDecAccumulator,actionDescriptors.map(function(o){return o.fnDec;}));
+        fnDecAccumulator.push.apply(fnDecAccumulator,actionDescriptors.map(function(o){return o.fnDecs;}).reduce(function(a,b){return a.concat(b);},[]));
 
         if(actionContainer[actionPropertyName].length === 1){
             actionContainer[actionPropertyName] = actionContainer[actionPropertyName][0];
@@ -144,9 +156,9 @@ var actionTags = {
 
         function processChild(child){
             var nameDecObj = generateActionFunction(child);
-            s += nameDecObj.fnName + '();\n';
+            s += '    ' + nameDecObj.fnName + '();\n';
 
-            fnDecs.push(nameDecObj.fnDec);
+            fnDecs.push.apply(fnDecs,nameDecObj.fnDecs);
         }
 
 
@@ -186,7 +198,10 @@ var actionTags = {
         }
         s+= "}";
 
-        return [fnDecs.join('\n\n'),s].join('\n\n');
+        return {
+            fnBody : s, 
+            fnDecs : fnDecs
+        };
     },
 
     "elseif" : function(){
@@ -198,14 +213,6 @@ var actionTags = {
     },
 
     /*
-    "log" : function(action){
-        var params = [];
-
-        if(pm.platform.dom.hasAttribute(action,"label")) params.push( JSON.stringify(pm.platform.dom.getAttribute(action,"label")));
-        if(pm.platform.dom.hasAttribute(action,"expr")) params.push( pm.platform.dom.getAttribute(action,"expr"));
-
-        return "$log(" + params.join(",") + ");";
-    },
 
     "raise" : function(action){
         return "$raise({ name:" + JSON.stringify(pm.platform.dom.getAttribute(action,"event")) + ", data : {}});";
@@ -245,33 +252,33 @@ var actionTags = {
 
     "foreach" : function(action){
         var isIndexDefined = action.index,
+            needsToDeclareIndex = !action.index,
             index = action.index || "$i",        //FIXME: the index variable could shadow the datamodel. We should pick a unique temperorary variable name
             item = action.item,
             arr = action.array.expr,
             foreachNameDecObjs = action.actions.map(generateActionFunction);
 
-        var loopContents = foreachNameDecObjs.map(function(o){return o.fnName + '();';}).join('\n');
-
         var forEachContents = 
+            (needsToDeclareIndex ? 'var ' + index + ';\n' : '') +
             'if(Array.isArray(' + arr + ')){\n' +
             '    for(' + index + ' = 0; ' + index + ' < ' + arr + '.length;' + index + '++){\n' + 
             '       ' + item + ' = ' + arr + '[' + index + '];\n' + 
-            '       ' + loopContents + '\n' +
+                        foreachNameDecObjs.map(function(o){return '       ' + o.fnName + '();';}).join('\n') + '\n' +
             '    }\n' +
             '} else{\n' + 
             '    for(' + index + ' in ' + arr + '){\n' + 
             '        if(' + arr + '.hasOwnProperty(' + index + ')){\n' +
             '           ' + item + ' = ' + arr + '[' + index + '];\n' + 
-            '           ' + loopContents + '\n' +
+                            foreachNameDecObjs.map(function(o){return '           ' + o.fnName + '();';}).join('\n') + '\n' +
             '        }\n' + 
             '    }\n' +
             '}';
 
-        return [
-                'var ' + [item,index].join(' ,') + ';',      
-                foreachNameDecObjs.map(function(o){return o.fnDec;}).join('\n'),
-                forEachContents  
-            ].join('\n\n');
+        //FIXME: we probably do not actually need to delcare a local scope for these variable, as they should be in the datamodel, thus should be in global datamodel definition. this actually means we can move all other functions up into the global scope - they don't need to be nested as they are here. although i'd be surprised if anyone relied on this feature. 
+        return {
+            fnBody : forEachContents,
+            fnDecs : foreachNameDecObjs.map(function(o){return o.fnDecs;}).reduce(function(a,b){return a.concat(b);},[])
+        };
     }
 };
 
