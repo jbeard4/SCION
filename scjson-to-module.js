@@ -287,34 +287,105 @@ var actionTags = {
         return "this.cancel(" + JSON.stringify(action.sendid) + ");";
     },
 
-    /*
     "send" : function(action){
-        var target = (pm.platform.dom.hasAttribute(action,"targetexpr") ? pm.platform.dom.getAttribute(action,"targetexpr") : JSON.stringify(pm.platform.dom.getAttribute(action,"target"))),
+
+        //TODO: make fnDecAccumulator global so we can create one or two functions that write to it and cut down on this boilerplate
+        var fnDecs = [];
+
+        function processAttr(container,attr){
+
+            var exprName = attr === 'id' ? 'idlocation' : attr + 'expr';  //the conditional is for send/@id vs. send/@idlocation. all others are just attr + 'expr'
+
+            if(container[exprName]){
+                var o = generateAttributeExpression(container, exprName);
+                fnDecs.push(o.fnDec);
+                return generateFnCall(o.fnName);
+            }else if(container[attr]){
+                return JSON.stringify(container[attr]);
+            }else{
+                return null;
+            }
+        }
+
+        function constructSendEventData(action){
+
+            function processSendAttr(container,attr){
+                var o = generateAttributeExpression(container, attr);
+                fnDecs.push(o.fnDec);
+                return generateFnCall(o.fnName);
+            }
+
+            //content and @contentexpr has priority over namelist and params
+            if(action.content){
+                return '            ' + JSON.stringify(action.content);     //TODO: inline it if content is pure JSON. call custom attribute 'contentType'?
+            }else if(action.contentexpr){
+                return generateAttributeExpression(action,'contentexpr');
+            }else{
+                var s = "{\n";
+                var props = [];
+                //namelist
+                if(action.namelist){
+                    action.namelist.expr.trim().split(/ +/).forEach(function(name){
+                        props.push('"' + name + '"' + ":" + name);          //FIXME: should add some kind of stack trace here. this is hard, though, because it aggregates multiple expressions to a single line/column 
+                    });
+                }
+
+                //params
+                if(action.params && action.params.length){
+                    action.params.forEach(function(param){
+                        if(param.expr){
+                            props.push('"' + param.name + '"' + ":" + processSendAttr(param,'expr'));
+                        }else if(param.location){
+                            props.push('"' + param.name + '"' + ":" + processSendAttr(param,'location'));
+                        }
+                    });
+                }
+
+                s += props.map(function(line){return '    ' + line;}).join(',\n');
+
+                s += "\n}";
+
+                s = s.split('\n').map(function(line){return '            ' + line;}).join('\n');
+
+                return s;
+            }
+        }
+
+
+
+        var target = processAttr(action, 'target'),
             targetVariableName = '_scionTargetRef',
             targetDeclaration = 'var ' + targetVariableName + ' = ' + target + ';\n';
 
-        var event = "{\n" +
-            "target: " + targetVariableName + ",\n" +
-            "name: " + (pm.platform.dom.hasAttribute(action,"eventexpr") ? pm.platform.dom.getAttribute(action,"eventexpr") : JSON.stringify(pm.platform.dom.getAttribute(action,"event"))) + ",\n" +
-            "type: " + (pm.platform.dom.hasAttribute(action,"typeexpr") ? pm.platform.dom.getAttribute(action,"typeexpr") : JSON.stringify(pm.platform.dom.getAttribute(action,"type"))) + ",\n" +
-            "data: " + constructSendEventData(action) + ",\n" +
-            "origin: $origin\n" +
-        "}";
+        var event = 
+        ["{", 
+         "   target: " + targetVariableName + ",", 
+         "   name: " + processAttr(action, 'event') + ",", 
+         "   type: " + processAttr(action, 'type') + ",", 
+         "   data: \n" + constructSendEventData(action) + ",", 
+         "   origin: _sessionId", 
+         "}"].map(function(line){return '     ' + line;}).join('\n');   //lightweight formatting
 
         var send =
             targetDeclaration +
             "if(" + targetVariableName + " === '#_internal'){\n" +
-                 "$raise(" + event  + ");\n" +
+            "     this.raise(\n" + 
+                      event + ");\n" +
             "}else{\n" +
-                "$send(" + event + ", {\n" +
-                    "delay: " + (pm.platform.dom.hasAttribute(action,"delayexpr") ? 'getDelayInMs(' + pm.platform.dom.getAttribute(action,"delayexpr") + ')' : getDelayInMs(pm.platform.dom.getAttribute(action,"delay"))) + ",\n" +
-                    "sendId: " + (pm.platform.dom.hasAttribute(action,"idlocation") ? pm.platform.dom.getAttribute(action,"idlocation") : JSON.stringify(pm.platform.dom.getAttribute(action,"id"))) + "\n" +
-                "}, $raise);" +
+            "     this.send(\n" + 
+                    event + ", \n" +
+            "       {\n" + 
+            "           delay: " + processAttr(action, 'delay') + ",\n" +       //TODO: delay needs to be parsed at runtime
+            "           sendId: " + processAttr(action,'id') + "\n" +
+            "       });\n" +
             "}";
 
-        return send;
+
+        return {
+            fnBody : send,
+            fnDecs : fnDecs
+        };
     },
-    */
 
     "foreach" : function(action){
         var isIndexDefined = action.index,
@@ -347,7 +418,6 @@ var actionTags = {
         };
     }
 };
-
 
 if(require.main === module){
     //read from stdin or file

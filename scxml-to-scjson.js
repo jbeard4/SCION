@@ -150,8 +150,10 @@ function transform(){
 
         //children of send
         "param": function(node){
+            //TODO: figure out how to deal with param and param/@expr and param/@location
             currentJson.params = currentJson.params || [];
-            currentJson = currentJson.params.push(node.attributes);
+            currentJson.params.push(node.attributes);
+            currentJson = node.attributes;
         },
         "content":function(){
             //skip. this gets taken care of later on
@@ -197,15 +199,17 @@ function transform(){
 
     };
 
+    var EXPRESSION_ATTRS = [ 'cond',
+                            'array',
+                            'location',
+                            'namelist'];
+
     parser.onclosetag = function(tag){
         //console.log("close tag",tag);
         jsonStack.pop();
         currentJson = jsonStack[jsonStack.length - 1];
         //console.log('current json now',currentJson,jsonStack.length); 
     };
-
-    var EXPRESSION_ATTRS = [ 'cond',
-                            'array'];
 
     parser.onattribute = function (attr) {
         //if attribute name ends with 'expr' or is one of the other ones enumerated above
