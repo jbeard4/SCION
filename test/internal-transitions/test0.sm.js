@@ -1,27 +1,45 @@
-var x = 0;
+//Generated on Monday, February 18, 2013 23:37:27 by the SCION SCXML compiler
 
-function  $log_line_26_column_33(){
-    console.log("x",x);
+var x = $data_line_22_column_31();
+
+function $log_line_26_column_33(_event, In, _sessionId, _name, _ioprocessors, _x){
+    console.log("x",$expr_line_26_column_31.apply(this, arguments));
 }
 
-function  $assign_line_35_column_47(){
-    x = x + 1;
+function $expr_line_26_column_31(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return x;
 }
 
-function  $assign_line_31_column_47(){
-    x = x + 1;
+function $assign_line_35_column_47(_event, In, _sessionId, _name, _ioprocessors, _x){
+    x = $expr_line_35_column_45.apply(this, arguments);
 }
 
-function  $expression_line_46_column_73(){
+function $expr_line_35_column_45(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return x + 1;
+}
+
+function $assign_line_31_column_47(_event, In, _sessionId, _name, _ioprocessors, _x){
+    x = $expr_line_31_column_45.apply(this, arguments);
+}
+
+function $expr_line_31_column_45(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return x + 1;
+}
+
+function $cond_line_46_column_73(_event, In, _sessionId, _name, _ioprocessors, _x){
     return x === 1;
 }
 
-function  $expression_line_43_column_59(){
+function $cond_line_43_column_59(_event, In, _sessionId, _name, _ioprocessors, _x){
     return x === 1;
 }
 
-function  $expression_line_50_column_56(){
+function $cond_line_50_column_56(_event, In, _sessionId, _name, _ioprocessors, _x){
     return x === 2;
+}
+
+function $data_line_22_column_31(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return 0;
 }
 
 module.exports = {
@@ -46,7 +64,7 @@ module.exports = {
                         {
                             "target": "b",
                             "event": "t2",
-                            "cond": $expression_line_43_column_59
+                            "cond": $cond_line_43_column_59
                         }
                     ]
                 }
@@ -56,7 +74,7 @@ module.exports = {
                     "target": "a2",
                     "event": "t1",
                     "type": "internal",
-                    "cond": $expression_line_46_column_73
+                    "cond": $cond_line_46_column_73
                 }
             ]
         },
@@ -66,7 +84,7 @@ module.exports = {
                 {
                     "target": "c",
                     "event": "t3",
-                    "cond": $expression_line_50_column_56
+                    "cond": $cond_line_50_column_56
                 }
             ]
         },
