@@ -1,34 +1,36 @@
+//Generated on Monday, February 18, 2013 19:28:55 by the SCION SCXML compiler
+
 var x;
 
-function  $script_line_27_column_20(){
+function $script_line_27_column_20(){
     x = 0;
 }
 
-function  $script_line_52_column_20(){
+function $script_line_52_column_20(){
     x = x * 2;
 }
 
-function  $expression_line_51_column_47(){
+function $expression_line_51_column_47(){
     return x === 100;
 }
 
-function  $script_line_37_column_24(){
+function $script_line_37_column_24(){
     x = x + 1;
 }
 
-function  $expression_line_36_column_52(){
+function $expression_line_36_column_52(){
     return x < 100;
 }
 
-function  $script_line_45_column_24(){
+function $script_line_45_column_24(){
     x = x + 1;
 }
 
-function  $expression_line_44_column_52(){
+function $expression_line_44_column_52(){
     return x < 100;
 }
 
-function  $expression_line_60_column_47(){
+function $expression_line_60_column_47(){
     return x === 200;
 }
 
