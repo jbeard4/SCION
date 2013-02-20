@@ -1,4 +1,18 @@
-//Generated on Tuesday, February 19, 2013 15:48:59 by the SCION SCXML compiler
+//Generated on Tuesday, February 19, 2013 20:21:59 by the SCION SCXML compiler
+
+function getDelayInMs(delayString){
+    if (!delayString) {
+        return 0;
+    } else {
+        if (delayString.slice(-2) === "ms") {
+            return parseFloat(delayString.slice(0, -2));
+        } else if (delayString.slice(-1) === "s") {
+            return parseFloat(delayString.slice(0, -1)) * 1000;
+        } else {
+            return parseFloat(delayString);
+        }
+    }
+}
 
 var foo = $data_line_22_column_33(), bar = $data_line_23_column_33(), bat = $data_line_24_column_33();
 
@@ -35,7 +49,7 @@ function $send_line_29_column_73(_event, In, _sessionId, _name, _ioprocessors, _
             origin: _sessionId
          }, 
            {
-               delay: $delayexpr_line_29_column_36.apply(this, arguments),
+               delay: getDelayInMs($delayexpr_line_29_column_36.apply(this, arguments)),
                sendId: null
            });
     }
@@ -80,7 +94,7 @@ function $send_line_43_column_54(_event, In, _sessionId, _name, _ioprocessors, _
             origin: _sessionId
          }, 
            {
-               delay: $delayexpr_line_43_column_36.apply(this, arguments),
+               delay: getDelayInMs($delayexpr_line_43_column_36.apply(this, arguments)),
                sendId: null
            });
     }

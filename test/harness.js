@@ -53,8 +53,9 @@ tests.forEach(function(test){
                 cb();
             }
 
-            if(nextEvent.delay){
-                setTimeout(ns,nextEvent.delay);
+            if(nextEvent.after){
+                console.log('Test harness waiting',nextEvent.after,'ms before sending next event');
+                setTimeout(ns,nextEvent.after);
             }else{
                 ns();
             }
