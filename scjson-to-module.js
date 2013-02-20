@@ -111,14 +111,12 @@ function generateModule(rootState,datamodelAccumulator,fnDecAccumulator){
     //only commonjs module for now
     var sm = [
         dumpHeader(),
-        '',
+        getDelayInMs.toString(),
         generateDatamodelDeclaration(datamodelAccumulator,fnDecAccumulator),
-        '',
         dumpFunctionDeclarations(fnDecAccumulator),
-        '',
         'module.exports = ' + generateSmObjectLiteral(rootState) + ';'];
 
-    return sm.join('\n');
+    return sm.join('\n\n');
 }
 
 function markAsReference(o){
@@ -375,7 +373,7 @@ var actionTags = {
             "     this.send(\n" + 
                     event + ", \n" +
             "       {\n" + 
-            "           delay: " + processAttr(action, 'delay') + ",\n" +       //TODO: delay needs to be parsed at runtime
+            "           delay: getDelayInMs(" + processAttr(action, 'delay') + "),\n" +       //TODO: delay needs to be parsed at runtime
             "           sendId: " + processAttr(action,'id') + "\n" +
             "       });\n" +
             "}";
@@ -418,6 +416,20 @@ var actionTags = {
         };
     }
 };
+
+function getDelayInMs(delayString){
+    if (!delayString) {
+        return 0;
+    } else {
+        if (delayString.slice(-2) === "ms") {
+            return parseFloat(delayString.slice(0, -2));
+        } else if (delayString.slice(-1) === "s") {
+            return parseFloat(delayString.slice(0, -1)) * 1000;
+        } else {
+            return parseFloat(delayString);
+        }
+    }
+}
 
 if(require.main === module){
     //read from stdin or file
