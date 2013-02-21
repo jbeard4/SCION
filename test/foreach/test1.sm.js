@@ -1,27 +1,31 @@
-//Generated on Thursday, February 21, 2013 18:37:33 by the SCION SCXML compiler
+//Generated on Thursday, February 21, 2013 18:44:35 by the SCION SCXML compiler
 
-function getDelayInMs(delayString){
-    if (!delayString) {
-        return 0;
-    } else {
-        if (delayString.slice(-2) === "ms") {
-            return parseFloat(delayString.slice(0, -2));
-        } else if (delayString.slice(-1) === "s") {
-            return parseFloat(delayString.slice(0, -1)) * 1000;
-        } else {
-            return parseFloat(delayString);
-        }
-    }
-}
+
 
 var myArray = $data_line_25_column_47(), myItem = $data_line_26_column_36(), myIndex = $data_line_27_column_37(), sum = $data_line_28_column_33(), indexSum = $data_line_29_column_38();
+
+function $expr_line_34_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return [sum,indexSum];
+}
 
 function $log_line_34_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
     console.log("before",$expr_line_34_column_55.apply(this, arguments));
 }
 
-function $expr_line_34_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
-    return [sum,indexSum];
+function $expr_line_36_column_60(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return sum + myItem;
+}
+
+function $assign_line_36_column_60(_event, In, _sessionId, _name, _ioprocessors, _x){
+    sum = $expr_line_36_column_60.apply(this, arguments);
+}
+
+function $expr_line_37_column_71(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return indexSum + myIndex;
+}
+
+function $assign_line_37_column_71(_event, In, _sessionId, _name, _ioprocessors, _x){
+    indexSum = $expr_line_37_column_71.apply(this, arguments);
 }
 
 function $foreach_line_35_column_67(_event, In, _sessionId, _name, _ioprocessors, _x){
@@ -42,20 +46,12 @@ function $foreach_line_35_column_67(_event, In, _sessionId, _name, _ioprocessors
     }
 }
 
-function $assign_line_36_column_60(_event, In, _sessionId, _name, _ioprocessors, _x){
-    sum = $expr_line_36_column_60.apply(this, arguments);
-}
-
-function $expr_line_36_column_60(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $expr_line_40_column_60(_event, In, _sessionId, _name, _ioprocessors, _x){
     return sum + myItem;
 }
 
-function $assign_line_37_column_71(_event, In, _sessionId, _name, _ioprocessors, _x){
-    indexSum = $expr_line_37_column_71.apply(this, arguments);
-}
-
-function $expr_line_37_column_71(_event, In, _sessionId, _name, _ioprocessors, _x){
-    return indexSum + myIndex;
+function $assign_line_40_column_60(_event, In, _sessionId, _name, _ioprocessors, _x){
+    sum = $expr_line_40_column_60.apply(this, arguments);
 }
 
 function $foreach_line_39_column_51(_event, In, _sessionId, _name, _ioprocessors, _x){
@@ -75,20 +71,12 @@ function $foreach_line_39_column_51(_event, In, _sessionId, _name, _ioprocessors
     }
 }
 
-function $assign_line_40_column_60(_event, In, _sessionId, _name, _ioprocessors, _x){
-    sum = $expr_line_40_column_60.apply(this, arguments);
-}
-
-function $expr_line_40_column_60(_event, In, _sessionId, _name, _ioprocessors, _x){
-    return sum + myItem;
+function $expr_line_42_column_54(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return [sum,indexSum];
 }
 
 function $log_line_42_column_54(_event, In, _sessionId, _name, _ioprocessors, _x){
     console.log("after",$expr_line_42_column_54.apply(this, arguments));
-}
-
-function $expr_line_42_column_54(_event, In, _sessionId, _name, _ioprocessors, _x){
-    return [sum,indexSum];
 }
 
 function $cond_line_44_column_87(_event, In, _sessionId, _name, _ioprocessors, _x){
