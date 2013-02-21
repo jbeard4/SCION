@@ -1,60 +1,74 @@
-//Generated on Monday, February 18, 2013 23:33:36 by the SCION SCXML compiler
+//Generated on Thursday, February 21, 2013 18:37:34 by the SCION SCXML compiler
+
+function getDelayInMs(delayString){
+    if (!delayString) {
+        return 0;
+    } else {
+        if (delayString.slice(-2) === "ms") {
+            return parseFloat(delayString.slice(0, -2));
+        } else if (delayString.slice(-1) === "s") {
+            return parseFloat(delayString.slice(0, -1)) * 1000;
+        } else {
+            return parseFloat(delayString);
+        }
+    }
+}
 
 var x = $data_line_23_column_31();
 
 function $assign_line_32_column_47(_event, In, _sessionId, _name, _ioprocessors, _x){
-    x = $expr_line_32_column_45.apply(this, arguments);
+    x = $expr_line_32_column_47.apply(this, arguments);
 }
 
-function $expr_line_32_column_45(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $expr_line_32_column_47(_event, In, _sessionId, _name, _ioprocessors, _x){
     return x * 3;
 }
 
 function $log_line_33_column_37(_event, In, _sessionId, _name, _ioprocessors, _x){
-    console.log($expr_line_33_column_35.apply(this, arguments));
+    console.log($expr_line_33_column_37.apply(this, arguments));
 }
 
-function $expr_line_33_column_35(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $expr_line_33_column_37(_event, In, _sessionId, _name, _ioprocessors, _x){
     return 'b, x:' + x;
 }
 
-function $cond_line_60_column_65(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $cond_line_60_column_67(_event, In, _sessionId, _name, _ioprocessors, _x){
     return x === 4410;
 }
 
-function $cond_line_62_column_69(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $cond_line_62_column_71(_event, In, _sessionId, _name, _ioprocessors, _x){
     return x === 1470;
 }
 
 function $assign_line_44_column_51(_event, In, _sessionId, _name, _ioprocessors, _x){
-    x = $expr_line_44_column_49.apply(this, arguments);
+    x = $expr_line_44_column_51.apply(this, arguments);
 }
 
-function $expr_line_44_column_49(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $expr_line_44_column_51(_event, In, _sessionId, _name, _ioprocessors, _x){
     return x * 5;
 }
 
 function $log_line_45_column_42(_event, In, _sessionId, _name, _ioprocessors, _x){
-    console.log($expr_line_45_column_40.apply(this, arguments));
+    console.log($expr_line_45_column_42.apply(this, arguments));
 }
 
-function $expr_line_45_column_40(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $expr_line_45_column_42(_event, In, _sessionId, _name, _ioprocessors, _x){
     return 'b2, x:' + x;
 }
 
 function $assign_line_52_column_51(_event, In, _sessionId, _name, _ioprocessors, _x){
-    x = $expr_line_52_column_49.apply(this, arguments);
+    x = $expr_line_52_column_51.apply(this, arguments);
 }
 
-function $expr_line_52_column_49(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $expr_line_52_column_51(_event, In, _sessionId, _name, _ioprocessors, _x){
     return x * 7;
 }
 
 function $log_line_53_column_42(_event, In, _sessionId, _name, _ioprocessors, _x){
-    console.log($expr_line_53_column_40.apply(this, arguments));
+    console.log($expr_line_53_column_42.apply(this, arguments));
 }
 
-function $expr_line_53_column_40(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $expr_line_53_column_42(_event, In, _sessionId, _name, _ioprocessors, _x){
     return 'b3, x:' + x;
 }
 
@@ -63,6 +77,7 @@ function $data_line_23_column_31(_event, In, _sessionId, _name, _ioprocessors, _
 }
 
 module.exports = {
+    "": "http://www.w3.org/2005/07/scxml",
     "initial": "a",
     "states": [
         {
@@ -125,12 +140,12 @@ module.exports = {
                 {
                     "event": "t4",
                     "target": "success",
-                    "cond": $cond_line_60_column_65
+                    "cond": $cond_line_60_column_67
                 },
                 {
                     "event": "t4",
                     "target": "really-fail",
-                    "cond": $cond_line_62_column_69
+                    "cond": $cond_line_62_column_71
                 },
                 {
                     "event": "t4",
