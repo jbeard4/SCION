@@ -1,4 +1,4 @@
-//Generated on Thursday, February 21, 2013 18:37:37 by the SCION SCXML compiler
+//Generated on Thursday, February 21, 2013 18:44:39 by the SCION SCXML compiler
 
 function getDelayInMs(delayString){
     if (!delayString) {
@@ -15,6 +15,18 @@ function getDelayInMs(delayString){
 }
 
 var foo = $data_line_22_column_33(), bar = $data_line_23_column_33(), bat = $data_line_24_column_33();
+
+function $eventexpr_line_29_column_74(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return 's1';
+}
+
+function $location_line_30_column_50(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return bat;
+}
+
+function $expr_line_31_column_45(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return 4;
+}
 
 function $send_line_29_column_74(_event, In, _sessionId, _name, _ioprocessors, _x){
     var _scionTargetRef = "#_internal";
@@ -55,16 +67,8 @@ function $send_line_29_column_74(_event, In, _sessionId, _name, _ioprocessors, _
     }
 }
 
-function $eventexpr_line_29_column_74(_event, In, _sessionId, _name, _ioprocessors, _x){
-    return 's1';
-}
-
-function $location_line_30_column_50(_event, In, _sessionId, _name, _ioprocessors, _x){
-    return bat;
-}
-
-function $expr_line_31_column_45(_event, In, _sessionId, _name, _ioprocessors, _x){
-    return 4;
+function $eventexpr_line_43_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return 's2';
 }
 
 function $send_line_43_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
@@ -96,10 +100,6 @@ function $send_line_43_column_55(_event, In, _sessionId, _name, _ioprocessors, _
     }
 }
 
-function $eventexpr_line_43_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
-    return 's2';
-}
-
 function $cond_line_41_column_40(_event, In, _sessionId, _name, _ioprocessors, _x){
     return _event.data.foo === 1 && 
                     _event.data.bar === 2 && 
@@ -111,12 +111,12 @@ function $cond_line_55_column_52(_event, In, _sessionId, _name, _ioprocessors, _
     return _event.data === 'More content.';
 }
 
-function $log_line_58_column_47(_event, In, _sessionId, _name, _ioprocessors, _x){
-    console.log("_event",$expr_line_58_column_47.apply(this, arguments));
-}
-
 function $expr_line_58_column_47(_event, In, _sessionId, _name, _ioprocessors, _x){
     return _event;
+}
+
+function $log_line_58_column_47(_event, In, _sessionId, _name, _ioprocessors, _x){
+    console.log("_event",$expr_line_58_column_47.apply(this, arguments));
 }
 
 function $data_line_22_column_33(_event, In, _sessionId, _name, _ioprocessors, _x){

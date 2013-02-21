@@ -1,18 +1,6 @@
-//Generated on Thursday, February 21, 2013 18:37:37 by the SCION SCXML compiler
+//Generated on Thursday, February 21, 2013 18:44:38 by the SCION SCXML compiler
 
-function getDelayInMs(delayString){
-    if (!delayString) {
-        return 0;
-    } else {
-        if (delayString.slice(-2) === "ms") {
-            return parseFloat(delayString.slice(0, -2));
-        } else if (delayString.slice(-1) === "s") {
-            return parseFloat(delayString.slice(0, -1)) * 1000;
-        } else {
-            return parseFloat(delayString);
-        }
-    }
-}
+
 
 
 

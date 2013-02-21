@@ -1,47 +1,35 @@
-//Generated on Thursday, February 21, 2013 18:37:32 by the SCION SCXML compiler
+//Generated on Thursday, February 21, 2013 18:44:34 by the SCION SCXML compiler
 
-function getDelayInMs(delayString){
-    if (!delayString) {
-        return 0;
-    } else {
-        if (delayString.slice(-2) === "ms") {
-            return parseFloat(delayString.slice(0, -2));
-        } else if (delayString.slice(-1) === "s") {
-            return parseFloat(delayString.slice(0, -1)) * 1000;
-        } else {
-            return parseFloat(delayString);
-        }
-    }
-}
+
 
 var i;
 
-function $assign_line_30_column_43(_event, In, _sessionId, _name, _ioprocessors, _x){
-    i = $expr_line_30_column_43.apply(this, arguments);
-}
-
 function $expr_line_30_column_43(_event, In, _sessionId, _name, _ioprocessors, _x){
     return 0;
+}
+
+function $assign_line_30_column_43(_event, In, _sessionId, _name, _ioprocessors, _x){
+    i = $expr_line_30_column_43.apply(this, arguments);
 }
 
 function $cond_line_58_column_58(_event, In, _sessionId, _name, _ioprocessors, _x){
     return i === 0;
 }
 
-function $assign_line_39_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
-    i = $expr_line_39_column_55.apply(this, arguments);
-}
-
 function $expr_line_39_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
     return i + 1;
 }
 
-function $assign_line_50_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
-    i = $expr_line_50_column_55.apply(this, arguments);
+function $assign_line_39_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
+    i = $expr_line_39_column_55.apply(this, arguments);
 }
 
 function $expr_line_50_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
     return i - 1;
+}
+
+function $assign_line_50_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
+    i = $expr_line_50_column_55.apply(this, arguments);
 }
 
 module.exports = {
