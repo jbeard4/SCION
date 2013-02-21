@@ -1,4 +1,4 @@
-//Generated on Tuesday, February 19, 2013 20:21:59 by the SCION SCXML compiler
+//Generated on Thursday, February 21, 2013 18:37:37 by the SCION SCXML compiler
 
 function getDelayInMs(delayString){
     if (!delayString) {
@@ -22,14 +22,14 @@ function $send_line_29_column_73(_event, In, _sessionId, _name, _ioprocessors, _
          this.raise(
          {
             target: _scionTargetRef,
-            name: $eventexpr_line_29_column_53.apply(this, arguments),
+            name: $eventexpr_line_29_column_73.apply(this, arguments),
             type: "send",
             data: 
                 {
                     "foo":foo,
                     "bar":bar,
-                    "bif":$location_line_30_column_48.apply(this, arguments),
-                    "belt":$expr_line_31_column_43.apply(this, arguments)
+                    "bif":$location_line_30_column_50.apply(this, arguments),
+                    "belt":$expr_line_31_column_45.apply(this, arguments)
                 },
             origin: _sessionId
          });
@@ -37,37 +37,37 @@ function $send_line_29_column_73(_event, In, _sessionId, _name, _ioprocessors, _
          this.send(
          {
             target: _scionTargetRef,
-            name: $eventexpr_line_29_column_53.apply(this, arguments),
+            name: $eventexpr_line_29_column_73.apply(this, arguments),
             type: "send",
             data: 
                 {
                     "foo":foo,
                     "bar":bar,
-                    "bif":$location_line_30_column_48.apply(this, arguments),
-                    "belt":$expr_line_31_column_43.apply(this, arguments)
+                    "bif":$location_line_30_column_50.apply(this, arguments),
+                    "belt":$expr_line_31_column_45.apply(this, arguments)
                 },
             origin: _sessionId
          }, 
            {
-               delay: getDelayInMs($delayexpr_line_29_column_36.apply(this, arguments)),
+               delay: getDelayInMs($delayexpr_line_29_column_73.apply(this, arguments)),
                sendId: null
            });
     }
 }
 
-function $eventexpr_line_29_column_53(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $eventexpr_line_29_column_73(_event, In, _sessionId, _name, _ioprocessors, _x){
     return 's1';
 }
 
-function $location_line_30_column_48(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $location_line_30_column_50(_event, In, _sessionId, _name, _ioprocessors, _x){
     return bat;
 }
 
-function $expr_line_31_column_43(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $expr_line_31_column_45(_event, In, _sessionId, _name, _ioprocessors, _x){
     return 4;
 }
 
-function $delayexpr_line_29_column_36(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $delayexpr_line_29_column_73(_event, In, _sessionId, _name, _ioprocessors, _x){
     return '10ms';
 }
 
@@ -77,7 +77,7 @@ function $send_line_43_column_54(_event, In, _sessionId, _name, _ioprocessors, _
          this.raise(
          {
             target: _scionTargetRef,
-            name: $eventexpr_line_43_column_53.apply(this, arguments),
+            name: $eventexpr_line_43_column_54.apply(this, arguments),
             type: "send",
             data: 
                 "More content.",
@@ -87,43 +87,43 @@ function $send_line_43_column_54(_event, In, _sessionId, _name, _ioprocessors, _
          this.send(
          {
             target: _scionTargetRef,
-            name: $eventexpr_line_43_column_53.apply(this, arguments),
+            name: $eventexpr_line_43_column_54.apply(this, arguments),
             type: "send",
             data: 
                 "More content.",
             origin: _sessionId
          }, 
            {
-               delay: getDelayInMs($delayexpr_line_43_column_36.apply(this, arguments)),
+               delay: getDelayInMs($delayexpr_line_43_column_54.apply(this, arguments)),
                sendId: null
            });
     }
 }
 
-function $eventexpr_line_43_column_53(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $eventexpr_line_43_column_54(_event, In, _sessionId, _name, _ioprocessors, _x){
     return 's2';
 }
 
-function $delayexpr_line_43_column_36(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $delayexpr_line_43_column_54(_event, In, _sessionId, _name, _ioprocessors, _x){
     return '10ms';
 }
 
-function $cond_line_41_column_39(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $cond_line_41_column_40(_event, In, _sessionId, _name, _ioprocessors, _x){
     return _event.data.foo === 1 && 
                     _event.data.bar === 2 && 
                     _event.data.bif === 3 &&
                     _event.data.belt === 4;
 }
 
-function $cond_line_55_column_50(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $cond_line_55_column_52(_event, In, _sessionId, _name, _ioprocessors, _x){
     return _event.data === 'More content.';
 }
 
 function $log_line_58_column_47(_event, In, _sessionId, _name, _ioprocessors, _x){
-    console.log("_event",$expr_line_58_column_45.apply(this, arguments));
+    console.log("_event",$expr_line_58_column_47.apply(this, arguments));
 }
 
-function $expr_line_58_column_45(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $expr_line_58_column_47(_event, In, _sessionId, _name, _ioprocessors, _x){
     return _event;
 }
 
@@ -140,6 +140,7 @@ function $data_line_24_column_33(_event, In, _sessionId, _name, _ioprocessors, _
 }
 
 module.exports = {
+    "": "http://www.w3.org/2005/07/scxml",
     "states": [
         {
             "id": "a",
@@ -157,7 +158,7 @@ module.exports = {
                 {
                     "event": "s1",
                     "target": "c",
-                    "cond": $cond_line_41_column_39,
+                    "cond": $cond_line_41_column_40,
                     "onTransition": $send_line_43_column_54
                 },
                 {
@@ -172,7 +173,7 @@ module.exports = {
                 {
                     "event": "s2",
                     "target": "d",
-                    "cond": $cond_line_55_column_50
+                    "cond": $cond_line_55_column_52
                 },
                 {
                     "event": "s2",

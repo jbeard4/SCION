@@ -1,4 +1,4 @@
-//Generated on Tuesday, February 19, 2013 21:28:15 by the SCION SCXML compiler
+//Generated on Thursday, February 21, 2013 18:37:32 by the SCION SCXML compiler
 
 function getDelayInMs(delayString){
     if (!delayString) {

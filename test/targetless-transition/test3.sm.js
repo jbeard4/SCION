@@ -1,42 +1,95 @@
-var i = 1;
+//Generated on Thursday, February 21, 2013 18:37:37 by the SCION SCXML compiler
 
-function  $expression_line_27_column_50(){
+function getDelayInMs(delayString){
+    if (!delayString) {
+        return 0;
+    } else {
+        if (delayString.slice(-2) === "ms") {
+            return parseFloat(delayString.slice(0, -2));
+        } else if (delayString.slice(-1) === "s") {
+            return parseFloat(delayString.slice(0, -1)) * 1000;
+        } else {
+            return parseFloat(delayString);
+        }
+    }
+}
+
+var i = $data_line_22_column_31();
+
+function $cond_line_27_column_52(_event, In, _sessionId, _name, _ioprocessors, _x){
     return i === 100;
 }
 
-function  $assign_line_30_column_48(){
-    i = i * 20;
+function $assign_line_30_column_48(_event, In, _sessionId, _name, _ioprocessors, _x){
+    i = $expr_line_30_column_48.apply(this, arguments);
 }
 
-function  $log_line_31_column_27(){
-    console.log();
+function $expr_line_30_column_48(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return i * 20;
 }
 
-function  $assign_line_37_column_55(){
-    i = i * 2;
+function $log_line_31_column_27(_event, In, _sessionId, _name, _ioprocessors, _x){
+    console.log($expr_line_31_column_27.apply(this, arguments));
 }
 
-function  $log_line_38_column_35(){
-    console.log();
+function $expr_line_31_column_27(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return i;
 }
 
-function  $assign_line_49_column_63(){
-    i = Math.pow(i,3);
+function $assign_line_37_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
+    i = $expr_line_37_column_55.apply(this, arguments);
 }
 
-function  $log_line_50_column_35(){
-    console.log();
+function $expr_line_37_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return i * 2;
 }
 
-function  $assign_line_60_column_51(){
-    i = i - 3;
+function $log_line_38_column_35(_event, In, _sessionId, _name, _ioprocessors, _x){
+    console.log($expr_line_38_column_35.apply(this, arguments));
 }
 
-function  $log_line_61_column_31(){
-    console.log();
+function $expr_line_38_column_35(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return i;
+}
+
+function $assign_line_49_column_63(_event, In, _sessionId, _name, _ioprocessors, _x){
+    i = $expr_line_49_column_63.apply(this, arguments);
+}
+
+function $expr_line_49_column_63(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return Math.pow(i,3);
+}
+
+function $log_line_50_column_35(_event, In, _sessionId, _name, _ioprocessors, _x){
+    console.log($expr_line_50_column_35.apply(this, arguments));
+}
+
+function $expr_line_50_column_35(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return i;
+}
+
+function $assign_line_60_column_51(_event, In, _sessionId, _name, _ioprocessors, _x){
+    i = $expr_line_60_column_51.apply(this, arguments);
+}
+
+function $expr_line_60_column_51(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return i - 3;
+}
+
+function $log_line_61_column_31(_event, In, _sessionId, _name, _ioprocessors, _x){
+    console.log($expr_line_61_column_31.apply(this, arguments));
+}
+
+function $expr_line_61_column_31(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return i;
+}
+
+function $data_line_22_column_31(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return 1;
 }
 
 module.exports = {
+    "": "http://www.w3.org/2005/07/scxml",
     "states": [
         {
             "id": "p",
@@ -44,7 +97,7 @@ module.exports = {
             "transitions": [
                 {
                     "target": "done",
-                    "cond": $expression_line_27_column_50
+                    "cond": $cond_line_27_column_52
                 },
                 {
                     "event": "bar",
