@@ -1,51 +1,39 @@
-//Generated on Thursday, February 21, 2013 18:37:32 by the SCION SCXML compiler
-
-function getDelayInMs(delayString){
-    if (!delayString) {
-        return 0;
-    } else {
-        if (delayString.slice(-2) === "ms") {
-            return parseFloat(delayString.slice(0, -2));
-        } else if (delayString.slice(-1) === "s") {
-            return parseFloat(delayString.slice(0, -1)) * 1000;
-        } else {
-            return parseFloat(delayString);
-        }
-    }
-}
+//Generated on Thursday, February 21, 2013 18:44:35 by the SCION SCXML compiler
 
 
 
-function $log_line_12_column_53(_event, In, _sessionId, _name, _ioprocessors, _x){
-    console.log($expr_line_12_column_53.apply(this, arguments));
-}
+
 
 function $expr_line_12_column_53(_event, In, _sessionId, _name, _ioprocessors, _x){
     return "exiting state A";
 }
 
-function $log_line_9_column_54(_event, In, _sessionId, _name, _ioprocessors, _x){
-    console.log($expr_line_9_column_54.apply(this, arguments));
+function $log_line_12_column_53(_event, In, _sessionId, _name, _ioprocessors, _x){
+    console.log($expr_line_12_column_53.apply(this, arguments));
 }
 
 function $expr_line_9_column_54(_event, In, _sessionId, _name, _ioprocessors, _x){
     return "entering state A";
 }
 
-function $log_line_15_column_53(_event, In, _sessionId, _name, _ioprocessors, _x){
-    console.log($expr_line_15_column_53.apply(this, arguments));
+function $log_line_9_column_54(_event, In, _sessionId, _name, _ioprocessors, _x){
+    console.log($expr_line_9_column_54.apply(this, arguments));
 }
 
 function $expr_line_15_column_53(_event, In, _sessionId, _name, _ioprocessors, _x){
     return "triggered by e1";
 }
 
-function $log_line_20_column_53(_event, In, _sessionId, _name, _ioprocessors, _x){
-    console.log($expr_line_20_column_53.apply(this, arguments));
+function $log_line_15_column_53(_event, In, _sessionId, _name, _ioprocessors, _x){
+    console.log($expr_line_15_column_53.apply(this, arguments));
 }
 
 function $expr_line_20_column_53(_event, In, _sessionId, _name, _ioprocessors, _x){
     return "triggered by e2";
+}
+
+function $log_line_20_column_53(_event, In, _sessionId, _name, _ioprocessors, _x){
+    console.log($expr_line_20_column_53.apply(this, arguments));
 }
 
 module.exports = {
