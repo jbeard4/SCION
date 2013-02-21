@@ -2,7 +2,7 @@ var fs = require('fs');
 
 var sax = require("sax"),
     strict = true, // set to false for html-mode
-    parser = sax.parser(strict,{trim : true});
+    parser = sax.parser(strict,{trim : true, xmlns : true});
 
 function merge(o1,o2){
     Object.keys(o2).forEach(function(k){
@@ -11,10 +11,10 @@ function merge(o1,o2){
     return o1;
 }
 
-function clone(o){
+function copyNsAttrObj(o){
     var r = {};
     Object.keys(o).forEach(function(k){
-        r[k] = o[k]; 
+        r[o[k].local] = o[k].value; 
     });
     return r;
 }
@@ -34,9 +34,9 @@ function transform(){
                     {
                         $line : parser.line,
                         $column : parser.column,
-                        type:node.name
+                        type:node.local
                     },
-                    node.attributes);
+                    copyNsAttrObj(node.attributes));
 
         //console.log('action node',node);
 
@@ -59,18 +59,18 @@ function transform(){
                     $line : parser.line,
                     $column : parser.column
                 },
-                node.attributes);
+                copyNsAttrObj(node.attributes));
     }
 
     function createStateJson(node){
-        var state = clone(node.attributes);
+        var state = copyNsAttrObj(node.attributes);
 
         if(state.type){
             state.isDeep = state.type === 'deep' ? true : false;
         }
 
         //"state" is the default, so you don't need to explicitly write it
-        if(node.name !== 'state' && node.name !== 'schema') state.type = node.name;
+        if(node.local !== 'state' && node.local !== 'schema') state.type = node.local;
 
         if(currentJson){ 
             if(!currentJson.states){
@@ -85,10 +85,11 @@ function transform(){
 
     function createTransitionJson(node){
 
-        var transition = clone(node.attributes);
+        var transition = copyNsAttrObj(node.attributes);
 
         //target can either be a string, an array (for multiple targets, e.g. targeting, or undefined
         if(transition.target){
+            //console.log('transition',transition);
             transition.target = transition.target.trim().split(/\s+/);
             if(transition.target.length === 1){
                 transition.target = transition.target[0];
@@ -152,8 +153,9 @@ function transform(){
         "param": function(node){
             //TODO: figure out how to deal with param and param/@expr and param/@location
             currentJson.params = currentJson.params || [];
-            currentJson.params.push(node.attributes);
-            currentJson = node.attributes;
+            var attr = copyNsAttrObj(node.attributes);
+            currentJson.params.push(attr);
+            currentJson = attr;
         },
         "content":function(){
             //skip. this gets taken care of later on
@@ -183,10 +185,10 @@ function transform(){
     expressionAttributeCache = {};  //TODO: put in onstart or something like that
 
     parser.onopentag = function (node) {
-        //console.log("open tag",node.name);
+        //console.log("open tag",node.local);
 
-        if(tagActions[node.name]){
-            tagActions[node.name](node);
+        if(tagActions[node.local]){
+            tagActions[node.local](node);
 
             jsonStack.push(currentJson);
             //console.log('current json now',currentJson,jsonStack.length); 

@@ -108,6 +108,8 @@ function dumpHeader(){
 }
 
 function generateModule(rootState,datamodelAccumulator,fnDecAccumulator){
+    //TODO: optimizations: only dump out getDelayInMs if there is a send/@delay. otherwise, suppress
+    //TODO: dump out pure JSON if there is no datamodel, entry, or exit actions.
     //only commonjs module for now
     var sm = [
         dumpHeader(),
@@ -182,7 +184,7 @@ var actionTags = {
     "assign" : function(action){
         var expr = generateAttributeExpression(action,'expr');
         return {
-            fnBody : action.location + " = " + generateFnCall(expr.fnName) + ";",
+            fnBody : action.location.expr + " = " + generateFnCall(expr.fnName) + ";",
             fnDecs : [expr.fnDec]
         };
     },
@@ -278,7 +280,10 @@ var actionTags = {
     },
 
     "raise" : function(action){
-        return "this.raise({ name:" + JSON.stringify(action.event) + ", data : {}});";
+        return {
+            fnBody : "this.raise({ name:" + JSON.stringify(action.event) + ", data : {}});", 
+            fnDecs : []
+        };
     },
 
     "cancel" : function(action){
