@@ -1,4 +1,18 @@
-//Generated on Monday, February 18, 2013 21:46:25 by the SCION SCXML compiler
+//Generated on Thursday, February 21, 2013 18:37:36 by the SCION SCXML compiler
+
+function getDelayInMs(delayString){
+    if (!delayString) {
+        return 0;
+    } else {
+        if (delayString.slice(-2) === "ms") {
+            return parseFloat(delayString.slice(0, -2));
+        } else if (delayString.slice(-1) === "s") {
+            return parseFloat(delayString.slice(0, -1)) * 1000;
+        } else {
+            return parseFloat(delayString);
+        }
+    }
+}
 
 
 
@@ -7,6 +21,7 @@ function $raise_line_24_column_30(_event, In, _sessionId, _name, _ioprocessors, 
 }
 
 module.exports = {
+    "": "http://www.w3.org/2005/07/scxml",
     "initial": "a",
     "states": [
         {

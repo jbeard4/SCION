@@ -1,16 +1,31 @@
-//Generated on Monday, February 18, 2013 23:15:36 by the SCION SCXML compiler
+//Generated on Thursday, February 21, 2013 18:37:33 by the SCION SCXML compiler
+
+function getDelayInMs(delayString){
+    if (!delayString) {
+        return 0;
+    } else {
+        if (delayString.slice(-2) === "ms") {
+            return parseFloat(delayString.slice(0, -2));
+        } else if (delayString.slice(-1) === "s") {
+            return parseFloat(delayString.slice(0, -1)) * 1000;
+        } else {
+            return parseFloat(delayString);
+        }
+    }
+}
 
 
 
-function $cond_line_22_column_53(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $cond_line_22_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
     return false;
 }
 
-function $cond_line_23_column_52(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $cond_line_23_column_54(_event, In, _sessionId, _name, _ioprocessors, _x){
     return true;
 }
 
 module.exports = {
+    "": "http://www.w3.org/2005/07/scxml",
     "states": [
         {
             "id": "a",
@@ -18,12 +33,12 @@ module.exports = {
                 {
                     "target": "f",
                     "event": "t",
-                    "cond": $cond_line_22_column_53
+                    "cond": $cond_line_22_column_55
                 },
                 {
                     "target": "b",
                     "event": "t",
-                    "cond": $cond_line_23_column_52
+                    "cond": $cond_line_23_column_54
                 }
             ]
         },

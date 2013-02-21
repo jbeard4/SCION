@@ -1,40 +1,55 @@
-//Generated on Monday, February 18, 2013 23:15:36 by the SCION SCXML compiler
+//Generated on Thursday, February 21, 2013 18:37:33 by the SCION SCXML compiler
+
+function getDelayInMs(delayString){
+    if (!delayString) {
+        return 0;
+    } else {
+        if (delayString.slice(-2) === "ms") {
+            return parseFloat(delayString.slice(0, -2));
+        } else if (delayString.slice(-1) === "s") {
+            return parseFloat(delayString.slice(0, -1)) * 1000;
+        } else {
+            return parseFloat(delayString);
+        }
+    }
+}
 
 
 
-function $cond_line_55_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $cond_line_55_column_57(_event, In, _sessionId, _name, _ioprocessors, _x){
     return false;
 }
 
-function $cond_line_56_column_54(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $cond_line_56_column_56(_event, In, _sessionId, _name, _ioprocessors, _x){
     return true;
 }
 
-function $cond_line_65_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $cond_line_65_column_57(_event, In, _sessionId, _name, _ioprocessors, _x){
     return false;
 }
 
-function $cond_line_66_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $cond_line_66_column_57(_event, In, _sessionId, _name, _ioprocessors, _x){
     return false;
 }
 
-function $cond_line_67_column_54(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $cond_line_67_column_56(_event, In, _sessionId, _name, _ioprocessors, _x){
     return true;
 }
 
-function $cond_line_92_column_56(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $cond_line_92_column_58(_event, In, _sessionId, _name, _ioprocessors, _x){
     return true;
 }
 
-function $cond_line_82_column_57(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $cond_line_82_column_59(_event, In, _sessionId, _name, _ioprocessors, _x){
     return true;
 }
 
-function $cond_line_87_column_58(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $cond_line_87_column_60(_event, In, _sessionId, _name, _ioprocessors, _x){
     return false;
 }
 
 module.exports = {
+    "": "http://www.w3.org/2005/07/scxml",
     "name": "root",
     "states": [
         {
@@ -87,12 +102,12 @@ module.exports = {
                 {
                     "target": "f1",
                     "event": "t3",
-                    "cond": $cond_line_55_column_55
+                    "cond": $cond_line_55_column_57
                 },
                 {
                     "target": "f2",
                     "event": "t3",
-                    "cond": $cond_line_56_column_54
+                    "cond": $cond_line_56_column_56
                 }
             ]
         },
@@ -108,17 +123,17 @@ module.exports = {
                 {
                     "target": "g1",
                     "event": "t4",
-                    "cond": $cond_line_65_column_55
+                    "cond": $cond_line_65_column_57
                 },
                 {
                     "target": "g2",
                     "event": "t4",
-                    "cond": $cond_line_66_column_55
+                    "cond": $cond_line_66_column_57
                 },
                 {
                     "target": "g3",
                     "event": "t4",
-                    "cond": $cond_line_67_column_54
+                    "cond": $cond_line_67_column_56
                 }
             ]
         },
@@ -145,7 +160,7 @@ module.exports = {
                         {
                             "target": "i",
                             "event": "t5",
-                            "cond": $cond_line_82_column_57
+                            "cond": $cond_line_82_column_59
                         }
                     ]
                 },
@@ -155,7 +170,7 @@ module.exports = {
                         {
                             "target": "j",
                             "event": "t5",
-                            "cond": $cond_line_87_column_58
+                            "cond": $cond_line_87_column_60
                         }
                     ]
                 },
@@ -167,7 +182,7 @@ module.exports = {
                 {
                     "target": "last",
                     "event": "t5",
-                    "cond": $cond_line_92_column_56
+                    "cond": $cond_line_92_column_58
                 }
             ]
         },

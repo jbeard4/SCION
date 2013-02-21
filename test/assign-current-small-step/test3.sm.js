@@ -1,36 +1,51 @@
-//Generated on Monday, February 18, 2013 23:14:47 by the SCION SCXML compiler
+//Generated on Thursday, February 21, 2013 18:37:32 by the SCION SCXML compiler
+
+function getDelayInMs(delayString){
+    if (!delayString) {
+        return 0;
+    } else {
+        if (delayString.slice(-2) === "ms") {
+            return parseFloat(delayString.slice(0, -2));
+        } else if (delayString.slice(-1) === "s") {
+            return parseFloat(delayString.slice(0, -1)) * 1000;
+        } else {
+            return parseFloat(delayString);
+        }
+    }
+}
 
 var i;
 
 function $assign_line_30_column_43(_event, In, _sessionId, _name, _ioprocessors, _x){
-    i = $expr_line_30_column_41.apply(this, arguments);
+    i = $expr_line_30_column_43.apply(this, arguments);
 }
 
-function $expr_line_30_column_41(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $expr_line_30_column_43(_event, In, _sessionId, _name, _ioprocessors, _x){
     return 0;
 }
 
-function $cond_line_58_column_56(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $cond_line_58_column_58(_event, In, _sessionId, _name, _ioprocessors, _x){
     return i === 0;
 }
 
 function $assign_line_39_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
-    i = $expr_line_39_column_53.apply(this, arguments);
+    i = $expr_line_39_column_55.apply(this, arguments);
 }
 
-function $expr_line_39_column_53(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $expr_line_39_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
     return i + 1;
 }
 
 function $assign_line_50_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
-    i = $expr_line_50_column_53.apply(this, arguments);
+    i = $expr_line_50_column_55.apply(this, arguments);
 }
 
-function $expr_line_50_column_53(_event, In, _sessionId, _name, _ioprocessors, _x){
+function $expr_line_50_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
     return i - 1;
 }
 
 module.exports = {
+    "": "http://www.w3.org/2005/07/scxml",
     "states": [
         {
             "id": "a",
@@ -89,7 +104,7 @@ module.exports = {
                 {
                     "event": "t3",
                     "target": "d",
-                    "cond": $cond_line_58_column_56
+                    "cond": $cond_line_58_column_58
                 },
                 {
                     "event": "t3",
