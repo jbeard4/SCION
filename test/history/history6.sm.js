@@ -1,8 +1,16 @@
-//Generated on Thursday, February 21, 2013 18:44:36 by the SCION SCXML compiler
+//Generated on Thursday, February 21, 2013 19:49:12 by the SCION SCXML compiler
 
 
 
-var x = $data_line_23_column_31();
+var x;
+
+var $scion_early_binding_datamodel_has_fired = false;
+function $initEarlyBindingDatamodel(_event, In, _sessionId, _name, _ioprocessors, _x){
+    if(!$scion_early_binding_datamodel_has_fired){
+        x = $data_line_23_column_31.apply(this, arguments);
+        $scion_early_binding_datamodel_has_fired = true; 
+    }
+}
 
 function $expr_line_32_column_47(_event, In, _sessionId, _name, _ioprocessors, _x){
     return x * 3;
@@ -150,5 +158,8 @@ module.exports = {
         {
             "id": "really-fail"
         }
+    ],
+    "onEntry": [
+        $initEarlyBindingDatamodel
     ]
 };

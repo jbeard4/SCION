@@ -1,8 +1,15 @@
-//Generated on Thursday, February 21, 2013 18:44:39 by the SCION SCXML compiler
+//Generated on Thursday, February 21, 2013 19:49:15 by the SCION SCXML compiler
 
 
 
 var x;
+
+var $scion_early_binding_datamodel_has_fired = false;
+function $initEarlyBindingDatamodel(_event, In, _sessionId, _name, _ioprocessors, _x){
+    if(!$scion_early_binding_datamodel_has_fired){
+        $scion_early_binding_datamodel_has_fired = true; 
+    }
+}
 
 function $script_line_27_column_20(_event, In, _sessionId, _name, _ioprocessors, _x){
     x = 0;
@@ -50,5 +57,8 @@ module.exports = {
         {
             "id": "c"
         }
+    ],
+    "onEntry": [
+        $initEarlyBindingDatamodel
     ]
 };
