@@ -12,14 +12,19 @@
 
 var printTrace = false;
 
+//global accumulators
+var datamodelAccumulator, fnDecAccumulator, documentHasSendAction;
+
 function generateFnName(actionType,action){
     return '$' + actionType + '_line_' + action.$line + '_column_' + action.$column;
 }
 
+var FN_ARGS = '(_event, In, _sessionId, _name, _ioprocessors, _x)';
+
 function generateFnDeclaration(fnName,fnBody){
     if(printTrace) console.log('generateFnDeclaration',fnName,fnBody);
 
-    return 'function ' + fnName + '(_event, In, _sessionId, _name, _ioprocessors, _x){\n' +
+    return 'function ' + fnName + FN_ARGS + '{\n' +
         fnBody.split('\n').map(function(line){return '    ' + line;}).join('\n') + '\n' +   //do some lightweight formatting
     '}';
 }
@@ -34,15 +39,12 @@ function generateActionFunction(action){
     if(printTrace) console.log('generateActionFunction',action);
 
     var fnName = generateFnName(action.type,action);
-    var fnBodyAndDecsObj = actionTags[action.type](action);
-    var fnBody = fnBodyAndDecsObj.fnBody;
+    var fnBody = actionTags[action.type](action);
     var fnDec = generateFnDeclaration(fnName,fnBody);
-    var fnDecs = [fnDec].concat(fnBodyAndDecsObj.fnDecs);
 
-    return {
-        fnName : fnName,
-        fnDecs : fnDecs 
-    };
+    fnDecAccumulator.push(fnDec);
+
+    return fnName;
 }
 
 function generateExpressionFunction(expressionType,exprObj){
@@ -52,10 +54,9 @@ function generateExpressionFunction(expressionType,exprObj){
     var fnBody = 'return ' + exprObj.expr  + ';';
     var fnDec = generateFnDeclaration(fnName,fnBody);
 
-    return {
-        fnName : fnName,
-        fnDec : fnDec
-    };
+    fnDecAccumulator.push(fnDec);
+
+    return fnName;
 }
 
 function generateAttributeExpression(attrContainer,attrName){
@@ -71,33 +72,34 @@ var REFERENCE_MARKER = '__xx__DELETE_ME__xx__',
 //and another single function that inits the model needs to contain a reference to this init function, 
 //and the interpreter must know about it. should be optional. 
 //call it $scion_init_datamodel. 
-function generateDatamodelDeclaration(datamodelAccumulator,fnDecAccumulator){
-    var s = "var ";
-    var vars = [];
-
-    function processDataElement(data){
-        var s = data.id;
-
-        if(data.expr){
-            var dataExpr = generateExpressionFunction('data',data);
-            fnDecAccumulator.push(dataExpr.fnDec);
-            s += ' = ' + dataExpr.fnName + '()';
-        }
-
-        return s;
-    }
-
-    vars = datamodelAccumulator.map(processDataElement);
-
-    return vars.length ? (s + vars.join(", ") + ";") : "";
+function generateDatamodelDeclaration(){
+    return datamodelAccumulator.length ? ('var ' + datamodelAccumulator.map(function(data){return data.id;}).join(", ") + ";") : '';
 }
+
+var EARLY_BINDING_DATAMODEL_FN_NAME = '$initEarlyBindingDatamodel';
+
+//TODO: make this function more clever and accept the datamodel as an action
+function generateEarlyBindingDatamodelInitFn(){
+    return  datamodelAccumulator.length ? 
+                'var $scion_early_binding_datamodel_has_fired = false;\n' +     //this guard guarantees it will only fire once
+                'function ' + EARLY_BINDING_DATAMODEL_FN_NAME + FN_ARGS + '{\n' +
+                '    if(!$scion_early_binding_datamodel_has_fired){\n' + 
+                         //invoke all datamodel expresions
+                         datamodelAccumulator.
+                            filter(function(data){return data.expr;}).
+                            map(function(data){return '        ' + data.id + ' = ' + generateFnCall(generateExpressionFunction('data',data)) + ';\n';}).join('') + 
+                '        $scion_early_binding_datamodel_has_fired = true; ' + '\n' +
+                '    }\n' +
+                '}' : '';
+}
+
 
 function generateSmObjectLiteral(rootState){
     //pretty simple
     return JSON.stringify(rootState,4,4).replace(REFERENCE_MARKER_RE,'$1');
 }
 
-function dumpFunctionDeclarations(fnDecAccumulator){
+function dumpFunctionDeclarations(){
     //simple
     return fnDecAccumulator.join('\n\n');
 }
@@ -107,31 +109,37 @@ function dumpHeader(){
     return '//Generated on ' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString() + ' by the SCION SCXML compiler';
 }
 
-function generateModule(rootState,datamodelAccumulator,fnDecAccumulator){
-    //TODO: optimizations: only dump out getDelayInMs if there is a send/@delay. otherwise, suppress
-    //TODO: dump out pure JSON if there is no datamodel, entry, or exit actions.
-    //only commonjs module for now
+function generateModule(rootState){
+
+    if(datamodelAccumulator.length){
+        //generalize him as an entry action on the root state
+        rootState.onEntry = rootState.onEntry || [];
+        //make sure that datamodel initialization fn comes before all other entry actions
+        rootState.onEntry = [markAsReference(EARLY_BINDING_DATAMODEL_FN_NAME)].concat(rootState.onEntry);
+    }
+
+    //TODO: support other module formats (AMD, UMD, module pattern)
     var sm = [
         dumpHeader(),
-        getDelayInMs.toString(),
-        generateDatamodelDeclaration(datamodelAccumulator,fnDecAccumulator),
-        dumpFunctionDeclarations(fnDecAccumulator),
+        (documentHasSendAction ? getDelayInMs.toString() : ''),
+        generateDatamodelDeclaration(),
+        generateEarlyBindingDatamodelInitFn(),
+        dumpFunctionDeclarations(),
         'module.exports = ' + generateSmObjectLiteral(rootState) + ';'];
+
 
     return sm.join('\n\n');
 }
 
-function markAsReference(o){
-    return  REFERENCE_MARKER + o.fnName + REFERENCE_MARKER;
+function markAsReference(fnName){
+    return  REFERENCE_MARKER + fnName + REFERENCE_MARKER;
 }
 
-function replaceActions(actionContainer,actionPropertyName,fnDecAccumulator){
+function replaceActions(actionContainer,actionPropertyName){
     if(actionContainer[actionPropertyName]){
         var actions = Array.isArray(actionContainer[actionPropertyName]) ? actionContainer[actionPropertyName] : [actionContainer[actionPropertyName]] ;
         
-        var actionDescriptors = actions.map(generateActionFunction);
-        actionContainer[actionPropertyName] = actionDescriptors.map(markAsReference);
-        fnDecAccumulator.push.apply(fnDecAccumulator,actionDescriptors.map(function(o){return o.fnDecs;}).reduce(function(a,b){return a.concat(b);},[]));
+        actionContainer[actionPropertyName] = actions.map(generateActionFunction).map(markAsReference);
 
         if(actionContainer[actionPropertyName].length === 1){
             actionContainer[actionPropertyName] = actionContainer[actionPropertyName][0];
@@ -139,24 +147,21 @@ function replaceActions(actionContainer,actionPropertyName,fnDecAccumulator){
     }
 }
 
-function visitState(state,datamodelAccumulator,fnDecAccumulator){
+function visitState(state){
     //accumulate datamodels
     if(state.datamodel){
         datamodelAccumulator.push.apply(datamodelAccumulator,state.datamodel);
     }
 
-    if(state.onExit) replaceActions(state,'onExit',fnDecAccumulator);
-    if(state.onEntry) replaceActions(state,'onEntry',fnDecAccumulator);
+    if(state.onExit) replaceActions(state,'onExit');
+    if(state.onEntry) replaceActions(state,'onEntry');
 
     if(state.transitions){
         state.transitions.forEach(function(transition){
-            replaceActions(transition,'onTransition',fnDecAccumulator);
+            replaceActions(transition,'onTransition');
 
-            //replaceActions(transition,'cond',fnDecAccumulator);
             if(transition.cond){
-                var condExpr = generateAttributeExpression(transition,'cond');
-                transition.cond = markAsReference(condExpr);
-                fnDecAccumulator.push(condExpr.fnDec);
+                transition.cond = markAsReference(generateAttributeExpression(transition,'cond'));
             }
         });
     }
@@ -164,66 +169,47 @@ function visitState(state,datamodelAccumulator,fnDecAccumulator){
     //clean up as we go
     delete state.datamodel;
 
-    if(state.states) state.states.forEach(function(substate){ visitState(substate,datamodelAccumulator,fnDecAccumulator); });
+    if(state.states) state.states.forEach(function(substate){ visitState(substate); });
 }
 
 function startTraversal(rootState){
-    var datamodelAccumulator = [], fnDecAccumulator = [];
-    visitState(rootState,datamodelAccumulator,fnDecAccumulator);
-    return generateModule(rootState,datamodelAccumulator,fnDecAccumulator);
+    datamodelAccumulator = [];      //init the accumulators
+    fnDecAccumulator = [];
+    documentHasSendAction = false;
+
+    visitState(rootState);
+    return generateModule(rootState);
 }
 
 var actionTags = {
     "script" : function(action){
-        return {
-            fnBody : action.content,
-            fnDecs : []
-        };
+        return action.content;
     },
 
     "assign" : function(action){
-        var expr = generateAttributeExpression(action,'expr');
-        return {
-            fnBody : action.location.expr + " = " + generateFnCall(expr.fnName) + ";",
-            fnDecs : [expr.fnDec]
-        };
+        return action.location.expr + " = " + generateFnCall(generateAttributeExpression(action,'expr')) + ";";
     },
 
     "log" : function(action){
-        var params = [],
-            fnDecs = [];
+        var params = [];
 
         if(action.label) params.push(JSON.stringify(action.label));
+
         if(action.expr){ 
-            var expr = generateAttributeExpression(action,'expr');
-            params.push(generateFnCall(expr.fnName));
-            fnDecs.push(expr.fnDec);
+            params.push(generateFnCall(generateAttributeExpression(action,'expr')));
         }
 
-        return {
-            fnBody : "console.log(" + params.join(",") + ");",
-            fnDecs : fnDecs
-        };
+        return "console.log(" + params.join(",") + ");";
     },
 
     "if" : function(action){
-        var s = "", fnDecs = [];
+        var s = "";
 
-        var ifCondExpr = generateAttributeExpression(action,'cond');
+        var ifCondExprName = generateAttributeExpression(action,'cond');
 
-        fnDecs.push(ifCondExpr.fnDec);
-
-        s += "if(" + generateFnCall(ifCondExpr.fnName)  + "){\n";
+        s += "if(" + generateFnCall(ifCondExprName)  + "){\n";
 
         var childNodes = action.actions;
-
-        function processChild(child){
-            var nameDecObj = generateActionFunction(child);
-            s += '    ' + generateFnCall(nameDecObj.fnName) + ';\n';
-
-            fnDecs.push.apply(fnDecs,nameDecObj.fnDecs);
-        }
-
 
         for(var i = 0; i < childNodes.length; i++){
             var child = childNodes[i];
@@ -231,7 +217,7 @@ var actionTags = {
             if(child.type === "elseif" || child.type === "else"){
                 break;
             }else{
-                processChild(child);
+                s += '    ' + generateFnCall(generateActionFunction(child)) + ';\n';
             }
         }
 
@@ -241,15 +227,12 @@ var actionTags = {
 
             if(child.type === "elseif"){
 
-                var elseIfExpr = generateAttributeExpression(child,'cond');
-                fnDecs.push(elseIfExpr.fnDec); 
-
-                s+= "}else if(" + generateFnCall(elseIfExpr.fnName)  + "){\n";
+                s+= "}else if(" + generateFnCall(generateAttributeExpression(child,'cond'))  + "){\n";
             }else if(child.type === "else"){
                 s += "}";
                 break;
             }else{
-                processChild(child);
+                s += '    ' + generateFnCall(generateActionFunction(child)) + ';\n';
             }
         }
 
@@ -260,15 +243,12 @@ var actionTags = {
             if(child.type === "else"){
                 s+= "else{\n";
             }else{
-                processChild(child);
+                s += '    ' + generateFnCall(generateActionFunction(child)) + ';\n';
             }
         }
         s+= "}";
 
-        return {
-            fnBody : s, 
-            fnDecs : fnDecs
-        };
+        return s;
     },
 
     "elseif" : function(){
@@ -280,10 +260,7 @@ var actionTags = {
     },
 
     "raise" : function(action){
-        return {
-            fnBody : "this.raise({ name:" + JSON.stringify(action.event) + ", data : {}});", 
-            fnDecs : []
-        };
+        return "this.raise({ name:" + JSON.stringify(action.event) + ", data : {}});";
     },
 
     "cancel" : function(action){
@@ -292,17 +269,15 @@ var actionTags = {
 
     "send" : function(action){
 
-        //TODO: make fnDecAccumulator global so we can create one or two functions that write to it and cut down on this boilerplate
-        var fnDecs = [];
+        documentHasSendAction = true;           //set the global flag
 
         function processAttr(container,attr){
 
             var exprName = attr === 'id' ? 'idlocation' : attr + 'expr';  //the conditional is for send/@id vs. send/@idlocation. all others are just attr + 'expr'
 
             if(container[exprName]){
-                var o = generateAttributeExpression(container, exprName);
-                fnDecs.push(o.fnDec);
-                return generateFnCall(o.fnName);
+                var fnName = generateAttributeExpression(container, exprName);
+                return generateFnCall(fnName);
             }else if(container[attr]){
                 return JSON.stringify(container[attr]);
             }else{
@@ -311,12 +286,6 @@ var actionTags = {
         }
 
         function constructSendEventData(action){
-
-            function processSendAttr(container,attr){
-                var o = generateAttributeExpression(container, attr);
-                fnDecs.push(o.fnDec);
-                return generateFnCall(o.fnName);
-            }
 
             //content and @contentexpr has priority over namelist and params
             if(action.content){
@@ -337,9 +306,9 @@ var actionTags = {
                 if(action.params && action.params.length){
                     action.params.forEach(function(param){
                         if(param.expr){
-                            props.push('"' + param.name + '"' + ":" + processSendAttr(param,'expr'));
+                            props.push('"' + param.name + '"' + ":" + generateFnCall(generateAttributeExpression(param, 'expr')));
                         }else if(param.location){
-                            props.push('"' + param.name + '"' + ":" + processSendAttr(param,'location'));
+                            props.push('"' + param.name + '"' + ":" + generateFnCall(generateAttributeExpression(param, 'location')));
                         }
                     });
                 }
@@ -384,10 +353,7 @@ var actionTags = {
             "}";
 
 
-        return {
-            fnBody : send,
-            fnDecs : fnDecs
-        };
+        return send;
     },
 
     "foreach" : function(action){
@@ -396,29 +362,25 @@ var actionTags = {
             index = action.index || "$i",        //FIXME: the index variable could shadow the datamodel. We should pick a unique temperorary variable name
             item = action.item,
             arr = action.array.expr,
-            foreachNameDecObjs = action.actions.map(generateActionFunction);
+            foreachFnNames = action.actions.map(generateActionFunction);
 
         var forEachContents = 
             (needsToDeclareIndex ? 'var ' + index + ';\n' : '') +
             'if(Array.isArray(' + arr + ')){\n' +
             '    for(' + index + ' = 0; ' + index + ' < ' + arr + '.length;' + index + '++){\n' + 
             '       ' + item + ' = ' + arr + '[' + index + '];\n' + 
-                        foreachNameDecObjs.map(function(o){return '       ' + generateFnCall(o.fnName) + ';';}).join('\n') + '\n' +
+                        foreachFnNames.map(function(fnName){return '       ' + generateFnCall(fnName) + ';';}).join('\n') + '\n' +
             '    }\n' +
             '} else{\n' + 
             '    for(' + index + ' in ' + arr + '){\n' + 
             '        if(' + arr + '.hasOwnProperty(' + index + ')){\n' +
             '           ' + item + ' = ' + arr + '[' + index + '];\n' + 
-                            foreachNameDecObjs.map(function(o){return '           ' + generateFnCall(o.fnName) + ';';}).join('\n') + '\n' +
+                            foreachFnNames.map(function(fnName){return '           ' + generateFnCall(fnName) + ';';}).join('\n') + '\n' +
             '        }\n' + 
             '    }\n' +
             '}';
 
-        //FIXME: we probably do not actually need to delcare a local scope for these variable, as they should be in the datamodel, thus should be in global datamodel definition. this actually means we can move all other functions up into the global scope - they don't need to be nested as they are here. although i'd be surprised if anyone relied on this feature. 
-        return {
-            fnBody : forEachContents,
-            fnDecs : foreachNameDecObjs.map(function(o){return o.fnDecs;}).reduce(function(a,b){return a.concat(b);},[])
-        };
+        return forEachContents;
     }
 };
 
