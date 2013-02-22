@@ -7,14 +7,14 @@ i=1
 for testJsonFile in $testJsonFiles;
 do
     testDir=`dirname $testJsonFile`
-    smFile=$testDir/`basename $testJsonFile .test.json`.sm.json
+    scFile=$testDir/`basename $testJsonFile .test.json`.sc.json
 
     #alternatively, it could just be a regular module, rather than a json object literal
-    if [ ! -e $smFile ]
-        then smFile=$testDir/`basename $testJsonFile .test.json`.sm.js
+    if [ ! -e $scFile ]
+        then scFile=$testDir/`basename $testJsonFile .test.json`.sc.js
     fi;
 
-    echo -n "    { name : '$testJsonFile', test : require('$testJsonFile'), sm : require('$smFile') }" >> tests.js
+    echo -n "    { name : '$testJsonFile', test : require('$testJsonFile'), sc : require('$scFile') }" >> tests.js
 
     #trailing comma
     if [ $i -lt $numFiles ] 

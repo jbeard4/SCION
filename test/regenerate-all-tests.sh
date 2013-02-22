@@ -9,9 +9,9 @@ for f in *; do
 
         testGroup=`basename $f`
 
-        for target in *.sm.json; do
+        for target in *.sc.json; do
             if [ -f $target ]; then
-                testName=`basename $target .sm.json`.scxml
+                testName=`basename $target .sc.json`.scxml
                 from=$scxmlDir/$testGroup/$testName
 
                 echo compiling $from to $target...
@@ -20,9 +20,9 @@ for f in *; do
             fi;
         done;
 
-        for target in *.sm.js; do
+        for target in *.sc.js; do
             if [ -f $target ]; then
-                testName=`basename $target .sm.js`.scxml
+                testName=`basename $target .sc.js`.scxml
                 from=$scxmlDir/$testGroup/$testName
 
                 echo compiling $from to $target...

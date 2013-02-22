@@ -16,12 +16,12 @@ var tests = statechartModulePaths.length ?
         statechartModulePaths.map(function(statechartModulePath){
 
             //try to find a .test.json file
-            var testModulePath = statechartModulePath.replace(/\.sm\.js(on)?$/,'.test.json');
-            var sm = require(path.resolve('.',statechartModulePath));
+            var testModulePath = statechartModulePath.replace(/\.sc\.js(on)?$/,'.test.json');
+            var sc = require(path.resolve('.',statechartModulePath));
 
             return {
                 name : testModulePath,
-                sm : sm,
+                sc : sc,
                 test : require(path.resolve('.',testModulePath))
             };
         }) : require('./tests.js');
@@ -31,7 +31,7 @@ tests.forEach(function(test){
 
         t.plan(test.test.events.length + 1);
 
-        var sc = new scion.Statechart(test.sm);
+        var sc = new scion.Statechart(test.sc);
 
         var actualInitialConf = sc.start();
 
