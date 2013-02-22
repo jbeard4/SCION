@@ -1,4 +1,4 @@
-//Generated on Thursday, February 21, 2013 18:44:39 by the SCION SCXML compiler
+//Generated on Thursday, February 21, 2013 19:49:15 by the SCION SCXML compiler
 
 function getDelayInMs(delayString){
     if (!delayString) {
@@ -14,7 +14,17 @@ function getDelayInMs(delayString){
     }
 }
 
-var foo = $data_line_22_column_33(), bar = $data_line_23_column_33(), bat = $data_line_24_column_33();
+var foo, bar, bat;
+
+var $scion_early_binding_datamodel_has_fired = false;
+function $initEarlyBindingDatamodel(_event, In, _sessionId, _name, _ioprocessors, _x){
+    if(!$scion_early_binding_datamodel_has_fired){
+        foo = $data_line_22_column_33.apply(this, arguments);
+        bar = $data_line_23_column_33.apply(this, arguments);
+        bat = $data_line_24_column_33.apply(this, arguments);
+        $scion_early_binding_datamodel_has_fired = true; 
+    }
+}
 
 function $eventexpr_line_29_column_73(_event, In, _sessionId, _name, _ioprocessors, _x){
     return 's1';
@@ -197,5 +207,8 @@ module.exports = {
         {
             "id": "f"
         }
+    ],
+    "onEntry": [
+        $initEarlyBindingDatamodel
     ]
 };

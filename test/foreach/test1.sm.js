@@ -1,8 +1,20 @@
-//Generated on Thursday, February 21, 2013 18:44:35 by the SCION SCXML compiler
+//Generated on Thursday, February 21, 2013 19:49:11 by the SCION SCXML compiler
 
 
 
-var myArray = $data_line_25_column_47(), myItem = $data_line_26_column_36(), myIndex = $data_line_27_column_37(), sum = $data_line_28_column_33(), indexSum = $data_line_29_column_38();
+var myArray, myItem, myIndex, sum, indexSum;
+
+var $scion_early_binding_datamodel_has_fired = false;
+function $initEarlyBindingDatamodel(_event, In, _sessionId, _name, _ioprocessors, _x){
+    if(!$scion_early_binding_datamodel_has_fired){
+        myArray = $data_line_25_column_47.apply(this, arguments);
+        myItem = $data_line_26_column_36.apply(this, arguments);
+        myIndex = $data_line_27_column_37.apply(this, arguments);
+        sum = $data_line_28_column_33.apply(this, arguments);
+        indexSum = $data_line_29_column_38.apply(this, arguments);
+        $scion_early_binding_datamodel_has_fired = true; 
+    }
+}
 
 function $expr_line_34_column_55(_event, In, _sessionId, _name, _ioprocessors, _x){
     return [sum,indexSum];
@@ -125,5 +137,8 @@ module.exports = {
         {
             "id": "c"
         }
+    ],
+    "onEntry": [
+        $initEarlyBindingDatamodel
     ]
 };
