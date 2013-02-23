@@ -1,0 +1,34 @@
+{
+    "name": "scxml-viz",
+    "version": "1.0.0",
+    "description": "A d3-based library for visualizing SCXML with SVG.",
+    "keywords": [
+        "scxml",
+        "statecharts",
+        "w3c",
+        "javascript",
+        "d3",
+        "visualization"
+    ],
+    "maintainers": [{
+        "name": "Jacob Beard",
+        "email": "jbeard4@cs.mcgill.ca",
+        "url": "http://echo-flow.com"
+    }],
+    "bugs": {
+        "email": "jbeard4@cs.mcgill.ca",
+        "url": "https://github.com/jbeard4/scxml-viz/issues"
+    },
+    "licenses": [
+        {
+            "type": "Apache-2.0",
+            "url": "https://github.com/jbeard4/SCION/blob/master/LICENSE.txt"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/jbeard4/scxml-viz"
+        }
+    ]
+}

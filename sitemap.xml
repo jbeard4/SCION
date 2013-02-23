@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
+    <url>
+        <loc>
+            http://jbeard4.github.com/SCION/blog/2013/02/22/the-next-step-in-the-evolution-of-scion/
+        </loc>
+        <lastmod>2013-02-22T21:50:08-05:00</lastmod>
+    </url>
+    <url>
+        <loc>http://jbeard4.github.com/SCION/blog/archives/</loc>
+        <lastmod>2013-02-22T21:50:08-05:00</lastmod>
+    </url>
+    <url>
+        <loc>http://jbeard4.github.com/SCION/robots.txt</loc>
+        <lastmod>2013-02-22T21:44:48-05:00</lastmod>
+    </url>
+    <url>
+        <loc>http://jbeard4.github.com/SCION/</loc>
+        <lastmod>2013-02-22T21:50:08-05:00</lastmod>
+    </url>
+</urlset>

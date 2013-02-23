@@ -1,0 +1,57 @@
+<html>
+    <head>
+        <style type="text/css">
+            html, body {
+                height:100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            div#rect{ 
+                width:100px;
+                height:100px;
+                background-color:red;
+                border:2px solid black;
+                position:absolute;
+                left:0px;
+                top:0px;
+            }
+        </style>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"></script>
+        <script type="text/javascript" src="http://jbeard4.github.com/SCION/builds/nightly/scion-min.js"></script>
+        <script>
+            var scion = require('scion');
+
+            $(document).ready(function(){
+                var rect = document.getElementById("rect");
+
+                scion.urlToModel("drag-and-drop.xml",function(err,model){
+
+                    if(err) throw err;
+
+                    //instantiate the interpreter
+                    var interpreter = new scion.SCXML(model);
+
+                    //start the interpreter
+                    interpreter.start();
+
+                    //send the init event
+                    interpreter.gen({name:"init",data:rect});
+
+                    function handleEvent(e){
+                        e.preventDefault();
+                        interpreter.gen({name : e.type,data: e});
+                    }
+
+                    //connect all relevant event listeners
+                    $(rect).mousedown(handleEvent);
+                    $(document.documentElement).bind("mouseup mousemove",handleEvent);
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <div id="rect"/>
+    </body>
+</html>

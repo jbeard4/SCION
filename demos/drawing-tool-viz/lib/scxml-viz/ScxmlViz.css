@@ -1,0 +1,30 @@
+g.cell rect {
+  fill: white;
+  stroke: black;
+}
+
+text {
+  font: 10px sans-serif;
+}
+
+path.transition,path.reverseTransition {
+  fill: none;
+  stroke: black;
+  stroke-width: 1.5px;
+}
+
+g.orthogonalComponent rect {
+    stroke-dasharray : 0.25em 0.25em; 
+}
+
+g.history rect {
+    fill : #3399FF; 
+}
+
+g.initial rect {
+    stroke : #CC0099;
+}
+
+g.highlighted rect {
+    stroke : #66FF33;
+}
