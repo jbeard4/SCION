@@ -1,53 +1,68 @@
 
 (function(/*! Stitch !*/) {
-  if (!this.require) {
-    var modules = {}, cache = {}, require = function(name, root) {
-      var path = expand(root, name), module = cache[path], fn;
-      if (module) {
+
+  var modules = {}, cache = {}, req = function(name, root) {
+    var path = expand(root, name), module = cache[path], fn;
+    if (module) {
+      return module.exports;
+    } else if (fn = modules[path] || modules[path = expand(path, './index')]) {
+      module = {id: path, exports: {}};
+      try {
+        cache[path] = module;
+        fn(module.exports, function(name) {
+          return req(name, dirname(path));
+        }, module);
         return module.exports;
-      } else if (fn = modules[path] || modules[path = expand(path, './index')]) {
-        module = {id: path, exports: {}};
-        try {
-          cache[path] = module;
-          fn(module.exports, function(name) {
-            return require(name, dirname(path));
-          }, module);
-          return module.exports;
-        } catch (err) {
-          delete cache[path];
-          throw err;
-        }
-      } else {
-        throw 'module \'' + name + '\' not found';
+      } catch (err) {
+        delete cache[path];
+        throw err;
       }
-    }, expand = function(root, name) {
-      var results = [], parts, part;
-      if (/^\.\.?(\/|$)/.test(name)) {
-        parts = [root, name].join('/').split('/');
-      } else {
-        parts = name.split('/');
-      }
-      for (var i = 0, length = parts.length; i < length; i++) {
-        part = parts[i];
-        if (part == '..') {
-          results.pop();
-        } else if (part != '.' && part != '') {
-          results.push(part);
-        }
-      }
-      return results.join('/');
-    }, dirname = function(path) {
-      return path.split('/').slice(0, -1).join('/');
-    };
-    this.require = function(name) {
-      return require(name, '');
+    } else {
+      throw 'module \'' + name + '\' not found';
     }
-    this.require.define = function(bundle) {
-      for (var key in bundle)
-        modules[key] = bundle[key];
-    };
-  }
-  return this.require.define;
+  }, expand = function(root, name) {
+    var results = [], parts, part;
+    if (/^\.\.?(\/|$)/.test(name)) {
+      parts = [root, name].join('/').split('/');
+    } else {
+      parts = name.split('/');
+    }
+    for (var i = 0, length = parts.length; i < length; i++) {
+      part = parts[i];
+      if (part == '..') {
+        results.pop();
+      } else if (part != '.' && part != '') {
+        results.push(part);
+      }
+    }
+    return results.join('/');
+  }, dirname = function(path) {
+    return path.split('/').slice(0, -1).join('/');
+  };
+
+  return function(bundle) {
+    for (var key in bundle){
+      modules[key] = bundle[key];
+    }
+
+    //UMD
+    if (typeof define === 'function' && define.amd) {
+      // AMD. Register as a named module
+      define('scion',[],function(){
+        return req('scion','');
+      });
+    } else {
+      // Browser globals
+      this.scion = req('scion','');
+
+      //define global require
+      if (!this.require) {
+        this.require = function(name) {
+          return req(name, '');
+        }
+      }
+    }
+  };
 }).call(this)({"base-platform/dom": function(exports, require, module) {/*
      Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
 
@@ -471,14 +486,15 @@ SCXMLInterpreter.prototype = {
             //this module's require
         var actionCodeRequire = 
             this.opts.require || 
-                (module.parent && 
+                (typeof module !== 'undefined' &&
+                    module.parent && 
                     module.parent.parent && 
                     module.parent.parent.require &&
                     module.parent.parent.require.bind(module.parent.parent)) || 
-                (require.main && 
+                (typeof require !== 'undefined' &&
+                    ((require.main && 
                     require.main.require &&
-                    require.main.require.bind(require.main)) ||
-                require;
+                    require.main.require.bind(require.main)) || require));
 
         //set up scope for action code embedded in the document
         var tmp = this.model.actionFactory(
@@ -562,7 +578,7 @@ SCXMLInterpreter.prototype = {
 
         if (!selectedTransitions.isEmpty()) {
 
-            if (printTrace) pm.platform.log("sorted transitions: ", require('util').inspect(selectedTransitions,false,4));
+            if (printTrace) pm.platform.log("sorted transitions: ", console.log(selectedTransitions));
 
             //we only want to enter and exit states from transitions with targets
             //filter out targetless transitions here - we will only use these to execute transition actions
@@ -1166,6 +1182,7 @@ module.exports = function(json,documentUrl){
 };
 
 //TODO: get google closure to compile this out as dead code in the browser build
+/*
 if(require.main === module){
     var fileName = process.argv[2];
 
@@ -1192,6 +1209,7 @@ if(require.main === module){
     }
 
 }
+*/
 }, "core/scxml/model": function(exports, require, module) {//   Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
@@ -1828,7 +1846,7 @@ function getScope(transition){
 //epic one-liner
 //this script can be called as a main script to convert an xml file to annotated scxml.
 //TODO: get google closure to compile this out as dead code in the browser build
-if(require.main === module) console.log(JSON.stringify(transform((new (require('xmldom').DOMParser)).parseFromString(require('fs').readFileSync(process.argv[2],'utf8'))),4,4));
+//if(require.main === module) console.log(JSON.stringify(transform((new (require('xmldom').DOMParser)).parseFromString(require('fs').readFileSync(process.argv[2],'utf8'))),4,4));
 }, "core/util/code-gen": function(exports, require, module) {/*
      Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
 
@@ -1966,7 +1984,7 @@ var actionTags = {
                      "$raise(" + event  + ");\n" +
                 "}else{\n" +
                     "$send(" + event + ", {\n" +
-                        "delay: " + (pm.platform.dom.hasAttribute(action,"delayexpr") ? pm.platform.dom.getAttribute(action,"delayexpr") : getDelayInMs(pm.platform.dom.getAttribute(action,"delay"))) + ",\n" +
+                        "delay: " + (pm.platform.dom.hasAttribute(action,"delayexpr") ? 'getDelayInMs(' + pm.platform.dom.getAttribute(action,"delayexpr") + ')' : getDelayInMs(pm.platform.dom.getAttribute(action,"delay"))) + ",\n" +
                         "sendId: " + (pm.platform.dom.hasAttribute(action,"idlocation") ? pm.platform.dom.getAttribute(action,"idlocation") : JSON.stringify(pm.platform.dom.getAttribute(action,"id"))) + "\n" +
                     "}, $raise);" +
                 "}";
@@ -2092,7 +2110,10 @@ function wrapTopLevelFunctionBodyInDeclaration(fnBody){
 function makeActionFactory(topLevelScripts,actionStrings,datamodel){
     var datamodelDeclaration = makeDatamodelDeclaration(datamodel);
     var datamodelClosures = makeDatamodelClosures(datamodel);
-    var topLevelFnBody = makeTopLevelFunctionBody(datamodelDeclaration,topLevelScripts,datamodelClosures,actionStrings);
+    //we need to include getDelayInMs function declaration to handle send/@delayexpr, which is evaluated at runtime
+    var topLevelFnBody = 
+            getDelayInMs.toString() + '\n' +        
+                makeTopLevelFunctionBody(datamodelDeclaration,topLevelScripts,datamodelClosures,actionStrings);
     var fnStr = wrapTopLevelFunctionBodyInDeclaration(topLevelFnBody);
     //require('fs').writeFileSync('out.js',fnStr);
     return fnStr;
@@ -2348,9 +2369,9 @@ var platform;
 if(isBrowser()){
     module.exports = require('./browser/platform');
 }else if(isNode()){
-    module.exports = require('./node/platform');
+    //module.exports = require('./node/platform');
 }else if(isRhino()){
-    module.exports = require('./rhino/platform');
+    //module.exports = require('./rhino/platform');
 }
 }, "scion": function(exports, require, module) {/*
      Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
