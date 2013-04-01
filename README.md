@@ -235,9 +235,12 @@ SCION is also available as an AMD module, so if you are using RequireJS in your 
 <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/require-jquery/0.25.0/require-jquery.min.js "></script>
 
-require(["http://jbeard4.github.com/SCION/builds/latest/scion-min.js"],function(scion){
-  //use SCION here
-});
+<script type="text/javascript">
+  //from inside your script
+  require(["http://jbeard4.github.com/SCION/builds/latest/scion-min.js"],function(scion){
+    //use SCION here
+  });
+</script>
 ```
 
 Note that SCION assumes the presence of jQuery to handle cross-browser XMLHTTPRequest, however an alternative Ajax library could instead be used. This is set up in the following way:
