@@ -48,7 +48,7 @@
     //UMD
     if (typeof define === 'function' && define.amd) {
       // AMD. Register as a named module
-      define('scion',[],function(){
+      define([],function(){
         return req('scion','');
       });
     } else {
@@ -486,15 +486,14 @@ SCXMLInterpreter.prototype = {
             //this module's require
         var actionCodeRequire = 
             this.opts.require || 
-                (typeof module !== 'undefined' &&
-                    module.parent && 
+                (module.parent && 
                     module.parent.parent && 
                     module.parent.parent.require &&
                     module.parent.parent.require.bind(module.parent.parent)) || 
-                (typeof require !== 'undefined' &&
-                    ((require.main && 
+                (require.main && 
                     require.main.require &&
-                    require.main.require.bind(require.main)) || require));
+                    require.main.require.bind(require.main)) ||
+                require;
 
         //set up scope for action code embedded in the document
         var tmp = this.model.actionFactory(
@@ -1182,7 +1181,6 @@ module.exports = function(json,documentUrl){
 };
 
 //TODO: get google closure to compile this out as dead code in the browser build
-/*
 if(require.main === module){
     var fileName = process.argv[2];
 
@@ -1209,7 +1207,6 @@ if(require.main === module){
     }
 
 }
-*/
 }, "core/scxml/model": function(exports, require, module) {//   Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
@@ -1846,7 +1843,7 @@ function getScope(transition){
 //epic one-liner
 //this script can be called as a main script to convert an xml file to annotated scxml.
 //TODO: get google closure to compile this out as dead code in the browser build
-//if(require.main === module) console.log(JSON.stringify(transform((new (require('xmldom').DOMParser)).parseFromString(require('fs').readFileSync(process.argv[2],'utf8'))),4,4));
+if(require.main === module) console.log(JSON.stringify(transform((new (require('xmldom').DOMParser)).parseFromString(require('fs').readFileSync(process.argv[2],'utf8'))),4,4));
 }, "core/util/code-gen": function(exports, require, module) {/*
      Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
 
@@ -2369,9 +2366,9 @@ var platform;
 if(isBrowser()){
     module.exports = require('./browser/platform');
 }else if(isNode()){
-    //module.exports = require('./node/platform');
+    module.exports = require('./node/platform');
 }else if(isRhino()){
-    //module.exports = require('./rhino/platform');
+    module.exports = require('./rhino/platform');
 }
 }, "scion": function(exports, require, module) {/*
      Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
