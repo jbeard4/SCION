@@ -610,7 +610,7 @@ SCXMLInterpreter.prototype = {
                    if(l.onExit) l.onExit(state.id); 
                 });
 
-                if(state.onexit !== undefined) this._evaluateAction(state.onexit,eventSet, datamodelForNextStep, eventsToAddToInnerQueue);
+                if(state.onexit !== "") this._evaluateAction(state.onexit,eventSet, datamodelForNextStep, eventsToAddToInnerQueue);
 
                 var f;
                 if (state.history) {
@@ -659,7 +659,7 @@ SCXMLInterpreter.prototype = {
                    if(l.onEntry) l.onEntry(state.id); 
                 });
 
-                if(state.onentry !== undefined) this._evaluateAction(state.onentry, eventSet, datamodelForNextStep, eventsToAddToInnerQueue);
+                if(state.onentry !== "") this._evaluateAction(state.onentry, eventSet, datamodelForNextStep, eventsToAddToInnerQueue);
             },this);
 
             if (printTrace) pm.platform.log("updating configuration ");
@@ -1709,8 +1709,8 @@ function transformStateNode(node, ancestors) {
     });
 
     //need to do some work on his children
-    var onExitChildren,
-        onEntryChildren;
+    var onExitChildren = [],
+        onEntryChildren = [];
     var transitionChildren = [];
     var stateChildren = [];
 
@@ -1735,10 +1735,10 @@ function transformStateNode(node, ancestors) {
                 transitionChildren.push(transformTransitionNode(child, state));
                 break;
             case "onentry":
-                onEntryChildren = codeGen.gen.parentToFnBody(child);
+                onEntryChildren.push(codeGen.gen.parentToFnBody(child));
                 break;
             case "onexit":
-                onExitChildren = codeGen.gen.parentToFnBody(child);
+                onExitChildren.push(codeGen.gen.parentToFnBody(child));
                 break;
             case "initial":
                 if (!processedInitial) {
@@ -1787,8 +1787,8 @@ function transformStateNode(node, ancestors) {
         }
     }
 
-    state.onexit = onExitChildren;
-    state.onentry = onEntryChildren;
+    state.onexit = onExitChildren.join(';');
+    state.onentry = onEntryChildren.join(';');
     state.transitions = transitionChildren.map(function(transition){return transition.documentOrder;});
     state.children = stateChildren.map(function(child){return child.id;});
 
