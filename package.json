@@ -30,8 +30,8 @@
         }
     ],
     "devDependencies":{
-        "tape" : "*",
-        "async" : "*"
+        "tape" : "0.2.2",
+        "async" : "0.2.5"
     },
     "engines" : { "node" : ">=0.6" },
     "main": "./lib/scion",
