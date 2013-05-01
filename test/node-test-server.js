@@ -3,8 +3,7 @@
 //send event to statechart with tokenid
 //clean up statechart
 
-var scionScxml = require('scion-scxml'),
-    scion = require('scion'),
+var scxml = require('scxml'),
     http = require('http');
 
 var sessionCounter = 0, sessions = {}, timeouts = {}, timeoutMs = 5000;
@@ -27,15 +26,15 @@ http.createServer(function (req, res) {
         try{
             var reqJson = JSON.parse(s);
             if(reqJson.load){
-                console.log("Loading new statechart");
+                console.log("Loading new statechart",reqJson.load);
 
-                scionScxml.urlToModel(reqJson.load,function(err,model){
+                scxml.urlToModel(reqJson.load,function(err,model){
                     if(err){
                         console.error(err.stack);
                         res.writeHead(500, {'Content-Type': 'text/plain'});
                         res.end(err.message);
                     }else{
-                        var interpreter = new scion.Statechart(model);
+                        var interpreter = new scxml.scion.Statechart(model);
 
                         var sessionToken = sessionCounter;
                         sessionCounter++;

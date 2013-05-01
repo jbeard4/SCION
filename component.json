@@ -1,0 +1,32 @@
+{
+  "name": "scxml",
+  "repo": "jbeard4/scxml.js",
+  "description": "An implementation of SCXML in portable ECMAScript.",
+  "version": "1.0.0",
+  "keywords": [
+    "scxml",
+    "statecharts",
+    "w3c",
+    "javascript"
+  ],
+  "dependencies": {
+    "scion": "1.*.*",
+    "sax": "*"
+  },
+  "development": {},
+  "license": "Apache-2.0",
+  "main" : "lib/scxml.js",
+  "scripts": [
+    "lib/scxml.js",
+    "lib/compiler/scjson-to-module.js",
+    "lib/compiler/scxml-to-scjson.js",
+    "lib/runtime/facade.js",
+    "lib/runtime/documentStringToModel.js",
+    "lib/runtime/platform/base-platform/path.js",
+    "lib/runtime/platform/platform.js",
+    "lib/runtime/platform/browser/build/glue.js",
+    "lib/runtime/platform/browser/build/stitch.js",
+    "lib/runtime/platform/browser/platform.js",
+    "lib/runtime/platform/browser/url.js"
+  ]
+}

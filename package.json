@@ -1,0 +1,52 @@
+{
+    "name": "scxml",
+    "version": "1.0.0",
+    "description": "An implementation of SCXML in JavaScript.",
+    "keywords": [
+        "scxml",
+        "statecharts",
+        "w3c",
+        "javascript"
+    ],
+    "maintainers": [{
+        "name": "Jacob Beard",
+        "email": "jbeard4@cs.mcgill.ca",
+        "url": "http://echo-flow.com"
+    }],
+    "bugs": {
+        "email": "jbeard4@cs.mcgill.ca",
+        "url": "https://github.com/jbeard4/scxml.js/issues"
+    },
+    "licenses": [
+        {
+            "type": "Apache-2.0",
+            "url": "https://github.com/jbeard4/scxml.js/blob/master/LICENSE.txt"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/jbeard4/scxml.js.git"
+        }
+    ],
+    "implements": [
+        "http://www.w3.org/TR/scxml/"
+    ],
+    "dependencies" : {
+        "scion" : "*",
+        "sax" : "*"
+    },
+    "devDependencies":{
+    },
+    "engines" : { "node" : ">=0.6" },
+    "main": "./lib/runtime/platform-bootstrap/node/index.js",
+    "scripts" : {
+        "test" : "cd test && bash run-tests-node.sh"
+    },
+    "web": {
+        "name": "SCXML",
+        "save": "dist/scxml.js"
+    }
+}
+
+
