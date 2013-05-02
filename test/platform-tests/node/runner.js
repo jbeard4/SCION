@@ -1,11 +1,31 @@
 var scxml = require('scxml');
 
-scxml.pathToModel('require/require.scxml',function(err,model){
-    if(err) throw err;
+function testModel(model, test){
+    var sc = new scxml.scion.Statechart(model);
+    var initialConfig = sc.start();
 
-    var scxml = new scxml.scion.Statechart(model);
-    var initialConfig = scxml.start();
-    console.log("initialConfig",initialConfig);
-    var nextConfig = scxml.gen("t");
+    test.deepEqual(initialConfig,['a'],'initial configuration');
+
+    var nextConfig = sc.gen("t");
+
+    test.deepEqual(nextConfig,['b'],'next configuration');
+
     console.log("nextConfig",nextConfig);
-});
+
+    test.done();
+}
+
+exports.testPathToModel = function(test){
+    scxml.pathToModel(__dirname + '/require/test.scxml',function(err,model){
+        if(err) throw err;
+        testModel(model,test);
+    });
+};
+
+exports.testRequireExtension = function(test){
+    var model = require('./require/test');
+    console.log('model',model);
+    testModel(model,test);
+};
+
+//exports.testRequireExtension(require('assert'));
