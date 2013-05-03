@@ -2,7 +2,9 @@
     <head>
         <script src="lib/jquery.js"></script>
         <script src="lib/async.js"></script>
-        <script src="lib/nodeunit.js"></script>
+        <script src="lib/qunit-1.11.0.js"></script>
+
+        <link rel="stylesheet" href="lib/qunit-1.11.0.css">
 
         <script src="/dist/scxml.js"></script>
 
@@ -10,15 +12,16 @@
         <script src="runner.js"></script>
     </head>
     <body>
+</head>
+<body>
+        <div id="qunit"></div>
+        <div id="qunit-fixture"></div>
         <script>
-var suites = {};
-
 TEST_REGISTRY.forEach(function(test){
     var tmp = test.name.split('/'), testGroup = tmp[0], testName = tmp[1];
 
-    suites[testGroup] = suites[testGroup] || {};
-
-    suites[testGroup][testName] = function(t){
+    module(testGroup);
+    asyncTest(testName,function(){
         $.getJSON(test.test,function(testScript){
             scxml.urlToModel(test.scxml,function(err,model){
                 if(err) throw err;
@@ -28,7 +31,7 @@ TEST_REGISTRY.forEach(function(test){
 
                 console.log('initial configuration',actualInitialConf);
 
-                t.deepEqual(actualInitialConf.sort(),testScript.initialConfiguration.sort(),'initial configuration');
+                deepEqual(actualInitialConf.sort(),testScript.initialConfiguration.sort(),'initial configuration');
 
                 async.forEachSeries(testScript.events,function(nextEvent,cb){
 
@@ -39,7 +42,7 @@ TEST_REGISTRY.forEach(function(test){
 
                         console.log('next configuration',actualNextConf);
 
-                        t.deepEqual(actualNextConf.sort(),nextEvent.nextConfiguration.sort(),'next configuration after sending event ' + JSON.stringify(nextEvent));
+                        deepEqual(actualNextConf.sort(),nextEvent.nextConfiguration.sort(),'next configuration after sending event ' + JSON.stringify(nextEvent));
 
                         cb();
                     }
@@ -50,16 +53,12 @@ TEST_REGISTRY.forEach(function(test){
                     }else{
                         ns();
                     }
-                },t.done);
+                },start);
 
             });
         });
-    };
+    });
 });
-
-console.log(suites);
-
-nodeunit.run(suites);
         </script>
     </body>
 </html>
