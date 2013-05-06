@@ -1,1 +1,1 @@
-This experimental branch will remove the XML dependency from SCION.
+This is the transitional repository for the next generation of the SCION JavaScript library. 
