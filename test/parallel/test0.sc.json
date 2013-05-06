@@ -1,0 +1,17 @@
+{
+    "": "http://www.w3.org/2005/07/scxml",
+    "states": [
+        {
+            "id": "p",
+            "type": "parallel",
+            "states": [
+                {
+                    "id": "a"
+                },
+                {
+                    "id": "b"
+                }
+            ]
+        }
+    ]
+}

@@ -1,7 +1,7 @@
 {
     "name": "scion",
-    "version": "0.0.10",
-    "description": "StateCharts Interpretation and Optimization eNgine (SCION) is an implementation of SCXML/Statecharts in JavaScript.",
+    "version": "0.1.0",
+    "description": "StateCharts Interpretation and Optimization eNgine (SCION) is an implementation of Statecharts in JavaScript.",
     "keywords": [
         "scxml",
         "statecharts",
@@ -29,19 +29,23 @@
             "url": "https://github.com/jbeard4/SCION.git"
         }
     ],
-    "implements": [
-        "http://www.w3.org/TR/scxml/"
-    ],
-    "dependencies" : {
-        "xmldom" : "git://github.com/jbeard4/xmldom.git"
-    },
     "devDependencies":{
-        "stitch" : "git://github.com/jbeard4/stitch.git",
-        "uglify-js" : "*"
+        "tape" : "0.2.2",
+        "async" : "0.2.5"
     },
     "engines" : { "node" : ">=0.6" },
     "main": "./lib/scion",
     "scripts" : {
-        "test" : "cd test && bash run-tests-node.sh"
+        "test" : "node test/harness.js"
+    },  
+    "testling": {
+        "files": "test/harness.js",
+        "browsers": {
+            "ie": [ 8, 9 ],
+            "firefox": [ 13 ],
+            "chrome": [ 20 ],
+            "safari": [ 5.1 ],
+            "opera": [ 12 ]
+        }
     }
 }
