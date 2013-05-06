@@ -1,0 +1,15 @@
+{
+  "name": "scion",
+  "repo": "jbeard4/SCION",
+  "description": "SCION is an implementation of Statecharts in portable ECMASCript",
+  "version": "0.0.1",
+  "keywords": ["statecharts"],
+  "dependencies": {},
+  "development": {},
+  "license": "Apache-2.0",
+  "main" : "lib/scion.js",
+  "scripts": [
+    "lib/scion.js"
+  ]
+}
+
