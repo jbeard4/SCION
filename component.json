@@ -1,6 +1,6 @@
 {
-  "name": "scion",
-  "repo": "jbeard4/SCION",
+  "name": "scion-ng",
+  "repo": "jbeard4/SCION-ng",
   "description": "SCION is an implementation of Statecharts in portable ECMASCript",
   "version": "0.0.1",
   "keywords": ["statecharts"],
