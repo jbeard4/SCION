@@ -1,7 +1,17 @@
 <html>
     <head>
-        <script type="text/javascript" src="bundle.js"></script>
     </head>
     <body>
+        <script type="text/javascript">
+            window.console = {};
+            window.console.log = function(){
+                var p = document.createElement('p');
+                for(var i = 0; i < arguments.length; i++){
+                    p.innerHTML += arguments[i].toString() + '&nbsp;';
+                }
+                document.body.appendChild(p);
+            }
+        </script>
+        <script type="text/javascript" src="bundle.js"></script>
     </body>
 </html>

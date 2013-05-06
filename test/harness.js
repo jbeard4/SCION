@@ -1,8 +1,8 @@
+require('es5-shim');        //load this first!
 var scion = require('../lib/scion');
 var addTest = require('tape');
 var path = require('path');
 var async = require('async');
-require('es5-shim');
 
 //path to test cases is passed in via argv
 var statechartModulePaths = process.argv.slice(2);      //assume these are of the form *.test.json
@@ -49,7 +49,7 @@ tests.forEach(function(test){
 
                 console.log('next configuration',actualNextConf);
 
-                t.deepEqual(actualNextConf.sort(),nextEvent.nextConfiguration.sort(),'next configuration after sending event ' + JSON.stringify(nextEvent));
+                t.deepEqual(actualNextConf.sort(),nextEvent.nextConfiguration.sort(),'next configuration after sending event ' + nextEvent.name);
 
                 cb();
             }
