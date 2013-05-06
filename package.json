@@ -1,5 +1,5 @@
 {
-    "name": "scion",
+    "name": "scion-ng",
     "version": "0.1.0",
     "description": "StateCharts Interpretation and Optimization eNgine (SCION) is an implementation of Statecharts in JavaScript.",
     "keywords": [
@@ -15,18 +15,18 @@
     }],
     "bugs": {
         "email": "jbeard4@cs.mcgill.ca",
-        "url": "https://github.com/jbeard4/SCION/issues"
+        "url": "https://github.com/jbeard4/SCION-ng/issues"
     },
     "licenses": [
         {
             "type": "Apache-2.0",
-            "url": "https://github.com/jbeard4/SCION/blob/master/LICENSE.txt"
+            "url": "https://github.com/jbeard4/SCION-ng/blob/master/LICENSE.txt"
         }
     ],
     "repositories": [
         {
             "type": "git",
-            "url": "https://github.com/jbeard4/SCION.git"
+            "url": "https://github.com/jbeard4/SCION-ng.git"
         }
     ],
     "devDependencies":{
