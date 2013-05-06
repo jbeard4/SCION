@@ -1,5 +1,7 @@
 js = $(shell find lib/ -name "*.js")
 
+all : dist/scxml.js dist/scxml.min.js
+
 dist/scxml.js : $(js)
 	component build -o dist -n scxml -s scxml
 
@@ -10,4 +12,4 @@ get-deps :
 	npm install -g component uglifyjs
 	component install
 
-.PHONY : get-deps
+.PHONY : get-deps all
