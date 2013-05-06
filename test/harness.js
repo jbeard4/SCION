@@ -2,6 +2,7 @@ var scion = require('../lib/scion');
 var addTest = require('tape');
 var path = require('path');
 var async = require('async');
+require('es5-shim');
 
 //path to test cases is passed in via argv
 var statechartModulePaths = process.argv.slice(2);      //assume these are of the form *.test.json
