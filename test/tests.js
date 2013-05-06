@@ -60,7 +60,6 @@ module.exports = [
     { name : './parallel/test3.test.json', test : require('./parallel/test3.test.json'), sc : require('./parallel/test3.sc.json') },
     { name : './parallel/test1.test.json', test : require('./parallel/test1.test.json'), sc : require('./parallel/test1.sc.json') },
     { name : './foreach/test1.test.json', test : require('./foreach/test1.test.json'), sc : require('./foreach/test1.sc.js') },
-    { name : './send-data/send1.test.json', test : require('./send-data/send1.test.json'), sc : require('./send-data/send1.sc.js') },
     { name : './atom3-basic-tests/m0.test.json', test : require('./atom3-basic-tests/m0.test.json'), sc : require('./atom3-basic-tests/m0.sc.js') },
     { name : './atom3-basic-tests/m3.test.json', test : require('./atom3-basic-tests/m3.test.json'), sc : require('./atom3-basic-tests/m3.sc.js') },
     { name : './atom3-basic-tests/m1.test.json', test : require('./atom3-basic-tests/m1.test.json'), sc : require('./atom3-basic-tests/m1.sc.js') },
