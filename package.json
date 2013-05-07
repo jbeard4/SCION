@@ -32,7 +32,7 @@
     "devDependencies":{
         "tape" : "0.2.2",
         "async" : "0.2.5",
-        "es5-shim" : "1.2.10"
+        "es5-shim" : "2.0.8"
     },
     "engines" : { "node" : ">=0.6" },
     "main": "./lib/scion",
