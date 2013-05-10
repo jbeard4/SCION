@@ -1,4 +1,5 @@
-;(function(e,t,n,r){function i(r){if(!n[r]){if(!t[r]){if(e)return e(r);throw new Error("Cannot find module '"+r+"'")}var s=n[r]={exports:{}};t[r][0](function(e){var n=t[r][1][e];return i(n?n:e)},s,s.exports)}return n[r].exports}for(var s=0;s<r.length;s++)i(r[s]);return i})(typeof require!=="undefined"&&require,{1:[function(require,module,exports){// shim for using process in browser
+;(function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0](function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
+// shim for using process in browser
 
 var process = module.exports = {};
 
@@ -51,7 +52,8 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],2:[function(require,module,exports){(function(process){function filter (xs, fn) {
+},{}],2:[function(require,module,exports){
+(function(process){function filter (xs, fn) {
     var res = [];
     for (var i = 0; i < xs.length; i++) {
         if (fn(xs[i], i, xs)) res.push(xs[i]);
@@ -228,7 +230,8 @@ exports.relative = function(from, to) {
 };
 
 })(require("__browserify_process"))
-},{"__browserify_process":1}],3:[function(require,module,exports){(function(){//   Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
+},{"__browserify_process":1}],3:[function(require,module,exports){
+(function(){//   Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -679,7 +682,7 @@ exports.relative = function(from, to) {
        
         this.opts = opts || {};
 
-        this.opts.log = opts.log || (typeof console === 'undefined' ? {log : function(){}} : console.log.bind(console));   //rely on global console if this console is undefined
+        this.opts.console = opts.console || (typeof console === 'undefined' ? {log : function(){}} : console);   //rely on global console if this console is undefined
         this.opts.Set = this.opts.Set || ArraySet;
         this.opts.priorityComparisonFn = this.opts.priorityComparisonFn || getTransitionWithHigherSourceChildPriority;
         this.opts.transitionSelector = this.opts.transitionSelector || scxmlPrefixTransitionSelector;
@@ -710,7 +713,7 @@ exports.relative = function(from, to) {
         /** @expose */
         start : function() {
             //perform big step without events to take all default transitions and reach stable initial state
-            if (printTrace) this.opts.log("performing initial big step");
+            if (printTrace) this.opts.console.log("performing initial big step");
 
             //We effectively need to figure out states to enter here to populate initial config. assuming root is compound state makes this simple.
             //but if we want it to be parallel, then this becomes more complex. so when initializing the model, we add a 'fake' root state, which
@@ -762,15 +765,15 @@ exports.relative = function(from, to) {
         /** @private */
         _performSmallStep : function(currentEvent) {
 
-            if (printTrace) this.opts.log("selecting transitions with currentEvent: ", currentEvent);
+            if (printTrace) this.opts.console.log("selecting transitions with currentEvent: ", currentEvent);
 
             var selectedTransitions = this._selectTransitions(currentEvent);
 
-            if (printTrace) this.opts.log("selected transitions: ", selectedTransitions);
+            if (printTrace) this.opts.console.log("selected transitions: ", selectedTransitions);
 
             if (!selectedTransitions.isEmpty()) {
 
-                if (printTrace) this.opts.log("sorted transitions: ", selectedTransitions);
+                if (printTrace) this.opts.console.log("sorted transitions: ", selectedTransitions);
 
                 //we only want to enter and exit states from transitions with targets
                 //filter out targetless transitions here - we will only use these to execute transition actions
@@ -784,21 +787,21 @@ exports.relative = function(from, to) {
                     basicStatesEntered = enteredTuple[0], 
                     statesEntered = enteredTuple[1];
 
-                if (printTrace) this.opts.log("basicStatesExited ", basicStatesExited);
-                if (printTrace) this.opts.log("basicStatesEntered ", basicStatesEntered);
-                if (printTrace) this.opts.log("statesExited ", statesExited);
-                if (printTrace) this.opts.log("statesEntered ", statesEntered);
+                if (printTrace) this.opts.console.log("basicStatesExited ", basicStatesExited);
+                if (printTrace) this.opts.console.log("basicStatesEntered ", basicStatesEntered);
+                if (printTrace) this.opts.console.log("statesExited ", statesExited);
+                if (printTrace) this.opts.console.log("statesEntered ", statesEntered);
 
                 var eventsToAddToInnerQueue = new this.opts.Set();
 
                 //update history states
-                if (printTrace) this.opts.log("executing state exit actions");
+                if (printTrace) this.opts.console.log("executing state exit actions");
 
                 var evaluateAction = this._evaluateAction.bind(this, currentEvent);        //create helper fn that actions can call later on
 
                 statesExited.forEach(function(state){
 
-                    if (printTrace || this.opts.logStatesEnteredAndExited) this.opts.log("exiting ", state.id);
+                    if (printTrace || this.opts.logStatesEnteredAndExited) this.opts.console.log("exiting ", state.id);
 
                     //invoke listeners
                     this._listeners.forEach(function(l){
@@ -830,7 +833,7 @@ exports.relative = function(from, to) {
                     return t1.documentOrder - t2.documentOrder;
                 });
 
-                if (printTrace) this.opts.log("executing transitition actions");
+                if (printTrace) this.opts.console.log("executing transitition actions");
 
 
                 sortedTransitions.forEach(function(transition){
@@ -844,11 +847,11 @@ exports.relative = function(from, to) {
                     if(transition.onTransition !== undefined) transition.onTransition.forEach(evaluateAction);
                 },this);
      
-                if (printTrace) this.opts.log("executing state enter actions");
+                if (printTrace) this.opts.console.log("executing state enter actions");
 
                 statesEntered.forEach(function(state){
 
-                    if (printTrace || this.opts.logStatesEnteredAndExited) this.opts.log("entering", state.id);
+                    if (printTrace || this.opts.logStatesEnteredAndExited) this.opts.console.log("entering", state.id);
 
                     this._listeners.forEach(function(l){
                        if(l.onEntry) l.onEntry(state.id); 
@@ -857,19 +860,19 @@ exports.relative = function(from, to) {
                     if(state.onEntry !== undefined) state.onEntry.forEach(evaluateAction);
                 },this);
 
-                if (printTrace) this.opts.log("updating configuration ");
-                if (printTrace) this.opts.log("old configuration ", this._configuration);
+                if (printTrace) this.opts.console.log("updating configuration ");
+                if (printTrace) this.opts.console.log("old configuration ", this._configuration);
 
                 //update configuration by removing basic states exited, and adding basic states entered
                 this._configuration.difference(basicStatesExited);
                 this._configuration.union(basicStatesEntered);
 
 
-                if (printTrace) this.opts.log("new configuration ", this._configuration);
+                if (printTrace) this.opts.console.log("new configuration ", this._configuration);
                 
                 //add set of generated events to the innerEventQueue -> Event Lifelines: Next small-step
                 if (!eventsToAddToInnerQueue.isEmpty()) {
-                    if (printTrace) this.opts.log("adding triggered events to inner queue ", eventsToAddToInnerQueue);
+                    if (printTrace) this.opts.console.log("adding triggered events to inner queue ", eventsToAddToInnerQueue);
                     this._internalEventQueue.push(eventsToAddToInnerQueue);
                 }
 
@@ -1040,7 +1043,7 @@ exports.relative = function(from, to) {
 
             var priorityEnabledTransitions = this._selectPriorityEnabledTransitions(enabledTransitions);
 
-            if (printTrace) this.opts.log("priorityEnabledTransitions", priorityEnabledTransitions);
+            if (printTrace) this.opts.console.log("priorityEnabledTransitions", priorityEnabledTransitions);
             
             return priorityEnabledTransitions;
         },
@@ -1055,10 +1058,10 @@ exports.relative = function(from, to) {
 
             priorityEnabledTransitions.union(consistentTransitions);
 
-            if (printTrace) this.opts.log("enabledTransitions", enabledTransitions);
-            if (printTrace) this.opts.log("consistentTransitions", consistentTransitions);
-            if (printTrace) this.opts.log("inconsistentTransitionsPairs", inconsistentTransitionsPairs);
-            if (printTrace) this.opts.log("priorityEnabledTransitions", priorityEnabledTransitions);
+            if (printTrace) this.opts.console.log("enabledTransitions", enabledTransitions);
+            if (printTrace) this.opts.console.log("consistentTransitions", consistentTransitions);
+            if (printTrace) this.opts.console.log("inconsistentTransitionsPairs", inconsistentTransitionsPairs);
+            if (printTrace) this.opts.console.log("priorityEnabledTransitions", priorityEnabledTransitions);
             
             while (!inconsistentTransitionsPairs.isEmpty()) {
                 enabledTransitions = new this.opts.Set(
@@ -1070,10 +1073,10 @@ exports.relative = function(from, to) {
 
                 priorityEnabledTransitions.union(consistentTransitions);
 
-                if (printTrace) this.opts.log("enabledTransitions", enabledTransitions);
-                if (printTrace) this.opts.log("consistentTransitions", consistentTransitions);
-                if (printTrace) this.opts.log("inconsistentTransitionsPairs", inconsistentTransitionsPairs);
-                if (printTrace) this.opts.log("priorityEnabledTransitions", priorityEnabledTransitions);
+                if (printTrace) this.opts.console.log("enabledTransitions", enabledTransitions);
+                if (printTrace) this.opts.console.log("consistentTransitions", consistentTransitions);
+                if (printTrace) this.opts.console.log("inconsistentTransitionsPairs", inconsistentTransitionsPairs);
+                if (printTrace) this.opts.console.log("priorityEnabledTransitions", priorityEnabledTransitions);
                 
             }
             return priorityEnabledTransitions;
@@ -1085,7 +1088,7 @@ exports.relative = function(from, to) {
             var inconsistentTransitionsPairs = new this.opts.Set();
             var transitionList = transitions.iter();
 
-            if (printTrace) this.opts.log("transitions", transitionList);
+            if (printTrace) this.opts.console.log("transitions", transitionList);
 
             for(var i = 0; i < transitionList.length; i++){
                 for(var j = i+1; j < transitionList.length; j++){
@@ -1111,11 +1114,11 @@ exports.relative = function(from, to) {
         /** @private */
         _isArenaOrthogonal : function(t1, t2) {
 
-            if (printTrace) this.opts.log("transition scopes", t1.scope, t2.scope);
+            if (printTrace) this.opts.console.log("transition scopes", t1.scope, t2.scope);
 
             var isOrthogonal = query.isOrthogonalTo(t1.scope, t2.scope);
 
-            if (printTrace) this.opts.log("transition scopes are orthogonal?", isOrthogonal);
+            if (printTrace) this.opts.console.log("transition scopes are orthogonal?", isOrthogonal);
 
             return isOrthogonal;
         },
@@ -1261,7 +1264,8 @@ exports.relative = function(from, to) {
 }));
 
 })()
-},{}],4:[function(require,module,exports){module.exports = [
+},{}],4:[function(require,module,exports){
+module.exports = [
     { name : './more-parallel/test2.test.json', test : require('./more-parallel/test2.test.json'), sc : require('./more-parallel/test2.sc.js') },
     { name : './more-parallel/test0.test.json', test : require('./more-parallel/test0.test.json'), sc : require('./more-parallel/test0.sc.js') },
     { name : './more-parallel/test8.test.json', test : require('./more-parallel/test8.test.json'), sc : require('./more-parallel/test8.sc.js') },
@@ -1366,18 +1370,78 @@ exports.relative = function(from, to) {
     { name : './scxml-prefix-event-name-matching/test1.test.json', test : require('./scxml-prefix-event-name-matching/test1.test.json'), sc : require('./scxml-prefix-event-name-matching/test1.sc.js') }
 ];
 
-},{"./more-parallel/test2.test.json":5,"./more-parallel/test2.sc.js":6,"./more-parallel/test0.test.json":7,"./more-parallel/test0.sc.js":8,"./more-parallel/test8.test.json":9,"./more-parallel/test8.sc.js":10,"./more-parallel/test10.test.json":11,"./more-parallel/test10.sc.js":12,"./more-parallel/test9.test.json":13,"./more-parallel/test9.sc.js":14,"./more-parallel/test7.test.json":15,"./more-parallel/test7.sc.js":16,"./more-parallel/test6.test.json":17,"./more-parallel/test6.sc.js":18,"./more-parallel/test3.test.json":19,"./more-parallel/test3.sc.js":20,"./more-parallel/test4.test.json":21,"./more-parallel/test4.sc.js":22,"./more-parallel/test1.test.json":23,"./more-parallel/test1.sc.js":24,"./more-parallel/test5.test.json":25,"./more-parallel/test5.sc.js":26,"./default-initial-state/initial1.test.json":27,"./default-initial-state/initial1.sc.js":28,"./default-initial-state/initial2.test.json":29,"./default-initial-state/initial2.sc.js":30,"./parallel+interrupt/test2.test.json":31,"./parallel+interrupt/test2.sc.json":32,"./parallel+interrupt/test28.test.json":33,"./parallel+interrupt/test28.sc.json":34,"./parallel+interrupt/test0.test.json":35,"./parallel+interrupt/test0.sc.json":36,"./parallel+interrupt/test16.test.json":37,"./parallel+interrupt/test16.sc.json":38,"./parallel+interrupt/test21.test.json":39,"./parallel+interrupt/test21.sc.json":40,"./parallel+interrupt/test8.test.json":41,"./parallel+interrupt/test8.sc.json":42,"./parallel+interrupt/test15.test.json":43,"./parallel+interrupt/test15.sc.json":44,"./parallel+interrupt/test18.test.json":45,"./parallel+interrupt/test18.sc.json":46,"./parallel+interrupt/test20.test.json":47,"./parallel+interrupt/test20.sc.json":48,"./parallel+interrupt/test17.test.json":49,"./parallel+interrupt/test17.sc.json":50,"./parallel+interrupt/test14.test.json":51,"./parallel+interrupt/test14.sc.json":52,"./parallel+interrupt/test22.test.json":53,"./parallel+interrupt/test22.sc.json":54,"./parallel+interrupt/test29.test.json":55,"./parallel+interrupt/test29.sc.json":56,"./parallel+interrupt/test26.test.json":57,"./parallel+interrupt/test26.sc.json":58,"./parallel+interrupt/test10.test.json":59,"./parallel+interrupt/test10.sc.json":60,"./parallel+interrupt/test19.test.json":61,"./parallel+interrupt/test19.sc.json":62,"./parallel+interrupt/test9.test.json":63,"./parallel+interrupt/test9.sc.json":64,"./parallel+interrupt/test7.test.json":65,"./parallel+interrupt/test7.sc.json":66,"./parallel+interrupt/test27.test.json":67,"./parallel+interrupt/test27.sc.json":68,"./parallel+interrupt/test13.test.json":69,"./parallel+interrupt/test13.sc.json":70,"./parallel+interrupt/test12.test.json":71,"./parallel+interrupt/test12.sc.json":72,"./parallel+interrupt/test6.test.json":73,"./parallel+interrupt/test6.sc.json":74,"./parallel+interrupt/test25.test.json":75,"./parallel+interrupt/test25.sc.json":76,"./parallel+interrupt/test3.test.json":77,"./parallel+interrupt/test3.sc.json":78,"./parallel+interrupt/test11.test.json":79,"./parallel+interrupt/test11.sc.json":80,"./parallel+interrupt/test4.test.json":81,"./parallel+interrupt/test4.sc.json":82,"./parallel+interrupt/test31.test.json":83,"./parallel+interrupt/test31.sc.json":84,"./parallel+interrupt/test30.test.json":85,"./parallel+interrupt/test30.sc.json":86,"./parallel+interrupt/test23.test.json":87,"./parallel+interrupt/test23.sc.json":88,"./parallel+interrupt/test1.test.json":89,"./parallel+interrupt/test1.sc.json":90,"./parallel+interrupt/test24.test.json":91,"./parallel+interrupt/test24.sc.json":92,"./parallel+interrupt/test5.test.json":93,"./parallel+interrupt/test5.sc.json":94,"./assign-current-small-step/test2.test.json":95,"./assign-current-small-step/test2.sc.js":96,"./assign-current-small-step/test0.test.json":97,"./assign-current-small-step/test0.sc.js":98,"./assign-current-small-step/test3.test.json":99,"./assign-current-small-step/test3.sc.js":100,"./assign-current-small-step/test4.test.json":101,"./assign-current-small-step/test4.sc.js":102,"./assign-current-small-step/test1.test.json":103,"./assign-current-small-step/test1.sc.js":104,"./basic/basic1.test.json":105,"./basic/basic1.sc.json":106,"./basic/basic2.test.json":107,"./basic/basic2.sc.json":108,"./basic/basic0.test.json":109,"./basic/basic0.sc.json":110,"./hierarchy+documentOrder/test0.test.json":111,"./hierarchy+documentOrder/test0.sc.json":112,"./hierarchy+documentOrder/test1.test.json":113,"./hierarchy+documentOrder/test1.sc.json":114,"./multiple-events-per-transition/test1.test.json":115,"./multiple-events-per-transition/test1.sc.js":116,"./parallel/test2.test.json":117,"./parallel/test2.sc.json":118,"./parallel/test0.test.json":119,"./parallel/test0.sc.json":120,"./parallel/test3.test.json":121,"./parallel/test3.sc.json":122,"./parallel/test1.test.json":123,"./parallel/test1.sc.json":124,"./foreach/test1.test.json":125,"./foreach/test1.sc.js":126,"./atom3-basic-tests/m0.test.json":127,"./atom3-basic-tests/m0.sc.js":128,"./atom3-basic-tests/m3.test.json":129,"./atom3-basic-tests/m3.sc.js":130,"./atom3-basic-tests/m1.test.json":131,"./atom3-basic-tests/m1.sc.js":132,"./atom3-basic-tests/m2.test.json":133,"./atom3-basic-tests/m2.sc.js":134,"./internal-transitions/test0.test.json":135,"./internal-transitions/test0.sc.js":136,"./internal-transitions/test1.test.json":137,"./internal-transitions/test1.sc.js":138,"./send-internal/test0.test.json":139,"./send-internal/test0.sc.js":140,"./cond-js/test2.test.json":141,"./cond-js/test2.sc.js":142,"./cond-js/test0.test.json":143,"./cond-js/test0.sc.js":144,"./cond-js/TestConditionalTransition.test.json":145,"./cond-js/TestConditionalTransition.sc.js":146,"./cond-js/test1.test.json":147,"./cond-js/test1.sc.js":148,"./documentOrder/documentOrder0.test.json":149,"./documentOrder/documentOrder0.sc.json":150,"./hierarchy/hier0.test.json":151,"./hierarchy/hier0.sc.json":152,"./hierarchy/hier1.test.json":153,"./hierarchy/hier1.sc.json":154,"./hierarchy/hier2.test.json":155,"./hierarchy/hier2.sc.json":156,"./if-else/test0.test.json":157,"./if-else/test0.sc.js":158,"./targetless-transition/test2.test.json":159,"./targetless-transition/test2.sc.js":160,"./targetless-transition/test0.test.json":161,"./targetless-transition/test0.sc.js":162,"./targetless-transition/test3.test.json":163,"./targetless-transition/test3.sc.js":164,"./targetless-transition/test1.test.json":165,"./targetless-transition/test1.sc.js":166,"./script/test2.test.json":167,"./script/test2.sc.js":168,"./script/test0.test.json":169,"./script/test0.sc.js":170,"./script/test1.test.json":171,"./script/test1.sc.js":172,"./raise/send7.test.json":173,"./raise/send7.sc.js":174,"./raise/send8.test.json":175,"./raise/send8.sc.js":176,"./raise/send6.test.json":177,"./raise/send6.sc.js":178,"./raise/send2.test.json":179,"./raise/send2.sc.js":180,"./raise/send4.test.json":181,"./raise/send4.sc.js":182,"./raise/send3.test.json":183,"./raise/send3.sc.js":184,"./raise/send1.test.json":185,"./raise/send1.sc.js":186,"./raise/send5.test.json":187,"./raise/send5.sc.js":188,"./history/history5.test.json":189,"./history/history5.sc.json":190,"./history/history2.test.json":191,"./history/history2.sc.json":192,"./history/history6.test.json":193,"./history/history6.sc.js":194,"./history/history3.test.json":195,"./history/history3.sc.json":196,"./history/history1.test.json":197,"./history/history1.sc.json":198,"./history/history0.test.json":199,"./history/history0.sc.json":200,"./history/history4.test.json":201,"./history/history4.sc.json":202,"./scxml-prefix-event-name-matching/test0.test.json":203,"./scxml-prefix-event-name-matching/test0.sc.js":204,"./scxml-prefix-event-name-matching/star0.test.json":205,"./scxml-prefix-event-name-matching/star0.sc.js":206,"./scxml-prefix-event-name-matching/test1.test.json":207,"./scxml-prefix-event-name-matching/test1.sc.js":208}],5:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["a1","b1"],
-    "events" : [ 
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["a1","b2"]
-        }
+},{"./more-parallel/test2.sc.js":5,"./more-parallel/test2.test.json":6,"./more-parallel/test0.test.json":7,"./more-parallel/test0.sc.js":8,"./more-parallel/test8.test.json":9,"./more-parallel/test10.test.json":10,"./more-parallel/test8.sc.js":11,"./more-parallel/test10.sc.js":12,"./more-parallel/test9.test.json":13,"./more-parallel/test9.sc.js":14,"./more-parallel/test7.test.json":15,"./more-parallel/test6.test.json":16,"./more-parallel/test7.sc.js":17,"./more-parallel/test6.sc.js":18,"./more-parallel/test3.test.json":19,"./more-parallel/test3.sc.js":20,"./more-parallel/test4.test.json":21,"./more-parallel/test4.sc.js":22,"./more-parallel/test1.sc.js":23,"./more-parallel/test1.test.json":24,"./more-parallel/test5.test.json":25,"./more-parallel/test5.sc.js":26,"./default-initial-state/initial1.test.json":27,"./default-initial-state/initial1.sc.js":28,"./default-initial-state/initial2.test.json":29,"./default-initial-state/initial2.sc.js":30,"./parallel+interrupt/test2.test.json":31,"./parallel+interrupt/test2.sc.json":32,"./parallel+interrupt/test28.sc.json":33,"./parallel+interrupt/test28.test.json":34,"./parallel+interrupt/test0.test.json":35,"./parallel+interrupt/test0.sc.json":36,"./parallel+interrupt/test16.sc.json":37,"./parallel+interrupt/test16.test.json":38,"./parallel+interrupt/test21.test.json":39,"./parallel+interrupt/test21.sc.json":40,"./parallel+interrupt/test8.test.json":41,"./parallel+interrupt/test8.sc.json":42,"./parallel+interrupt/test15.test.json":43,"./parallel+interrupt/test18.test.json":44,"./parallel+interrupt/test15.sc.json":45,"./parallel+interrupt/test18.sc.json":46,"./parallel+interrupt/test20.test.json":47,"./parallel+interrupt/test20.sc.json":48,"./parallel+interrupt/test17.test.json":49,"./parallel+interrupt/test17.sc.json":50,"./parallel+interrupt/test14.test.json":51,"./parallel+interrupt/test14.sc.json":52,"./parallel+interrupt/test22.test.json":53,"./parallel+interrupt/test22.sc.json":54,"./parallel+interrupt/test29.test.json":55,"./parallel+interrupt/test29.sc.json":56,"./parallel+interrupt/test26.test.json":57,"./parallel+interrupt/test26.sc.json":58,"./parallel+interrupt/test10.test.json":59,"./parallel+interrupt/test10.sc.json":60,"./parallel+interrupt/test19.test.json":61,"./parallel+interrupt/test9.test.json":62,"./parallel+interrupt/test9.sc.json":63,"./parallel+interrupt/test19.sc.json":64,"./parallel+interrupt/test7.test.json":65,"./parallel+interrupt/test7.sc.json":66,"./parallel+interrupt/test27.test.json":67,"./parallel+interrupt/test27.sc.json":68,"./parallel+interrupt/test13.test.json":69,"./parallel+interrupt/test13.sc.json":70,"./parallel+interrupt/test12.test.json":71,"./parallel+interrupt/test12.sc.json":72,"./parallel+interrupt/test6.test.json":73,"./parallel+interrupt/test6.sc.json":74,"./parallel+interrupt/test25.test.json":75,"./parallel+interrupt/test25.sc.json":76,"./parallel+interrupt/test3.test.json":77,"./parallel+interrupt/test11.test.json":78,"./parallel+interrupt/test3.sc.json":79,"./parallel+interrupt/test11.sc.json":80,"./parallel+interrupt/test4.test.json":81,"./parallel+interrupt/test4.sc.json":82,"./parallel+interrupt/test31.test.json":83,"./parallel+interrupt/test31.sc.json":84,"./parallel+interrupt/test30.sc.json":85,"./parallel+interrupt/test30.test.json":86,"./parallel+interrupt/test23.test.json":87,"./parallel+interrupt/test23.sc.json":88,"./parallel+interrupt/test1.test.json":89,"./parallel+interrupt/test1.sc.json":90,"./parallel+interrupt/test24.test.json":91,"./parallel+interrupt/test24.sc.json":92,"./parallel+interrupt/test5.test.json":93,"./parallel+interrupt/test5.sc.json":94,"./assign-current-small-step/test2.test.json":95,"./assign-current-small-step/test2.sc.js":96,"./assign-current-small-step/test0.test.json":97,"./assign-current-small-step/test0.sc.js":98,"./assign-current-small-step/test3.test.json":99,"./assign-current-small-step/test4.test.json":100,"./assign-current-small-step/test4.sc.js":101,"./assign-current-small-step/test3.sc.js":102,"./assign-current-small-step/test1.test.json":103,"./assign-current-small-step/test1.sc.js":104,"./basic/basic1.test.json":105,"./basic/basic1.sc.json":106,"./basic/basic2.test.json":107,"./basic/basic2.sc.json":108,"./basic/basic0.test.json":109,"./basic/basic0.sc.json":110,"./hierarchy+documentOrder/test0.test.json":111,"./hierarchy+documentOrder/test0.sc.json":112,"./hierarchy+documentOrder/test1.test.json":113,"./multiple-events-per-transition/test1.test.json":114,"./multiple-events-per-transition/test1.sc.js":115,"./hierarchy+documentOrder/test1.sc.json":116,"./parallel/test2.test.json":117,"./parallel/test2.sc.json":118,"./parallel/test0.test.json":119,"./parallel/test0.sc.json":120,"./parallel/test3.test.json":121,"./parallel/test3.sc.json":122,"./parallel/test1.test.json":123,"./parallel/test1.sc.json":124,"./foreach/test1.test.json":125,"./foreach/test1.sc.js":126,"./atom3-basic-tests/m0.test.json":127,"./atom3-basic-tests/m0.sc.js":128,"./atom3-basic-tests/m3.test.json":129,"./atom3-basic-tests/m3.sc.js":130,"./atom3-basic-tests/m1.test.json":131,"./atom3-basic-tests/m1.sc.js":132,"./atom3-basic-tests/m2.test.json":133,"./atom3-basic-tests/m2.sc.js":134,"./internal-transitions/test0.test.json":135,"./internal-transitions/test0.sc.js":136,"./internal-transitions/test1.test.json":137,"./internal-transitions/test1.sc.js":138,"./send-internal/test0.test.json":139,"./send-internal/test0.sc.js":140,"./cond-js/test2.test.json":141,"./cond-js/test2.sc.js":142,"./cond-js/test0.test.json":143,"./cond-js/test0.sc.js":144,"./cond-js/TestConditionalTransition.test.json":145,"./cond-js/TestConditionalTransition.sc.js":146,"./cond-js/test1.test.json":147,"./cond-js/test1.sc.js":148,"./documentOrder/documentOrder0.sc.json":149,"./hierarchy/hier0.test.json":150,"./hierarchy/hier0.sc.json":151,"./hierarchy/hier1.test.json":152,"./documentOrder/documentOrder0.test.json":153,"./hierarchy/hier1.sc.json":154,"./hierarchy/hier2.test.json":155,"./hierarchy/hier2.sc.json":156,"./if-else/test0.test.json":157,"./if-else/test0.sc.js":158,"./targetless-transition/test2.test.json":159,"./targetless-transition/test0.test.json":160,"./targetless-transition/test2.sc.js":161,"./targetless-transition/test0.sc.js":162,"./targetless-transition/test3.test.json":163,"./targetless-transition/test3.sc.js":164,"./targetless-transition/test1.test.json":165,"./targetless-transition/test1.sc.js":166,"./script/test2.test.json":167,"./script/test2.sc.js":168,"./script/test0.test.json":169,"./script/test0.sc.js":170,"./script/test1.test.json":171,"./script/test1.sc.js":172,"./raise/send7.test.json":173,"./raise/send7.sc.js":174,"./raise/send8.test.json":175,"./raise/send8.sc.js":176,"./raise/send6.test.json":177,"./raise/send6.sc.js":178,"./raise/send2.test.json":179,"./raise/send4.test.json":180,"./raise/send4.sc.js":181,"./raise/send3.test.json":182,"./raise/send3.sc.js":183,"./raise/send1.test.json":184,"./raise/send1.sc.js":185,"./raise/send5.test.json":186,"./raise/send5.sc.js":187,"./history/history5.sc.json":188,"./history/history5.test.json":189,"./history/history2.test.json":190,"./history/history2.sc.json":191,"./raise/send2.sc.js":192,"./history/history6.sc.js":193,"./history/history3.test.json":194,"./history/history6.test.json":195,"./history/history3.sc.json":196,"./history/history1.test.json":197,"./history/history1.sc.json":198,"./history/history0.test.json":199,"./history/history0.sc.json":200,"./history/history4.test.json":201,"./history/history4.sc.json":202,"./scxml-prefix-event-name-matching/test0.sc.js":203,"./scxml-prefix-event-name-matching/test0.test.json":204,"./scxml-prefix-event-name-matching/star0.test.json":205,"./scxml-prefix-event-name-matching/star0.sc.js":206,"./scxml-prefix-event-name-matching/test1.test.json":207,"./scxml-prefix-event-name-matching/test1.sc.js":208}],209:[function(require,module,exports){
+(function(process){require('es5-shim');        //load this first!
+var scion = require('../lib/scion');
+var addTest = require('tape');
+var path = require('path');
+var async = require('async');
 
-    ]
-}
+//path to test cases is passed in via argv
+var statechartModulePaths = process.argv.slice(2);      //assume these are of the form *.test.json
 
-},{}],6:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
+//console.log('statechartModulePaths',statechartModulePaths); 
+
+var swallowErrors = false;
+
+//if we've specified individual tests via argv, get them
+//otherwise, pull it from the registry
+var tests = statechartModulePaths.length ? 
+        statechartModulePaths.map(function(statechartModulePath){
+
+            //try to find a .test.json file
+            var testModulePath = statechartModulePath.replace(/\.sc\.js(on)?$/,'.test.json');
+            var sc = require(path.resolve('.',statechartModulePath));
+
+            return {
+                name : testModulePath,
+                sc : sc,
+                test : require(path.resolve('.',testModulePath))
+            };
+        }) : require('./tests.js');
+
+tests.forEach(function(test){
+    addTest(test.name,function(t){
+
+        t.plan(test.test.events.length + 1);
+
+        var sc = new scion.Statechart(test.sc);
+
+        var actualInitialConf = sc.start();
+
+        console.log('initial configuration',actualInitialConf);
+
+        t.deepEqual(actualInitialConf.sort(),test.test.initialConfiguration.sort(),'initial configuration');
+
+        async.eachSeries(test.test.events,function(nextEvent,cb){
+
+            function ns(){
+                console.log('sending event',nextEvent.event);
+
+                var actualNextConf = sc.gen(nextEvent.event);
+
+                console.log('next configuration',actualNextConf);
+
+                t.deepEqual(actualNextConf.sort(),nextEvent.nextConfiguration.sort(),'next configuration after sending event ' + nextEvent.name);
+
+                cb();
+            }
+
+            if(nextEvent.after){
+                console.log('Test harness waiting',nextEvent.after,'ms before sending next event');
+                setTimeout(ns,nextEvent.after);
+            }else{
+                ns();
+            }
+        },function(){
+            //we could explicitly end here by calling t.end(), but we don't need to - t.plan() should take care of it automatically
+        });
+    });
+});
+
+})(require("__browserify_process"))
+},{"path":2,"./tests.js":4,"../lib/scion":3,"es5-shim":210,"tape":211,"async":212,"__browserify_process":1}],5:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
 
 
 
@@ -1433,7 +1497,20 @@ module.exports = {
     ]
 };
 
-},{}],7:[function(require,module,exports){module.exports={
+},{}],6:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["a1","b1"],
+    "events" : [ 
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["a1","b2"]
+        }
+
+    ]
+}
+
+},{}],7:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a","b"],
     "events" : [ 
         {
@@ -1444,7 +1521,8 @@ module.exports = {
     ]
 }
 
-},{}],8:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:25 by the SCION SCXML compiler
+},{}],8:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:25 by the SCION SCXML compiler
 
 
 
@@ -1478,7 +1556,8 @@ module.exports = {
     ]
 };
 
-},{}],9:[function(require,module,exports){module.exports={
+},{}],9:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["x"],
     "events" : [ 
         {
@@ -1489,7 +1568,27 @@ module.exports = {
     ]
 }
 
-},{}],10:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
+},{}],10:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["a","b"],
+    "events" : [ 
+        {
+            "event" : { "name" : "t1" },
+            "nextConfiguration" : ["a","b"]
+        },
+        {
+            "event" : { "name" : "t2" },
+            "nextConfiguration" : ["c"]
+        },
+        {
+            "event" : { "name" : "t3" },
+            "nextConfiguration" : ["d"]
+        }
+    ]
+}
+
+},{}],11:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
 
 
 
@@ -1574,25 +1673,8 @@ module.exports = {
     ]
 };
 
-},{}],11:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["a","b"],
-    "events" : [ 
-        {
-            "event" : { "name" : "t1" },
-            "nextConfiguration" : ["a","b"]
-        },
-        {
-            "event" : { "name" : "t2" },
-            "nextConfiguration" : ["c"]
-        },
-        {
-            "event" : { "name" : "t3" },
-            "nextConfiguration" : ["d"]
-        }
-    ]
-}
-
-},{}],12:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:25 by the SCION SCXML compiler
+},{}],12:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:25 by the SCION SCXML compiler
 
 
 
@@ -1706,7 +1788,8 @@ module.exports = {
     ]
 };
 
-},{}],13:[function(require,module,exports){module.exports={
+},{}],13:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["x"],
     "events" : [ 
         {
@@ -1719,7 +1802,33 @@ module.exports = {
 
 
 
-},{}],14:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
+},{}],15:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["a11","b11"],
+    "events" : [ 
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["a22","b11"]
+        }
+
+    ]
+}
+
+
+},{}],16:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["a11","b11"],
+    "events" : [ 
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["a11","b12"]
+        }
+
+    ]
+}
+
+},{}],14:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
 
 
 
@@ -1807,30 +1916,8 @@ module.exports = {
     ]
 };
 
-},{}],15:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["a11","b11"],
-    "events" : [ 
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["a22","b11"]
-        }
-
-    ]
-}
-
-
-},{}],17:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["a11","b11"],
-    "events" : [ 
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["a11","b12"]
-        }
-
-    ]
-}
-
-},{}],16:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
+},{}],17:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
 
 
 
@@ -1918,7 +2005,8 @@ module.exports = {
     ]
 };
 
-},{}],18:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
+},{}],18:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
 
 
 
@@ -2006,7 +2094,8 @@ module.exports = {
     ]
 };
 
-},{}],19:[function(require,module,exports){module.exports={
+},{}],19:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a1","b1"],
     "events" : [ 
         {
@@ -2018,7 +2107,8 @@ module.exports = {
 }
 
 
-},{}],20:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
+},{}],20:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
 
 
 
@@ -2074,7 +2164,8 @@ module.exports = {
     ]
 };
 
-},{}],21:[function(require,module,exports){module.exports={
+},{}],21:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a1","b1"],
     "events" : [ 
         {
@@ -2087,7 +2178,8 @@ module.exports = {
 
 
 
-},{}],22:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
+},{}],22:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
 
 
 
@@ -2143,18 +2235,8 @@ module.exports = {
     ]
 };
 
-},{}],23:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["a1","b1"],
-    "events" : [ 
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["a1","b1"]
-        }
-
-    ]
-}
-
-},{}],24:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
+},{}],23:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
 
 
 
@@ -2204,7 +2286,20 @@ module.exports = {
     ]
 };
 
-},{}],25:[function(require,module,exports){module.exports={
+},{}],24:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["a1","b1"],
+    "events" : [ 
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["a1","b1"]
+        }
+
+    ]
+}
+
+},{}],25:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a1","b1"],
     "events" : [ 
         {
@@ -2218,7 +2313,8 @@ module.exports = {
 
 
 
-},{}],26:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
+},{}],26:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
 
 
 
@@ -2274,20 +2370,8 @@ module.exports = {
     ]
 };
 
-},{}],27:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["a"],
-    "events" : [
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["b"]
-        }
-    ]
-}
-
-
-
-
-},{}],28:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
+},{}],28:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
 
 
 
@@ -2315,7 +2399,22 @@ module.exports = {
     ]
 };
 
-},{}],30:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:25 by the SCION SCXML compiler
+},{}],27:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["a"],
+    "events" : [
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["b"]
+        }
+    ]
+}
+
+
+
+
+},{}],30:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:25 by the SCION SCXML compiler
 
 
 
@@ -2344,7 +2443,8 @@ module.exports = {
     ]
 };
 
-},{}],29:[function(require,module,exports){module.exports={
+},{}],29:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -2358,7 +2458,8 @@ module.exports = {
 
 
 
-},{}],31:[function(require,module,exports){module.exports={
+},{}],31:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["c1","d1"],
     "events" : [ 
         {
@@ -2371,7 +2472,8 @@ module.exports = {
 
 
 
-},{}],32:[function(require,module,exports){module.exports={
+},{}],32:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -2423,44 +2525,8 @@ module.exports = {
     ]
 }
 
-},{}],33:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["c","d"],
-    "events" : [ 
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["a2"]
-        }
-
-    ]
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-},{}],34:[function(require,module,exports){module.exports={
+},{}],33:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -2503,7 +2569,46 @@ module.exports = {
     ]
 }
 
-},{}],35:[function(require,module,exports){module.exports={
+},{}],34:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["c","d"],
+    "events" : [ 
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["a2"]
+        }
+
+    ]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+},{}],35:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["c","d"],
     "events" : [ 
         {
@@ -2514,7 +2619,8 @@ module.exports = {
     ]
 }
 
-},{}],36:[function(require,module,exports){module.exports={
+},{}],36:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -2551,34 +2657,8 @@ module.exports = {
     ]
 }
 
-},{}],37:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["c","d"],
-    "events" : [ 
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["a1"]
-        }
-
-    ]
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-},{}],38:[function(require,module,exports){module.exports={
+},{}],37:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -2621,7 +2701,36 @@ module.exports = {
     ]
 }
 
-},{}],39:[function(require,module,exports){module.exports={
+},{}],38:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["c","d"],
+    "events" : [ 
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["a1"]
+        }
+
+    ]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+},{}],39:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["c","d1"],
     "events" : [ 
         {
@@ -2653,7 +2762,8 @@ module.exports = {
 
 
 
-},{}],40:[function(require,module,exports){module.exports={
+},{}],40:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -2705,7 +2815,8 @@ module.exports = {
     ]
 }
 
-},{}],41:[function(require,module,exports){module.exports={
+},{}],41:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["b1","b2"],
     "events" : [ 
         {
@@ -2724,7 +2835,8 @@ module.exports = {
 
 
 
-},{}],42:[function(require,module,exports){module.exports={
+},{}],42:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "a",
     "states": [
@@ -2767,7 +2879,8 @@ module.exports = {
     ]
 }
 
-},{}],43:[function(require,module,exports){module.exports={
+},{}],43:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["i1","j","h","g","f1","k"],
     "events" : [ 
         {
@@ -2793,7 +2906,38 @@ module.exports = {
 
 
 
-},{}],44:[function(require,module,exports){module.exports={
+},{}],44:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["c","d"],
+    "events" : [ 
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["a2"]
+        }
+
+    ]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+},{}],45:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "a",
     "states": [
@@ -2881,36 +3025,8 @@ module.exports = {
     ]
 }
 
-},{}],45:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["c","d"],
-    "events" : [ 
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["a2"]
-        }
-
-    ]
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-},{}],46:[function(require,module,exports){module.exports={
+},{}],46:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -2947,7 +3063,8 @@ module.exports = {
     ]
 }
 
-},{}],47:[function(require,module,exports){module.exports={
+},{}],47:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["c1","d"],
     "events" : [ 
         {
@@ -2978,7 +3095,8 @@ module.exports = {
 
 
 
-},{}],48:[function(require,module,exports){module.exports={
+},{}],48:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -3030,7 +3148,8 @@ module.exports = {
     ]
 }
 
-},{}],49:[function(require,module,exports){module.exports={
+},{}],49:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["c","d"],
     "events" : [ 
         {
@@ -3058,7 +3177,34 @@ module.exports = {
 
 
 
-},{}],50:[function(require,module,exports){module.exports={
+},{}],51:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["i1","j","h","g","f1","k"],
+    "events" : [ 
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["l"]
+        }
+
+    ]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+},{}],50:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -3101,32 +3247,8 @@ module.exports = {
     ]
 }
 
-},{}],51:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["i1","j","h","g","f1","k"],
-    "events" : [ 
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["l"]
-        }
-
-    ]
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-},{}],52:[function(require,module,exports){module.exports={
+},{}],52:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "a",
     "states": [
@@ -3214,7 +3336,8 @@ module.exports = {
     ]
 }
 
-},{}],53:[function(require,module,exports){module.exports={
+},{}],53:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["c1","d1"],
     "events" : [ 
         {
@@ -3247,7 +3370,8 @@ module.exports = {
 
 
 
-},{}],54:[function(require,module,exports){module.exports={
+},{}],54:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -3305,7 +3429,8 @@ module.exports = {
     ]
 }
 
-},{}],55:[function(require,module,exports){module.exports={
+},{}],55:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["c","d"],
     "events" : [ 
         {
@@ -3342,50 +3467,46 @@ module.exports = {
 
 
 
-},{}],56:[function(require,module,exports){module.exports={
-    "": "http://www.w3.org/2005/07/scxml",
-    "initial": "b",
-    "states": [
+},{}],57:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["c","d1"],
+    "events" : [ 
         {
-            "id": "b",
-            "type": "parallel",
-            "states": [
-                {
-                    "id": "c"
-                },
-                {
-                    "id": "d",
-                    "transitions": [
-                        {
-                            "event": "t",
-                            "target": "a"
-                        }
-                    ]
-                }
-            ],
-            "transitions": [
-                {
-                    "event": "t",
-                    "target": "a2"
-                }
-            ]
-        },
-        {
-            "id": "a",
-            "initial": "a1",
-            "states": [
-                {
-                    "id": "a1"
-                },
-                {
-                    "id": "a2"
-                }
-            ]
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["c","d2"]
         }
+
     ]
 }
 
-},{}],58:[function(require,module,exports){module.exports={
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+},{}],58:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -3437,44 +3558,8 @@ module.exports = {
     ]
 }
 
-},{}],57:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["c","d1"],
-    "events" : [ 
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["c","d2"]
-        }
-
-    ]
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-},{}],59:[function(require,module,exports){module.exports={
+},{}],59:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["b1","b2"],
     "events" : [ 
         {
@@ -3495,37 +3580,52 @@ module.exports = {
 
 
 
-},{}],61:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["c1","d1"],
-    "events" : [ 
+},{}],56:[function(require,module,exports){
+module.exports={
+    "": "http://www.w3.org/2005/07/scxml",
+    "initial": "b",
+    "states": [
         {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["c2","d2"]
+            "id": "b",
+            "type": "parallel",
+            "states": [
+                {
+                    "id": "c"
+                },
+                {
+                    "id": "d",
+                    "transitions": [
+                        {
+                            "event": "t",
+                            "target": "a"
+                        }
+                    ]
+                }
+            ],
+            "transitions": [
+                {
+                    "event": "t",
+                    "target": "a2"
+                }
+            ]
+        },
+        {
+            "id": "a",
+            "initial": "a1",
+            "states": [
+                {
+                    "id": "a1"
+                },
+                {
+                    "id": "a2"
+                }
+            ]
         }
-
     ]
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-},{}],60:[function(require,module,exports){module.exports={
+},{}],60:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "a",
     "states": [
@@ -3568,7 +3668,104 @@ module.exports = {
     ]
 }
 
-},{}],62:[function(require,module,exports){module.exports={
+},{}],61:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["c1","d1"],
+    "events" : [ 
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["c2","d2"]
+        }
+
+    ]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+},{}],62:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["b1","b2"],
+    "events" : [ 
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["c1","c2"]
+        }
+
+    ]
+}
+
+
+
+
+
+
+
+
+
+
+},{}],63:[function(require,module,exports){
+module.exports={
+    "": "http://www.w3.org/2005/07/scxml",
+    "initial": "a",
+    "states": [
+        {
+            "id": "a",
+            "initial": "b",
+            "states": [
+                {
+                    "id": "b",
+                    "type": "parallel",
+                    "states": [
+                        {
+                            "id": "b1",
+                            "transitions": [
+                                {
+                                    "event": "t",
+                                    "target": "c"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "b2"
+                        }
+                    ]
+                },
+                {
+                    "id": "c",
+                    "type": "parallel",
+                    "states": [
+                        {
+                            "id": "c1"
+                        },
+                        {
+                            "id": "c2"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+},{}],64:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -3626,88 +3823,8 @@ module.exports = {
     ]
 }
 
-},{}],63:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["b1","b2"],
-    "events" : [ 
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["c1","c2"]
-        }
-
-    ]
-}
-
-
-
-
-
-
-
-
-
-
-},{}],64:[function(require,module,exports){module.exports={
-    "": "http://www.w3.org/2005/07/scxml",
-    "initial": "a",
-    "states": [
-        {
-            "id": "a",
-            "initial": "b",
-            "states": [
-                {
-                    "id": "b",
-                    "type": "parallel",
-                    "states": [
-                        {
-                            "id": "b1",
-                            "transitions": [
-                                {
-                                    "event": "t",
-                                    "target": "c"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "b2"
-                        }
-                    ]
-                },
-                {
-                    "id": "c",
-                    "type": "parallel",
-                    "states": [
-                        {
-                            "id": "c1"
-                        },
-                        {
-                            "id": "c2"
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
-}
-
-},{}],65:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["c","e1","f1"],
-    "events" : [ 
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["c","e2","f2"]
-        }
-
-    ]
-}
-
-
-
-
-
-
-
-
-},{}],66:[function(require,module,exports){module.exports={
+},{}],66:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -3774,7 +3891,27 @@ module.exports = {
     ]
 }
 
-},{}],67:[function(require,module,exports){module.exports={
+},{}],65:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["c","e1","f1"],
+    "events" : [ 
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["c","e2","f2"]
+        }
+
+    ]
+}
+
+
+
+
+
+
+
+
+},{}],67:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["c1","d1"],
     "events" : [ 
         {
@@ -3811,7 +3948,8 @@ module.exports = {
 
 
 
-},{}],68:[function(require,module,exports){module.exports={
+},{}],68:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -3869,7 +4007,8 @@ module.exports = {
     ]
 }
 
-},{}],69:[function(require,module,exports){module.exports={
+},{}],69:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["b1","b2"],
     "events" : [ 
         {
@@ -3893,30 +4032,8 @@ module.exports = {
 
 
 
-},{}],71:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["b1","b2"],
-    "events" : [ 
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["c1","c2"]
-        }
-
-    ]
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-},{}],70:[function(require,module,exports){module.exports={
+},{}],70:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "a",
     "states": [
@@ -3968,7 +4085,8 @@ module.exports = {
     ]
 }
 
-},{}],72:[function(require,module,exports){module.exports={
+},{}],72:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "a",
     "states": [
@@ -4020,7 +4138,50 @@ module.exports = {
     ]
 }
 
-},{}],74:[function(require,module,exports){module.exports={
+},{}],71:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["b1","b2"],
+    "events" : [ 
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["c1","c2"]
+        }
+
+    ]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+},{}],73:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["g","e1","f1"],
+    "events" : [ 
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["h","e2","f2"]
+        }
+
+    ]
+}
+
+
+
+
+
+
+
+},{}],74:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -4093,24 +4254,8 @@ module.exports = {
     ]
 }
 
-},{}],73:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["g","e1","f1"],
-    "events" : [ 
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["h","e2","f2"]
-        }
-
-    ]
-}
-
-
-
-
-
-
-
-},{}],75:[function(require,module,exports){module.exports={
+},{}],75:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["c1","d"],
     "events" : [ 
         {
@@ -4146,21 +4291,8 @@ module.exports = {
 
 
 
-},{}],77:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["e","f","d"],
-    "events" : [ 
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["a1"]
-        }
-
-    ]
-}
-
-
-
-
-},{}],76:[function(require,module,exports){module.exports={
+},{}],76:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -4212,7 +4344,46 @@ module.exports = {
     ]
 }
 
-},{}],78:[function(require,module,exports){module.exports={
+},{}],77:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["e","f","d"],
+    "events" : [ 
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["a1"]
+        }
+
+    ]
+}
+
+
+
+
+},{}],78:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["b1","b2"],
+    "events" : [ 
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["d"]
+        }
+
+    ]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+},{}],79:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -4276,29 +4447,8 @@ module.exports = {
     ]
 }
 
-},{}],79:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["b1","b2"],
-    "events" : [ 
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["d"]
-        }
-
-    ]
-}
-
-
-
-
-
-
-
-
-
-
-
-
-},{}],80:[function(require,module,exports){module.exports={
+},{}],80:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "a",
     "states": [
@@ -4350,7 +4500,8 @@ module.exports = {
     ]
 }
 
-},{}],81:[function(require,module,exports){module.exports={
+},{}],81:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["e","f","g"],
     "events" : [ 
         {
@@ -4365,7 +4516,8 @@ module.exports = {
 
 
 
-},{}],82:[function(require,module,exports){module.exports={
+},{}],82:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -4438,7 +4590,8 @@ module.exports = {
     ]
 }
 
-},{}],83:[function(require,module,exports){module.exports={
+},{}],83:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["c1","d1"],
     "events" : [ 
         {
@@ -4475,7 +4628,8 @@ module.exports = {
 
 
 
-},{}],84:[function(require,module,exports){module.exports={
+},{}],84:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -4539,44 +4693,8 @@ module.exports = {
     ]
 }
 
-},{}],85:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["c1","d"],
-    "events" : [ 
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["c2","d"]
-        }
-
-    ]
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-},{}],86:[function(require,module,exports){module.exports={
+},{}],85:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -4634,7 +4752,8 @@ module.exports = {
     ]
 }
 
-},{}],87:[function(require,module,exports){module.exports={
+},{}],87:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["c","d"],
     "events" : [ 
         {
@@ -4668,7 +4787,46 @@ module.exports = {
 
 
 
-},{}],88:[function(require,module,exports){module.exports={
+},{}],86:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["c1","d"],
+    "events" : [ 
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["c2","d"]
+        }
+
+    ]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+},{}],88:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -4705,19 +4863,8 @@ module.exports = {
     ]
 }
 
-},{}],89:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["c1","d1"],
-    "events" : [ 
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["c2","d1"]
-        }
-
-    ]
-}
-
-
-},{}],90:[function(require,module,exports){module.exports={
+},{}],90:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -4766,7 +4913,21 @@ module.exports = {
     ]
 }
 
-},{}],91:[function(require,module,exports){module.exports={
+},{}],89:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["c1","d1"],
+    "events" : [ 
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["c2","d1"]
+        }
+
+    ]
+}
+
+
+},{}],91:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["c1","d1"],
     "events" : [ 
         {
@@ -4801,7 +4962,8 @@ module.exports = {
 
 
 
-},{}],92:[function(require,module,exports){module.exports={
+},{}],92:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -4859,7 +5021,8 @@ module.exports = {
     ]
 }
 
-},{}],93:[function(require,module,exports){module.exports={
+},{}],93:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["e","f","g"],
     "events" : [ 
         {
@@ -4875,7 +5038,8 @@ module.exports = {
 
 
 
-},{}],94:[function(require,module,exports){module.exports={
+},{}],94:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "states": [
@@ -4948,7 +5112,8 @@ module.exports = {
     ]
 }
 
-},{}],95:[function(require,module,exports){module.exports={
+},{}],95:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -4962,7 +5127,8 @@ module.exports = {
 
 
 
-},{}],96:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
+},{}],96:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
 
 
 
@@ -5092,7 +5258,8 @@ module.exports = {
     ]
 };
 
-},{}],97:[function(require,module,exports){module.exports={
+},{}],97:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -5105,7 +5272,8 @@ module.exports = {
 
 
 
-},{}],98:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
+},{}],98:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
 
 
 
@@ -5197,7 +5365,8 @@ module.exports = {
     ]
 };
 
-},{}],99:[function(require,module,exports){module.exports={
+},{}],99:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -5220,7 +5389,19 @@ module.exports = {
 
 
 
-},{}],100:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
+},{}],100:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["a"],
+    "events" : [
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["c"]
+        }
+    ]
+}
+
+},{}],102:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
 
 
 
@@ -5341,17 +5522,8 @@ module.exports = {
     ]
 };
 
-},{}],101:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["a"],
-    "events" : [
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["c"]
-        }
-    ]
-}
-
-},{}],102:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
+},{}],101:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
 
 
 
@@ -5481,7 +5653,8 @@ module.exports = {
     ]
 };
 
-},{}],103:[function(require,module,exports){module.exports={
+},{}],103:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -5494,7 +5667,8 @@ module.exports = {
 
 
 
-},{}],104:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
+},{}],104:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
 
 
 
@@ -5567,7 +5741,8 @@ module.exports = {
     ]
 };
 
-},{}],105:[function(require,module,exports){module.exports={
+},{}],105:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -5580,7 +5755,8 @@ module.exports = {
 
 
 
-},{}],106:[function(require,module,exports){module.exports={
+},{}],106:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "states": [
         {
@@ -5598,7 +5774,8 @@ module.exports = {
     ]
 }
 
-},{}],107:[function(require,module,exports){module.exports={
+},{}],107:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -5615,7 +5792,27 @@ module.exports = {
 
 
 
-},{}],108:[function(require,module,exports){module.exports={
+},{}],109:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["a"],
+    "events" : []
+}
+
+
+
+},{}],110:[function(require,module,exports){
+module.exports={
+    "": "http://www.w3.org/2005/07/scxml",
+    "initial": "a",
+    "states": [
+        {
+            "id": "a"
+        }
+    ]
+}
+
+},{}],108:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "states": [
         {
@@ -5642,24 +5839,8 @@ module.exports = {
     ]
 }
 
-},{}],109:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["a"],
-    "events" : []
-}
-
-
-
-},{}],110:[function(require,module,exports){module.exports={
-    "": "http://www.w3.org/2005/07/scxml",
-    "initial": "a",
-    "states": [
-        {
-            "id": "a"
-        }
-    ]
-}
-
-},{}],111:[function(require,module,exports){module.exports={
+},{}],111:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a1"],
     "events" : [
         {
@@ -5672,7 +5853,8 @@ module.exports = {
 
 
 
-},{}],112:[function(require,module,exports){module.exports={
+},{}],112:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "states": [
         {
@@ -5711,7 +5893,8 @@ module.exports = {
     ]
 }
 
-},{}],113:[function(require,module,exports){module.exports={
+},{}],113:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a1"],
     "events" : [
         {
@@ -5724,46 +5907,8 @@ module.exports = {
 
 
 
-},{}],114:[function(require,module,exports){module.exports={
-    "": "http://www.w3.org/2005/07/scxml",
-    "states": [
-        {
-            "id": "a",
-            "states": [
-                {
-                    "id": "a1",
-                    "transitions": [
-                        {
-                            "target": "b",
-                            "event": "t"
-                        },
-                        {
-                            "target": "c",
-                            "event": "t"
-                        }
-                    ]
-                },
-                {
-                    "id": "a2"
-                }
-            ],
-            "transitions": [
-                {
-                    "target": "a2",
-                    "event": "t"
-                }
-            ]
-        },
-        {
-            "id": "b"
-        },
-        {
-            "id": "c"
-        }
-    ]
-}
-
-},{}],115:[function(require,module,exports){module.exports={
+},{}],114:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -5784,7 +5929,8 @@ module.exports = {
 
 
 
-},{}],116:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
+},{}],115:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:26 by the SCION SCXML compiler
 
 
 
@@ -5830,7 +5976,8 @@ module.exports = {
     ]
 };
 
-},{}],117:[function(require,module,exports){module.exports={
+},{}],117:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["s3","s4","s7","s8"],
     "events" : [ 
         {
@@ -5845,7 +5992,48 @@ module.exports = {
 
 
 
-},{}],118:[function(require,module,exports){module.exports={
+},{}],116:[function(require,module,exports){
+module.exports={
+    "": "http://www.w3.org/2005/07/scxml",
+    "states": [
+        {
+            "id": "a",
+            "states": [
+                {
+                    "id": "a1",
+                    "transitions": [
+                        {
+                            "target": "b",
+                            "event": "t"
+                        },
+                        {
+                            "target": "c",
+                            "event": "t"
+                        }
+                    ]
+                },
+                {
+                    "id": "a2"
+                }
+            ],
+            "transitions": [
+                {
+                    "target": "a2",
+                    "event": "t"
+                }
+            ]
+        },
+        {
+            "id": "b"
+        },
+        {
+            "id": "c"
+        }
+    ]
+}
+
+},{}],118:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "states": [
         {
@@ -5929,7 +6117,8 @@ module.exports = {
     ]
 }
 
-},{}],119:[function(require,module,exports){module.exports={
+},{}],119:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a","b"],
     "events" : [ ]
 }
@@ -5937,7 +6126,8 @@ module.exports = {
 
 
 
-},{}],120:[function(require,module,exports){module.exports={
+},{}],120:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "states": [
         {
@@ -5955,7 +6145,8 @@ module.exports = {
     ]
 }
 
-},{}],121:[function(require,module,exports){module.exports={
+},{}],121:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["s3.1","s4","s7","s8"],
     "events" : [ 
         {
@@ -5971,7 +6162,8 @@ module.exports = {
 
 
 
-},{}],122:[function(require,module,exports){module.exports={
+},{}],122:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "p1",
     "states": [
@@ -6065,7 +6257,8 @@ module.exports = {
     ]
 }
 
-},{}],123:[function(require,module,exports){module.exports={
+},{}],123:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a1","b1"],
     "events" : [ 
         {
@@ -6079,7 +6272,22 @@ module.exports = {
 
 
 
-},{}],124:[function(require,module,exports){module.exports={
+},{}],125:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["a"],
+    "events" : [
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["c"]
+        }
+    ]
+}
+
+
+
+
+},{}],124:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "states": [
         {
@@ -6141,20 +6349,8 @@ module.exports = {
     ]
 }
 
-},{}],125:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["a"],
-    "events" : [
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["c"]
-        }
-    ]
-}
-
-
-
-
-},{}],126:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:25 by the SCION SCXML compiler
+},{}],126:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:25 by the SCION SCXML compiler
 
 
 
@@ -6299,7 +6495,8 @@ module.exports = {
     ]
 };
 
-},{}],127:[function(require,module,exports){module.exports={
+},{}],127:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["A"],
     "events" : [
         {
@@ -6313,7 +6510,8 @@ module.exports = {
     ]
 }
 
-},{}],128:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
+},{}],128:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
 
 
 
@@ -6373,7 +6571,8 @@ module.exports = {
     ]
 };
 
-},{}],129:[function(require,module,exports){module.exports={
+},{}],129:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["A"],
     "events" : [
         {
@@ -6398,7 +6597,8 @@ module.exports = {
 
 
 
-},{}],130:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
+},{}],130:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
 
 
 
@@ -6507,7 +6707,8 @@ module.exports = {
     ]
 };
 
-},{}],131:[function(require,module,exports){module.exports={
+},{}],131:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["A"],
     "events" : [
         {
@@ -6522,7 +6723,8 @@ module.exports = {
 }
 
 
-},{}],132:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
+},{}],132:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
 
 
 
@@ -6591,23 +6793,8 @@ module.exports = {
     ]
 };
 
-},{}],133:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["A"],
-    "events" : [
-        {
-            "event" : { "name" : "e1" },
-            "nextConfiguration" : ["B"]
-        },
-        {
-            "event" : { "name" : "e2" },
-            "nextConfiguration" : ["A"]
-        }
-    ]
-}
-
-
-
-},{}],134:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
+},{}],134:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
 
 
 
@@ -6689,7 +6876,25 @@ module.exports = {
     ]
 };
 
-},{}],135:[function(require,module,exports){module.exports={
+},{}],133:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["A"],
+    "events" : [
+        {
+            "event" : { "name" : "e1" },
+            "nextConfiguration" : ["B"]
+        },
+        {
+            "event" : { "name" : "e2" },
+            "nextConfiguration" : ["A"]
+        }
+    ]
+}
+
+
+
+},{}],135:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a1"],
     "events" : [
         {
@@ -6707,7 +6912,8 @@ module.exports = {
     ]
 }
 
-},{}],136:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:25 by the SCION SCXML compiler
+},{}],136:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:25 by the SCION SCXML compiler
 
 
 
@@ -6817,7 +7023,8 @@ module.exports = {
     ]
 };
 
-},{}],137:[function(require,module,exports){module.exports={
+},{}],137:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a1", "b1"],
     "events" : [
         {
@@ -6836,7 +7043,19 @@ module.exports = {
 }
 
 
-},{}],138:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:25 by the SCION SCXML compiler
+},{}],139:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["a"],
+    "events" : [
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["d"]
+        }
+    ]
+}
+
+},{}],138:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:25 by the SCION SCXML compiler
 
 
 
@@ -7003,17 +7222,8 @@ module.exports = {
     ]
 };
 
-},{}],139:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["a"],
-    "events" : [
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["d"]
-        }
-    ]
-}
-
-},{}],140:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:29 by the SCION SCXML compiler
+},{}],140:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:29 by the SCION SCXML compiler
 
 function getDelayInMs(delayString){
     if (!delayString) {
@@ -7211,7 +7421,8 @@ module.exports = {
     ]
 };
 
-},{}],141:[function(require,module,exports){module.exports={
+},{}],141:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -7224,7 +7435,8 @@ module.exports = {
 
 
 
-},{}],142:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
+},{}],142:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
 
 
 
@@ -7255,7 +7467,8 @@ module.exports = {
     ]
 };
 
-},{}],143:[function(require,module,exports){module.exports={
+},{}],143:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -7268,7 +7481,8 @@ module.exports = {
 
 
 
-},{}],144:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
+},{}],144:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
 
 
 
@@ -7299,7 +7513,8 @@ module.exports = {
     ]
 };
 
-},{}],145:[function(require,module,exports){module.exports={
+},{}],145:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["b"],
     "events" : [
         {
@@ -7333,7 +7548,8 @@ module.exports = {
 
 
 
-},{}],146:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
+},{}],146:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
 
 
 
@@ -7517,7 +7733,8 @@ module.exports = {
     ]
 };
 
-},{}],147:[function(require,module,exports){module.exports={
+},{}],147:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -7530,7 +7747,8 @@ module.exports = {
 
 
 
-},{}],148:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
+},{}],148:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:24 by the SCION SCXML compiler
 
 
 
@@ -7573,20 +7791,8 @@ module.exports = {
     ]
 };
 
-},{}],149:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["a"],
-    "events" : [
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["b"]
-        }
-    ]
-}
-
-
-
-
-},{}],150:[function(require,module,exports){module.exports={
+},{}],149:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "states": [
         {
@@ -7611,7 +7817,8 @@ module.exports = {
     ]
 }
 
-},{}],151:[function(require,module,exports){module.exports={
+},{}],150:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a1"],
     "events" : [
         {
@@ -7624,7 +7831,8 @@ module.exports = {
 
 
 
-},{}],152:[function(require,module,exports){module.exports={
+},{}],151:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "states": [
         {
@@ -7647,7 +7855,8 @@ module.exports = {
     ]
 }
 
-},{}],153:[function(require,module,exports){module.exports={
+},{}],152:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a1"],
     "events" : [
         {
@@ -7660,7 +7869,22 @@ module.exports = {
 
 
 
-},{}],154:[function(require,module,exports){module.exports={
+},{}],153:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["a"],
+    "events" : [
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["b"]
+        }
+    ]
+}
+
+
+
+
+},{}],154:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "states": [
         {
@@ -7692,7 +7916,8 @@ module.exports = {
     ]
 }
 
-},{}],155:[function(require,module,exports){module.exports={
+},{}],155:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a1"],
     "events" : [
         {
@@ -7705,7 +7930,8 @@ module.exports = {
 
 
 
-},{}],156:[function(require,module,exports){module.exports={
+},{}],156:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "states": [
         {
@@ -7737,7 +7963,8 @@ module.exports = {
     ]
 }
 
-},{}],157:[function(require,module,exports){module.exports={
+},{}],157:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -7750,7 +7977,8 @@ module.exports = {
 
 
 
-},{}],158:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:25 by the SCION SCXML compiler
+},{}],158:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:25 by the SCION SCXML compiler
 
 
 
@@ -8136,7 +8364,8 @@ module.exports = {
     ]
 };
 
-},{}],159:[function(require,module,exports){module.exports={
+},{}],159:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -8155,7 +8384,86 @@ module.exports = {
 
 
 
-},{}],160:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:29 by the SCION SCXML compiler
+},{}],160:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["a"],
+    "events" : [
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["done"]
+        }
+    ]
+}
+
+
+
+
+},{}],162:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:29 by the SCION SCXML compiler
+
+
+
+var i;
+
+var $scion_early_binding_datamodel_has_fired = false;
+function $initEarlyBindingDatamodel(_event, In, _sessionId, _name, _ioprocessors, _x){
+    if(!$scion_early_binding_datamodel_has_fired){
+        i = $data_line_22_column_31.apply(this, arguments);
+        $scion_early_binding_datamodel_has_fired = true; 
+    }
+}
+
+function $cond_line_30_column_52(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return i === 100;
+}
+
+function $expr_line_32_column_47(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return i + 1;
+}
+
+function $assign_line_32_column_47(_event, In, _sessionId, _name, _ioprocessors, _x){
+    i = $expr_line_32_column_47.apply(this, arguments);
+}
+
+function $data_line_22_column_31(_event, In, _sessionId, _name, _ioprocessors, _x){
+    return 0;
+}
+
+module.exports = {
+    "": "http://www.w3.org/2005/07/scxml",
+    "states": [
+        {
+            "id": "a",
+            "transitions": [
+                {
+                    "target": "b",
+                    "event": "t"
+                }
+            ]
+        },
+        {
+            "id": "b",
+            "transitions": [
+                {
+                    "target": "done",
+                    "cond": $cond_line_30_column_52
+                },
+                {
+                    "onTransition": $assign_line_32_column_47
+                }
+            ]
+        },
+        {
+            "id": "done"
+        }
+    ],
+    "onEntry": [
+        $initEarlyBindingDatamodel
+    ]
+};
+
+},{}],161:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:29 by the SCION SCXML compiler
 
 
 
@@ -8241,83 +8549,8 @@ module.exports = {
     ]
 };
 
-},{}],161:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["a"],
-    "events" : [
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["done"]
-        }
-    ]
-}
-
-
-
-
-},{}],162:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:29 by the SCION SCXML compiler
-
-
-
-var i;
-
-var $scion_early_binding_datamodel_has_fired = false;
-function $initEarlyBindingDatamodel(_event, In, _sessionId, _name, _ioprocessors, _x){
-    if(!$scion_early_binding_datamodel_has_fired){
-        i = $data_line_22_column_31.apply(this, arguments);
-        $scion_early_binding_datamodel_has_fired = true; 
-    }
-}
-
-function $cond_line_30_column_52(_event, In, _sessionId, _name, _ioprocessors, _x){
-    return i === 100;
-}
-
-function $expr_line_32_column_47(_event, In, _sessionId, _name, _ioprocessors, _x){
-    return i + 1;
-}
-
-function $assign_line_32_column_47(_event, In, _sessionId, _name, _ioprocessors, _x){
-    i = $expr_line_32_column_47.apply(this, arguments);
-}
-
-function $data_line_22_column_31(_event, In, _sessionId, _name, _ioprocessors, _x){
-    return 0;
-}
-
-module.exports = {
-    "": "http://www.w3.org/2005/07/scxml",
-    "states": [
-        {
-            "id": "a",
-            "transitions": [
-                {
-                    "target": "b",
-                    "event": "t"
-                }
-            ]
-        },
-        {
-            "id": "b",
-            "transitions": [
-                {
-                    "target": "done",
-                    "cond": $cond_line_30_column_52
-                },
-                {
-                    "onTransition": $assign_line_32_column_47
-                }
-            ]
-        },
-        {
-            "id": "done"
-        }
-    ],
-    "onEntry": [
-        $initEarlyBindingDatamodel
-    ]
-};
-
-},{}],163:[function(require,module,exports){module.exports={
+},{}],163:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a1","b1","c"],
     "events" : [
         {
@@ -8337,7 +8570,27 @@ module.exports = {
 
 
 
-},{}],164:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:29 by the SCION SCXML compiler
+},{}],165:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["a"],
+    "events" : [
+        {
+            "event" : { "name" : "foo" },
+            "nextConfiguration" : ["a"]
+        },
+        {
+            "event" : { "name" : "bar" },
+            "nextConfiguration" : ["done"]
+        }
+    ]
+}
+
+
+
+
+
+},{}],164:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:29 by the SCION SCXML compiler
 
 
 
@@ -8508,25 +8761,8 @@ module.exports = {
     ]
 };
 
-},{}],165:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["a"],
-    "events" : [
-        {
-            "event" : { "name" : "foo" },
-            "nextConfiguration" : ["a"]
-        },
-        {
-            "event" : { "name" : "bar" },
-            "nextConfiguration" : ["done"]
-        }
-    ]
-}
-
-
-
-
-
-},{}],166:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:29 by the SCION SCXML compiler
+},{}],166:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:29 by the SCION SCXML compiler
 
 
 
@@ -8600,7 +8836,8 @@ module.exports = {
     ]
 };
 
-},{}],167:[function(require,module,exports){module.exports={
+},{}],167:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -8614,7 +8851,8 @@ module.exports = {
 
 
 
-},{}],168:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
+},{}],168:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
 
 
 
@@ -8728,7 +8966,8 @@ module.exports = {
     ]
 };
 
-},{}],169:[function(require,module,exports){module.exports={
+},{}],169:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -8741,7 +8980,8 @@ module.exports = {
 
 
 
-},{}],170:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
+},{}],170:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
 
 
 
@@ -8800,7 +9040,8 @@ module.exports = {
     ]
 };
 
-},{}],171:[function(require,module,exports){module.exports={
+},{}],171:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -8813,7 +9054,8 @@ module.exports = {
 
 
 
-},{}],172:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
+},{}],172:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
 
 
 
@@ -8878,7 +9120,8 @@ module.exports = {
     ]
 };
 
-},{}],173:[function(require,module,exports){module.exports={
+},{}],173:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -8897,7 +9140,29 @@ module.exports = {
 
 
 
-},{}],174:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
+},{}],175:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["a"],
+    "events" : [
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["b2"]
+        }
+    ]
+}
+
+
+
+
+
+
+
+
+
+
+
+},{}],174:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
 
 
 
@@ -8950,27 +9215,8 @@ module.exports = {
     ]
 };
 
-},{}],175:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["a"],
-    "events" : [
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["b2"]
-        }
-    ]
-}
-
-
-
-
-
-
-
-
-
-
-
-},{}],176:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
+},{}],176:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
 
 
 
@@ -9023,25 +9269,8 @@ module.exports = {
     ]
 };
 
-},{}],177:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["a"],
-    "events" : [
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["d"]
-        }
-    ]
-}
-
-
-
-
-
-
-
-
-
-},{}],178:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
+},{}],178:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
 
 
 
@@ -9110,62 +9339,8 @@ module.exports = {
     ]
 };
 
-},{}],179:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["a"],
-    "events" : [
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["c"]
-        }
-    ]
-}
-
-
-
-
-
-},{}],180:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
-
-
-
-
-
-
-
-function $raise_line_24_column_30(_event, In, _sessionId, _name, _ioprocessors, _x){
-    this.raise({ name:"s", data : {}});
-}
-
-module.exports = {
-    "": "http://www.w3.org/2005/07/scxml",
-    "initial": "a",
-    "states": [
-        {
-            "id": "a",
-            "onExit": $raise_line_24_column_30,
-            "transitions": [
-                {
-                    "target": "b",
-                    "event": "t"
-                }
-            ]
-        },
-        {
-            "id": "b",
-            "transitions": [
-                {
-                    "target": "c",
-                    "event": "s"
-                }
-            ]
-        },
-        {
-            "id": "c"
-        }
-    ]
-};
-
-},{}],181:[function(require,module,exports){module.exports={
+},{}],177:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -9181,7 +9356,42 @@ module.exports = {
 
 
 
-},{}],182:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
+
+
+},{}],179:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["a"],
+    "events" : [
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["c"]
+        }
+    ]
+}
+
+
+
+
+
+},{}],180:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["a"],
+    "events" : [
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["d"]
+        }
+    ]
+}
+
+
+
+
+
+
+
+},{}],181:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
 
 
 
@@ -9243,7 +9453,8 @@ module.exports = {
     ]
 };
 
-},{}],183:[function(require,module,exports){module.exports={
+},{}],182:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -9258,7 +9469,22 @@ module.exports = {
 
 
 
-},{}],184:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
+},{}],184:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["a"],
+    "events" : [
+        {
+            "event" : { "name" : "t" },
+            "nextConfiguration" : ["c"]
+        }
+    ]
+}
+
+
+
+
+},{}],183:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
 
 
 
@@ -9299,20 +9525,8 @@ module.exports = {
     ]
 };
 
-},{}],185:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["a"],
-    "events" : [
-        {
-            "event" : { "name" : "t" },
-            "nextConfiguration" : ["c"]
-        }
-    ]
-}
-
-
-
-
-},{}],186:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
+},{}],185:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
 
 
 
@@ -9353,7 +9567,8 @@ module.exports = {
     ]
 };
 
-},{}],187:[function(require,module,exports){module.exports={
+},{}],186:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -9370,7 +9585,8 @@ module.exports = {
 
 
 
-},{}],188:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
+},{}],187:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
 
 
 
@@ -9439,27 +9655,8 @@ module.exports = {
     ]
 };
 
-},{}],189:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["i1","j","h","g","f1","k"],
-    "events" : [ 
-        {
-            "event" : { "name" : "t1" },
-            "nextConfiguration" : ["i2","j","h","g","f2","k"]
-        },
-        {
-            "event" : { "name" : "t2" },
-            "nextConfiguration" : ["l"]
-        },
-        {
-            "event" : { "name" : "t3" },
-            "nextConfiguration" : ["i2","j","h","g","f2","k"]
-        }
-
-
-    ]
-}
-
-},{}],190:[function(require,module,exports){module.exports={
+},{}],188:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "a",
     "states": [
@@ -9569,7 +9766,29 @@ module.exports = {
     ]
 }
 
-},{}],191:[function(require,module,exports){module.exports={
+},{}],189:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["i1","j","h","g","f1","k"],
+    "events" : [ 
+        {
+            "event" : { "name" : "t1" },
+            "nextConfiguration" : ["i2","j","h","g","f2","k"]
+        },
+        {
+            "event" : { "name" : "t2" },
+            "nextConfiguration" : ["l"]
+        },
+        {
+            "event" : { "name" : "t3" },
+            "nextConfiguration" : ["i2","j","h","g","f2","k"]
+        }
+
+
+    ]
+}
+
+},{}],190:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -9595,7 +9814,8 @@ module.exports = {
 
 
 
-},{}],192:[function(require,module,exports){module.exports={
+},{}],191:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "a",
     "states": [
@@ -9654,36 +9874,50 @@ module.exports = {
     ]
 }
 
-},{}],193:[function(require,module,exports){module.exports={
-    "initialConfiguration" : ["a"],
-    "events" : [
-        {
-            "event" : { "name" : "t1" },
-            "nextConfiguration" : ["b2"]
-        },
-        {
-            "event" : { "name" : "t2" },
-            "nextConfiguration" : ["b3"]
-        },
-        {
-            "event" : { "name" : "t3" },
-            "nextConfiguration" : ["a"]
-        },
-        {
-            "event" : { "name" : "t1" },
-            "nextConfiguration" : ["b3"]
-        },
-        {
-            "event" : { "name" : "t4" },
-            "nextConfiguration" : ["success"]
-        }
-    ]
+},{}],192:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
+
+
+
+
+
+
+
+function $raise_line_24_column_30(_event, In, _sessionId, _name, _ioprocessors, _x){
+    this.raise({ name:"s", data : {}});
 }
 
+module.exports = {
+    "": "http://www.w3.org/2005/07/scxml",
+    "initial": "a",
+    "states": [
+        {
+            "id": "a",
+            "onExit": $raise_line_24_column_30,
+            "transitions": [
+                {
+                    "target": "b",
+                    "event": "t"
+                }
+            ]
+        },
+        {
+            "id": "b",
+            "transitions": [
+                {
+                    "target": "c",
+                    "event": "s"
+                }
+            ]
+        },
+        {
+            "id": "c"
+        }
+    ]
+};
 
-
-
-},{}],194:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:25 by the SCION SCXML compiler
+},{}],193:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:25 by the SCION SCXML compiler
 
 
 
@@ -9849,7 +10083,8 @@ module.exports = {
     ]
 };
 
-},{}],195:[function(require,module,exports){module.exports={
+},{}],194:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -9876,7 +10111,8 @@ module.exports = {
 
 
 
-},{}],196:[function(require,module,exports){module.exports={
+},{}],196:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "a",
     "states": [
@@ -9954,7 +10190,38 @@ module.exports = {
     ]
 }
 
-},{}],197:[function(require,module,exports){module.exports={
+},{}],195:[function(require,module,exports){
+module.exports={
+    "initialConfiguration" : ["a"],
+    "events" : [
+        {
+            "event" : { "name" : "t1" },
+            "nextConfiguration" : ["b2"]
+        },
+        {
+            "event" : { "name" : "t2" },
+            "nextConfiguration" : ["b3"]
+        },
+        {
+            "event" : { "name" : "t3" },
+            "nextConfiguration" : ["a"]
+        },
+        {
+            "event" : { "name" : "t1" },
+            "nextConfiguration" : ["b3"]
+        },
+        {
+            "event" : { "name" : "t4" },
+            "nextConfiguration" : ["success"]
+        }
+    ]
+}
+
+
+
+
+},{}],197:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -9979,7 +10246,8 @@ module.exports = {
 
 
 
-},{}],198:[function(require,module,exports){module.exports={
+},{}],198:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "a",
     "states": [
@@ -10038,7 +10306,8 @@ module.exports = {
     ]
 }
 
-},{}],199:[function(require,module,exports){module.exports={
+},{}],199:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -10062,7 +10331,8 @@ module.exports = {
 
 
 
-},{}],200:[function(require,module,exports){module.exports={
+},{}],200:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "a",
     "states": [
@@ -10114,7 +10384,8 @@ module.exports = {
     ]
 }
 
-},{}],201:[function(require,module,exports){module.exports={
+},{}],201:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -10162,7 +10433,8 @@ module.exports = {
 
 
 
-},{}],202:[function(require,module,exports){module.exports={
+},{}],202:[function(require,module,exports){
+module.exports={
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "a",
     "states": [
@@ -10332,7 +10604,8 @@ module.exports = {
     ]
 }
 
-},{}],203:[function(require,module,exports){module.exports={
+},{}],204:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -10373,7 +10646,44 @@ module.exports = {
 
 
 
-},{}],204:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
+},{}],206:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
+
+
+
+
+
+
+
+
+
+module.exports = {
+    "": "http://www.w3.org/2005/07/scxml",
+    "states": [
+        {
+            "id": "a",
+            "transitions": [
+                {
+                    "target": "b",
+                    "event": "*"
+                },
+                {
+                    "target": "fail",
+                    "event": "foo"
+                }
+            ]
+        },
+        {
+            "id": "b"
+        },
+        {
+            "id": "fail"
+        }
+    ]
+};
+
+},{}],203:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
 
 
 
@@ -10446,7 +10756,8 @@ module.exports = {
     ]
 };
 
-},{}],205:[function(require,module,exports){module.exports={
+},{}],205:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -10460,42 +10771,8 @@ module.exports = {
 
 
 
-},{}],206:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
-
-
-
-
-
-
-
-
-
-module.exports = {
-    "": "http://www.w3.org/2005/07/scxml",
-    "states": [
-        {
-            "id": "a",
-            "transitions": [
-                {
-                    "target": "b",
-                    "event": "*"
-                },
-                {
-                    "target": "fail",
-                    "event": "foo"
-                }
-            ]
-        },
-        {
-            "id": "b"
-        },
-        {
-            "id": "fail"
-        }
-    ]
-};
-
-},{}],207:[function(require,module,exports){module.exports={
+},{}],207:[function(require,module,exports){
+module.exports={
     "initialConfiguration" : ["a"],
     "events" : [
         {
@@ -10537,7 +10814,8 @@ module.exports = {
 
 
 
-},{}],208:[function(require,module,exports){//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
+},{}],208:[function(require,module,exports){
+//Generated on Thursday, February 21, 2013 19:56:28 by the SCION SCXML compiler
 
 
 
@@ -10625,106 +10903,18 @@ module.exports = {
     ]
 };
 
-},{}],209:[function(require,module,exports){(function(process){require('es5-shim');        //load this first!
-var scion = require('../lib/scion');
-var addTest = require('tape');
-var path = require('path');
-var async = require('async');
-
-//path to test cases is passed in via argv
-var statechartModulePaths = process.argv.slice(2);      //assume these are of the form *.test.json
-
-//console.log('statechartModulePaths',statechartModulePaths); 
-
-var swallowErrors = false;
-
-//if we've specified individual tests via argv, get them
-//otherwise, pull it from the registry
-var tests = statechartModulePaths.length ? 
-        statechartModulePaths.map(function(statechartModulePath){
-
-            //try to find a .test.json file
-            var testModulePath = statechartModulePath.replace(/\.sc\.js(on)?$/,'.test.json');
-            var sc = require(path.resolve('.',statechartModulePath));
-
-            return {
-                name : testModulePath,
-                sc : sc,
-                test : require(path.resolve('.',testModulePath))
-            };
-        }) : require('./tests.js');
-
-tests.forEach(function(test){
-    addTest(test.name,function(t){
-
-        t.plan(test.test.events.length + 1);
-
-        var sc = new scion.Statechart(test.sc);
-
-        var actualInitialConf = sc.start();
-
-        console.log('initial configuration',actualInitialConf);
-
-        t.deepEqual(actualInitialConf.sort(),test.test.initialConfiguration.sort(),'initial configuration');
-
-        async.eachSeries(test.test.events,function(nextEvent,cb){
-
-            function ns(){
-                console.log('sending event',nextEvent.event);
-
-                var actualNextConf = sc.gen(nextEvent.event);
-
-                console.log('next configuration',actualNextConf);
-
-                t.deepEqual(actualNextConf.sort(),nextEvent.nextConfiguration.sort(),'next configuration after sending event ' + nextEvent.name);
-
-                cb();
-            }
-
-            if(nextEvent.after){
-                console.log('Test harness waiting',nextEvent.after,'ms before sending next event');
-                setTimeout(ns,nextEvent.after);
-            }else{
-                ns();
-            }
-        },function(){
-            //we could explicitly end here by calling t.end(), but we don't need to - t.plan() should take care of it automatically
-        });
-    });
-});
-
-})(require("__browserify_process"))
-},{"path":2,"./tests.js":4,"../lib/scion":3,"es5-shim":210,"tape":211,"async":212,"__browserify_process":1}],210:[function(require,module,exports){(function(){// vim: ts=4 sts=4 sw=4 expandtab
-// -- kriskowal Kris Kowal Copyright (C) 2009-2011 MIT License
-// -- tlrobinson Tom Robinson Copyright (C) 2009-2010 MIT License (Narwhal Project)
-// -- dantman Daniel Friesen Copyright (C) 2010 XXX TODO License or CLA
-// -- fschaefer Florian Schäfer Copyright (C) 2010 MIT License
-// -- Gozala Irakli Gozalishvili Copyright (C) 2010 MIT License
-// -- kitcambridge Kit Cambridge Copyright (C) 2011 MIT License
-// -- kossnocorp Sasha Koss XXX TODO License or CLA
-// -- bryanforbes Bryan Forbes XXX TODO License or CLA
-// -- killdream Quildreen Motta XXX TODO License or CLA
-// -- michaelficarra Michael Ficarra Copyright (C) 2011 3-clause BSD License
-// -- sharkbrainguy Gerard Paapu Copyright (C) 2011 MIT License
-// -- bbqsrc Brendan Molloy XXX TODO License or CLA
-// -- iwyg XXX TODO License or CLA
-// -- DomenicDenicola Domenic Denicola XXX TODO License or CLA
-// -- xavierm02 Montillet Xavier XXX TODO License or CLA
-// -- Raynos Raynos XXX TODO License or CLA
-// -- samsonjs Sami Samhuri XXX TODO License or CLA
-// -- rwldrn Rick Waldron XXX TODO License or CLA
-// -- lexer Alexey Zakharov XXX TODO License or CLA
-
-/*!
-    Copyright (c) 2009, 280 North Inc. http://280north.com/
-    MIT License. http://github.com/280north/narwhal/blob/master/README.md
-*/
+},{}],210:[function(require,module,exports){
+(function(){// Copyright 2009-2012 by contributors, MIT License
+// vim: ts=4 sts=4 sw=4 expandtab
 
 // Module systems magic dance
 (function (definition) {
     // RequireJS
     if (typeof define == "function") {
         define(definition);
+    // YUI3
+    } else if (typeof YUI == "function") {
+        YUI.add("es5", definition);
     // CommonJS and <script>
     } else {
         definition();
@@ -10735,24 +10925,10 @@ tests.forEach(function(test){
  * Brings an environment as close to ECMAScript 5 compliance
  * as is possible with the facilities of erstwhile engines.
  *
- * ES5 Draft
- * http://www.ecma-international.org/publications/files/drafts/tc39-2009-050.pdf
- *
- * NOTE: this is a draft, and as such, the URL is subject to change.  If the
- * link is broken, check in the parent directory for the latest TC39 PDF.
- * http://www.ecma-international.org/publications/files/drafts/
- *
- * Previous ES5 Draft
- * http://www.ecma-international.org/publications/files/drafts/tc39-2009-025.pdf
- * This is a broken link to the previous draft of ES5 on which most of the
- * numbered specification references and quotes herein were taken.  Updating
- * these references and quotes to reflect the new document would be a welcome
- * volunteer project.
- *
- * @module
+ * Annotated ES5: http://es5.github.com/ (specific links below)
+ * ES5 Spec: http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
+ * Required reading: http://javascriptweblog.wordpress.com/2011/12/05/extending-javascript-natives/
  */
-
-/*whatsupdoc*/
 
 //
 // Function
@@ -10760,37 +10936,38 @@ tests.forEach(function(test){
 //
 
 // ES-5 15.3.4.5
-// http://www.ecma-international.org/publications/files/drafts/tc39-2009-025.pdf
+// http://es5.github.com/#x15.3.4.5
+
+function Empty() {}
 
 if (!Function.prototype.bind) {
     Function.prototype.bind = function bind(that) { // .length is 1
         // 1. Let Target be the this value.
         var target = this;
         // 2. If IsCallable(Target) is false, throw a TypeError exception.
-        if (typeof target != "function")
-            throw new TypeError(); // TODO message
+        if (typeof target != "function") {
+            throw new TypeError("Function.prototype.bind called on incompatible " + target);
+        }
         // 3. Let A be a new (possibly empty) internal list of all of the
         //   argument values provided after thisArg (arg1, arg2 etc), in order.
         // XXX slicedArgs will stand in for "A" if used
         var args = slice.call(arguments, 1); // for normal call
         // 4. Let F be a new native ECMAScript object.
-        // 9. Set the [[Prototype]] internal property of F to the standard
+        // 11. Set the [[Prototype]] internal property of F to the standard
         //   built-in Function prototype object as specified in 15.3.3.1.
-        // 10. Set the [[Call]] internal property of F as described in
+        // 12. Set the [[Call]] internal property of F as described in
         //   15.3.4.5.1.
-        // 11. Set the [[Construct]] internal property of F as described in
+        // 13. Set the [[Construct]] internal property of F as described in
         //   15.3.4.5.2.
-        // 12. Set the [[HasInstance]] internal property of F as described in
+        // 14. Set the [[HasInstance]] internal property of F as described in
         //   15.3.4.5.3.
-        // 13. The [[Scope]] internal property of F is unused and need not
-        //   exist.
         var bound = function () {
 
             if (this instanceof bound) {
                 // 15.3.4.5.2 [[Construct]]
                 // When the [[Construct]] internal method of a function object,
                 // F that was created using the bind function is called with a
-                // list of arguments ExtraArgs the following steps are taken:
+                // list of arguments ExtraArgs, the following steps are taken:
                 // 1. Let target be the value of F's [[TargetFunction]]
                 //   internal property.
                 // 2. If target has no [[Construct]] internal method, a
@@ -10800,24 +10977,23 @@ if (!Function.prototype.bind) {
                 // 4. Let args be a new list containing the same values as the
                 //   list boundArgs in the same order followed by the same
                 //   values as the list ExtraArgs in the same order.
-
-                var F = function(){};
-                F.prototype = target.prototype;
-                var self = new F;
+                // 5. Return the result of calling the [[Construct]] internal
+                //   method of target providing args as the arguments.
 
                 var result = target.apply(
-                    self,
+                    this,
                     args.concat(slice.call(arguments))
                 );
-                if (result !== null && Object(result) === result)
+                if (Object(result) === result) {
                     return result;
-                return self;
+                }
+                return this;
 
             } else {
                 // 15.3.4.5.1 [[Call]]
                 // When the [[Call]] internal method of a function object, F,
                 // which was created using the bind function is called with a
-                // this value and a list of arguments ExtraArgs the following
+                // this value and a list of arguments ExtraArgs, the following
                 // steps are taken:
                 // 1. Let boundArgs be the value of F's [[BoundArgs]] internal
                 //   property.
@@ -10825,12 +11001,12 @@ if (!Function.prototype.bind) {
                 //   property.
                 // 3. Let target be the value of F's [[TargetFunction]] internal
                 //   property.
-                // 4. Let args be a new list containing the same values as the list
-                //   boundArgs in the same order followed by the same values as
-                //   the list ExtraArgs in the same order. 5.  Return the
-                //   result of calling the [[Call]] internal method of target
-                //   providing boundThis as the this value and providing args
-                //   as the arguments.
+                // 4. Let args be a new list containing the same values as the
+                //   list boundArgs in the same order followed by the same
+                //   values as the list ExtraArgs in the same order.
+                // 5. Return the result of calling the [[Call]] internal method
+                //   of target providing boundThis as the this value and
+                //   providing args as the arguments.
 
                 // equiv: target.call(this, ...boundArgs, ...args)
                 return target.apply(
@@ -10841,26 +11017,43 @@ if (!Function.prototype.bind) {
             }
 
         };
+        if(target.prototype) {
+            Empty.prototype = target.prototype;
+            bound.prototype = new Empty();
+            // Clean up dangling references.
+            Empty.prototype = null;
+        }
         // XXX bound.length is never writable, so don't even try
         //
-        // 16. The length own property of F is given attributes as specified in
-        //   15.3.5.1.
+        // 15. If the [[Class]] internal property of Target is "Function", then
+        //     a. Let L be the length property of Target minus the length of A.
+        //     b. Set the length own property of F to either 0 or L, whichever is
+        //       larger.
+        // 16. Else set the length own property of F to 0.
+        // 17. Set the attributes of the length own property of F to the values
+        //   specified in 15.3.5.1.
+
         // TODO
-        // 17. Set the [[Extensible]] internal property of F to true.
+        // 18. Set the [[Extensible]] internal property of F to true.
+
         // TODO
-        // 18. Call the [[DefineOwnProperty]] internal method of F with
-        //   arguments "caller", PropertyDescriptor {[[Value]]: null,
-        //   [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]:
-        //   false}, and false.
-        // TODO
-        // 19. Call the [[DefineOwnProperty]] internal method of F with
-        //   arguments "arguments", PropertyDescriptor {[[Value]]: null,
-        //   [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]:
-        //   false}, and false.
+        // 19. Let thrower be the [[ThrowTypeError]] function Object (13.2.3).
+        // 20. Call the [[DefineOwnProperty]] internal method of F with
+        //   arguments "caller", PropertyDescriptor {[[Get]]: thrower, [[Set]]:
+        //   thrower, [[Enumerable]]: false, [[Configurable]]: false}, and
+        //   false.
+        // 21. Call the [[DefineOwnProperty]] internal method of F with
+        //   arguments "arguments", PropertyDescriptor {[[Get]]: thrower,
+        //   [[Set]]: thrower, [[Enumerable]]: false, [[Configurable]]: false},
+        //   and false.
+
         // TODO
         // NOTE Function objects created using Function.prototype.bind do not
-        // have a prototype property.
-        // XXX can't delete it in pure-js.
+        // have a prototype property or the [[Code]], [[FormalParameters]], and
+        // [[Scope]] internal properties.
+        // XXX can't delete prototype in pure-js.
+
+        // 22. Return F.
         return bound;
     };
 }
@@ -10873,7 +11066,8 @@ var call = Function.prototype.call;
 var prototypeOfArray = Array.prototype;
 var prototypeOfObject = Object.prototype;
 var slice = prototypeOfArray.slice;
-var toString = call.bind(prototypeOfObject.toString);
+// Having a toString local variable name breaks in Opera so use _toString.
+var _toString = call.bind(prototypeOfObject.toString);
 var owns = call.bind(prototypeOfObject.hasOwnProperty);
 
 // If JS engine supports accessors creating shortcuts.
@@ -10894,10 +11088,44 @@ if ((supportsAccessors = owns(prototypeOfObject, "__defineGetter__"))) {
 // =====
 //
 
+// ES5 15.4.4.12
+// http://es5.github.com/#x15.4.4.12
+// Default value for second param
+// [bugfix, ielt9, old browsers]
+// IE < 9 bug: [1,2].splice(0).join("") == "" but should be "12"
+if ([1,2].splice(0).length != 2) {
+    var array_splice = Array.prototype.splice;
+    Array.prototype.splice = function(start, deleteCount) {
+        if (!arguments.length) {
+            return [];
+        } else {
+            return array_splice.apply(this, [
+                start === void 0 ? 0 : start,
+                deleteCount === void 0 ? (this.length - start) : deleteCount
+            ].concat(slice.call(arguments, 2)))
+        }
+    };
+}
+
+// ES5 15.4.4.12
+// http://es5.github.com/#x15.4.4.13
+// Return len+argCount.
+// [bugfix, ielt8]
+// IE < 8 bug: [].unshift(0) == undefined but should be "1"
+if ([].unshift(0) != 1) {
+    var array_unshift = Array.prototype.unshift;
+    Array.prototype.unshift = function() {
+        array_unshift.apply(this, arguments);
+        return this.length;
+    };
+}
+
 // ES5 15.4.3.2
+// http://es5.github.com/#x15.4.3.2
+// https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/isArray
 if (!Array.isArray) {
     Array.isArray = function isArray(obj) {
-        return toString(obj) == "[object Array]";
+        return _toString(obj) == "[object Array]";
     };
 }
 
@@ -10914,129 +11142,169 @@ if (!Array.isArray) {
 // expressions.
 
 // ES5 15.4.4.18
-// https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/array/foreach
+// http://es5.github.com/#x15.4.4.18
+// https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/array/forEach
+
+// Check failure of by-index access of string characters (IE < 9)
+// and failure of `0 in boxedString` (Rhino)
+var boxedString = Object("a"),
+    splitString = boxedString[0] != "a" || !(0 in boxedString);
+
 if (!Array.prototype.forEach) {
     Array.prototype.forEach = function forEach(fun /*, thisp*/) {
-        var self = toObject(this),
+        var object = toObject(this),
+            self = splitString && _toString(this) == "[object String]" ?
+                this.split("") :
+                object,
             thisp = arguments[1],
-            i = 0,
+            i = -1,
             length = self.length >>> 0;
 
         // If no callback function or if callback is not a callable function
-        if (toString(fun) != "[object Function]") {
+        if (_toString(fun) != "[object Function]") {
             throw new TypeError(); // TODO message
         }
 
-        while (i < length) {
+        while (++i < length) {
             if (i in self) {
                 // Invoke the callback function with call, passing arguments:
-                // context, property value, property key, thisArg object context
-                fun.call(thisp, self[i], i, self);
+                // context, property value, property key, thisArg object
+                // context
+                fun.call(thisp, self[i], i, object);
             }
-            i++;
         }
     };
 }
 
 // ES5 15.4.4.19
+// http://es5.github.com/#x15.4.4.19
 // https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Objects/Array/map
 if (!Array.prototype.map) {
     Array.prototype.map = function map(fun /*, thisp*/) {
-        var self = toObject(this),
+        var object = toObject(this),
+            self = splitString && _toString(this) == "[object String]" ?
+                this.split("") :
+                object,
             length = self.length >>> 0,
             result = Array(length),
             thisp = arguments[1];
 
         // If no callback function or if callback is not a callable function
-        if (toString(fun) != "[object Function]") {
-            throw new TypeError(); // TODO message
+        if (_toString(fun) != "[object Function]") {
+            throw new TypeError(fun + " is not a function");
         }
 
         for (var i = 0; i < length; i++) {
             if (i in self)
-                result[i] = fun.call(thisp, self[i], i, self);
+                result[i] = fun.call(thisp, self[i], i, object);
         }
         return result;
     };
 }
 
 // ES5 15.4.4.20
+// http://es5.github.com/#x15.4.4.20
+// https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Objects/Array/filter
 if (!Array.prototype.filter) {
     Array.prototype.filter = function filter(fun /*, thisp */) {
-        var self = toObject(this),
+        var object = toObject(this),
+            self = splitString && _toString(this) == "[object String]" ?
+                this.split("") :
+                    object,
             length = self.length >>> 0,
             result = [],
+            value,
             thisp = arguments[1];
 
         // If no callback function or if callback is not a callable function
-        if (toString(fun) != "[object Function]") {
-            throw new TypeError(); // TODO message
+        if (_toString(fun) != "[object Function]") {
+            throw new TypeError(fun + " is not a function");
         }
 
         for (var i = 0; i < length; i++) {
-            if (i in self && fun.call(thisp, self[i], i, self))
-                result.push(self[i]);
+            if (i in self) {
+                value = self[i];
+                if (fun.call(thisp, value, i, object)) {
+                    result.push(value);
+                }
+            }
         }
         return result;
     };
 }
 
 // ES5 15.4.4.16
+// http://es5.github.com/#x15.4.4.16
+// https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/every
 if (!Array.prototype.every) {
     Array.prototype.every = function every(fun /*, thisp */) {
-        var self = toObject(this),
+        var object = toObject(this),
+            self = splitString && _toString(this) == "[object String]" ?
+                this.split("") :
+                object,
             length = self.length >>> 0,
             thisp = arguments[1];
 
         // If no callback function or if callback is not a callable function
-        if (toString(fun) != "[object Function]") {
-            throw new TypeError(); // TODO message
+        if (_toString(fun) != "[object Function]") {
+            throw new TypeError(fun + " is not a function");
         }
 
         for (var i = 0; i < length; i++) {
-            if (i in self && !fun.call(thisp, self[i], i, self))
+            if (i in self && !fun.call(thisp, self[i], i, object)) {
                 return false;
+            }
         }
         return true;
     };
 }
 
 // ES5 15.4.4.17
+// http://es5.github.com/#x15.4.4.17
 // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/some
 if (!Array.prototype.some) {
     Array.prototype.some = function some(fun /*, thisp */) {
-        var self = toObject(this),
+        var object = toObject(this),
+            self = splitString && _toString(this) == "[object String]" ?
+                this.split("") :
+                object,
             length = self.length >>> 0,
             thisp = arguments[1];
 
         // If no callback function or if callback is not a callable function
-        if (toString(fun) != "[object Function]") {
-            throw new TypeError(); // TODO message
+        if (_toString(fun) != "[object Function]") {
+            throw new TypeError(fun + " is not a function");
         }
 
         for (var i = 0; i < length; i++) {
-            if (i in self && fun.call(thisp, self[i], i, self))
+            if (i in self && fun.call(thisp, self[i], i, object)) {
                 return true;
+            }
         }
         return false;
     };
 }
 
 // ES5 15.4.4.21
+// http://es5.github.com/#x15.4.4.21
 // https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Objects/Array/reduce
 if (!Array.prototype.reduce) {
     Array.prototype.reduce = function reduce(fun /*, initial*/) {
-        var self = toObject(this),
+        var object = toObject(this),
+            self = splitString && _toString(this) == "[object String]" ?
+                this.split("") :
+                object,
             length = self.length >>> 0;
 
         // If no callback function or if callback is not a callable function
-        if (toString(fun) != "[object Function]") {
-            throw new TypeError(); // TODO message
+        if (_toString(fun) != "[object Function]") {
+            throw new TypeError(fun + " is not a function");
         }
 
         // no value to return if no initial value and an empty array
-        if (!length && arguments.length == 1)
-            throw new TypeError(); // TODO message
+        if (!length && arguments.length == 1) {
+            throw new TypeError("reduce of empty array with no initial value");
+        }
 
         var i = 0;
         var result;
@@ -11050,14 +11318,16 @@ if (!Array.prototype.reduce) {
                 }
 
                 // if array contains no values, no initial value to return
-                if (++i >= length)
-                    throw new TypeError(); // TODO message
+                if (++i >= length) {
+                    throw new TypeError("reduce of empty array with no initial value");
+                }
             } while (true);
         }
 
         for (; i < length; i++) {
-            if (i in self)
-                result = fun.call(void 0, result, self[i], i, self);
+            if (i in self) {
+                result = fun.call(void 0, result, self[i], i, object);
+            }
         }
 
         return result;
@@ -11065,20 +11335,25 @@ if (!Array.prototype.reduce) {
 }
 
 // ES5 15.4.4.22
+// http://es5.github.com/#x15.4.4.22
 // https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Objects/Array/reduceRight
 if (!Array.prototype.reduceRight) {
     Array.prototype.reduceRight = function reduceRight(fun /*, initial*/) {
-        var self = toObject(this),
+        var object = toObject(this),
+            self = splitString && _toString(this) == "[object String]" ?
+                this.split("") :
+                object,
             length = self.length >>> 0;
 
         // If no callback function or if callback is not a callable function
-        if (toString(fun) != "[object Function]") {
-            throw new TypeError(); // TODO message
+        if (_toString(fun) != "[object Function]") {
+            throw new TypeError(fun + " is not a function");
         }
 
         // no value to return if no initial value, empty array
-        if (!length && arguments.length == 1)
-            throw new TypeError(); // TODO message
+        if (!length && arguments.length == 1) {
+            throw new TypeError("reduceRight of empty array with no initial value");
+        }
 
         var result, i = length - 1;
         if (arguments.length >= 2) {
@@ -11091,14 +11366,16 @@ if (!Array.prototype.reduceRight) {
                 }
 
                 // if array contains no values, no initial value to return
-                if (--i < 0)
-                    throw new TypeError(); // TODO message
+                if (--i < 0) {
+                    throw new TypeError("reduceRight of empty array with no initial value");
+                }
             } while (true);
         }
 
         do {
-            if (i in this)
-                result = fun.call(void 0, result, self[i], i, self);
+            if (i in this) {
+                result = fun.call(void 0, result, self[i], i, object);
+            }
         } while (i--);
 
         return result;
@@ -11106,21 +11383,26 @@ if (!Array.prototype.reduceRight) {
 }
 
 // ES5 15.4.4.14
+// http://es5.github.com/#x15.4.4.14
 // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/indexOf
-if (!Array.prototype.indexOf) {
+if (!Array.prototype.indexOf || ([0, 1].indexOf(1, 2) != -1)) {
     Array.prototype.indexOf = function indexOf(sought /*, fromIndex */ ) {
-        var self = toObject(this),
+        var self = splitString && _toString(this) == "[object String]" ?
+                this.split("") :
+                toObject(this),
             length = self.length >>> 0;
 
-        if (!length)
+        if (!length) {
             return -1;
+        }
 
         var i = 0;
-        if (arguments.length > 1)
+        if (arguments.length > 1) {
             i = toInteger(arguments[1]);
+        }
 
         // handle negative indices
-        i = i >= 0 ? i : length - Math.abs(i);
+        i = i >= 0 ? i : Math.max(0, length + i);
         for (; i < length; i++) {
             if (i in self && self[i] === sought) {
                 return i;
@@ -11131,21 +11413,28 @@ if (!Array.prototype.indexOf) {
 }
 
 // ES5 15.4.4.15
-if (!Array.prototype.lastIndexOf) {
+// http://es5.github.com/#x15.4.4.15
+// https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/lastIndexOf
+if (!Array.prototype.lastIndexOf || ([0, 1].lastIndexOf(0, -3) != -1)) {
     Array.prototype.lastIndexOf = function lastIndexOf(sought /*, fromIndex */) {
-        var self = toObject(this),
+        var self = splitString && _toString(this) == "[object String]" ?
+                this.split("") :
+                toObject(this),
             length = self.length >>> 0;
 
-        if (!length)
+        if (!length) {
             return -1;
+        }
         var i = length - 1;
-        if (arguments.length > 1)
-            i = toInteger(arguments[1]);
+        if (arguments.length > 1) {
+            i = Math.min(i, toInteger(arguments[1]));
+        }
         // handle negative indices
         i = i >= 0 ? i : length - Math.abs(i);
         for (; i >= 0; i--) {
-            if (i in self && sought === self[i])
+            if (i in self && sought === self[i]) {
                 return i;
+            }
         }
         return -1;
     };
@@ -11156,297 +11445,10 @@ if (!Array.prototype.lastIndexOf) {
 // ======
 //
 
-// ES5 15.2.3.2
-if (!Object.getPrototypeOf) {
-    // https://github.com/kriskowal/es5-shim/issues#issue/2
-    // http://ejohn.org/blog/objectgetprototypeof/
-    // recommended by fschaefer on github
-    Object.getPrototypeOf = function getPrototypeOf(object) {
-        return object.__proto__ || (
-            object.constructor ?
-            object.constructor.prototype :
-            prototypeOfObject
-        );
-    };
-}
-
-// ES5 15.2.3.3
-if (!Object.getOwnPropertyDescriptor) {
-    var ERR_NON_OBJECT = "Object.getOwnPropertyDescriptor called on a " +
-                         "non-object: ";
-    Object.getOwnPropertyDescriptor = function getOwnPropertyDescriptor(object, property) {
-        if ((typeof object != "object" && typeof object != "function") || object === null)
-            throw new TypeError(ERR_NON_OBJECT + object);
-        // If object does not owns property return undefined immediately.
-        if (!owns(object, property))
-            return;
-
-        var descriptor, getter, setter;
-
-        // If object has a property then it's for sure both `enumerable` and
-        // `configurable`.
-        descriptor =  { enumerable: true, configurable: true };
-
-        // If JS engine supports accessor properties then property may be a
-        // getter or setter.
-        if (supportsAccessors) {
-            // Unfortunately `__lookupGetter__` will return a getter even
-            // if object has own non getter property along with a same named
-            // inherited getter. To avoid misbehavior we temporary remove
-            // `__proto__` so that `__lookupGetter__` will return getter only
-            // if it's owned by an object.
-            var prototype = object.__proto__;
-            object.__proto__ = prototypeOfObject;
-
-            var getter = lookupGetter(object, property);
-            var setter = lookupSetter(object, property);
-
-            // Once we have getter and setter we can put values back.
-            object.__proto__ = prototype;
-
-            if (getter || setter) {
-                if (getter) descriptor.get = getter;
-                if (setter) descriptor.set = setter;
-
-                // If it was accessor property we're done and return here
-                // in order to avoid adding `value` to the descriptor.
-                return descriptor;
-            }
-        }
-
-        // If we got this far we know that object has an own property that is
-        // not an accessor so we set it as a value and return descriptor.
-        descriptor.value = object[property];
-        return descriptor;
-    };
-}
-
-// ES5 15.2.3.4
-if (!Object.getOwnPropertyNames) {
-    Object.getOwnPropertyNames = function getOwnPropertyNames(object) {
-        return Object.keys(object);
-    };
-}
-
-// ES5 15.2.3.5
-if (!Object.create) {
-    Object.create = function create(prototype, properties) {
-        var object;
-        if (prototype === null) {
-            object = { "__proto__": null };
-        } else {
-            if (typeof prototype != "object")
-                throw new TypeError("typeof prototype["+(typeof prototype)+"] != 'object'");
-            var Type = function () {};
-            Type.prototype = prototype;
-            object = new Type();
-            // IE has no built-in implementation of `Object.getPrototypeOf`
-            // neither `__proto__`, but this manually setting `__proto__` will
-            // guarantee that `Object.getPrototypeOf` will work as expected with
-            // objects created using `Object.create`
-            object.__proto__ = prototype;
-        }
-        if (properties !== void 0)
-            Object.defineProperties(object, properties);
-        return object;
-    };
-}
-
-// ES5 15.2.3.6
-
-// Patch for WebKit and IE8 standard mode
-// Designed by hax <hax.github.com>
-// related issue: https://github.com/kriskowal/es5-shim/issues#issue/5
-// IE8 Reference:
-//     http://msdn.microsoft.com/en-us/library/dd282900.aspx
-//     http://msdn.microsoft.com/en-us/library/dd229916.aspx
-// WebKit Bugs:
-//     https://bugs.webkit.org/show_bug.cgi?id=36423
-
-function doesDefinePropertyWork(object) {
-    try {
-        Object.defineProperty(object, "sentinel", {});
-        return "sentinel" in object;
-    } catch (exception) {
-        // returns falsy
-    }
-}
-
-// check whether defineProperty works if it's given. Otherwise,
-// shim partially.
-if (Object.defineProperty) {
-    var definePropertyWorksOnObject = doesDefinePropertyWork({});
-    var definePropertyWorksOnDom = typeof document == "undefined" ||
-        doesDefinePropertyWork(document.createElement("div"));
-    if (!definePropertyWorksOnObject || !definePropertyWorksOnDom) {
-        var definePropertyFallback = Object.defineProperty;
-    }
-}
-
-if (!Object.defineProperty || definePropertyFallback) {
-    var ERR_NON_OBJECT_DESCRIPTOR = "Property description must be an object: ";
-    var ERR_NON_OBJECT_TARGET = "Object.defineProperty called on non-object: "
-    var ERR_ACCESSORS_NOT_SUPPORTED = "getters & setters can not be defined " +
-                                      "on this javascript engine";
-
-    Object.defineProperty = function defineProperty(object, property, descriptor) {
-        if ((typeof object != "object" && typeof object != "function") || object === null)
-            throw new TypeError(ERR_NON_OBJECT_TARGET + object);
-        if ((typeof descriptor != "object" && typeof descriptor != "function") || descriptor === null)
-            throw new TypeError(ERR_NON_OBJECT_DESCRIPTOR + descriptor);
-
-        // make a valiant attempt to use the real defineProperty
-        // for I8's DOM elements.
-        if (definePropertyFallback) {
-            try {
-                return definePropertyFallback.call(Object, object, property, descriptor);
-            } catch (exception) {
-                // try the shim if the real one doesn't work
-            }
-        }
-
-        // If it's a data property.
-        if (owns(descriptor, "value")) {
-            // fail silently if "writable", "enumerable", or "configurable"
-            // are requested but not supported
-            /*
-            // alternate approach:
-            if ( // can't implement these features; allow false but not true
-                !(owns(descriptor, "writable") ? descriptor.writable : true) ||
-                !(owns(descriptor, "enumerable") ? descriptor.enumerable : true) ||
-                !(owns(descriptor, "configurable") ? descriptor.configurable : true)
-            )
-                throw new RangeError(
-                    "This implementation of Object.defineProperty does not " +
-                    "support configurable, enumerable, or writable."
-                );
-            */
-
-            if (supportsAccessors && (lookupGetter(object, property) ||
-                                      lookupSetter(object, property)))
-            {
-                // As accessors are supported only on engines implementing
-                // `__proto__` we can safely override `__proto__` while defining
-                // a property to make sure that we don't hit an inherited
-                // accessor.
-                var prototype = object.__proto__;
-                object.__proto__ = prototypeOfObject;
-                // Deleting a property anyway since getter / setter may be
-                // defined on object itself.
-                delete object[property];
-                object[property] = descriptor.value;
-                // Setting original `__proto__` back now.
-                object.__proto__ = prototype;
-            } else {
-                object[property] = descriptor.value;
-            }
-        } else {
-            if (!supportsAccessors)
-                throw new TypeError(ERR_ACCESSORS_NOT_SUPPORTED);
-            // If we got that far then getters and setters can be defined !!
-            if (owns(descriptor, "get"))
-                defineGetter(object, property, descriptor.get);
-            if (owns(descriptor, "set"))
-                defineSetter(object, property, descriptor.set);
-        }
-
-        return object;
-    };
-}
-
-// ES5 15.2.3.7
-if (!Object.defineProperties) {
-    Object.defineProperties = function defineProperties(object, properties) {
-        for (var property in properties) {
-            if (owns(properties, property))
-                Object.defineProperty(object, property, properties[property]);
-        }
-        return object;
-    };
-}
-
-// ES5 15.2.3.8
-if (!Object.seal) {
-    Object.seal = function seal(object) {
-        // this is misleading and breaks feature-detection, but
-        // allows "securable" code to "gracefully" degrade to working
-        // but insecure code.
-        return object;
-    };
-}
-
-// ES5 15.2.3.9
-if (!Object.freeze) {
-    Object.freeze = function freeze(object) {
-        // this is misleading and breaks feature-detection, but
-        // allows "securable" code to "gracefully" degrade to working
-        // but insecure code.
-        return object;
-    };
-}
-
-// detect a Rhino bug and patch it
-try {
-    Object.freeze(function () {});
-} catch (exception) {
-    Object.freeze = (function freeze(freezeObject) {
-        return function freeze(object) {
-            if (typeof object == "function") {
-                return object;
-            } else {
-                return freezeObject(object);
-            }
-        };
-    })(Object.freeze);
-}
-
-// ES5 15.2.3.10
-if (!Object.preventExtensions) {
-    Object.preventExtensions = function preventExtensions(object) {
-        // this is misleading and breaks feature-detection, but
-        // allows "securable" code to "gracefully" degrade to working
-        // but insecure code.
-        return object;
-    };
-}
-
-// ES5 15.2.3.11
-if (!Object.isSealed) {
-    Object.isSealed = function isSealed(object) {
-        return false;
-    };
-}
-
-// ES5 15.2.3.12
-if (!Object.isFrozen) {
-    Object.isFrozen = function isFrozen(object) {
-        return false;
-    };
-}
-
-// ES5 15.2.3.13
-if (!Object.isExtensible) {
-    Object.isExtensible = function isExtensible(object) {
-        // 1. If Type(O) is not Object throw a TypeError exception.
-        if (Object(object) === object) {
-            throw new TypeError(); // TODO message
-        }
-        // 2. Return the Boolean value of the [[Extensible]] internal property of O.
-        var name = '';
-        while (owns(object, name)) {
-            name += '?';
-        }
-        object[name] = true;
-        var returnValue = owns(object, name);
-        delete object[name];
-        return returnValue;
-    };
-}
-
 // ES5 15.2.3.14
-// http://whattheheadsaid.com/2010/10/a-safer-object-keys-compatibility-implementation
+// http://es5.github.com/#x15.2.3.14
 if (!Object.keys) {
-
+    // http://whattheheadsaid.com/2010/10/a-safer-object-keys-compatibility-implementation
     var hasDontEnumBug = true,
         dontEnums = [
             "toString",
@@ -11459,13 +11461,18 @@ if (!Object.keys) {
         ],
         dontEnumsLength = dontEnums.length;
 
-    for (var key in {"toString": null})
+    for (var key in {"toString": null}) {
         hasDontEnumBug = false;
+    }
 
     Object.keys = function keys(object) {
 
-        if ((typeof object != "object" && typeof object != "function") || object === null)
+        if (
+            (typeof object != "object" && typeof object != "function") ||
+            object === null
+        ) {
             throw new TypeError("Object.keys called on a non-object");
+        }
 
         var keys = [];
         for (var name in object) {
@@ -11482,7 +11489,6 @@ if (!Object.keys) {
                 }
             }
         }
-
         return keys;
     };
 
@@ -11494,58 +11500,102 @@ if (!Object.keys) {
 //
 
 // ES5 15.9.5.43
-// Format a Date object as a string according to a simplified subset of the ISO 8601
-// standard as defined in 15.9.1.15.
-if (!Date.prototype.toISOString) {
+// http://es5.github.com/#x15.9.5.43
+// This function returns a String value represent the instance in time
+// represented by this Date object. The format of the String is the Date Time
+// string format defined in 15.9.1.15. All fields are present in the String.
+// The time zone is always UTC, denoted by the suffix Z. If the time value of
+// this object is not a finite Number a RangeError exception is thrown.
+var negativeDate = -62198755200000,
+    negativeYearString = "-000001";
+if (
+    !Date.prototype.toISOString ||
+    (new Date(negativeDate).toISOString().indexOf(negativeYearString) === -1)
+) {
     Date.prototype.toISOString = function toISOString() {
-        var result, length, value;
-        if (!isFinite(this))
-            throw new RangeError;
+        var result, length, value, year, month;
+        if (!isFinite(this)) {
+            throw new RangeError("Date.prototype.toISOString called on non-finite value.");
+        }
+
+        year = this.getUTCFullYear();
+
+        month = this.getUTCMonth();
+        // see https://github.com/kriskowal/es5-shim/issues/111
+        year += Math.floor(month / 12);
+        month = (month % 12 + 12) % 12;
 
         // the date time string format is specified in 15.9.1.15.
-        result = [this.getUTCFullYear(), this.getUTCMonth() + 1, this.getUTCDate(),
+        result = [month + 1, this.getUTCDate(),
             this.getUTCHours(), this.getUTCMinutes(), this.getUTCSeconds()];
+        year = (
+            (year < 0 ? "-" : (year > 9999 ? "+" : "")) +
+            ("00000" + Math.abs(year))
+            .slice(0 <= year && year <= 9999 ? -4 : -6)
+        );
 
         length = result.length;
         while (length--) {
             value = result[length];
-            // pad months, days, hours, minutes, and seconds to have two digits.
-            if (value < 10)
+            // pad months, days, hours, minutes, and seconds to have two
+            // digits.
+            if (value < 10) {
                 result[length] = "0" + value;
+            }
         }
         // pad milliseconds to have three digits.
-        return result.slice(0, 3).join("-") + "T" + result.slice(3).join(":") + "." +
-            ("000" + this.getUTCMilliseconds()).slice(-3) + "Z";
-    }
-}
-
-// ES5 15.9.4.4
-if (!Date.now) {
-    Date.now = function now() {
-        return new Date().getTime();
+        return (
+            year + "-" + result.slice(0, 2).join("-") +
+            "T" + result.slice(2).join(":") + "." +
+            ("000" + this.getUTCMilliseconds()).slice(-3) + "Z"
+        );
     };
 }
 
+
 // ES5 15.9.5.44
-if (!Date.prototype.toJSON) {
+// http://es5.github.com/#x15.9.5.44
+// This function provides a String representation of a Date object for use by
+// JSON.stringify (15.12.3).
+var dateToJSONIsSupported = false;
+try {
+    dateToJSONIsSupported = (
+        Date.prototype.toJSON &&
+        new Date(NaN).toJSON() === null &&
+        new Date(negativeDate).toJSON().indexOf(negativeYearString) !== -1 &&
+        Date.prototype.toJSON.call({ // generic
+            toISOString: function () {
+                return true;
+            }
+        })
+    );
+} catch (e) {
+}
+if (!dateToJSONIsSupported) {
     Date.prototype.toJSON = function toJSON(key) {
-        // This function provides a String representation of a Date object for
-        // use by JSON.stringify (15.12.3). When the toJSON method is called
-        // with argument key, the following steps are taken:
+        // When the toJSON method is called with argument key, the following
+        // steps are taken:
 
         // 1.  Let O be the result of calling ToObject, giving it the this
         // value as its argument.
-        // 2. Let tv be ToPrimitive(O, hint Number).
+        // 2. Let tv be toPrimitive(O, hint Number).
+        var o = Object(this),
+            tv = toPrimitive(o),
+            toISO;
         // 3. If tv is a Number and is not finite, return null.
-        // XXX
+        if (typeof tv === "number" && !isFinite(tv)) {
+            return null;
+        }
         // 4. Let toISO be the result of calling the [[Get]] internal method of
         // O with argument "toISOString".
+        toISO = o.toISOString;
         // 5. If IsCallable(toISO) is false, throw a TypeError exception.
-        if (typeof this.toISOString != "function")
-            throw new TypeError(); // TODO message
+        if (typeof toISO != "function") {
+            throw new TypeError("toISOString property is not callable");
+        }
         // 6. Return the result of calling the [[Call]] internal method of
-        // toISO with O as the this value and an empty argument list.
-        return this.toISOString();
+        //  toISO with O as the this value and an empty argument list.
+        return toISO.call(o);
 
         // NOTE 1 The argument is ignored.
 
@@ -11558,18 +11608,17 @@ if (!Date.prototype.toJSON) {
     };
 }
 
-// 15.9.4.2 Date.parse (string)
-// 15.9.1.15 Date Time String Format
-// Date.parse
+// ES5 15.9.4.2
+// http://es5.github.com/#x15.9.4.2
 // based on work shared by Daniel Friesen (dantman)
 // http://gist.github.com/303249
-if (isNaN(Date.parse("2011-06-15T21:40:05+06:00"))) {
+if (!Date.parse || "Date.parse is buggy") {
     // XXX global assignment won't work in embeddings that use
     // an alternate object for the context.
     Date = (function(NativeDate) {
 
         // Date.length === 7
-        var Date = function Date(Y, M, D, h, m, s, ms) {
+        function Date(Y, M, D, h, m, s, ms) {
             var length = arguments.length;
             if (this instanceof NativeDate) {
                 var date = length == 1 && String(Y) === Y ? // isString(Y)
@@ -11592,10 +11641,10 @@ if (isNaN(Date.parse("2011-06-15T21:40:05+06:00"))) {
             return NativeDate.apply(this, arguments);
         };
 
-        // 15.9.1.15 Date Time String Format. This pattern does not implement
-        // extended years (15.9.1.15.1), as `Date.UTC` cannot parse them.
+        // 15.9.1.15 Date Time String Format.
         var isoDateExpression = new RegExp("^" +
-            "(\\d{4})" + // four-digit year capture
+            "(\\d{4}|[\+\-]\\d{6})" + // four-digit year capture or sign +
+                                      // 6-digit extended year
             "(?:-(\\d{2})" + // optional month capture
             "(?:-(\\d{2})" + // optional day capture
             "(?:" + // capture hours:minutes:seconds.milliseconds
@@ -11605,7 +11654,7 @@ if (isNaN(Date.parse("2011-06-15T21:40:05+06:00"))) {
                     ":(\\d{2})" + // seconds capture
                     "(?:\\.(\\d{3}))?" + // milliseconds capture
                 ")?" +
-            "(?:" + // capture UTC offset component
+            "(" + // capture UTC offset component
                 "Z|" + // UTC capture
                 "(?:" + // offset specifier +/-hours:minutes
                     "([-+])" + // sign capture
@@ -11615,9 +11664,25 @@ if (isNaN(Date.parse("2011-06-15T21:40:05+06:00"))) {
             ")?)?)?)?" +
         "$");
 
+        var months = [
+            0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365
+        ];
+
+        function dayFromMonth(year, month) {
+            var t = month > 1 ? 1 : 0;
+            return (
+                months[month] +
+                Math.floor((year - 1969 + t) / 4) -
+                Math.floor((year - 1901 + t) / 100) +
+                Math.floor((year - 1601 + t) / 400) +
+                365 * (year - 1970)
+            );
+        }
+
         // Copy any custom methods a 3rd party library may have added
-        for (var key in NativeDate)
+        for (var key in NativeDate) {
             Date[key] = NativeDate[key];
+        }
 
         // Copy "native" methods explicitly; they may be non-enumerable
         Date.now = NativeDate.now;
@@ -11629,35 +11694,53 @@ if (isNaN(Date.parse("2011-06-15T21:40:05+06:00"))) {
         Date.parse = function parse(string) {
             var match = isoDateExpression.exec(string);
             if (match) {
-                match.shift(); // kill match[0], the full match
                 // parse months, days, hours, minutes, seconds, and milliseconds
-                for (var i = 1; i < 7; i++) {
-                    // provide default values if necessary
-                    match[i] = +(match[i] || (i < 3 ? 1 : 0));
-                    // match[1] is the month. Months are 0-11 in JavaScript
-                    // `Date` objects, but 1-12 in ISO notation, so we
-                    // decrement.
-                    if (i == 1)
-                        match[i]--;
-                }
-
+                // provide default values if necessary
                 // parse the UTC offset component
-                var minuteOffset = +match.pop(), hourOffset = +match.pop(), sign = match.pop();
-
-                // compute the explicit time zone offset if specified
-                var offset = 0;
-                if (sign) {
-                    // detect invalid offsets and return early
-                    if (hourOffset > 23 || minuteOffset > 59)
-                        return NaN;
-
-                    // express the provided time zone offset in minutes. The offset is
-                    // negative for time zones west of UTC; positive otherwise.
-                    offset = (hourOffset * 60 + minuteOffset) * 6e4 * (sign == "+" ? -1 : 1);
+                var year = Number(match[1]),
+                    month = Number(match[2] || 1) - 1,
+                    day = Number(match[3] || 1) - 1,
+                    hour = Number(match[4] || 0),
+                    minute = Number(match[5] || 0),
+                    second = Number(match[6] || 0),
+                    millisecond = Number(match[7] || 0),
+                    // When time zone is missed, local offset should be used
+                    // (ES 5.1 bug)
+                    // see https://bugs.ecmascript.org/show_bug.cgi?id=112
+                    offset = !match[4] || match[8] ?
+                        0 : Number(new NativeDate(1970, 0)),
+                    signOffset = match[9] === "-" ? 1 : -1,
+                    hourOffset = Number(match[10] || 0),
+                    minuteOffset = Number(match[11] || 0),
+                    result;
+                if (
+                    hour < (
+                        minute > 0 || second > 0 || millisecond > 0 ?
+                        24 : 25
+                    ) &&
+                    minute < 60 && second < 60 && millisecond < 1000 &&
+                    month > -1 && month < 12 && hourOffset < 24 &&
+                    minuteOffset < 60 && // detect invalid offsets
+                    day > -1 &&
+                    day < (
+                        dayFromMonth(year, month + 1) -
+                        dayFromMonth(year, month)
+                    )
+                ) {
+                    result = (
+                        (dayFromMonth(year, month) + day) * 24 +
+                        hour +
+                        hourOffset * signOffset
+                    ) * 60;
+                    result = (
+                        (result + minute + minuteOffset * signOffset) * 60 +
+                        second
+                    ) * 1000 + millisecond + offset;
+                    if (-8.64e15 <= result && result <= 8.64e15) {
+                        return result;
+                    }
                 }
-
-                // compute a new UTC date value, accounting for the optional offset
-                return NativeDate.UTC.apply(this, match) + offset;
+                return NaN;
             }
             return NativeDate.parse.apply(this, arguments);
         };
@@ -11666,12 +11749,61 @@ if (isNaN(Date.parse("2011-06-15T21:40:05+06:00"))) {
     })(Date);
 }
 
+// ES5 15.9.4.4
+// http://es5.github.com/#x15.9.4.4
+if (!Date.now) {
+    Date.now = function now() {
+        return new Date().getTime();
+    };
+}
+
+
 //
 // String
 // ======
 //
 
+
+// ES5 15.5.4.14
+// http://es5.github.com/#x15.5.4.14
+// [bugfix, chrome]
+// If separator is undefined, then the result array contains just one String,
+// which is the this value (converted to a String). If limit is not undefined,
+// then the output array is truncated so that it contains no more than limit
+// elements.
+// "0".split(undefined, 0) -> []
+if("0".split(void 0, 0).length) {
+    var string_split = String.prototype.split;
+    String.prototype.split = function(separator, limit) {
+        if(separator === void 0 && limit === 0)return [];
+        return string_split.apply(this, arguments);
+    }
+}
+
+// ECMA-262, 3rd B.2.3
+// Note an ECMAScript standart, although ECMAScript 3rd Edition has a
+// non-normative section suggesting uniform semantics and it should be
+// normalized across all browsers
+// [bugfix, IE lt 9] IE < 9 substr() with negative value not working in IE
+if("".substr && "0b".substr(-1) !== "b") {
+    var string_substr = String.prototype.substr;
+    /**
+     *  Get the substring of a string
+     *  @param  {integer}  start   where to start the substring
+     *  @param  {integer}  length  how many characters to return
+     *  @return {string}
+     */
+    String.prototype.substr = function(start, length) {
+        return string_substr.call(
+            this,
+            start < 0 ? ((start = this.length + start) < 0 ? 0 : start) : start,
+            length
+        );
+    }
+}
+
 // ES5 15.5.4.20
+// http://es5.github.com/#x15.5.4.20
 var ws = "\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003" +
     "\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028" +
     "\u2029\uFEFF";
@@ -11682,7 +11814,12 @@ if (!String.prototype.trim || ws.trim()) {
     var trimBeginRegexp = new RegExp("^" + ws + ws + "*"),
         trimEndRegexp = new RegExp(ws + ws + "*$");
     String.prototype.trim = function trim() {
-        return String(this).replace(trimBeginRegexp, "").replace(trimEndRegexp, "");
+        if (this === undefined || this === null) {
+            throw new TypeError("can't convert "+this+" to object");
+        }
+        return String(this)
+            .replace(trimBeginRegexp, "")
+            .replace(trimEndRegexp, "");
     };
 }
 
@@ -11691,33 +11828,67 @@ if (!String.prototype.trim || ws.trim()) {
 // ======
 //
 
+// ES5 9.4
+// http://es5.github.com/#x9.4
 // http://jsperf.com/to-integer
-var toInteger = function (n) {
+
+function toInteger(n) {
     n = +n;
-    if (n !== n) // isNaN
-        n = -1;
-    else if (n !== 0 && n !== (1/0) && n !== -(1/0))
+    if (n !== n) { // isNaN
+        n = 0;
+    } else if (n !== 0 && n !== (1/0) && n !== -(1/0)) {
         n = (n > 0 || -1) * Math.floor(Math.abs(n));
+    }
     return n;
+}
+
+function isPrimitive(input) {
+    var type = typeof input;
+    return (
+        input === null ||
+        type === "undefined" ||
+        type === "boolean" ||
+        type === "number" ||
+        type === "string"
+    );
+}
+
+function toPrimitive(input) {
+    var val, valueOf, toString;
+    if (isPrimitive(input)) {
+        return input;
+    }
+    valueOf = input.valueOf;
+    if (typeof valueOf === "function") {
+        val = valueOf.call(input);
+        if (isPrimitive(val)) {
+            return val;
+        }
+    }
+    toString = input.toString;
+    if (typeof toString === "function") {
+        val = toString.call(input);
+        if (isPrimitive(val)) {
+            return val;
+        }
+    }
+    throw new TypeError();
+}
+
+// ES5 9.9
+// http://es5.github.com/#x9.9
+var toObject = function (o) {
+    if (o == null) { // this matches both null and undefined
+        throw new TypeError("can't convert "+o+" to object");
+    }
+    return Object(o);
 };
 
-var prepareString = "a"[0] != "a",
-    // ES5 9.9
-    toObject = function (o) {
-        if (o == null) { // this matches both null and undefined
-            throw new TypeError(); // TODO message
-        }
-        // If the implementation doesn't support by-index access of
-        // string characters (ex. IE < 7), split the string
-        if (prepareString && typeof o == "string" && o) {
-            return o.split("");
-        }
-        return Object(o);
-    };
 });
 
 })()
-},{}],212:[function(require,module,exports){(function(process){/*global setImmediate: false, setTimeout: false, console: false */
+},{}],212:[function(require,module,exports){
+(function(process){/*global setImmediate: false, setTimeout: false, console: false */
 (function () {
 
     var async = {};
@@ -12674,7 +12845,8 @@ var prepareString = "a"[0] != "a",
 }());
 
 })(require("__browserify_process"))
-},{"__browserify_process":1}],211:[function(require,module,exports){(function(process){var createDefaultStream = require('./lib/default_stream');
+},{"__browserify_process":1}],211:[function(require,module,exports){
+(function(process){var createDefaultStream = require('./lib/default_stream');
 var Render = require('./lib/render');
 var Test = require('./lib/test');
 
@@ -12800,7 +12972,8 @@ function createHarness (conf_) {
 // vim: set softtabstop=4 shiftwidth=4:
 
 })(require("__browserify_process"))
-},{"./lib/default_stream":213,"./lib/render":214,"./lib/test":215,"__browserify_process":1}],213:[function(require,module,exports){var Stream = require('stream');
+},{"./lib/default_stream":213,"./lib/render":214,"./lib/test":215,"__browserify_process":1}],213:[function(require,module,exports){
+var Stream = require('stream');
 
 module.exports = function () {
     var out = new Stream;
@@ -12831,127 +13004,8 @@ module.exports = function () {
     return out;
 };
 
-},{"stream":216}],216:[function(require,module,exports){var events = require('events');
-var util = require('util');
-
-function Stream() {
-  events.EventEmitter.call(this);
-}
-util.inherits(Stream, events.EventEmitter);
-module.exports = Stream;
-// Backwards-compat with node 0.4.x
-Stream.Stream = Stream;
-
-Stream.prototype.pipe = function(dest, options) {
-  var source = this;
-
-  function ondata(chunk) {
-    if (dest.writable) {
-      if (false === dest.write(chunk) && source.pause) {
-        source.pause();
-      }
-    }
-  }
-
-  source.on('data', ondata);
-
-  function ondrain() {
-    if (source.readable && source.resume) {
-      source.resume();
-    }
-  }
-
-  dest.on('drain', ondrain);
-
-  // If the 'end' option is not supplied, dest.end() will be called when
-  // source gets the 'end' or 'close' events.  Only dest.end() once, and
-  // only when all sources have ended.
-  if (!dest._isStdio && (!options || options.end !== false)) {
-    dest._pipeCount = dest._pipeCount || 0;
-    dest._pipeCount++;
-
-    source.on('end', onend);
-    source.on('close', onclose);
-  }
-
-  var didOnEnd = false;
-  function onend() {
-    if (didOnEnd) return;
-    didOnEnd = true;
-
-    dest._pipeCount--;
-
-    // remove the listeners
-    cleanup();
-
-    if (dest._pipeCount > 0) {
-      // waiting for other incoming streams to end.
-      return;
-    }
-
-    dest.end();
-  }
-
-
-  function onclose() {
-    if (didOnEnd) return;
-    didOnEnd = true;
-
-    dest._pipeCount--;
-
-    // remove the listeners
-    cleanup();
-
-    if (dest._pipeCount > 0) {
-      // waiting for other incoming streams to end.
-      return;
-    }
-
-    dest.destroy();
-  }
-
-  // don't leave dangling pipes when there are errors.
-  function onerror(er) {
-    cleanup();
-    if (this.listeners('error').length === 0) {
-      throw er; // Unhandled stream error in pipe.
-    }
-  }
-
-  source.on('error', onerror);
-  dest.on('error', onerror);
-
-  // remove all the event listeners that were added.
-  function cleanup() {
-    source.removeListener('data', ondata);
-    dest.removeListener('drain', ondrain);
-
-    source.removeListener('end', onend);
-    source.removeListener('close', onclose);
-
-    source.removeListener('error', onerror);
-    dest.removeListener('error', onerror);
-
-    source.removeListener('end', cleanup);
-    source.removeListener('close', cleanup);
-
-    dest.removeListener('end', cleanup);
-    dest.removeListener('close', cleanup);
-  }
-
-  source.on('end', cleanup);
-  source.on('close', cleanup);
-
-  dest.on('end', cleanup);
-  dest.on('close', cleanup);
-
-  dest.emit('pipe', source);
-
-  // Allow for unix-like usage: A.pipe(B).pipe(C)
-  return dest;
-};
-
-},{"events":217,"util":218}],217:[function(require,module,exports){(function(process){if (!process.EventEmitter) process.EventEmitter = function () {};
+},{"stream":216}],217:[function(require,module,exports){
+(function(process){if (!process.EventEmitter) process.EventEmitter = function () {};
 
 var EventEmitter = exports.EventEmitter = process.EventEmitter;
 var isArray = typeof Array.isArray === 'function'
@@ -13136,7 +13190,129 @@ EventEmitter.prototype.listeners = function(type) {
 };
 
 })(require("__browserify_process"))
-},{"__browserify_process":1}],218:[function(require,module,exports){var events = require('events');
+},{"__browserify_process":1}],216:[function(require,module,exports){
+var events = require('events');
+var util = require('util');
+
+function Stream() {
+  events.EventEmitter.call(this);
+}
+util.inherits(Stream, events.EventEmitter);
+module.exports = Stream;
+// Backwards-compat with node 0.4.x
+Stream.Stream = Stream;
+
+Stream.prototype.pipe = function(dest, options) {
+  var source = this;
+
+  function ondata(chunk) {
+    if (dest.writable) {
+      if (false === dest.write(chunk) && source.pause) {
+        source.pause();
+      }
+    }
+  }
+
+  source.on('data', ondata);
+
+  function ondrain() {
+    if (source.readable && source.resume) {
+      source.resume();
+    }
+  }
+
+  dest.on('drain', ondrain);
+
+  // If the 'end' option is not supplied, dest.end() will be called when
+  // source gets the 'end' or 'close' events.  Only dest.end() once, and
+  // only when all sources have ended.
+  if (!dest._isStdio && (!options || options.end !== false)) {
+    dest._pipeCount = dest._pipeCount || 0;
+    dest._pipeCount++;
+
+    source.on('end', onend);
+    source.on('close', onclose);
+  }
+
+  var didOnEnd = false;
+  function onend() {
+    if (didOnEnd) return;
+    didOnEnd = true;
+
+    dest._pipeCount--;
+
+    // remove the listeners
+    cleanup();
+
+    if (dest._pipeCount > 0) {
+      // waiting for other incoming streams to end.
+      return;
+    }
+
+    dest.end();
+  }
+
+
+  function onclose() {
+    if (didOnEnd) return;
+    didOnEnd = true;
+
+    dest._pipeCount--;
+
+    // remove the listeners
+    cleanup();
+
+    if (dest._pipeCount > 0) {
+      // waiting for other incoming streams to end.
+      return;
+    }
+
+    dest.destroy();
+  }
+
+  // don't leave dangling pipes when there are errors.
+  function onerror(er) {
+    cleanup();
+    if (this.listeners('error').length === 0) {
+      throw er; // Unhandled stream error in pipe.
+    }
+  }
+
+  source.on('error', onerror);
+  dest.on('error', onerror);
+
+  // remove all the event listeners that were added.
+  function cleanup() {
+    source.removeListener('data', ondata);
+    dest.removeListener('drain', ondrain);
+
+    source.removeListener('end', onend);
+    source.removeListener('close', onclose);
+
+    source.removeListener('error', onerror);
+    dest.removeListener('error', onerror);
+
+    source.removeListener('end', cleanup);
+    source.removeListener('close', cleanup);
+
+    dest.removeListener('end', cleanup);
+    dest.removeListener('close', cleanup);
+  }
+
+  source.on('end', cleanup);
+  source.on('close', cleanup);
+
+  dest.on('end', cleanup);
+  dest.on('close', cleanup);
+
+  dest.emit('pipe', source);
+
+  // Allow for unix-like usage: A.pipe(B).pipe(C)
+  return dest;
+};
+
+},{"events":217,"util":218}],218:[function(require,module,exports){
+var events = require('events');
 
 exports.isArray = isArray;
 exports.isDate = function(obj){return Object.prototype.toString.call(obj) === '[object Date]'};
@@ -13488,7 +13664,8 @@ exports.format = function(f) {
   return str;
 };
 
-},{"events":217}],214:[function(require,module,exports){var Stream = require('stream');
+},{"events":217}],214:[function(require,module,exports){
+var Stream = require('stream');
 var json = typeof JSON === 'object' ? JSON : require('jsonify');
 
 module.exports = Render;
@@ -13589,7 +13766,8 @@ function encodeResult (res, count) {
     return output;
 }
 
-},{"stream":216,"jsonify":219}],215:[function(require,module,exports){(function(process,__dirname){var EventEmitter = require('events').EventEmitter;
+},{"stream":216,"jsonify":219}],215:[function(require,module,exports){
+(function(process,__dirname){var EventEmitter = require('events').EventEmitter;
 var deepEqual = require('deep-equal');
 var defined = require('defined');
 var path = require('path');
@@ -13933,7 +14111,8 @@ Test.prototype.doesNotThrow = function (fn, expected, msg, extra) {
 // vim: set softtabstop=4 shiftwidth=4:
 
 })(require("__browserify_process"),"/../node_modules/tape/lib")
-},{"events":217,"path":2,"deep-equal":220,"defined":221,"__browserify_process":1}],220:[function(require,module,exports){var pSlice = Array.prototype.slice;
+},{"events":217,"path":2,"deep-equal":220,"defined":221,"__browserify_process":1}],220:[function(require,module,exports){
+var pSlice = Array.prototype.slice;
 var Object_keys = typeof Object.keys === 'function'
     ? Object.keys
     : function (obj) {
@@ -14018,16 +14197,19 @@ function objEquiv(a, b) {
   return true;
 }
 
-},{}],221:[function(require,module,exports){module.exports = function () {
+},{}],221:[function(require,module,exports){
+module.exports = function () {
     for (var i = 0; i < arguments.length; i++) {
         if (arguments[i] !== undefined) return arguments[i];
     }
 };
 
-},{}],219:[function(require,module,exports){exports.parse = require('./lib/parse');
+},{}],219:[function(require,module,exports){
+exports.parse = require('./lib/parse');
 exports.stringify = require('./lib/stringify');
 
-},{"./lib/parse":222,"./lib/stringify":223}],222:[function(require,module,exports){var at, // The index of the current character
+},{"./lib/parse":222,"./lib/stringify":223}],222:[function(require,module,exports){
+var at, // The index of the current character
     ch, // The current character
     escapee = {
         '"':  '"',
@@ -14301,7 +14483,8 @@ module.exports = function (source, reviver) {
     }({'': result}, '')) : result;
 };
 
-},{}],223:[function(require,module,exports){var cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
+},{}],223:[function(require,module,exports){
+var cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
     escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
     gap,
     indent,
@@ -14456,4 +14639,5 @@ module.exports = function (value, replacer, space) {
     return str('', {'': value});
 };
 
-},{}]},{},[209]);
+},{}]},{},[209])
+;
