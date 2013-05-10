@@ -3,7 +3,7 @@
 //send event to statechart with tokenid
 //clean up statechart
 
-var scxml = require('scxml'),
+var scxml = require('..'),
     http = require('http');
 
 var sessionCounter = 0, sessions = {}, timeouts = {}, timeoutMs = 5000;
