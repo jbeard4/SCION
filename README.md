@@ -8,7 +8,7 @@ SCION is a small (2.9kb, minified and gzipped), embeddable implementation of Sta
 
 SCION is written so as to abstract out platform dependencies, and is implemented as a single UMD module, which makes it easy to deploy in any JavaScript environment. The philosophy of SCION is "write once, embed everywhere".
 
-SCION powers [SCXML.js](https://github.com/jbeard4/scxml.js), an implementation of [SCXML](http://www.w3.org/TR/scxml) in JavaScript, and as such, it supports all of the features of the SCXML core module, including compound states (**OR** states), parallel states (**AND** states), and history states. 
+SCION powers [SCXML.js](https://github.com/jbeard4/scxml.js), an implementation of [SCXML](http://www.w3.org/TR/scxml) in JavaScript, and as such, it supports all of the features of the SCXML core module, including compound states ( **OR** states), parallel states ( **AND** states), and history states. 
 
 <!--
 # Quickstart and Simple Use Case
