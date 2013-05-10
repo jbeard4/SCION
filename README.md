@@ -6,7 +6,7 @@ Statecharts is a powerful modelling language for developing **complex, timed, ev
 
 SCION is a small (2.9kb, minified and gzipped), embeddable implementation of Statecharts in ECMAScript (JavaScript). SCION lets you program with Statecharts using a simple JavaScript/JSON API. It can be used in the browser to manage complex user interface behaviour, or on the server under Node.js or Rhino to manage page navigation and asynchronous control flow. It can even be used in custom JavaScript environments, such as the Mozilla Spidermonkey shell. 
 
-SCION is written so as to abstract out platform dependencies, and is implemented as a single UMD module, which makes it esay to deploy in any JavaScript environment. The philosophy of SCION is "write once, embed everywhere".
+SCION is written so as to abstract out platform dependencies, and is implemented as a single UMD module, which makes it easy to deploy in any JavaScript environment. The philosophy of SCION is "write once, embed everywhere".
 
 SCION powers [SCXML.js](https://github.com/jbeard4/scxml.js), an implementation of [SCXML](http://www.w3.org/TR/scxml) in JavaScript, and as such, it supports all of the features of the SCXML core module, including compound states (**OR** states), parallel states (**AND** states), and history states. 
 
