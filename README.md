@@ -2,14 +2,15 @@ This is the transitional repository for the next generation of the SCION JavaScr
 
 # Overview
 
+Statecharts is a powerful modelling language for developing **complex, timed, event-driven, state-based systems**. For an overview of Statecharts see [STATECHARTS: A VISUAL FORMALISM FOR COMPLEX SYSTEMS](http://websrv0a.sdu.dk/ups/ESD/materials/harel-Statecharts.pdf) and [The Rhapsody Semantics of Statecharts](research.microsoft.com/pubs/148761/Charts04.pdf).
+
 SCION is a small (2.9kb, minified and gzipped), embeddable implementation of Statecharts in ECMAScript (JavaScript). SCION lets you program with Statecharts using a simple JavaScript/JSON API. It can be used in the browser to manage complex user interface behaviour, or on the server under Node.js or Rhino to manage page navigation and asynchronous control flow. It can even be used in custom JavaScript environments, such as the Mozilla Spidermonkey shell. 
 
-SCION is implemented a single UMD module so that it is easy to deploy in any JavaScript environment. The philosophy of SCION is "write once, embed everywhere".
+SCION is written so as to abstract out platform dependencies, and is implemented as a single UMD module, which makes it esay to deploy in any JavaScript environment. The philosophy of SCION is "write once, embed everywhere".
 
-Statecharts is a powerful modelling language for developing **complex, timed, event-driven, state-based systems**, and can offer elegant solutions to many problems faced in development of JavaScript-based applications. For an overview of Statecharts, see [Harel]().
+SCION powers [SCXML.js](https://github.com/jbeard4/scxml.js), an implementation of [SCXML](http://www.w3.org/TR/scxml) in JavaScript, and as such, it supports all of the features of the SCXML core module, including compound states (**OR** states), parallel states (**AND** states), and history states. 
 
-SCION powers SCXML.js, an implementation of SCXML in JavaScript, and as such, it supports all of the features of the SCXML core module, including parallel states, history states. <!-- TODO: cite more features -->
-
+<!--
 # Quickstart and Simple Use Case
 
 Let's start with the simple example of drag-and-drop behaviour in the browser. You can run this demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop.html), or on jsfiddle [here](http://jsfiddle.net/jbeard4/mjm72/).
@@ -233,7 +234,7 @@ The context ("`this`") object contains the following methods:
 * `gen(event)`, which adds an event to the Statechart's outer queue
 * `raise(event)`, which adds an event to the Statechart's inner queue 
 
-For semantics, see <!-- TODO: the SCXML specification, and my thesis. -->
+For semantics, see [TODO: the SCXML specification, and my thesis.]
 
 ## Instantiation
 
@@ -313,3 +314,4 @@ rhino -modules path/to/SCION/lib -main path/to/your/script.js
 # Support
 
 [Mailing list](https://groups.google.com/group/scion-dev)
+-->
