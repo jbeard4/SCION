@@ -1,4 +1,4 @@
-var scxml = require('scxml');
+var scxml = require('../../../');
 
 function testModel(model, test){
     var sc = new scxml.scion.Statechart(model);
