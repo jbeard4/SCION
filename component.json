@@ -2,7 +2,7 @@
   "name": "scxml",
   "repo": "jbeard4/scxml.js",
   "description": "An implementation of SCXML in portable ECMAScript.",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "keywords": [
     "scxml",
     "statecharts",
@@ -10,8 +10,8 @@
     "javascript"
   ],
   "dependencies": {
-    "scion": "1.*.*",
-    "sax": "*"
+    "jbeard4/scion-ng": "*",
+    "isaacs/sax-js": "*"
   },
   "development": {},
   "license": "Apache-2.0",

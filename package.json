@@ -33,7 +33,7 @@
         "http://www.w3.org/TR/scxml/"
     ],
     "dependencies" : {
-        "scion" : "*",
+        "scion-ng" : "*",
         "sax" : "*"
     },
     "devDependencies":{
@@ -42,10 +42,6 @@
     "main": "./lib/runtime/platform-bootstrap/node/index.js",
     "scripts" : {
         "test" : "cd test && bash run-tests-node.sh"
-    },
-    "web": {
-        "name": "SCXML",
-        "save": "dist/scxml.js"
     }
 }
 
