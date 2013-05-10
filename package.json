@@ -1,7 +1,7 @@
 {
     "name": "scion-ng",
     "version": "0.1.0",
-    "description": "StateCharts Interpretation and Optimization eNgine (SCION) is an implementation of Statecharts in JavaScript.",
+    "description": "StateCharts Interpretation and Optimization eNgine (SCION) is an implementation of Statecharts in JavaScript. This is a transitional package for the next generation of SCION.",
     "keywords": [
         "scxml",
         "statecharts",
