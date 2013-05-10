@@ -1,6 +1,6 @@
 {
     "name": "scxml",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "description": "An implementation of SCXML in JavaScript.",
     "keywords": [
         "scxml",
@@ -37,6 +37,7 @@
         "sax" : "*"
     },
     "devDependencies":{
+        "karma" : "~0.8"
     },
     "engines" : { "node" : ">=0.6" },
     "main": "./lib/runtime/platform-bootstrap/node/index.js",

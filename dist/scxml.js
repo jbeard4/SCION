@@ -200,7 +200,7 @@ require.relative = function(parent) {
 
   return localRequire;
 };
-require.register("scion/lib/scion.js", function(exports, require, module){
+require.register("jbeard4-scion-ng/lib/scion.js", function(exports, require, module){
 //   Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
@@ -652,7 +652,7 @@ require.register("scion/lib/scion.js", function(exports, require, module){
        
         this.opts = opts || {};
 
-        this.opts.log = opts.log || (typeof console === 'undefined' ? {log : function(){}} : console.log.bind(console));   //rely on global console if this console is undefined
+        this.opts.console = opts.console || (typeof console === 'undefined' ? {log : function(){}} : console);   //rely on global console if this console is undefined
         this.opts.Set = this.opts.Set || ArraySet;
         this.opts.priorityComparisonFn = this.opts.priorityComparisonFn || getTransitionWithHigherSourceChildPriority;
         this.opts.transitionSelector = this.opts.transitionSelector || scxmlPrefixTransitionSelector;
@@ -683,7 +683,7 @@ require.register("scion/lib/scion.js", function(exports, require, module){
         /** @expose */
         start : function() {
             //perform big step without events to take all default transitions and reach stable initial state
-            if (printTrace) this.opts.log("performing initial big step");
+            if (printTrace) this.opts.console.log("performing initial big step");
 
             //We effectively need to figure out states to enter here to populate initial config. assuming root is compound state makes this simple.
             //but if we want it to be parallel, then this becomes more complex. so when initializing the model, we add a 'fake' root state, which
@@ -735,15 +735,15 @@ require.register("scion/lib/scion.js", function(exports, require, module){
         /** @private */
         _performSmallStep : function(currentEvent) {
 
-            if (printTrace) this.opts.log("selecting transitions with currentEvent: ", currentEvent);
+            if (printTrace) this.opts.console.log("selecting transitions with currentEvent: ", currentEvent);
 
             var selectedTransitions = this._selectTransitions(currentEvent);
 
-            if (printTrace) this.opts.log("selected transitions: ", selectedTransitions);
+            if (printTrace) this.opts.console.log("selected transitions: ", selectedTransitions);
 
             if (!selectedTransitions.isEmpty()) {
 
-                if (printTrace) this.opts.log("sorted transitions: ", selectedTransitions);
+                if (printTrace) this.opts.console.log("sorted transitions: ", selectedTransitions);
 
                 //we only want to enter and exit states from transitions with targets
                 //filter out targetless transitions here - we will only use these to execute transition actions
@@ -757,21 +757,21 @@ require.register("scion/lib/scion.js", function(exports, require, module){
                     basicStatesEntered = enteredTuple[0], 
                     statesEntered = enteredTuple[1];
 
-                if (printTrace) this.opts.log("basicStatesExited ", basicStatesExited);
-                if (printTrace) this.opts.log("basicStatesEntered ", basicStatesEntered);
-                if (printTrace) this.opts.log("statesExited ", statesExited);
-                if (printTrace) this.opts.log("statesEntered ", statesEntered);
+                if (printTrace) this.opts.console.log("basicStatesExited ", basicStatesExited);
+                if (printTrace) this.opts.console.log("basicStatesEntered ", basicStatesEntered);
+                if (printTrace) this.opts.console.log("statesExited ", statesExited);
+                if (printTrace) this.opts.console.log("statesEntered ", statesEntered);
 
                 var eventsToAddToInnerQueue = new this.opts.Set();
 
                 //update history states
-                if (printTrace) this.opts.log("executing state exit actions");
+                if (printTrace) this.opts.console.log("executing state exit actions");
 
                 var evaluateAction = this._evaluateAction.bind(this, currentEvent);        //create helper fn that actions can call later on
 
                 statesExited.forEach(function(state){
 
-                    if (printTrace || this.opts.logStatesEnteredAndExited) this.opts.log("exiting ", state.id);
+                    if (printTrace || this.opts.logStatesEnteredAndExited) this.opts.console.log("exiting ", state.id);
 
                     //invoke listeners
                     this._listeners.forEach(function(l){
@@ -803,7 +803,7 @@ require.register("scion/lib/scion.js", function(exports, require, module){
                     return t1.documentOrder - t2.documentOrder;
                 });
 
-                if (printTrace) this.opts.log("executing transitition actions");
+                if (printTrace) this.opts.console.log("executing transitition actions");
 
 
                 sortedTransitions.forEach(function(transition){
@@ -817,11 +817,11 @@ require.register("scion/lib/scion.js", function(exports, require, module){
                     if(transition.onTransition !== undefined) transition.onTransition.forEach(evaluateAction);
                 },this);
      
-                if (printTrace) this.opts.log("executing state enter actions");
+                if (printTrace) this.opts.console.log("executing state enter actions");
 
                 statesEntered.forEach(function(state){
 
-                    if (printTrace || this.opts.logStatesEnteredAndExited) this.opts.log("entering", state.id);
+                    if (printTrace || this.opts.logStatesEnteredAndExited) this.opts.console.log("entering", state.id);
 
                     this._listeners.forEach(function(l){
                        if(l.onEntry) l.onEntry(state.id); 
@@ -830,19 +830,19 @@ require.register("scion/lib/scion.js", function(exports, require, module){
                     if(state.onEntry !== undefined) state.onEntry.forEach(evaluateAction);
                 },this);
 
-                if (printTrace) this.opts.log("updating configuration ");
-                if (printTrace) this.opts.log("old configuration ", this._configuration);
+                if (printTrace) this.opts.console.log("updating configuration ");
+                if (printTrace) this.opts.console.log("old configuration ", this._configuration);
 
                 //update configuration by removing basic states exited, and adding basic states entered
                 this._configuration.difference(basicStatesExited);
                 this._configuration.union(basicStatesEntered);
 
 
-                if (printTrace) this.opts.log("new configuration ", this._configuration);
+                if (printTrace) this.opts.console.log("new configuration ", this._configuration);
                 
                 //add set of generated events to the innerEventQueue -> Event Lifelines: Next small-step
                 if (!eventsToAddToInnerQueue.isEmpty()) {
-                    if (printTrace) this.opts.log("adding triggered events to inner queue ", eventsToAddToInnerQueue);
+                    if (printTrace) this.opts.console.log("adding triggered events to inner queue ", eventsToAddToInnerQueue);
                     this._internalEventQueue.push(eventsToAddToInnerQueue);
                 }
 
@@ -1013,7 +1013,7 @@ require.register("scion/lib/scion.js", function(exports, require, module){
 
             var priorityEnabledTransitions = this._selectPriorityEnabledTransitions(enabledTransitions);
 
-            if (printTrace) this.opts.log("priorityEnabledTransitions", priorityEnabledTransitions);
+            if (printTrace) this.opts.console.log("priorityEnabledTransitions", priorityEnabledTransitions);
             
             return priorityEnabledTransitions;
         },
@@ -1028,10 +1028,10 @@ require.register("scion/lib/scion.js", function(exports, require, module){
 
             priorityEnabledTransitions.union(consistentTransitions);
 
-            if (printTrace) this.opts.log("enabledTransitions", enabledTransitions);
-            if (printTrace) this.opts.log("consistentTransitions", consistentTransitions);
-            if (printTrace) this.opts.log("inconsistentTransitionsPairs", inconsistentTransitionsPairs);
-            if (printTrace) this.opts.log("priorityEnabledTransitions", priorityEnabledTransitions);
+            if (printTrace) this.opts.console.log("enabledTransitions", enabledTransitions);
+            if (printTrace) this.opts.console.log("consistentTransitions", consistentTransitions);
+            if (printTrace) this.opts.console.log("inconsistentTransitionsPairs", inconsistentTransitionsPairs);
+            if (printTrace) this.opts.console.log("priorityEnabledTransitions", priorityEnabledTransitions);
             
             while (!inconsistentTransitionsPairs.isEmpty()) {
                 enabledTransitions = new this.opts.Set(
@@ -1043,10 +1043,10 @@ require.register("scion/lib/scion.js", function(exports, require, module){
 
                 priorityEnabledTransitions.union(consistentTransitions);
 
-                if (printTrace) this.opts.log("enabledTransitions", enabledTransitions);
-                if (printTrace) this.opts.log("consistentTransitions", consistentTransitions);
-                if (printTrace) this.opts.log("inconsistentTransitionsPairs", inconsistentTransitionsPairs);
-                if (printTrace) this.opts.log("priorityEnabledTransitions", priorityEnabledTransitions);
+                if (printTrace) this.opts.console.log("enabledTransitions", enabledTransitions);
+                if (printTrace) this.opts.console.log("consistentTransitions", consistentTransitions);
+                if (printTrace) this.opts.console.log("inconsistentTransitionsPairs", inconsistentTransitionsPairs);
+                if (printTrace) this.opts.console.log("priorityEnabledTransitions", priorityEnabledTransitions);
                 
             }
             return priorityEnabledTransitions;
@@ -1058,7 +1058,7 @@ require.register("scion/lib/scion.js", function(exports, require, module){
             var inconsistentTransitionsPairs = new this.opts.Set();
             var transitionList = transitions.iter();
 
-            if (printTrace) this.opts.log("transitions", transitionList);
+            if (printTrace) this.opts.console.log("transitions", transitionList);
 
             for(var i = 0; i < transitionList.length; i++){
                 for(var j = i+1; j < transitionList.length; j++){
@@ -1084,11 +1084,11 @@ require.register("scion/lib/scion.js", function(exports, require, module){
         /** @private */
         _isArenaOrthogonal : function(t1, t2) {
 
-            if (printTrace) this.opts.log("transition scopes", t1.scope, t2.scope);
+            if (printTrace) this.opts.console.log("transition scopes", t1.scope, t2.scope);
 
             var isOrthogonal = query.isOrthogonalTo(t1.scope, t2.scope);
 
-            if (printTrace) this.opts.log("transition scopes are orthogonal?", isOrthogonal);
+            if (printTrace) this.opts.console.log("transition scopes are orthogonal?", isOrthogonal);
 
             return isOrthogonal;
         },
@@ -1134,7 +1134,16 @@ require.register("scion/lib/scion.js", function(exports, require, module){
 
         BaseInterpreter.call(this,model,opts);     //call super constructor
     }
-    Statechart.prototype = Object.create(BaseInterpreter.prototype);
+
+    function beget(o){
+        function F(){}
+        F.prototype = o;
+        return new F();
+    }
+
+    //Statechart.prototype = Object.create(BaseInterpreter.prototype);
+    //would like to use Object.create here, but not portable, but it's too complicated to use portably
+    Statechart.prototype = beget(BaseInterpreter.prototype);    
 
     /** @expose */
     Statechart.prototype.gen = function(evtObjOrName,optionalData) {
@@ -1225,7 +1234,7 @@ require.register("scion/lib/scion.js", function(exports, require, module){
 }));
 
 });
-require.register("sax/lib/sax.js", function(exports, require, module){
+require.register("isaacs-sax-js/lib/sax.js", function(exports, require, module){
 // wrapper for non-node envs
 ;(function (sax) {
 
@@ -1892,9 +1901,9 @@ function qname (name) {
 function attrib (parser) {
   if (!parser.strict) parser.attribName = parser.attribName[parser.looseCase]()
 
-  if (parser.attribList.hasOwnProperty(parser.attribName) ||
+  if (parser.attribList.indexOf(parser.attribName) !== -1 ||
       parser.tag.attributes.hasOwnProperty(parser.attribName)) {
-   return parser.attribName = parser.attribValue = ""
+    return parser.attribName = parser.attribValue = ""
   }
 
   if (parser.opt.xmlns) {
@@ -1947,11 +1956,12 @@ function openTag (parser, selfClosing) {
     var qn = qname(parser.tagName)
     tag.prefix = qn.prefix
     tag.local = qn.local
-    tag.uri = tag.ns[qn.prefix] || qn.prefix
+    tag.uri = tag.ns[qn.prefix] || ""
 
     if (tag.prefix && !tag.uri) {
       strictFail(parser, "Unbound namespace prefix: "
                        + JSON.stringify(parser.tagName))
+      tag.uri = qn.prefix
     }
 
     var parent = parser.tags[parser.tags.length - 1] || parser
@@ -3577,7 +3587,7 @@ require.register("scxml/lib/runtime/platform-bootstrap/browser/index.js", functi
 var pm = require('../platform'),
     platform = require('./platform'),
     facade = require('../../facade'),
-    scion = require('scion');
+    scion = require('scion-ng');
 
 pm.platform = platform;     //setup platform
 
@@ -3651,11 +3661,15 @@ function documentStringToModel(url,docString,cb,context){
 }
 
 function createModule(url,scJson,context,cb){
-    console.log('scjson',JSON.stringify(scJson,4,4)); 
+
+    if(pm.platform.debug) console.log('scjson',JSON.stringify(scJson,4,4)); 
+
     var jsModuleString = scjsonToModule(scJson);
-    console.log('jsModuleString\n',jsModuleString); 
+    if(pm.platform.debug) console.log('jsModuleString\n',jsModuleString); 
+
     var model = pm.platform.module.eval(jsModuleString,url,context);     //TODO: use a platform-native eval? this is where we would pass in require
-    console.log('model',model);
+    if(pm.platform.debug) console.log('model',model);
+
     cb(null,model);
 }
 
@@ -3744,15 +3758,15 @@ module.exports = {
 };
 
 });
-require.alias("scion/lib/scion.js", "scxml/deps/scion/lib/scion.js");
-require.alias("scion/lib/scion.js", "scxml/deps/scion/index.js");
-require.alias("scion/lib/scion.js", "scion/index.js");
-require.alias("scion/lib/scion.js", "scion/index.js");
+require.alias("jbeard4-scion-ng/lib/scion.js", "scxml/deps/scion-ng/lib/scion.js");
+require.alias("jbeard4-scion-ng/lib/scion.js", "scxml/deps/scion-ng/index.js");
+require.alias("jbeard4-scion-ng/lib/scion.js", "scion-ng/index.js");
+require.alias("jbeard4-scion-ng/lib/scion.js", "jbeard4-scion-ng/index.js");
 
-require.alias("sax/lib/sax.js", "scxml/deps/sax/lib/sax.js");
-require.alias("sax/lib/sax.js", "scxml/deps/sax/index.js");
-require.alias("sax/lib/sax.js", "sax/index.js");
-require.alias("sax/lib/sax.js", "sax/index.js");
+require.alias("isaacs-sax-js/lib/sax.js", "scxml/deps/sax/lib/sax.js");
+require.alias("isaacs-sax-js/lib/sax.js", "scxml/deps/sax/index.js");
+require.alias("isaacs-sax-js/lib/sax.js", "sax/index.js");
+require.alias("isaacs-sax-js/lib/sax.js", "isaacs-sax-js/index.js");
 
 require.alias("scxml/lib/runtime/platform-bootstrap/browser/index.js", "scxml/index.js");
 
