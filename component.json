@@ -26,7 +26,7 @@
     "lib/runtime/platform-bootstrap/browser/platform.js",
     "lib/runtime/platform-bootstrap/browser/index.js",
     "lib/runtime/platform-bootstrap/platform.js",
-    "lib/runtime/document-string-to-model.js",
+    "lib/runtime/document-string-to-model-factory.js",
     "lib/runtime/facade.js"
   ]
 }
