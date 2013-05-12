@@ -2944,19 +2944,10 @@ function dumpHeader(){
     return '//Generated on ' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString() + ' by the SCION SCXML compiler';
 }
 
-
-function generateAmdModule(o){
-
-    return 'define' + 
-                generateSelfInvokingFunctionInvocationModule(o).slice(0,-2);
-}
-
-
-function generateSelfInvokingFunctionInvocationModule(o){
-
+function generateFactoryFunctionWrapper(o){
 
     return o.headerString + '\n' +
-              '(function(){\n' + 
+              '(function(_x,_sessionid,_name,_ioprocessors){\n' + 
                     [
                         o.sendString,
                         o.rootScript,
@@ -2966,21 +2957,7 @@ function generateSelfInvokingFunctionInvocationModule(o){
                         'return ' + o.objectLiteralString + ';'
                     ].join('\n\n').
                         split('\n').map(function(line){return '    ' + line;}).join('\n') +      //indent
-                '})()';
-}
-
-function generateCommonJsModule(o){
-
-
-    return [
-            o.headerString,
-            o.rootScript,
-            o.sendString,
-            o.datamodelDeclaration,
-            o.earlyBindingFnDeclaration,
-            o.actionFunctionDeclarations,
-            'module.exports = ' + o.objectLiteralString + ';'
-        ].join('\n\n');
+                '})';
 }
 
 function generateModule(rootState, moduleType){
@@ -3010,24 +2987,26 @@ function generateModule(rootState, moduleType){
 
     o.objectLiteralString = generateSmObjectLiteral(rootState);
         
-    var s;
+    var s = generateFactoryFunctionWrapper(o);
+
+    var r;
 
     switch(moduleType){
         case 'amd':
-            s = generateAmdModule(o);
+            r = 'define' + s;
             break;
         case 'umd':
             //TODO
             break;
         case 'commonjs':
-            s = generateCommonJsModule(o);
+            r = 'module.exports = ' + s + ';';
             break;
         default:
-            s = generateSelfInvokingFunctionInvocationModule(o);
+            r = s;
             break;
     }
 
-    return s;
+    return r;
 }
 
 function markAsReference(fnName){
@@ -3604,7 +3583,7 @@ require.register("scxml/lib/runtime/platform-bootstrap/platform.js", function(ex
 module.exports = {};    //this will get setup (monkey-patched) by the platform bootstrap script
 
 });
-require.register("scxml/lib/runtime/document-string-to-model.js", function(exports, require, module){
+require.register("scxml/lib/runtime/document-string-to-model-factory.js", function(exports, require, module){
 /*
      Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
 
@@ -3696,21 +3675,21 @@ require.register("scxml/lib/runtime/facade.js", function(exports, require, modul
 "use strict";
 
 var pm = require('./platform-bootstrap/platform'),
-    documentStringToModel = require('./document-string-to-model');
+    documentStringToModelFactory = require('./document-string-to-model-factory');
 
 /*
   *@url URL of the SCXML document to retrieve and convert to a model
   *@cb callback to invoke with an error or the model
   *@context Optional. host-specific data passed along to the platform-specific resource-fetching API (e.g. to provide better traceability)
   */
-function urlToModel(url,cb,context){
+function urlToModelFactory(url,cb,context){
     if(!pm.platform.http.get) throw new Error("Platform does not support http.get");
 
     pm.platform.http.get(url,function(err,doc){
         if(err){
             cb(err,null);
         }else{
-            documentStringToModel(url,doc,cb,context);
+            documentStringToModelFactory(url,doc,cb,context);
         }
     },context);
 }
@@ -3720,7 +3699,7 @@ function urlToModel(url,cb,context){
   *@cb callback to invoke with an error or the model
   *@context Optional. host-specific data passed along to the platform-specific resource-fetching API (e.g. to provide better traceability)
   */
-function pathToModel(url,cb,context){
+function pathToModelFactory(url,cb,context){
     if(!pm.platform.fs.get) throw new Error("Platform does not support fs.get");
 
     context = context || {};
@@ -3730,7 +3709,7 @@ function pathToModel(url,cb,context){
         if(err){
             cb(err,null);
         }else{
-            documentStringToModel(url,doc,cb,context);
+            documentStringToModelFactory(url,doc,cb,context);
         }
     },context);
 }
@@ -3740,18 +3719,18 @@ function pathToModel(url,cb,context){
   *@cb callback to invoke with an error or the model
   *@context Optional. host-specific data passed along to the platform-specific resource-fetching API (e.g. to provide better traceability)
   */
-function documentToModel(doc,cb,context){
+function documentToModelFactory(doc,cb,context){
     var s = pm.platform.dom.serializeToString(doc);
-    documentStringToModel(null,s,cb,context);
+    documentStringToModelFactory(null,s,cb,context);
 }
 
 
 //export standard interface
 module.exports = {
-    pathToModel : pathToModel,
-    urlToModel : urlToModel,
-    documentStringToModel : documentStringToModel.bind(this,null),
-    documentToModel : documentToModel,
+    pathToModelFactory : pathToModelFactory,
+    urlToModelFactory : urlToModelFactory,
+    documentStringToModelFactory : documentStringToModelFactory.bind(this,null),
+    documentToModelFactory : documentToModelFactory,
     ext : {
         platformModule : pm
     }
