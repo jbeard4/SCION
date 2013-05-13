@@ -2,7 +2,7 @@
   "name": "scxml",
   "repo": "jbeard4/scxml.js",
   "description": "An implementation of SCXML in portable ECMAScript.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "keywords": [
     "scxml",
     "statecharts",
