@@ -29,14 +29,13 @@ http.createServer(function (req, res) {
                 console.log("Loading new statechart",reqJson.load);
 
                 scxml.urlToModelFactory(reqJson.load,function(err,modelFactory){
-                    //console.log(modelFactory.toString());
+                    //console.log('modelFactory',modelFactory);
                     if(err){
                         console.error(err.stack);
                         res.writeHead(500, {'Content-Type': 'text/plain'});
                         res.end(err.message);
                     }else{
-                        var model = modelFactory();
-                        var interpreter = new scxml.scion.Statechart(model);
+                        var interpreter = new scxml.scion.Statechart(modelFactory);
 
                         var sessionToken = sessionCounter;
                         sessionCounter++;
