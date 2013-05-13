@@ -2770,9 +2770,12 @@ function transform(xmlString){
 
     parser.onclosetag = function(tag){
         //console.log("close tag",tag);
-        jsonStack.pop();
-        currentJson = jsonStack[jsonStack.length - 1];
-        //console.log('current json now',currentJson,jsonStack.length); 
+        var localName = tag.split(':').pop();
+        if(tagActions[localName]){
+            jsonStack.pop();
+            currentJson = jsonStack[jsonStack.length - 1];
+            //console.log('current json now',currentJson,jsonStack.length); 
+        }
     };
 
     parser.onattribute = function (attr) {
@@ -2854,7 +2857,7 @@ function generateFnName(actionType,action){
     return '$' + actionType + '_line_' + action.$line + '_column_' + action.$column;
 }
 
-var FN_ARGS = '(_event, In, _sessionId, _name, _ioprocessors, _x)';
+var FN_ARGS = '(_event)';
 
 function generateFnDeclaration(fnName,fnBody){
     if(printTrace) console.log('generateFnDeclaration',fnName,fnBody);
@@ -2947,7 +2950,8 @@ function dumpHeader(){
 function generateFactoryFunctionWrapper(o){
 
     return o.headerString + '\n' +
-              '(function(_x,_sessionid,_name,_ioprocessors){\n' + 
+              '(function(_x,_sessionid,_name,_ioprocessors,In){\n' + 
+                    //'console.log(_x,_sessionid,_name,_ioprocessors,In);\n' +
                     [
                         o.sendString,
                         o.rootScript,
@@ -2971,7 +2975,7 @@ function generateModule(rootState, moduleType){
         rootState.onEntry = [markAsReference(EARLY_BINDING_DATAMODEL_FN_NAME)].concat(rootState.onEntry);
     }
 
-    console.log('rootState.rootScripts',rootState.rootScripts);
+    //console.log('rootState.rootScripts',rootState.rootScripts);
 
     //TODO: support other module formats (AMD, UMD, module pattern)
     var o = {
@@ -3079,7 +3083,7 @@ var actionTags = {
             params.push(generateFnCall(generateAttributeExpression(action,'expr')));
         }
 
-        return "console.log(" + params.join(",") + ");";
+        return "this.log(" + params.join(",") + ");";
     },
 
     "if" : function(action){
@@ -3171,7 +3175,7 @@ var actionTags = {
             if(action.content){
                 return '            ' + JSON.stringify(action.content);     //TODO: inline it if content is pure JSON. call custom attribute 'contentType'?
             }else if(action.contentexpr){
-                return generateAttributeExpression(action,'contentexpr');
+                return generateFnCall(generateAttributeExpression(action,'contentexpr'));
             }else{
                 var s = "{\n";
                 var props = [];
@@ -3213,9 +3217,9 @@ var actionTags = {
         ["{", 
          "   target: " + targetVariableName + ",", 
          "   name: " + processAttr(action, 'event') + ",", 
-         "   type: " + processAttr(action, 'type') + ",", 
+         //"   type: " + processAttr(action, 'type') + ",", 
          "   data: \n" + constructSendEventData(action) + ",", 
-         "   origin: _sessionId", 
+         "   origin: _sessionid", 
          "}"].map(function(line){return '     ' + line;}).join('\n');   //lightweight formatting
 
         var send =
@@ -3265,9 +3269,7 @@ var actionTags = {
 };
 
 function getDelayInMs(delayString){
-    if (!delayString) {
-        return 0;
-    } else {
+    if(typeof delayString === 'string') {
         if (delayString.slice(-2) === "ms") {
             return parseFloat(delayString.slice(0, -2));
         } else if (delayString.slice(-1) === "s") {
@@ -3275,6 +3277,10 @@ function getDelayInMs(delayString){
         } else {
             return parseFloat(delayString);
         }
+    }else if (typeof delayString === 'number'){
+        return delayString;
+    }else{
+        return 0;
     }
 }
 
