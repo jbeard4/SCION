@@ -12,4 +12,7 @@ get-deps :
 	npm install -g component uglifyjs
 	component install
 
-.PHONY : get-deps all
+clean :
+	rm dist/*
+
+.PHONY : get-deps all clean

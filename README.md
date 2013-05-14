@@ -39,26 +39,23 @@ Support is currently being added for Rhino.
 
 # API
 
-scxml.js uses [SCION](http://github.com/jbeard4/SCION-ng) as its Statecharts engine. scxml.js first compiles SCXML documents to JavaScript object model factory functions. When the factory function is evaluated, the SCXML datamodel is initialized, and the a "model" produced. The "model" is then used to instantiate a SCION Statecharts interpreter.
+scxml.js uses [SCION](http://github.com/jbeard4/SCION-ng) as its Statecharts engine. scxml.js first compiles the SCXML document to a JavaScript object model. The "model" is then used to instantiate a SCION Statecharts interpreter.
 
 Here is an example of a typical usage:
 
 ```javascript
-    scxml.urlToModelFactory(url,function(err, modelFactory){
+    scxml.urlToModel(url,function(err, model){
 
         if(err) throw err;
 
         //you can inspect the generated code if you like using JavaScript's Function.prototype.toString
-        console.log(modelFactory.toString());       
-
-        //create the model, which initializes the SCXML datamodel
-        var model = modelFactory();                 
+        console.log(model.toString());       
 
         //instantiate the interpreter
         var statechart1 = new scxml.scion.Statechart(model);
 
-        //make sure you create a new model for each new Statechart
-        var statechart2 = new scxml.scion.Statechart(modelFactory());
+        //you can instantiate a second interpreter using the same model
+        var statechart2 = new scxml.scion.Statechart(model);
 
         //start the interpreter
         var initialConfiguration = statechart1.start();
@@ -71,7 +68,7 @@ Here is an example of a typical usage:
 In node, you can also use `require`. 
 
 ```javascript
-var modelFactory = require('./path/to/foo.scxml');
+var model = require('./path/to/foo.scxml');
 //etc...
 ```
 
@@ -79,10 +76,10 @@ Note that this will only work if the SCXML <script> tags contain local filesyste
 
 ## Instantiation
 
-### scxml.urlToModelFactory(url,function(err, modelFactory){})
-### scxml.pathToModelFactory(path,function(err, modelFactory){})
-### scxml.documentStringToModelFactory(scxmlDocString,function(err, modelFactory){})
-### scxml.documentToModelFactory(scxmlDocument,function(err, modelFactory){})
+### scxml.urlToModel(url,function(err, model){})
+### scxml.pathToModel(path,function(err, model){})
+### scxml.documentStringToModel(scxmlDocString,function(err, model){})
+### scxml.documentToModel(scxmlDocument,function(err, model){})
 
 SCION allows you to instantiate SCXML interpreters from SCXML "model" objects, which are SCXML documents that have been processed for easier interpretation. 
 These methods allow you to create an SCXML model from an XML DOM document, document string, or url/path to document.

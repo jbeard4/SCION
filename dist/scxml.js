@@ -640,12 +640,31 @@ require.register("jbeard4-scion-ng/lib/scion.js", function(exports, require, mod
             }
         }
     }
+
+    function initializeModelGeneratorFn(modelFn, opts, interpreter){
+
+         opts.x =  opts.x || {};
+
+        var args = ['x','sessionid','name','ioprocessors'].
+                            map(function(name){ return opts.x['_' + name] = opts[name]; }).
+                                concat(interpreter.isIn.bind(interpreter));
+
+        //the "model" might be a function, so we lazy-init him here to get the root state
+        return modelFn.apply(interpreter,args);
+    }
  
     /** @const */
     var printTrace = false;
 
     /** @constructor */
-    function BaseInterpreter(model, opts){
+    function BaseInterpreter(modelOrFnGenerator, opts){
+
+        this._scriptingContext = opts.interpreterScriptingContext || (opts.InterpreterScriptingContext ? new opts.InterpreterScriptingContext(this) : {}); 
+
+        var model = typeof modelOrFnGenerator === 'function' ? 
+                        initializeModelGeneratorFn(modelOrFnGenerator, opts, this) :
+                        modelOrFnGenerator; 
+
         this._model = initializeModel(model);
 
         //console.log(require('util').inspect(this._model,false,4));
@@ -657,7 +676,7 @@ require.register("jbeard4-scion-ng/lib/scion.js", function(exports, require, mod
         this.opts.priorityComparisonFn = this.opts.priorityComparisonFn || getTransitionWithHigherSourceChildPriority;
         this.opts.transitionSelector = this.opts.transitionSelector || scxmlPrefixTransitionSelector;
 
-        this._sessionid = this.opts.sessionid || "";
+        this._scriptingContext.log = this._scriptingContext.log || this.opts.console.log;   //set up default scripting context log function
 
         this._configuration = new this.opts.Set();
         this._historyValue = {};
@@ -672,10 +691,6 @@ require.register("jbeard4-scion-ng/lib/scion.js", function(exports, require, mod
         };
 
         this._listeners = [];
-
-        if(!opts.InterpreterScriptingContext) opts.log('Warning : interpreter scripting context not set');
-
-        this._scriptingContext = opts.InterpreterScriptingContext ? new opts.InterpreterScriptingContext(this) : {}; 
     }
 
     BaseInterpreter.prototype = {
@@ -854,8 +869,7 @@ require.register("jbeard4-scion-ng/lib/scion.js", function(exports, require, mod
 
         /** @private */
         _evaluateAction : function(currentEvent, actionRef) {
-            return actionRef.call(this._scriptingContext, currentEvent, this.isIn.bind(this),
-                            this._x._sessionId, this._x._name, this._x._ioprocessors, this._x);     //SCXML system variables
+            return actionRef.call(this._scriptingContext, currentEvent);     //SCXML system variables
         },
 
         /** @private */
@@ -1116,6 +1130,24 @@ require.register("jbeard4-scion-ng/lib/scion.js", function(exports, require, mod
         /** @expose */
         unregisterListener : function(listener){
             return this._listeners.splice(this._listeners.indexOf(listener),1);
+        },
+
+        /** @expose */
+        getAllTransitionEvents : function(){
+            var events = {};
+            function getEvents(state){
+
+                if(state.transitions){
+                    state.transitions.forEach(function(transition){
+                        events[transition.event] = true;
+                    });
+                }
+
+                if(state.states) state.states.forEach(getEvents);
+            }
+            getEvents(this._model);
+
+            return Object.keys(events);
         }
 
     };
@@ -3589,7 +3621,7 @@ require.register("scxml/lib/runtime/platform-bootstrap/platform.js", function(ex
 module.exports = {};    //this will get setup (monkey-patched) by the platform bootstrap script
 
 });
-require.register("scxml/lib/runtime/document-string-to-model-factory.js", function(exports, require, module){
+require.register("scxml/lib/runtime/document-string-to-model.js", function(exports, require, module){
 /*
      Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
 
@@ -3681,21 +3713,21 @@ require.register("scxml/lib/runtime/facade.js", function(exports, require, modul
 "use strict";
 
 var pm = require('./platform-bootstrap/platform'),
-    documentStringToModelFactory = require('./document-string-to-model-factory');
+    documentStringToModel = require('./document-string-to-model');
 
 /*
   *@url URL of the SCXML document to retrieve and convert to a model
   *@cb callback to invoke with an error or the model
   *@context Optional. host-specific data passed along to the platform-specific resource-fetching API (e.g. to provide better traceability)
   */
-function urlToModelFactory(url,cb,context){
+function urlToModel(url,cb,context){
     if(!pm.platform.http.get) throw new Error("Platform does not support http.get");
 
     pm.platform.http.get(url,function(err,doc){
         if(err){
             cb(err,null);
         }else{
-            documentStringToModelFactory(url,doc,cb,context);
+            documentStringToModel(url,doc,cb,context);
         }
     },context);
 }
@@ -3705,7 +3737,7 @@ function urlToModelFactory(url,cb,context){
   *@cb callback to invoke with an error or the model
   *@context Optional. host-specific data passed along to the platform-specific resource-fetching API (e.g. to provide better traceability)
   */
-function pathToModelFactory(url,cb,context){
+function pathToModel(url,cb,context){
     if(!pm.platform.fs.get) throw new Error("Platform does not support fs.get");
 
     context = context || {};
@@ -3715,7 +3747,7 @@ function pathToModelFactory(url,cb,context){
         if(err){
             cb(err,null);
         }else{
-            documentStringToModelFactory(url,doc,cb,context);
+            documentStringToModel(url,doc,cb,context);
         }
     },context);
 }
@@ -3725,18 +3757,18 @@ function pathToModelFactory(url,cb,context){
   *@cb callback to invoke with an error or the model
   *@context Optional. host-specific data passed along to the platform-specific resource-fetching API (e.g. to provide better traceability)
   */
-function documentToModelFactory(doc,cb,context){
+function documentToModel(doc,cb,context){
     var s = pm.platform.dom.serializeToString(doc);
-    documentStringToModelFactory(null,s,cb,context);
+    documentStringToModel(null,s,cb,context);
 }
 
 
 //export standard interface
 module.exports = {
-    pathToModelFactory : pathToModelFactory,
-    urlToModelFactory : urlToModelFactory,
-    documentStringToModelFactory : documentStringToModelFactory.bind(this,null),
-    documentToModelFactory : documentToModelFactory,
+    pathToModel : pathToModel,
+    urlToModel : urlToModel,
+    documentStringToModel : documentStringToModel.bind(this,null),
+    documentToModel : documentToModel,
     ext : {
         platformModule : pm
     }
