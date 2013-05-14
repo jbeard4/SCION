@@ -42,7 +42,7 @@
     "engines" : { "node" : ">=0.6" },
     "main": "./lib/runtime/platform-bootstrap/node/index.js",
     "scripts" : {
-        "test" : "cd test && bash run-tests-node.sh"
+        "test" : "cd test && bash run-tests-node.sh && cd .. && ./node_modules/.bin/karma start test/platform-tests/browser/scxml.conf.js --single-run"
     }
 }
 
