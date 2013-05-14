@@ -1,7 +1,6 @@
 var scxml = require('../../../');
 
-function testModel(modelFactory, test){
-    var model = modelFactory();
+function testModel(model, test){
     var sc = new scxml.scion.Statechart(model);
     var initialConfig = sc.start();
 
@@ -17,16 +16,16 @@ function testModel(modelFactory, test){
 }
 
 exports.testPathToModel = function(test){
-    scxml.pathToModelFactory(__dirname + '/require/test.scxml',function(err,modelFactory){
+    scxml.pathToModel(__dirname + '/require/test.scxml',function(err,model){
         if(err) throw err;
-        testModel(modelFactory,test);
+        testModel(model,test);
     });
 };
 
 exports.testRequireExtension = function(test){
-    var modelFactory = require('./require/test');
-    console.log('modelFactory',modelFactory.toString());
-    testModel(modelFactory,test);
+    var model = require('./require/test');
+    console.log('model',model.toString());
+    testModel(model,test);
 };
 
 //exports.testRequireExtension(require('assert'));

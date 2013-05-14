@@ -116,10 +116,10 @@
     module(testGroup);
     asyncTest(testName,function(){
         $.getJSON(test.test,function(testScript){
-            scxml.urlToModelFactory(test.scxml,function(err,modelFactory){
+            scxml.urlToModel(test.scxml,function(err,model){
                 if(err) throw err;
 
-                var model = modelFactory();
+                console.log('model',model.toString());
                 var sc = new scxml.scion.Statechart(model);
                 var actualInitialConf = sc.start();
 
