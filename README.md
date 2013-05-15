@@ -107,7 +107,7 @@ var statechartModel = {
 };
 
 //instantiate the interpreter
-var interpreter = new SCION.Statechart(statechartModel);
+var interpreter = new scion.Statechart(statechartModel);
 
 //start the interpreter
 interpreter.start();
