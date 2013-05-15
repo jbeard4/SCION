@@ -12,7 +12,7 @@ SCION powers [SCXML.js](https://github.com/jbeard4/scxml.js), an implementation 
 
 # Quickstart and Simple Use Case
 
-Let's start with the simple example of drag-and-drop behaviour in the browser. You can run this demo live on jsfiddle [here](http://jsfiddle.net/jbeard4/MDkLe/).
+Let's start with the simple example of drag-and-drop behaviour in the browser. You can run this demo live on jsfiddle [here](http://jsfiddle.net/jbeard4/MDkLe/1/).
 
 An entity that can be dragged has two states: idle and dragging. If the entity is in an idle state, and it receives a mousedown event, then it starts dragging. While dragging, if it receives a mousemove event, then it changes its position. Also while dragging, when it receives a mouseup event, it returns to the idle state.
 
@@ -73,7 +73,7 @@ var statechartModel = {
                     event : 'mousedown',
                     target : 'dragging',
                     onTransition : function(event){
-                        eventStamp = firstEvent = event;
+                        eventStamp = firstEvent = event.data;
                     }
                 }
             ]
@@ -86,25 +86,42 @@ var statechartModel = {
             transitions : [
                 {
                     event : 'mouseup',
-                    target : 'idle',
+                    target : 'idle'
+                },
+                {
+                    event : 'mousemove',
+                    target : 'dragging',
                     onTransition : function(event){
                         var dx = eventStamp.clientX - event.data.clientX;
                         var dy = eventStamp.clientY - event.data.clientY;
 
-                        rectNode.style.left = rectX -= dx;
-                        rectNode.style.top = rectY -= dy;
-
+                        rectNode.style.left = (rectX -= dx) + 'px';
+                        rectNode.style.top = (rectY -= dy) + 'px';
+                        
                         eventStamp = event.data;
                     }
-                },
-                {
-                    event : 'mousemove',
-                    target : 'dragging'
                 }
             ]
         }
     ]
 };
+
+//instantiate the interpreter
+var interpreter = new SCION.Statechart(statechartModel);
+
+//start the interpreter
+interpreter.start();
+
+function handleEvent(e){
+    e.preventDefault();
+    interpreter.gen({name : e.type,data: e});
+}
+
+//connect all relevant event listeners
+rectNode.addEventListener('mousedown',handleEvent,true);
+document.documentElement.addEventListener('mouseup',handleEvent,true);
+document.documentElement.addEventListener('mousemove',handleEvent,true);
+
 ```
 
 You can then perform the following steps to script web content:
@@ -142,7 +159,7 @@ You can then perform the following steps to script web content:
                                 event : 'mousedown',
                                 target : 'dragging',
                                 onTransition : function(event){
-                                    eventStamp = firstEvent = event;
+                                    eventStamp = firstEvent = event.data;
                                 }
                             }
                         ]
@@ -155,20 +172,20 @@ You can then perform the following steps to script web content:
                         transitions : [
                             {
                                 event : 'mouseup',
-                                target : 'idle',
+                                target : 'idle'
+                            },
+                            {
+                                event : 'mousemove',
+                                target : 'dragging',
                                 onTransition : function(event){
                                     var dx = eventStamp.clientX - event.data.clientX;
                                     var dy = eventStamp.clientY - event.data.clientY;
 
-                                    rectNode.style.left = rectX -= dx;
-                                    rectNode.style.top = rectY -= dy;
-
+                                    rectNode.style.left = (rectX -= dx) + 'px';
+                                    rectNode.style.top = (rectY -= dy) + 'px';
+                                    
                                     eventStamp = event.data;
                                 }
-                            },
-                            {
-                                event : 'mousemove',
-                                target : 'dragging'
                             }
                         ]
                     }
@@ -190,6 +207,7 @@ You can then perform the following steps to script web content:
             rectNode.addEventListener('mousedown',handleEvent,true);
             document.documentElement.addEventListener('mouseup',handleEvent,true);
             document.documentElement.addEventListener('mousemove',handleEvent,true);
+
 
         </script>
     </body>
