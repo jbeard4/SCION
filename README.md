@@ -2,7 +2,7 @@ This is the transitional repository for the next generation of the SCION JavaScr
 
 # Overview
 
-Statecharts is a powerful modelling language for developing **complex, timed, event-driven, state-based systems**. For an overview of Statecharts see [STATECHARTS: A VISUAL FORMALISM FOR COMPLEX SYSTEMS](http://websrv0a.sdu.dk/ups/ESD/materials/harel-Statecharts.pdf) and [The Rhapsody Semantics of Statecharts](http://research.microsoft.com/pubs/148761/Charts04.pdf).
+Statecharts is a powerful modelling language for developing **complex, timed, event-driven, state-based systems**. For an overview of Statecharts see [Statecharts: A Visual Formalism For Complex Systems](http://websrv0a.sdu.dk/ups/ESD/materials/harel-Statecharts.pdf) and [The Rhapsody Semantics of Statecharts](http://research.microsoft.com/pubs/148761/Charts04.pdf).
 
 SCION is a small (2.9kb, minified and gzipped), embeddable implementation of Statecharts in ECMAScript (JavaScript). SCION lets you program with Statecharts using a simple JavaScript/JSON API. It can be used in the browser to manage complex user interface behaviour, or on the server under Node.js or Rhino to manage page navigation and asynchronous control flow. It can even be used in custom JavaScript environments, such as the Mozilla Spidermonkey shell. 
 
