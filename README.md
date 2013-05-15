@@ -10,10 +10,9 @@ SCION is written so as to abstract out platform dependencies, and is implemented
 
 SCION powers [SCXML.js](https://github.com/jbeard4/scxml.js), an implementation of [SCXML](http://www.w3.org/TR/scxml) in JavaScript, and as such, it supports all of the features of the SCXML core module, including compound states ( **OR** states), parallel states ( **AND** states), and history states. 
 
-<!--
 # Quickstart and Simple Use Case
 
-Let's start with the simple example of drag-and-drop behaviour in the browser. You can run this demo live [here](http://jbeard4.github.com/SCION/demos/drag-and-drop/drag-and-drop.html), or on jsfiddle [here](http://jsfiddle.net/jbeard4/mjm72/).
+Let's start with the simple example of drag-and-drop behaviour in the browser. You can run this demo live on jsfiddle [here](http://jsfiddle.net/jbeard4/MDkLe/).
 
 An entity that can be dragged has two states: idle and dragging. If the entity is in an idle state, and it receives a mousedown event, then it starts dragging. While dragging, if it receives a mousemove event, then it changes its position. Also while dragging, when it receives a mouseup event, it returns to the idle state.
 
@@ -25,35 +24,37 @@ This state machine could be written in SCION's JSON syntax as follows:
 
 ```javascript
 {
-    {
-        id : 'idle',
-        transitions : [
-            {
-                event : 'mousedown',
-                target : 'dragging'
-            }
-        ]
-    },
-    {
-        id : 'dragging',
-        transitions : [
-            {
-                event : 'mouseup',
-                target : 'idle'
-            },
-            {
-                event : 'mousemove',
-                target : 'dragging'
-            }
-        ]
-    }
+    "states" : [
+        {
+            "id" : "idle",
+            "transitions" : [
+                {
+                    "event" : "mousedown",
+                    "target" : "dragging",
+                }
+            ]
+        },
+        {
+            "id" : "dragging",
+            "transitions" : [
+                {
+                    "event" : "mouseup",
+                    "target" : "idle",
+                },
+                {
+                    "event" : "mousemove",
+                    "target" : "dragging"
+                }
+            ]
+        }
+    ]
 }
 ```
 
 One can add action code in order to script an HTML DOM element, so as to change its position on mousemove events:
 
 ```javascript
-
+//declare the your statechart model, same as before
 var firstEvent,
     eventStamp,
     rectNode = document.getElementById('rect'),
@@ -61,46 +62,48 @@ var firstEvent,
     rectY = 0;
 
 var statechartModel = {
-    {
-        id : 'idle',
-        onEntry : function(){
-            rectNode.textContent='idle';
-        }
-        transitions : [
-            {
-                event : 'mousedown',
-                target : 'dragging',
-                onTransition : function(event){
-                    eventStamp = firstEvent = event;
-                }
-            }
-        ]
-    },
-    {
-        id : 'dragging',
-        onEntry : function(){
-            rectNode.textContent='dragging';
-        },
-        transitions : [
-            {
-                event : 'mouseup',
-                target : 'idle'
-                onTransition : function(event){
-                    var dx = eventStamp.clientX - _event.data.clientX;
-                    var dy = eventStamp.clientY - _event.data.clientY;
-
-                    rectNode.style.left = rectX -= dx;
-                    rectNode.style.top = rectY -= dy;
-
-                    eventStamp = event.data;
-                }
+    states : [
+        {
+            id : 'idle',
+            onEntry : function(){
+                rectNode.textContent='idle';
             },
-            {
-                event : 'mousemove',
-                target : 'dragging'
-            }
-        ]
-    }
+            transitions : [
+                {
+                    event : 'mousedown',
+                    target : 'dragging',
+                    onTransition : function(event){
+                        eventStamp = firstEvent = event;
+                    }
+                }
+            ]
+        },
+        {
+            id : 'dragging',
+            onEntry : function(){
+                rectNode.textContent='dragging';
+            },
+            transitions : [
+                {
+                    event : 'mouseup',
+                    target : 'idle',
+                    onTransition : function(event){
+                        var dx = eventStamp.clientX - event.data.clientX;
+                        var dy = eventStamp.clientY - event.data.clientY;
+
+                        rectNode.style.left = rectX -= dx;
+                        rectNode.style.top = rectY -= dy;
+
+                        eventStamp = event.data;
+                    }
+                },
+                {
+                    event : 'mousemove',
+                    target : 'dragging'
+                }
+            ]
+        }
+    ]
 };
 ```
 
@@ -128,46 +131,48 @@ You can then perform the following steps to script web content:
                 rectY = 0;
 
             var statechartModel = {
-                {
-                    id : 'idle',
-                    onEntry : function(){
-                        rectNode.textContent='idle';
-                    }
-                    transitions : [
-                        {
-                            event : 'mousedown',
-                            target : 'dragging',
-                            onTransition : function(event){
-                                eventStamp = firstEvent = event;
-                            }
-                        }
-                    ]
-                },
-                {
-                    id : 'dragging',
-                    onEntry : function(){
-                        rectNode.textContent='dragging';
-                    },
-                    transitions : [
-                        {
-                            event : 'mouseup',
-                            target : 'idle'
-                            onTransition : function(event){
-                                var dx = eventStamp.clientX - _event.data.clientX;
-                                var dy = eventStamp.clientY - _event.data.clientY;
-
-                                rectNode.style.left = rectX -= dx;
-                                rectNode.style.top = rectY -= dy;
-
-                                eventStamp = event.data;
-                            }
+                states : [
+                    {
+                        id : 'idle',
+                        onEntry : function(){
+                            rectNode.textContent='idle';
                         },
-                        {
-                            event : 'mousemove',
-                            target : 'dragging'
-                        }
-                    ]
-                }
+                        transitions : [
+                            {
+                                event : 'mousedown',
+                                target : 'dragging',
+                                onTransition : function(event){
+                                    eventStamp = firstEvent = event;
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        id : 'dragging',
+                        onEntry : function(){
+                            rectNode.textContent='dragging';
+                        },
+                        transitions : [
+                            {
+                                event : 'mouseup',
+                                target : 'idle',
+                                onTransition : function(event){
+                                    var dx = eventStamp.clientX - event.data.clientX;
+                                    var dy = eventStamp.clientY - event.data.clientY;
+
+                                    rectNode.style.left = rectX -= dx;
+                                    rectNode.style.top = rectY -= dy;
+
+                                    eventStamp = event.data;
+                                }
+                            },
+                            {
+                                event : 'mousemove',
+                                target : 'dragging'
+                            }
+                        ]
+                    }
+                ]
             };
 
             //instantiate the interpreter
@@ -182,17 +187,21 @@ You can then perform the following steps to script web content:
             }
 
             //connect all relevant event listeners
-            rect.addEventListener('mousedown',handleEvent,true);
-            document.documentElement).addEventListener('mouseup',handleEvent,true);
-            document.documentElement).addEventListener('mousemove',handleEvent,true);
+            rectNode.addEventListener('mousedown',handleEvent,true);
+            document.documentElement.addEventListener('mouseup',handleEvent,true);
+            document.documentElement.addEventListener('mousemove',handleEvent,true);
+
         </script>
     </body>
 </html>
 ```
 
+<!--
+
 # API
 
 ## Statecharts Model Schema
+
 
 SCION is designed to allow you to specify the Statecharts model declaratively as a single JavaScript object literal, or as JSON.
 
