@@ -341,7 +341,7 @@ A transition can also be associated with a **condition**, which is an arbitrary 
 
 For example, the above model will only transition from 'bar' to 'bat', when `event.data` contains an odd number.
 
-## Entry, exit, and Transition Actions
+## Entry, Exit, and Transition Actions
 
 States can be associated with **entry** and **exit** actions. These are JavaScript functions which are executed when the state is entered or exited.
 
