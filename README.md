@@ -1,4 +1,4 @@
-This is the transitional repository for the next generation of the SCION JavaScript library. This documentation is in flux, and is incomplete.
+This is the transitional repository for the next generation of the SCION JavaScript library.
 
 # Overview
 
@@ -211,13 +211,13 @@ SCION is then available as the global variable `scion`.
 
 <!-- TODO: test with RequireJS and add documentation for this -->
 
-## Usage in Node.js
+## Node.js
 
 Install SCION via npm:
 
     npm install scion-ng
 
-## Usage in Rhino
+## Rhino
 
 Get it with git:
 
@@ -230,15 +230,13 @@ Rhino 1.7R3 supports CommonJS modules, so SCION can be used as follows:
 rhino -modules path/to/SCION-ng/lib -main path/to/your/script.js
 ```
 
-# API
-
-## Statecharts Model Schema
+# Statecharts Model Schema
 
 SCION is designed to allow you to specify the Statecharts model declaratively as a single JavaScript object literal, or as JSON. This section is intended to describe the schema of the Statecharts object model accepted by SCION. 
 
 This section will also touch briefly on semantics, but is not meant to serve as a comprehensive reference.  Unlike SCXML.js, a formal semantics has not been defined for SCION. However it is very close to [Rhapsody Semantics](http://research.microsoft.com/pubs/148761/Charts04.pdf).
 
-### States
+## States
 
 A SCION model is made up of states. States can have id's, which are optional. Here is a SCION model which is a single state:
 
@@ -250,7 +248,7 @@ A SCION model is made up of states. States can have id's, which are optional. He
 
 States can contain other states hierarchically:
 
-```
+```javascript
 {
     id : 'foo'
     states : [
@@ -270,7 +268,7 @@ By default, when entering a parent state, the first state in the parent's state 
 
 There are other types of states, however, including "parallel" states, which defines an "AND" relationship between substates.
 
-```
+```javascript
 {
     id : 'foo'
     type : 'parallel'
@@ -287,12 +285,12 @@ There are other types of states, however, including "parallel" states, which def
 
 In this example, if the state machine is in state 'foo', then the state machine will also be in state 'bar' and state 'bat' simultaneously. So when the state machine is started with the above model, its configuration will be `['foo','bar','bat']`.
 
-### Transitions
+## Transitions
 
 States are associated with **transitions**, which target other states. Transitions are optionally associated with an **event name**. A SCION event is an object with "name" and "data" properties. When an event is sent to the state machine, the interpreter will inspect the current configuration, and select the set of transitions that matches event name.
 
 
-```
+```javascript
 {
     id : 'foo'
     states : [
@@ -318,7 +316,7 @@ If the transition does not have an event property, then it is known as a "defaul
 
 A transition can also be associated with a **condition**, which is an arbitrary JavaScript function that accepts an event as input, and returns a boolean value as output. Boolean true means the transition can be selected, while boolean false means the transition will not be selected.
 
-```
+```javascript
 {
     id : 'foo'
     states : [
@@ -343,7 +341,7 @@ A transition can also be associated with a **condition**, which is an arbitrary 
 
 For example, the above model will only transition from 'bar' to 'bat', when `event.data` contains an odd number.
 
-### Entry, exit, and Transition Actions
+## Entry, exit, and Transition Actions
 
 States can be associated with **entry** and **exit** actions. These are JavaScript functions which are executed when the state is entered or exited.
 
@@ -355,7 +353,7 @@ Actions are executed in the following order:
 * Transition actions, based on document order.
 * State entry actions, ordered first by hierarchy (outer states first), and then by the order in which they appear in the document.
 
-```
+```javascript
 var buffer;
 
 var model = {
@@ -400,13 +398,13 @@ For the above model, when the state machine is started, 'foo' would be entered, 
 
 During the call to `sc.gen`, the exit action of state 'bar' would be executed, pushing `2` to the buffer, followed by transition action, pushing `3` to the buffer, followed by the entry action of `bat`, pushing the event data, string `"x"`, to the buffer. After the call to `sc.gen` completes, the buffer would contain [1,2,3,'x'].
 
-### History
+## History
 
 A **history** state is a special pseudo-state that allows the state machine to "remember" what substate it was in last time it was in a particular parent state. There are two types of history states: "deep" and "shallow".
 
 The syntax for specifying history states is as follows:
 
-```
+```javascript
 {
     states : [
         {
@@ -473,12 +471,14 @@ Finally, after the state machine sends event `t3`, the state machine will transi
 
 If property `isDeep` had not been set on the history state, then the state machine would only have remembered the child substates of `foo`, and the state machine would have completed in configuration `['foo','bat','bat1']`.
 
-### Communications
+## Communications
 
 The context object ("`this`") of onEntry, onExit, and onTransition functions contains the following methods:
 
 * `gen(event)`, which adds an event to the Statechart's outer queue
 * `raise(event)`, which adds an event to the Statechart's inner queue 
+
+# API
 
 ## new scion.Statechart(model)
 
