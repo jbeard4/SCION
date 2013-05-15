@@ -105,23 +105,6 @@ var statechartModel = {
         }
     ]
 };
-
-//instantiate the interpreter
-var interpreter = new scion.Statechart(statechartModel);
-
-//start the interpreter
-interpreter.start();
-
-function handleEvent(e){
-    e.preventDefault();
-    interpreter.gen({name : e.type,data: e});
-}
-
-//connect all relevant event listeners
-rectNode.addEventListener('mousedown',handleEvent,true);
-document.documentElement.addEventListener('mouseup',handleEvent,true);
-document.documentElement.addEventListener('mousemove',handleEvent,true);
-
 ```
 
 You can then perform the following steps to script web content:
