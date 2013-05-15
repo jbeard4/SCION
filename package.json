@@ -89,7 +89,6 @@
             "firefox/18.0",
             "firefox/19.0",
             "opera/10.0",
-            "opera/10.5",
             "opera/11.0",
             "opera/11.5",
             "opera/11.6",
@@ -102,8 +101,7 @@
             "chrome/canary",
             "iphone/6.0",
             "ipad/6.0",
-            "safari/6.0",
-            "android-browser/4.2"
+            "safari/6.0"
         ]
     }
 }
