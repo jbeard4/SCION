@@ -45,6 +45,6 @@ initialConfig = sc.start()
 
 print initialConfig 
 
-nextConfig = sc.gen('t');
+nextConfig = sc.gen('t')
 
 print nextConfig
