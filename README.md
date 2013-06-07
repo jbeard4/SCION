@@ -72,7 +72,7 @@ var model = require('./path/to/foo.scxml');
 //etc...
 ```
 
-Note that this will only work if the SCXML <script> tags contain local filesystem paths, and not references to 'http:' URIs. The reason for this is that node's `require()` is a synchronous API, but requesting resources across a network must be done asynchronously. 
+Note that this will only work if the SCXML `<script>` tags contain local filesystem paths, and not references to 'http:' URIs. The reason for this is that node's `require()` is a synchronous API, but requesting resources across a network must be done asynchronously. 
 
 ## Instantiation
 
