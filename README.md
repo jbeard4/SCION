@@ -321,7 +321,7 @@ SCION takes many ideas from the SCXML standard. In particular, it reuses the syn
 * [SCION Demos](https://github.com/jbeard4/scion-demos)
 * [Table describing which SCXML tags are supported](https://github.com/jbeard4/SCION/wiki/SCION-Implementation-Status)
 * [Project Background](https://github.com/jbeard4/SCION/wiki/Project-Background)
-* [Jacob Beard's Master thesis](http://digitool.library.mcgill.ca/R/C1IKME93Y41MNJ6F3GP5JXTYJBT3YA6ID2B9DTJTN6RG5QUJ8P-00958?func=results-jump-full&set_entry=000003&set_number=000851&base=GEN01)
+* [Jacob Beard's Master thesis](http://digitool.library.mcgill.ca/R/Q5UK1QE8RHLBVR46SCL28IJMFDMCLJ75SD9LRM23EH1BCNBUFT-02740?func=results-jump-full&set_entry=000019&set_number=001373&base=GEN01)
 
 <a name="relatedwork"></a>
 
