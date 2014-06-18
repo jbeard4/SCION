@@ -1,6 +1,7 @@
 {
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
+    "type": "scxml",
     "states": [
         {
             "id": "b",
