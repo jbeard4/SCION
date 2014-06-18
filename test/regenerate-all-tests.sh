@@ -16,7 +16,7 @@ for f in *; do
 
                 echo compiling $from to $target...
 
-                node ~/workspace/scion/scion-scxml/scxml-to-scjson.js $from > $target 
+                node ~/workspace/scion/scxml.js/lib/compiler/scxml-to-scjson.js $from > $target 
             fi;
         done;
 
@@ -27,7 +27,7 @@ for f in *; do
 
                 echo compiling $from to $target...
 
-                node ~/workspace/scion/scion-scxml/scxml-to-scjson.js $from | node ~/workspace/scion/scion-scxml/scjson-to-module.js > $target 
+                node ~/workspace/scion/scxml.js/lib/compiler/scxml-to-scjson.js $from | node ~/workspace/scion/scxml.js/lib/compiler/scjson-to-module.js --type commonjs - > $target 
             fi;
         done;
 
