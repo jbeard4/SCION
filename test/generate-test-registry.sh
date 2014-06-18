@@ -1,4 +1,4 @@
-testJsonFiles=`find -name "*.test.json"`
+testJsonFiles=`find . -name "*.test.json"`
 numFiles=`echo $testJsonFiles | wc -w`
 
 echo "module.exports = [" > tests.js
