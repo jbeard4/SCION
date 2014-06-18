@@ -1,12 +1,12 @@
 require('es5-shim');        //load this first!
 var scion = require('../lib/scion');
-var addTest = require('tape');
 var path = require('path');
 var async = require('async');
-var minimist = require('minimist');
+
+var testSerialization = process.env.TEST_SERIALIZATION;
 
 //path to test cases is passed in via argv
-var statechartModulePaths = process.argv.slice(2);      //assume these are of the form *.test.json
+var statechartModulePaths = require('./tests.json');      //assume these are of the form *.test.json
 
 //console.log('statechartModulePaths',statechartModulePaths); 
 
@@ -29,9 +29,11 @@ var tests = statechartModulePaths.length ?
         }) : require('./tests.js');
 
 tests.forEach(function(test){
-    addTest(test.name,function(t){
+    console.log(test);
+    exports[test.name] = function(t){
+        //console.log('Running test',test.name);
 
-        t.plan(test.test.events.length + 1);
+        //t.plan(test.test.events.length + 1);
 
         var sc = new scion.Statechart(test.sc);
 
@@ -41,9 +43,17 @@ tests.forEach(function(test){
 
         t.deepEqual(actualInitialConf.sort(),test.test.initialConfiguration.sort(),'initial configuration');
 
+        var mostRecentSnapshot;
+
         async.eachSeries(test.test.events,function(nextEvent,cb){
 
             function ns(){
+
+                if(testSerialization && mostRecentSnapshot){
+                  //load up state machine state
+                  sc = new scion.Statechart(test.sc,{snapshot : JSON.parse(mostRecentSnapshot)});
+                }
+
                 console.log('sending event',nextEvent.event);
 
                 var actualNextConf = sc.gen(nextEvent.event);
@@ -51,6 +61,13 @@ tests.forEach(function(test){
                 console.log('next configuration',actualNextConf);
 
                 t.deepEqual(actualNextConf.sort(),nextEvent.nextConfiguration.sort(),'next configuration after sending event ' + nextEvent.event.name);
+                //dump state machine state
+
+                if(testSerialization){
+                  mostRecentSnapshot = JSON.stringify(sc.getSnapshot());
+                  //console.log('mostRecentSnapshot',mostRecentSnapshot);
+                  sc = null;  //clear the statechart in memory, just because
+                }
 
                 cb();
             }
@@ -63,6 +80,7 @@ tests.forEach(function(test){
             }
         },function(){
             //we could explicitly end here by calling t.end(), but we don't need to - t.plan() should take care of it automatically
+            t.done();
         });
-    });
+    };
 });
