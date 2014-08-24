@@ -122,11 +122,22 @@ module.exports = {
             if(node.nodeType === 1){
                 //element node
                 if(node.textContent !== undefined){
-                    return node.textContent = txt;
+                    if (typeof txt == "object") {
+                        //We've read in some JSON
+                        convertObjectToDataElements(txt, node);
+                        node.removeAttribute("src");
+                        console.log("Modified data node:");
+                        console.log(node);
+                        return txt;
+                    }
+                    else {
+                        return node.textContent = txt;
+                    }
+
                 }else{
                     //IE
                     var textNode = node.ownerDocument.createTextNode(txt);
-                    node.appendChild(textNode); 
+                    node.appendChild(textNode);
                     return txt;
                 }
             }else if(node.nodeType === 3){
@@ -134,7 +145,26 @@ module.exports = {
                 return node.data = txt;
             }
         }
+
+        function convertObjectToDataElements(obj, node) {
+            var dataNode;
+
+            for (var key in obj) {
+                dataNode = node.ownerDocument.createElement("data");
+                dataNode.setAttribute("id", key);
+
+                if (typeof obj[key] === "object" && !(obj[key] instanceof Array)) {
+                    convertObjectToDataElements(obj[key], dataNode);
+                }
+                else {
+                    dataNode.setAttribute("expr", obj[key]);
+                }
+
+                node.appendChild(dataNode);
+            }
+        }
     },
+
 
     getElementChildren : function(node){
         return this.getChildren(node).filter(function(c){return c.nodeType === 1;});
@@ -1543,7 +1573,7 @@ var transform = exports.transform = function(scxmlDoc) {
 
         transition.lcca = getLCCA(source, targets[0]);
     });
-    
+
     transitions.forEach(function(transition){
         transition.scope = getScope(transition);
     });
@@ -1632,48 +1662,45 @@ function transformTransitionNode (transitionNode, parentState) {
     return transition;
 }
 
-function transformDatamodel(node, ancestors) {
-    pm.platform.dom.getChildren(node).filter(function(child){return pm.platform.dom.localName(child) === 'data';}).forEach(function(child){
-        if (pm.platform.dom.hasAttribute(child,"id")) {
+function transformDatamodel(datamodelNode, ancestors) {
+    console.log("datamodel:");
+    console.log(datamodel);
 
-            var datamodelObject;
+    var children = pm.platform.dom.getChildren(datamodelNode).filter(function(child){return pm.platform.dom.localName(child) === 'data';});
+    children.forEach(function(child) {transformData(child, "")});
 
-            var id = pm.platform.dom.getAttribute(child,"id");
+    console.log(datamodel);
+    function transformData(dataNode, prefix){
 
-            if(pm.platform.dom.hasAttribute(child,"expr")){ 
-                datamodelObject = {
-                    content : pm.platform.dom.getAttribute(child,"expr"),
+        if (pm.platform.dom.hasAttribute(dataNode,"id")) {
+
+            var dataObject;
+
+            var id = pm.platform.dom.getAttribute(dataNode,"id");
+
+            if(pm.platform.dom.hasAttribute(dataNode,"expr")){
+                dataObject = {
+                    content : pm.platform.dom.getAttribute(dataNode,"expr"),
                     type : 'expr'
                 };
+
+                if (prefix) {
+                    datamodel[prefix + "." + id] = dataObject;
+                }
+                else {
+                    datamodel[id] = dataObject;
+                }
             }else{
-                var hasType = pm.platform.dom.hasAttribute(child,'type');
+                var dataChildren = pm.platform.dom.getChildren(dataNode).filter(function(child){return pm.platform.dom.localName(child) === 'data';});
 
-
-                //fetch the first text node to get the text content
-                if(hasType){
-                    var type = pm.platform.dom.getAttribute(child,'type');
-
-                    var textContent = type === 'xml' ? 
-                                        pm.platform.dom.serializeToString(child) : 
-                                        pm.platform.dom.textContent(child);
-
-                    datamodelObject = {
-                        content : textContent,
-                        type : type 
-                    };
-                }else{
-                    textContent = pm.platform.dom.textContent(child);
-                    datamodelObject = textContent.length ? 
-                                        {
-                                            content : textContent,
-                                            type : 'text' 
-                                        } : null;
+                if (prefix) {
+                    dataChildren.forEach(function(child) {transformData(child, prefix + "." + id)});
+                } else {
+                    dataChildren.forEach(function(child) {transformData(child, id)});
                 }
             }
-
-            datamodel[id] = datamodelObject;
         }
-    });
+    }
 }
 
 function transformStateNode(node, ancestors) {
@@ -2252,7 +2279,9 @@ function documentToModel(url,doc,cb,context){
 function docToModel(url,doc,cb){
     try {
         var annotatedScxmlJson = annotator.transform(doc);
+        //console.log(annotatedScxmlJson);
         var model = json2model(annotatedScxmlJson,url);
+        //console.log(model);
         cb(null,model);
     }catch(e){
         cb(e);
