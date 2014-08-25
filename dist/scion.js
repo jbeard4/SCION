@@ -126,8 +126,6 @@ module.exports = {
                         //We've read in some JSON
                         convertObjectToDataElements(txt, node);
                         node.removeAttribute("src");
-                        console.log("Modified data node:");
-                        console.log(node);
                         return txt;
                     }
                     else {
@@ -1663,13 +1661,9 @@ function transformTransitionNode (transitionNode, parentState) {
 }
 
 function transformDatamodel(datamodelNode, ancestors) {
-    console.log("datamodel:");
-    console.log(datamodel);
-
     var children = pm.platform.dom.getChildren(datamodelNode).filter(function(child){return pm.platform.dom.localName(child) === 'data';});
     children.forEach(function(child) {transformData(child, "")});
 
-    console.log(datamodel);
     function transformData(dataNode, prefix){
 
         if (pm.platform.dom.hasAttribute(dataNode,"id")) {
@@ -2279,7 +2273,6 @@ function documentToModel(url,doc,cb,context){
 function docToModel(url,doc,cb){
     try {
         var annotatedScxmlJson = annotator.transform(doc);
-        //console.log(annotatedScxmlJson);
         var model = json2model(annotatedScxmlJson,url);
         //console.log(model);
         cb(null,model);
