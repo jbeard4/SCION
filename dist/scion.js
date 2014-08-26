@@ -154,6 +154,9 @@ module.exports = {
                 if (typeof obj[key] === "object" && !(obj[key] instanceof Array)) {
                     convertObjectToDataElements(obj[key], dataNode);
                 }
+                else if (obj[key] instanceof Array) {
+                    dataNode.setAttribute("expr", "[" + obj[key] + "]");
+                }
                 else {
                     dataNode.setAttribute("expr", obj[key]);
                 }
@@ -484,7 +487,7 @@ function getTransitionWithHigherSourceChildPriority(model) {
 }
 
 /** @const */
-var printTrace = false;
+var printTrace = true;
 
 /** @constructor */
 function SCXMLInterpreter(model, opts){
@@ -1147,9 +1150,10 @@ var pm = require('../../platform'),
     cg = require('../util/code-gen');
 
 function linkReferencesAndGenerateActionFactory(json){
+    var datamodelContainerName = "dmContainer";
 
     function makeEvaluationFn(action,isExpression){
-        return actionStrings.push(cg.gen.util.wrapFunctionBodyInDeclaration(action,isExpression)) - 1;
+        return actionStrings.push(cg.gen.util.wrapFunctionBodyInDeclaration(cg.gen.util.wrapActionVariables(action, json.datamodel, datamodelContainerName), isExpression)) - 1;
     }
 
     function stateIdToReference(stateId){
@@ -1158,6 +1162,8 @@ function linkReferencesAndGenerateActionFactory(json){
 
     var actionStrings = [];
     var idToStateMap = {};
+
+
     json.states.forEach(function(state){
         idToStateMap[state.id] = state;
     });
@@ -1207,7 +1213,7 @@ function linkReferencesAndGenerateActionFactory(json){
 
     json.root = idToStateMap[json.root];
 
-    var actionFactoryString = cg.gen.util.makeActionFactory(json.scripts,actionStrings,json.datamodel); 
+    var actionFactoryString = cg.gen.util.makeActionFactory(json.scripts,actionStrings,json.datamodel, datamodelContainerName);
 
     return actionFactoryString;
 }
@@ -1672,9 +1678,26 @@ function transformDatamodel(datamodelNode, ancestors) {
 
             var id = pm.platform.dom.getAttribute(dataNode,"id");
 
-            if(pm.platform.dom.hasAttribute(dataNode,"expr")){
+            var dataChildren = pm.platform.dom.getChildren(dataNode).filter(function(child){return pm.platform.dom.localName(child) === 'data';});
+
+            if(pm.platform.dom.hasAttribute(dataNode,"expr") || dataChildren.length == 0){
+                var content;
+
+                if (pm.platform.dom.hasAttribute(dataNode,"expr")) {
+                    //evaluate the expression so it's stored with the correct type, defaulting to string
+                    try {
+                        content = eval(pm.platform.dom.getAttribute(dataNode,"expr"));
+                    }
+                    catch (err) {
+                        content = pm.platform.dom.getAttribute(dataNode,"expr");
+                    }
+                }
+                else {
+                    content = null;
+                }
+
                 dataObject = {
-                    content : pm.platform.dom.getAttribute(dataNode,"expr"),
+                    content : content,
                     type : 'expr'
                 };
 
@@ -1685,8 +1708,6 @@ function transformDatamodel(datamodelNode, ancestors) {
                     datamodel[id] = dataObject;
                 }
             }else{
-                var dataChildren = pm.platform.dom.getChildren(dataNode).filter(function(child){return pm.platform.dom.localName(child) === 'data';});
-
                 if (prefix) {
                     dataChildren.forEach(function(child) {transformData(child, prefix + "." + id)});
                 } else {
@@ -2072,10 +2093,10 @@ function getDelayInMs(delayString){
 }
 
 function getDatamodelExpression(id, datamodelObject){
-    var s = id;
+    var s = '"' + id + '"';
 
     if(datamodelObject){
-        s += ' = ';
+        s += ' : ';
 
         switch(datamodelObject.type){
             case 'xml' :
@@ -2085,7 +2106,15 @@ function getDatamodelExpression(id, datamodelObject){
                 s += 'JSON.parse(' + JSON.stringify(datamodelObject.content) + ')';
                 break;
             case 'expr' :
-                s += datamodelObject.content;
+                if (datamodelObject.content instanceof Array) {
+                    s += '[' + datamodelObject.content.toString() + ']';
+                }
+                else if (typeof datamodelObject.content === 'string') {
+                    s += '"' + datamodelObject.content + '"';
+                }
+                else {
+                    s += datamodelObject.content;
+                }
                 break;
             default :
                 s += JSON.stringify(datamodelObject.content);
@@ -2098,34 +2127,44 @@ function getDatamodelExpression(id, datamodelObject){
 
 //utility functions
 //this creates the string which declares the datamodel in the document scope
-function makeDatamodelDeclaration(datamodel){
+function makeDatamodelDeclaration(datamodel, datamodelContainerName){
     var s = "var ";
     var vars = [];
     for(var id in datamodel){
         var datamodelObject = datamodel[id];
         vars.push(getDatamodelExpression(id,datamodelObject));
     }
-    return vars.length ? (s + vars.join(", ") + ";") : "";
+
+    return vars.length ? (s + datamodelContainerName + " = {" + vars.join(", ") + "};\n") : "";
 }
 
 //this exposes a getter and setter API on the datamodel in the document scope
-function makeDatamodelClosures(datamodel){
+function makeDatamodelClosures(datamodel, datamodelContainerName){
     var vars = [];
     for(var id in datamodel){
         vars.push( '"' + id + '" : {\n' +
-            '"set" : function(v){ return ' + id + ' = v; },\n' +
-            '"get" : function(){ return ' + id + ';}' +
+            '\t"set" : function(v){ return ' + datamodelContainerName + '["' + id + '"] = v; },\n' +
+            '\t"get" : function(){ return ' + datamodelContainerName + '["' + id + '"];}' +
         '\n}');
     }
     return '{\n' + vars.join(',\n') + '\n}';
 }
 
-function wrapFunctionBodyInDeclaration(action,isExpression){
+function wrapFunctionBodyInDeclaration(action, isExpression){
     return "function(getData,setData,_events,$raise){var _event = _events[0];\n" +
-        (isExpression ? "return" : "") + " " + action +
+        (isExpression ? "return" : "") + " " + action + (isExpression ? ";" : "") +
     "\n}";
 }
 
+function wrapActionVariables(action, datamodel, datamodelContainerName) {
+    //TODO: This creates problems with events have the same names as datamodel variables
+    //Could be fixed by doing this transformation only on cond actions
+    for (var prop in datamodel) {
+        action = action.replace(prop, datamodelContainerName + '["' + prop + '"]');
+    }
+
+    return action;
+}
 
 function makeTopLevelFunctionBody(datamodelDeclaration,topLevelScripts,datamodelClosures,actionStrings){
     return  datamodelDeclaration +
@@ -2146,9 +2185,9 @@ function wrapTopLevelFunctionBodyInDeclaration(fnBody){
 //This function ensures that eval() is only called once, when the model is parsed. It will not be called during execution of the statechart.
 //However, each SCXML interpreter instance will have its own copies of the functions declared in the document.
 //This is similar to the way HTML works - each page has its own copies of evaluated scripts.
-function makeActionFactory(topLevelScripts,actionStrings,datamodel){
-    var datamodelDeclaration = makeDatamodelDeclaration(datamodel);
-    var datamodelClosures = makeDatamodelClosures(datamodel);
+function makeActionFactory(topLevelScripts,actionStrings,datamodel, datamodelContainerName){
+    var datamodelDeclaration = makeDatamodelDeclaration(datamodel, datamodelContainerName);
+    var datamodelClosures = makeDatamodelClosures(datamodel, datamodelContainerName);
     //we need to include getDelayInMs function declaration to handle send/@delayexpr, which is evaluated at runtime
     var topLevelFnBody = 
             getDelayInMs.toString() + '\n' +        
@@ -2218,6 +2257,7 @@ module.exports = {
             makeDatamodelDeclaration : makeDatamodelDeclaration,
             makeDatamodelClosures : makeDatamodelClosures,
             wrapFunctionBodyInDeclaration : wrapFunctionBodyInDeclaration,
+            wrapActionVariables: wrapActionVariables,
             makeTopLevelFunctionBody : makeTopLevelFunctionBody,
             wrapTopLevelFunctionBodyInDeclaration : wrapTopLevelFunctionBodyInDeclaration,
             makeActionFactory : makeActionFactory
@@ -2274,7 +2314,6 @@ function docToModel(url,doc,cb){
     try {
         var annotatedScxmlJson = annotator.transform(doc);
         var model = json2model(annotatedScxmlJson,url);
-        //console.log(model);
         cb(null,model);
     }catch(e){
         cb(e);
@@ -2296,8 +2335,6 @@ function fixupUrl(baseUrl, targetUrl) {
 }
 
 function inlineSrcs(docUrl,doc,context,cb){
-    //console.log('inlining scripts');
-
     var nodesWithSrcAttributes = [], errors = [], resultCount = 0;
 
     traverse(doc.documentElement,nodesWithSrcAttributes);
