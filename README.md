@@ -1,3 +1,5 @@
+![Build status](https://travis-ci.org/jbeard4/SCION-CORE.svg?branch=master)
+
 # Overview
 
 Statecharts is a powerful modelling language for developing **complex, timed, event-driven, state-based systems**. For an overview of Statecharts see [Statecharts: A Visual Formalism For Complex Systems](http://websrv0a.sdu.dk/ups/ESD/materials/harel-Statecharts.pdf) and [The Rhapsody Semantics of Statecharts](http://research.microsoft.com/pubs/148761/Charts04.pdf).
