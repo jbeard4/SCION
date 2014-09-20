@@ -1,14 +1,12 @@
-This is the transitional repository for the next generation of the SCION JavaScript library.
-
 # Overview
 
 Statecharts is a powerful modelling language for developing **complex, timed, event-driven, state-based systems**. For an overview of Statecharts see [Statecharts: A Visual Formalism For Complex Systems](http://websrv0a.sdu.dk/ups/ESD/materials/harel-Statecharts.pdf) and [The Rhapsody Semantics of Statecharts](http://research.microsoft.com/pubs/148761/Charts04.pdf).
 
-SCION is a small (2.9kb, minified and gzipped), embeddable implementation of Statecharts in ECMAScript (JavaScript). SCION lets you program with Statecharts using a simple JavaScript/JSON API. It can be used in the browser to manage complex user interface behaviour, or on the server under Node.js or Rhino to manage page navigation and asynchronous control flow. It can even be used in custom JavaScript environments, such as the Mozilla Spidermonkey shell. 
+SCION-CORE is a small (2.9kb, minified and gzipped), embeddable implementation of Statecharts in ECMAScript (JavaScript). SCION-CORE lets you program with Statecharts using a simple JavaScript/JSON API. It can be used in the browser to manage complex user interface behaviour, or on the server under Node.js or Rhino to manage page navigation and asynchronous control flow. It can even be used in custom JavaScript environments, such as the Mozilla Spidermonkey shell. 
 
-SCION is written so as to abstract out platform dependencies, and is implemented as a single UMD module, which makes it easy to deploy in any JavaScript environment. The philosophy of SCION is **"write once, embed everywhere"**.
+SCION-CORE is written so as to abstract out platform dependencies, and is implemented as a single UMD module, which makes it easy to deploy in any JavaScript environment. The philosophy of SCION-CORE is **"write once, embed everywhere"**.
 
-SCION powers [SCXML.js](https://github.com/jbeard4/scxml.js), an implementation of [SCXML](http://www.w3.org/TR/scxml) in JavaScript, and as such, it supports all of the features of the SCXML core module, including compound states ( **OR** states), parallel states ( **AND** states), and history states. 
+SCION-CORE powers [SCXML.js](https://github.com/jbeard4/scxml.js), an implementation of [SCXML](http://www.w3.org/TR/scxml) in JavaScript, and as such, it supports all of the features of the SCXML core module, including compound states ( **OR** states), parallel states ( **AND** states), and history states. 
 
 # Quickstart and Simple Use Case
 
@@ -20,7 +18,7 @@ This natural-language description of behaviour can be described using the follow
 
 ![Drag and Drop](http://jbeard4.github.com/SCION/img/drag_and_drop.png)
 
-This state machine could be written in SCION's JSON syntax as follows:
+This state machine could be written in SCION-CORE's JSON syntax as follows:
 
 ```javascript
 {
@@ -118,7 +116,7 @@ You can then perform the following steps to script web content:
 <html>
     <head>
         <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"></script>
-        <script type="text/javascript" src="http://jbeard4.github.com/SCION-ng/builds/latest/scion-min.js"></script>
+        <script type="text/javascript" src="http://jbeard4.github.com/SCION-CORE/builds/latest/scion-min.js"></script>
     </head>
     <body>
         <div id="rect"/>
@@ -204,16 +202,16 @@ Add the following script tags to your web page:
 
 ```html
 <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"></script>
-<script type="text/javascript" src="http://jbeard4.github.io/SCION-ng/repository/lib/scion.js"></script>
+<script type="text/javascript" src="http://jbeard4.github.io/SCION-CORE/repository/lib/scion.js"></script>
 ```
 
-SCION is then available as the global variable `scion`.
+SCION-CORE is then available as the global variable `scion`.
 
 <!-- TODO: test with RequireJS and add documentation for this -->
 
 ## Node.js
 
-Install SCION via npm:
+Install SCION-CORE via npm:
 
     npm install scion-ng
 
@@ -221,24 +219,24 @@ Install SCION via npm:
 
 Get it with git:
 
-    git clone git://github.com/jbeard4/SCION-ng.git
+    git clone git://github.com/jbeard4/SCION-CORE.git
 
-Rhino 1.7R3 supports CommonJS modules, so SCION can be used as follows:
+Rhino 1.7R3 supports CommonJS modules, so SCION-CORE can be used as follows:
 
 ```bash
-#just put SCION-ng/lib on your modules path
-rhino -modules path/to/SCION-ng/lib -main path/to/your/script.js
+#just put SCION-CORE/lib on your modules path
+rhino -modules path/to/SCION-CORE/lib -main path/to/your/script.js
 ```
 
 # Statecharts Model Schema
 
-SCION is designed to allow you to specify the Statecharts model declaratively as a single JavaScript object literal, or as JSON. This section is intended to describe the schema of the Statecharts object model accepted by SCION. 
+SCION-CORE is designed to allow you to specify the Statecharts model declaratively as a single JavaScript object literal, or as JSON. This section is intended to describe the schema of the Statecharts object model accepted by SCION-CORE. 
 
-This section will also touch briefly on semantics, but is not meant to serve as a comprehensive reference.  Unlike SCXML.js, a formal semantics has not been defined for SCION. However it is very close to [Rhapsody Semantics](http://research.microsoft.com/pubs/148761/Charts04.pdf).
+This section will also touch briefly on semantics, but is not meant to serve as a comprehensive reference.  Unlike SCXML.js, a formal semantics has not been defined for SCION-CORE. However it is very close to [Rhapsody Semantics](http://research.microsoft.com/pubs/148761/Charts04.pdf).
 
 ## States
 
-A SCION model is made up of states. States can have id's, which are optional. Here is a SCION model which is a single state:
+A SCION-CORE model is made up of states. States can have id's, which are optional. Here is a SCION-CORE model which is a single state:
 
 ```
 {
@@ -287,7 +285,7 @@ In this example, if the state machine is in state 'foo', then the state machine 
 
 ## Transitions
 
-States are associated with **transitions**, which target other states. Transitions are optionally associated with an **event name**. A SCION event is an object with "name" and "data" properties. When an event is sent to the state machine, the interpreter will inspect the current configuration, and select the set of transitions that matches event name.
+States are associated with **transitions**, which target other states. Transitions are optionally associated with an **event name**. A SCION-CORE event is an object with "name" and "data" properties. When an event is sent to the state machine, the interpreter will inspect the current configuration, and select the set of transitions that matches event name.
 
 
 ```javascript
@@ -492,7 +490,7 @@ The SCXML constructor creates an interpreter instance from a model object.
 
 ## sc.start() : `<String>`[]
 
-`sc.start` starts the SCION interpreter. `sc.start` should only be called once, and should be called before `sc.gen` is called for the first time.
+`sc.start` starts the SCION-CORE interpreter. `sc.start` should only be called once, and should be called before `sc.gen` is called for the first time.
 
 Returns a "basic configuration", which is an Array of strings representing the ids all of the basic states the interpreter is in after the call to `sc.start` completes.
 
