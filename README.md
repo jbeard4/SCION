@@ -517,6 +517,10 @@ Registers a callback to receive notification of state changes, as described abov
 
 Each `onEntry`, `onExit` and `onTransition` callback is optional - if the property is not present, it will be ignored.
 
+# Development
+
+Run unit tests: `npm test`
+
 # Support
 
 [Mailing list](https://groups.google.com/group/scion-dev)
