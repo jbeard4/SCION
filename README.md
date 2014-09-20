@@ -1,4 +1,4 @@
-![Build status](https://travis-ci.org/jbeard4/SCION-CORE.svg?branch=master)
+[![Build status](https://travis-ci.org/jbeard4/SCION-CORE.svg?branch=master)](https://travis-ci.org/jbeard4/SCION-CORE)
 
 # Overview
 
