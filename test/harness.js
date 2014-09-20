@@ -29,7 +29,7 @@ var tests = statechartModulePaths.length ?
         }) : require('./tests.js');
 
 tests.forEach(function(test){
-    console.log(test);
+    //console.log(test);
     exports[test.name] = function(t){
         //console.log('Running test',test.name);
 
@@ -39,7 +39,7 @@ tests.forEach(function(test){
 
         var actualInitialConf = sc.start();
 
-        console.log('initial configuration',actualInitialConf);
+        //console.log('initial configuration',actualInitialConf);
 
         t.deepEqual(actualInitialConf.sort(),test.test.initialConfiguration.sort(),'initial configuration');
 
@@ -54,11 +54,11 @@ tests.forEach(function(test){
                   sc = new scion.Statechart(test.sc,{snapshot : JSON.parse(mostRecentSnapshot)});
                 }
 
-                console.log('sending event',nextEvent.event);
+                //console.log('sending event',nextEvent.event);
 
                 var actualNextConf = sc.gen(nextEvent.event);
 
-                console.log('next configuration',actualNextConf);
+                //console.log('next configuration',actualNextConf);
 
                 t.deepEqual(actualNextConf.sort(),nextEvent.nextConfiguration.sort(),'next configuration after sending event ' + nextEvent.event.name);
                 //dump state machine state
@@ -73,7 +73,7 @@ tests.forEach(function(test){
             }
 
             if(nextEvent.after){
-                console.log('Test harness waiting',nextEvent.after,'ms before sending next event');
+                //console.log('Test harness waiting',nextEvent.after,'ms before sending next event');
                 setTimeout(ns,nextEvent.after);
             }else{
                 ns();

@@ -43,7 +43,7 @@
   },
   "main": "./lib/scion",
   "scripts": {
-    "test": "node test/harness.js"
+    "test": "cd test && nodeunit harness.js"
   },
   "testling": {
     "files": "test/harness.js",
