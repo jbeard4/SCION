@@ -1,14 +1,14 @@
-scxml.js is a lightweight SCXML-to-JavaScript compiler that targets the next generation of the [SCION](http://github.com/jbeard4/SCION-ng) Statecharts interpreter. It currently supports node.js and the browser, and will later support Rhino and other JavaScript environments.
+SCION 2.0 is a lightweight SCXML-to-JavaScript compiler that targets the [SCION-CORE](http://github.com/jbeard4/SCION-COR)  Statecharts interpreter. It currently supports node.js and the browser, and will later support Rhino and other JavaScript environments.
 
-**Note that scxml.js is still new and should be considered beta-quality software.** For a more robust and debugged JavaScript SCXML interpreter, please see the current version of [SCION](http://github.com/jbeard4/SCION).
+**Note that SCION 2.0 is still new and should be considered beta-quality software.** For a more robust and debugged JavaScript SCXML interpreter, please see the current version of [SCION](http://github.com/jbeard4/SCION).
 
 # Overview
 
-scxml.js provides an implementation of the [W3C SCXML draft specification](http://www.w3.org/TR/scxml/) in JavaScript. SCXML provides a declarative markup for Statecharts, a powerful modelling language for developing **complex, timed, event-driven, state-based systems**, and can offer elegant solutions to many problems faced in development of JavaScript-based applications across various domains. In the browser, SCXML can be used to facilitate the development of **rich, web-based user interfaces** with complex behavioural requirements. On the server, SCXML can be used to manage **asynchronous control flow**. 
+SCION 2.0 provides an implementation of the [W3C SCXML draft specification](http://www.w3.org/TR/scxml/) in JavaScript. SCXML provides a declarative markup for Statecharts, a powerful modelling language for developing **complex, timed, event-driven, state-based systems**, and can offer elegant solutions to many problems faced in development of JavaScript-based applications across various domains. In the browser, SCXML can be used to facilitate the development of **rich, web-based user interfaces** with complex behavioural requirements. On the server, SCXML can be used to manage **asynchronous control flow**. 
 
 # Installation
 
-In node.js, install scxml.js via npm:
+In node.js, install SCION 2.0 via npm:
 
     npm install scxml
 
@@ -20,7 +20,7 @@ In the browser, add the following script tags to your web page:
 <script type="text/javascript" src="http://jbeard4.github.com/scxml.js/builds/latest/scxml.js"></script>
 ```
 
-Note that scxml.js assumes the presence of jQuery to handle cross-browser XMLHTTPRequest, however an alternative Ajax library could instead be used. This is set up in the following way:
+Note that SCION 2.0 assumes the presence of jQuery to handle cross-browser XMLHTTPRequest, however an alternative Ajax library could instead be used. This is set up in the following way:
 
 ```javascript
     //perform this setup once, before SCION is used
@@ -39,7 +39,7 @@ Support is currently being added for Rhino.
 
 # API
 
-scxml.js uses [SCION](http://github.com/jbeard4/SCION-ng) as its Statecharts engine. scxml.js first compiles the SCXML document to a JavaScript object model. The "model" is then used to instantiate a SCION Statecharts interpreter.
+SCION 2.0 uses [SCION](http://github.com/jbeard4/SCION-ng) as its Statecharts engine. SCION 2.0 first compiles the SCXML document to a JavaScript object model. The "model" is then used to instantiate a SCION Statecharts interpreter.
 
 Here is an example of a typical usage:
 
