@@ -33,8 +33,8 @@
     "http://www.w3.org/TR/scxml/"
   ],
   "dependencies": {
-    "optimist": "^0.6.1",
-    "sax": "^0.6.0",
+    "optimist": "0.6.1",
+    "sax": "0.6.0",
     "scion-core": "0.1.2"
   },
   "devDependencies": {
