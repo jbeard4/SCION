@@ -1,4 +1,4 @@
-[![Build status](https://travis-ci.org/jbeard4/SCION.svg?branch=2.0.0)](https://travis-ci.org/jbeard4/SCION)
+[![Build status](https://travis-ci.org/jbeard4/SCION.svg?branch=2.0.0-w3c-ecma)](https://travis-ci.org/jbeard4/SCION)
 
 SCION 2.0 is a lightweight SCXML-to-JavaScript compiler that targets the [SCION-CORE](http://github.com/jbeard4/SCION-CORE)  Statecharts interpreter. It currently supports node.js and the browser, and will later support Rhino and other JavaScript environments.
 
