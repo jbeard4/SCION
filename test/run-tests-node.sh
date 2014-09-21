@@ -35,6 +35,7 @@ node scxml-test-framework/lib/test-client.js \
   scxml-test-framework/test/send-internal/*.scxml \
   scxml-test-framework/test/targetless-transition/*.scxml \
   scxml-test-framework/test/w3c-ecma/test150.txml.scxml \
+  scxml-test-framework/test/w3c-ecma/test151.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test525.txml.scxml
   #FIXME issue #29 - re-enable scxml-test-framework/test/actionSend/*.scxml \
 
