@@ -33,7 +33,8 @@ node scxml-test-framework/lib/test-client.js \
   scxml-test-framework/test/scxml-prefix-event-name-matching/*.scxml \
   scxml-test-framework/test/send-data/*.scxml \
   scxml-test-framework/test/send-internal/*.scxml \
-  scxml-test-framework/test/targetless-transition/*.scxml 
+  scxml-test-framework/test/targetless-transition/*.scxml \
+  scxml-test-framework/test/w3c-ecma/test150.txml.scxml
   #FIXME issue #29 - re-enable scxml-test-framework/test/actionSend/*.scxml \
 
 status=$?
