@@ -1,5 +1,5 @@
 if [ ! -e node_modules ]; then mkdir node_modules; fi
-npm install request underscore nopt node-static github ..   #install scion as a dependency, and scxml-test-framework's dependencies
+npm install request underscore nopt node-static github cli-table ..   #install scion as a dependency, and scxml-test-framework's dependencies
 
 #start the server
 node node-test-server.js &
