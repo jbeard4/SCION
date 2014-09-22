@@ -1,5 +1,5 @@
 if [ ! -e node_modules ]; then mkdir node_modules; fi
-npm install request underscore nopt node-static github ..   #install scion as a dependency, and scxml-test-framework's dependencies
+npm install request underscore nopt node-static github cli-table ..   #install scion as a dependency, and scxml-test-framework's dependencies
 
 #start the server
 node node-test-server.js &
@@ -9,7 +9,7 @@ serverpid=$!
 sleep 1
 
 #run the client
-node scxml-test-framework/lib/test-client.js \
+node scxml-test-framework/lib/test-client.js -v -r console \
   scxml-test-framework/test/assign-current-small-step/*.scxml \
   scxml-test-framework/test/atom3-basic-tests/*.scxml \
   scxml-test-framework/test/basic/*.scxml \
