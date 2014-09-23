@@ -25,9 +25,9 @@
       "url": "https://github.com/jbeard4/scxml.js/blob/master/LICENSE.txt"
     }
   ],
-  "repository":{
-      "type": "git",
-      "url": "https://github.com/jbeard4/scxml.js.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jbeard4/scxml.js.git"
   },
   "implements": [
     "http://www.w3.org/TR/scxml/"
@@ -38,7 +38,8 @@
     "scion-core": "0.1.2"
   },
   "devDependencies": {
-    "karma": "~0.8"
+    "karma": "~0.8",
+    "grunt": "~0.4.5"
   },
   "engines": {
     "node": ">=0.8"
