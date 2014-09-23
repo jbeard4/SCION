@@ -41,6 +41,11 @@ module.exports = function(grunt) {
   // Default task(s).
   grunt.registerTask('default', ['watch']);
 
-
-  grunt.registerTask('runtests', ['jshint']);
+  grunt.task.registerTask('runtests', 'Runs all scxml tests in testlist file.', function(arg1, arg2) {
+    if (arguments.length === 0) {
+      grunt.log.writeln(this.name + ", no args");
+    } else {
+      grunt.log.writeln(this.name + ", " + arg1 + " " + arg2);
+    }
+  });
 };
