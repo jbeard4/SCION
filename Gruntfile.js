@@ -10,13 +10,19 @@ module.exports = function(grunt) {
           reload: true
         }
       },
+      scripts: {
+        files: [
+          'lib/**/*.js',                        //Watch SCION changes
+          'test/*.js',                          //Watch test server changes
+          'test/scxml-test-framework/lib/*.js', //Watch test client changes
+        ],
+        tasks: ['jshint']
+      },
       test: {
         files: [
-          'lib/**/*.js', //Watch all if SCION changes
-          'test/*.js', //Watch if test server changes
-          'test/scxml-test-framework/lib/*.js', //Watch if test server changes
-          'test/scxml-test-framework/test/**/*.scxml', //Watch if test contents changes
-          'test/scxml-test-framework/test/**/*.json'], //Watch if test configuration changes
+          'test/scxml-test-framework/test/**/*.scxml',  //Watch test content changes
+          'test/scxml-test-framework/test/**/*.json'    //Watch test configuration changes
+        ],
         tasks: ['runtests']
       }
     },
