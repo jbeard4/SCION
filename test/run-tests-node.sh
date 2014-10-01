@@ -36,6 +36,11 @@ node scxml-test-framework/lib/test-client.js -v -r console \
   scxml-test-framework/test/targetless-transition/*.scxml \
   scxml-test-framework/test/w3c-ecma/test150.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test151.txml.scxml \
+  scxml-test-framework/test/w3c-ecma/test198.txml.scxml \
+  scxml-test-framework/test/w3c-ecma/test199.txml.scxml \
+  scxml-test-framework/test/w3c-ecma-modified/test200-1.txml.scxml \
+  scxml-test-framework/test/w3c-ecma-modified/test200-2.txml.scxml \
+  scxml-test-framework/test/w3c-ecma/test201.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test309.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test312.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test313.txml.scxml \
