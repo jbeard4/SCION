@@ -44,8 +44,6 @@ node scxml-test-framework/lib/test-client.js -v -r console \
   scxml-test-framework/test/w3c-ecma/test322.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test323.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test324.txml.scxml \
-  scxml-test-framework/test/w3c-ecma/test325.txml.scxml \
-  scxml-test-framework/test/w3c-ecma/test326.txml.scxml \
   scxml-test-framework/test/w3c-ecma-modified/test329-1.txml.scxml \
   scxml-test-framework/test/w3c-ecma-modified/test329-2.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test525.txml.scxml
