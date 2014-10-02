@@ -48,7 +48,8 @@ node scxml-test-framework/lib/test-client.js -v -r console \
   scxml-test-framework/test/w3c-ecma/test326.txml.scxml \
   scxml-test-framework/test/w3c-ecma-modified/test329-1.txml.scxml \
   scxml-test-framework/test/w3c-ecma-modified/test329-2.txml.scxml \
-  scxml-test-framework/test/w3c-ecma/test525.txml.scxml
+  scxml-test-framework/test/w3c-ecma/test525.txml.scxml \
+  scxml-test-framework/test/w3c-ecma/test569.txml.scxml
   #FIXME issue #29 - re-enable scxml-test-framework/test/actionSend/*.scxml \
 
 status=$?
