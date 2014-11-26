@@ -34,7 +34,7 @@ node scxml-test-framework/lib/test-client.js -v -r console \
   scxml-test-framework/test/send-data/*.scxml \
   scxml-test-framework/test/send-internal/*.scxml \
   scxml-test-framework/test/targetless-transition/*.scxml \
-  scxml-test-framework/test/w3c-ecma/test1.txml.scxml \
+  scxml-test-framework/test/w3c-ecma/test144.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test147.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test148.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test149.txml.scxml \
