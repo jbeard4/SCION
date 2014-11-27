@@ -50,6 +50,7 @@ node scxml-test-framework/lib/test-client.js -v -r console \
   scxml-test-framework/test/w3c-ecma-modified/test301.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test302.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test304.txml.scxml \
+  scxml-test-framework/test/w3c-ecma/test309.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test310.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test312.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test313.txml.scxml \
