@@ -8,23 +8,19 @@
     "w3c",
     "javascript"
   ],
-  "maintainers": [
-    {
-      "name": "Jacob Beard",
-      "email": "jbeard4@cs.mcgill.ca",
-      "url": "http://echo-flow.com"
-    }
-  ],
+  "maintainers": [{
+    "name": "Jacob Beard",
+    "email": "jbeard4@cs.mcgill.ca",
+    "url": "http://echo-flow.com"
+  }],
   "bugs": {
     "email": "jbeard4@cs.mcgill.ca",
     "url": "https://github.com/jbeard4/scxml.js/issues"
   },
-  "licenses": [
-    {
-      "type": "Apache-2.0",
-      "url": "https://github.com/jbeard4/scxml.js/blob/master/LICENSE.txt"
-    }
-  ],
+  "licenses": [{
+    "type": "Apache-2.0",
+    "url": "https://github.com/jbeard4/scxml.js/blob/master/LICENSE.txt"
+  }],
   "repository": {
     "type": "git",
     "url": "https://github.com/jbeard4/scxml.js.git"
@@ -35,17 +31,19 @@
   "dependencies": {
     "optimist": "0.6.1",
     "sax": "0.6.0",
-    "scion-core": "git://github.com/jbeard4/scion-core.git#74664b00108873560d18ad6019ed50ab3de649e2",
+    "scion-core": "git://github.com/jbeard4/scion-core.git#ada754fc9bf9369fb5d2d378c1a2d5aa0339a0ed",
     "esprima": "~1.2.2"
   },
   "devDependencies": {
     "karma": "~0.8"
   },
   "engines": {
-    "node": ">=0.8"
+    "node": ">=0.8",
+    "npm": "1.4.10"
   },
   "main": "./lib/runtime/platform-bootstrap/node/index.js",
   "scripts": {
     "test": "cd test && bash run-tests-node.sh"
   }
 }
+
