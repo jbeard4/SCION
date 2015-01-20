@@ -6,7 +6,18 @@
 var scxml = require('..'),
     http = require('http');
 
-var sessionCounter = 0, sessions = {}, timeouts = {}, timeoutMs = 5000;
+var sessionCounter = 0, sessions = {}, timeouts = {}, timeoutMs = 5000, 
+    eventProcessorTypes = {
+        'scxml': {
+          location: 'http://www.w3.org/TR/scxml/#SCXMLEventProcessor'
+        },
+        'basichttp': {
+          location: 'http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor'
+        },
+        'dom': {
+          location: 'http://www.w3.org/TR/scxml/#DOMEventProcessor'
+        }
+      };
 
 function loadScxml(scxmlStr){
 }
@@ -35,7 +46,7 @@ http.createServer(function (req, res) {
                         res.writeHead(500, {'Content-Type': 'text/plain'});
                         res.end(err.message);
                     }else{
-                        var interpreter = new scxml.scion.Statechart(result.model, { name: result.name });
+                        var interpreter = new scxml.scion.Statechart(result.model, { name: result.name, sessionid: sessionCounter, ioprocessors: eventProcessorTypes });
 
                         var sessionToken = sessionCounter;
                         sessionCounter++;
