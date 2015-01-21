@@ -35,8 +35,8 @@ http.createServer(function (req, res) {
                         res.writeHead(500, {'Content-Type': 'text/plain'});
                         res.end(err.message);
                     }else{
-                        console.log('name: ' + model.name);
-                        var interpreter = new scxml.scion.Statechart(model, { name: model.name });
+                        console.log('name: ' + model.meta.name);
+                        var interpreter = new scxml.scion.Statechart(model, { name: model.meta.name });
 
                         var sessionToken = sessionCounter;
                         sessionCounter++;
