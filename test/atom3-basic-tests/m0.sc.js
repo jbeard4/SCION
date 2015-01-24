@@ -46,7 +46,7 @@ module.exports = (function(_x,_sessionid,_name,_ioprocessors,In){
     return {
         "ns0": "http://www.w3.org/2005/07/scxml",
         "name": "root",
-        "type": "scxml",
+        "$type": "scxml",
         "states": [
             {
                 "id": "A",
