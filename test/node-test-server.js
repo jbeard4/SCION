@@ -35,21 +35,26 @@ http.createServer(function (req, res) {
                         res.writeHead(500, {'Content-Type': 'text/plain'});
                         res.end(err.message);
                     }else{
-                        var interpreter = new scxml.scion.Statechart(model, { sessionid: sessionCounter });
+                        try {
+                            var interpreter = new scxml.scion.Statechart(model, { sessionid: sessionCounter });
 
-                        var sessionToken = sessionCounter;
-                        sessionCounter++;
-                        sessions[sessionToken] = interpreter; 
+                            var sessionToken = sessionCounter;
+                            sessionCounter++;
+                            sessions[sessionToken] = interpreter; 
 
-                        var conf = interpreter.start(); 
+                            var conf = interpreter.start(); 
 
-                        res.writeHead(200, {'Content-Type': 'application/json'});
-                        res.end(JSON.stringify({
-                            sessionToken : sessionToken,
-                            nextConfiguration : conf
-                        }));
+                            res.writeHead(200, {'Content-Type': 'application/json'});
+                            res.end(JSON.stringify({
+                                sessionToken : sessionToken,
+                                nextConfiguration : conf
+                            }));
 
-                        timeouts[sessionToken] = setTimeout(function(){cleanUp(sessionToken);},timeoutMs);  
+                            timeouts[sessionToken] = setTimeout(function(){cleanUp(sessionToken);},timeoutMs);  
+                        } catch(e) {
+                          res.writeHead(500, {'Content-Type': 'text/plain'});
+                          res.end(e.message);
+                        }
                     }
                 });
 
