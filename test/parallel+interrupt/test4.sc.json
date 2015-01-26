@@ -1,15 +1,15 @@
 {
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
-    "type": "scxml",
+    "$type": "scxml",
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "p",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "e",

@@ -271,7 +271,7 @@ There are other types of states, however, including "parallel" states, which def
 ```javascript
 {
     id : 'foo'
-    type : 'parallel'
+    $type : 'parallel'
     states : [
         {
             id : 'bar'
@@ -418,7 +418,7 @@ The syntax for specifying history states is as follows:
             states : [
                 {
                     id : 'h',
-                    type : 'history',
+                    $type : 'history',
                     isDeep : true
                     transitions : [
                         {

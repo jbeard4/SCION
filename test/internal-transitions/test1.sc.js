@@ -107,11 +107,11 @@ module.exports = (function(_x,_sessionid,_name,_ioprocessors,In){
     
     return {
         "": "http://www.w3.org/2005/07/scxml",
-        "type": "scxml",
+        "$type": "scxml",
         "states": [
             {
                 "id": "p",
-                "type": "parallel",
+                "$type": "parallel",
                 "onEntry": $assign_line_27_column_47,
                 "onExit": $assign_line_31_column_47,
                 "states": [
