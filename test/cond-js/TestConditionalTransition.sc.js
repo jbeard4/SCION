@@ -54,7 +54,7 @@ module.exports = (function(_x,_sessionid,_name,_ioprocessors,In){
     return {
         "": "http://www.w3.org/2005/07/scxml",
         "name": "root",
-        "type": "scxml",
+        "$type": "scxml",
         "states": [
             {
                 "id": "a",
@@ -151,7 +151,7 @@ module.exports = (function(_x,_sessionid,_name,_ioprocessors,In){
                 "id": "g3",
                 "states": [
                     {
-                        "type": "initial",
+                        "$type": "initial",
                         "transitions": [
                             {
                                 "target": "h"
