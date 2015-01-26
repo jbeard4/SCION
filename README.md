@@ -2,8 +2,6 @@
 
 SCION 2.0 is a lightweight SCXML-to-JavaScript compiler that targets the [SCION-CORE](http://github.com/jbeard4/SCION-CORE)  Statecharts interpreter. It currently supports node.js and the browser, and will later support Rhino and other JavaScript environments.
 
-**Note that SCION 2.0 is still new and should be considered beta-quality software.** For a more robust and debugged JavaScript SCXML interpreter, please see the current version of [SCION](http://github.com/jbeard4/SCION).
-
 # Overview
 
 SCION 2.0 provides an implementation of the [W3C SCXML draft specification](http://www.w3.org/TR/scxml/) in JavaScript. SCXML provides a declarative markup for Statecharts, a powerful modelling language for developing **complex, timed, event-driven, state-based systems**, and can offer elegant solutions to many problems faced in development of JavaScript-based applications across various domains. In the browser, SCXML can be used to facilitate the development of **rich, web-based user interfaces** with complex behavioural requirements. On the server, SCXML can be used to manage **asynchronous control flow**. 
