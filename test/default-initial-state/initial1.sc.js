@@ -23,7 +23,7 @@ module.exports = (function(_x,_sessionid,_name,_ioprocessors,In){
     
     return {
         "": "http://www.w3.org/2005/07/scxml",
-        "type": "scxml",
+        "$type": "scxml",
         "states": [
             {
                 "id": "a",
