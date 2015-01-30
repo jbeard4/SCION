@@ -25,9 +25,7 @@ http.createServer(function (req, res) {
         var sessionToken;
         try{
             var reqJson = JSON.parse(s);
-            console.log('reqJson',reqJson);
             if(reqJson.load){
-                console.log("Loading new statechart",reqJson.load);
 
                 scxml.urlToModel(reqJson.load,function(err,model){
                     //console.log('model',model);
@@ -44,7 +42,6 @@ http.createServer(function (req, res) {
                             sessions[sessionToken] = interpreter; 
 
                             var conf = interpreter.start(); 
-                            console.log('conf ',conf );
 
                             res.writeHead(200, {'Content-Type': 'application/json'});
                             res.end(JSON.stringify({
