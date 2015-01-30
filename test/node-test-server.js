@@ -25,6 +25,7 @@ http.createServer(function (req, res) {
         var sessionToken;
         try{
             var reqJson = JSON.parse(s);
+            console.log('reqJson',reqJson);
             if(reqJson.load){
                 console.log("Loading new statechart",reqJson.load);
 
@@ -43,6 +44,7 @@ http.createServer(function (req, res) {
                             sessions[sessionToken] = interpreter; 
 
                             var conf = interpreter.start(); 
+                            console.log('conf ',conf );
 
                             res.writeHead(200, {'Content-Type': 'application/json'});
                             res.end(JSON.stringify({
@@ -52,6 +54,8 @@ http.createServer(function (req, res) {
 
                             timeouts[sessionToken] = setTimeout(function(){cleanUp(sessionToken);},timeoutMs);  
                         } catch(e) {
+                          console.log(e.stack);
+                          console.log(e);
                           res.writeHead(500, {'Content-Type': 'text/plain'});
                           res.end(e.message);
                         }
