@@ -1,7 +1,7 @@
 {
     "": "http://www.w3.org/2005/07/scxml",
     "initial": "a",
-    "type": "scxml",
+    "$type": "scxml",
     "states": [
         {
             "id": "a",
@@ -22,11 +22,11 @@
         },
         {
             "id": "p",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "hp",
-                    "type": "history",
+                    "$type": "history",
                     "isDeep": true,
                     "transitions": [
                         {
@@ -40,7 +40,7 @@
                     "states": [
                         {
                             "id": "hb",
-                            "type": "history",
+                            "$type": "history",
                             "isDeep": true,
                             "transitions": [
                                 {
@@ -108,7 +108,7 @@
                     "states": [
                         {
                             "id": "hc",
-                            "type": "history",
+                            "$type": "history",
                             "isDeep": false,
                             "transitions": [
                                 {
