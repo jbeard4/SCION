@@ -1456,7 +1456,7 @@ module.exports = {
     "states": [
         {
             "id": "p",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "a",
@@ -1537,7 +1537,7 @@ module.exports = {
     "states": [
         {
             "id": "p",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "a",
@@ -1612,7 +1612,7 @@ module.exports = {
         },
         {
             "id": "p",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "a",
@@ -1741,7 +1741,7 @@ module.exports = {
     "states": [
         {
             "id": "p",
-            "type": "parallel",
+            "$type": "parallel",
             "onEntry": $assign_line_27_column_46,
             "onExit": $assign_line_30_column_47,
             "states": [
@@ -1855,7 +1855,7 @@ module.exports = {
         },
         {
             "id": "p",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "a",
@@ -1932,7 +1932,7 @@ module.exports = {
     "states": [
         {
             "id": "p",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "a",
@@ -2021,7 +2021,7 @@ module.exports = {
     "states": [
         {
             "id": "p",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "a",
@@ -2123,7 +2123,7 @@ module.exports = {
     "states": [
         {
             "id": "p",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "a",
@@ -2194,7 +2194,7 @@ module.exports = {
     "states": [
         {
             "id": "p",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "a",
@@ -2251,7 +2251,7 @@ module.exports = {
     "states": [
         {
             "id": "p",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "a",
@@ -2329,7 +2329,7 @@ module.exports = {
     "states": [
         {
             "id": "p",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "a",
@@ -2479,7 +2479,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c",
@@ -2532,7 +2532,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c"
@@ -2626,7 +2626,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c",
@@ -2664,7 +2664,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c",
@@ -2769,7 +2769,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c",
@@ -2846,7 +2846,7 @@ module.exports={
             "states": [
                 {
                     "id": "b",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "b1"
@@ -2864,7 +2864,7 @@ module.exports={
                 },
                 {
                     "id": "c",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "c1"
@@ -2943,23 +2943,23 @@ module.exports={
     "states": [
         {
             "id": "a",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "b",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "c",
-                            "type": "parallel",
+                            "$type": "parallel",
                             "states": [
                                 {
                                     "id": "d",
-                                    "type": "parallel",
+                                    "$type": "parallel",
                                     "states": [
                                         {
                                             "id": "e",
-                                            "type": "parallel",
+                                            "$type": "parallel",
                                             "states": [
                                                 {
                                                     "id": "i",
@@ -3032,7 +3032,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c"
@@ -3102,7 +3102,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c",
@@ -3210,7 +3210,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c",
@@ -3254,23 +3254,23 @@ module.exports={
     "states": [
         {
             "id": "a",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "b",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "c",
-                            "type": "parallel",
+                            "$type": "parallel",
                             "states": [
                                 {
                                     "id": "d",
-                                    "type": "parallel",
+                                    "$type": "parallel",
                                     "states": [
                                         {
                                             "id": "e",
-                                            "type": "parallel",
+                                            "$type": "parallel",
                                             "states": [
                                                 {
                                                     "id": "i",
@@ -3377,7 +3377,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c",
@@ -3512,7 +3512,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c",
@@ -3587,7 +3587,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c"
@@ -3641,7 +3641,7 @@ module.exports={
             "states": [
                 {
                     "id": "b",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "b1"
@@ -3653,7 +3653,7 @@ module.exports={
                 },
                 {
                     "id": "c",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "c1"
@@ -3731,7 +3731,7 @@ module.exports={
             "states": [
                 {
                     "id": "b",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "b1",
@@ -3749,7 +3749,7 @@ module.exports={
                 },
                 {
                     "id": "c",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "c1"
@@ -3771,7 +3771,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c",
@@ -3830,7 +3830,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c",
@@ -3843,7 +3843,7 @@ module.exports={
                 },
                 {
                     "id": "d",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "e",
@@ -3955,7 +3955,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c",
@@ -4043,7 +4043,7 @@ module.exports={
             "states": [
                 {
                     "id": "b",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "b1",
@@ -4067,7 +4067,7 @@ module.exports={
                 },
                 {
                     "id": "c",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "c1"
@@ -4096,7 +4096,7 @@ module.exports={
             "states": [
                 {
                     "id": "b",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "b1",
@@ -4120,7 +4120,7 @@ module.exports={
                 },
                 {
                     "id": "c",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "c1"
@@ -4187,7 +4187,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c",
@@ -4209,7 +4209,7 @@ module.exports={
                 },
                 {
                     "id": "d",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "e",
@@ -4298,7 +4298,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c",
@@ -4389,11 +4389,11 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "e",
@@ -4458,7 +4458,7 @@ module.exports={
             "states": [
                 {
                     "id": "b",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "b1",
@@ -4482,7 +4482,7 @@ module.exports={
                 },
                 {
                     "id": "c",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "c1"
@@ -4523,11 +4523,11 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "p",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "e",
@@ -4635,7 +4635,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c",
@@ -4700,7 +4700,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c",
@@ -4832,7 +4832,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c"
@@ -4870,7 +4870,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c",
@@ -4969,7 +4969,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "c",
@@ -5045,7 +5045,7 @@ module.exports={
     "states": [
         {
             "id": "b",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "d",
@@ -5067,7 +5067,7 @@ module.exports={
                 },
                 {
                     "id": "p",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "e",
@@ -5457,7 +5457,7 @@ module.exports = {
         },
         {
             "id": "p",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "b",
@@ -6038,7 +6038,7 @@ module.exports={
     "states": [
         {
             "id": "p1",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "s1",
@@ -6046,7 +6046,7 @@ module.exports={
                     "states": [
                         {
                             "id": "p2",
-                            "type": "parallel",
+                            "$type": "parallel",
                             "states": [
                                 {
                                     "id": "s3"
@@ -6064,7 +6064,7 @@ module.exports={
                         },
                         {
                             "id": "p3",
-                            "type": "parallel",
+                            "$type": "parallel",
                             "states": [
                                 {
                                     "id": "s5"
@@ -6082,7 +6082,7 @@ module.exports={
                     "states": [
                         {
                             "id": "p4",
-                            "type": "parallel",
+                            "$type": "parallel",
                             "states": [
                                 {
                                     "id": "s7"
@@ -6100,7 +6100,7 @@ module.exports={
                         },
                         {
                             "id": "p5",
-                            "type": "parallel",
+                            "$type": "parallel",
                             "states": [
                                 {
                                     "id": "s9"
@@ -6132,7 +6132,7 @@ module.exports={
     "states": [
         {
             "id": "p",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "a"
@@ -6169,7 +6169,7 @@ module.exports={
     "states": [
         {
             "id": "p1",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "s1",
@@ -6177,7 +6177,7 @@ module.exports={
                     "states": [
                         {
                             "id": "p2",
-                            "type": "parallel",
+                            "$type": "parallel",
                             "states": [
                                 {
                                     "id": "s3",
@@ -6204,7 +6204,7 @@ module.exports={
                         },
                         {
                             "id": "p3",
-                            "type": "parallel",
+                            "$type": "parallel",
                             "states": [
                                 {
                                     "id": "s5"
@@ -6222,7 +6222,7 @@ module.exports={
                     "states": [
                         {
                             "id": "p4",
-                            "type": "parallel",
+                            "$type": "parallel",
                             "states": [
                                 {
                                     "id": "s7"
@@ -6240,7 +6240,7 @@ module.exports={
                         },
                         {
                             "id": "p5",
-                            "type": "parallel",
+                            "$type": "parallel",
                             "states": [
                                 {
                                     "id": "s9"
@@ -6292,13 +6292,13 @@ module.exports={
     "states": [
         {
             "id": "p",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "a",
                     "states": [
                         {
-                            "type": "initial",
+                            "$type": "initial",
                             "transitions": [
                                 {
                                     "target": "a1"
@@ -6323,7 +6323,7 @@ module.exports={
                     "id": "b",
                     "states": [
                         {
-                            "type": "initial",
+                            "$type": "initial",
                             "transitions": [
                                 {
                                     "target": "b1"
@@ -6662,7 +6662,7 @@ module.exports = {
             "id": "AB",
             "states": [
                 {
-                    "type": "initial",
+                    "$type": "initial",
                     "transitions": [
                         {
                             "target": "A"
@@ -6842,7 +6842,7 @@ module.exports = {
             "id": "AB",
             "states": [
                 {
-                    "type": "initial",
+                    "$type": "initial",
                     "transitions": [
                         {
                             "target": "A"
@@ -6999,7 +6999,7 @@ module.exports = {
                 {
                     "target": "a2",
                     "event": "t1",
-                    "type": "internal",
+                    "$type": "internal",
                     "cond": $cond_line_46_column_75
                 }
             ]
@@ -7154,7 +7154,7 @@ module.exports = {
     "states": [
         {
             "id": "p",
-            "type": "parallel",
+            "$type": "parallel",
             "onEntry": $assign_line_27_column_47,
             "onExit": $assign_line_31_column_47,
             "states": [
@@ -7185,7 +7185,7 @@ module.exports = {
                         {
                             "target": "a2",
                             "event": "t1",
-                            "type": "internal",
+                            "$type": "internal",
                             "cond": $cond_line_67_column_79
                         }
                     ]
@@ -7688,7 +7688,7 @@ module.exports = {
             "id": "g3",
             "states": [
                 {
-                    "type": "initial",
+                    "$type": "initial",
                     "transitions": [
                         {
                             "target": "h"
@@ -8681,7 +8681,7 @@ module.exports = {
     "states": [
         {
             "id": "p",
-            "type": "parallel",
+            "$type": "parallel",
             "transitions": [
                 {
                     "target": "done",
@@ -9662,11 +9662,11 @@ module.exports={
     "states": [
         {
             "id": "a",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "ha",
-                    "type": "history",
+                    "$type": "history",
                     "isDeep": true,
                     "transitions": [
                         {
@@ -9676,19 +9676,19 @@ module.exports={
                 },
                 {
                     "id": "b",
-                    "type": "parallel",
+                    "$type": "parallel",
                     "states": [
                         {
                             "id": "c",
-                            "type": "parallel",
+                            "$type": "parallel",
                             "states": [
                                 {
                                     "id": "d",
-                                    "type": "parallel",
+                                    "$type": "parallel",
                                     "states": [
                                         {
                                             "id": "e",
-                                            "type": "parallel",
+                                            "$type": "parallel",
                                             "states": [
                                                 {
                                                     "id": "i",
@@ -9834,7 +9834,7 @@ module.exports={
             "states": [
                 {
                     "id": "h",
-                    "type": "history",
+                    "$type": "history",
                     "isDeep": false,
                     "transitions": [
                         {
@@ -10014,7 +10014,7 @@ module.exports = {
             "states": [
                 {
                     "id": "h",
-                    "type": "history",
+                    "$type": "history",
                     "transitions": [
                         {
                             "target": "b2"
@@ -10131,11 +10131,11 @@ module.exports={
         },
         {
             "id": "p",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "h",
-                    "type": "history",
+                    "$type": "history",
                     "isDeep": true,
                     "transitions": [
                         {
@@ -10266,7 +10266,7 @@ module.exports={
             "states": [
                 {
                     "id": "h",
-                    "type": "history",
+                    "$type": "history",
                     "isDeep": true,
                     "transitions": [
                         {
@@ -10351,7 +10351,7 @@ module.exports={
             "states": [
                 {
                     "id": "h",
-                    "type": "history",
+                    "$type": "history",
                     "transitions": [
                         {
                             "target": "b2"
@@ -10457,11 +10457,11 @@ module.exports={
         },
         {
             "id": "p",
-            "type": "parallel",
+            "$type": "parallel",
             "states": [
                 {
                     "id": "hp",
-                    "type": "history",
+                    "$type": "history",
                     "isDeep": true,
                     "transitions": [
                         {
@@ -10475,7 +10475,7 @@ module.exports={
                     "states": [
                         {
                             "id": "hb",
-                            "type": "history",
+                            "$type": "history",
                             "isDeep": true,
                             "transitions": [
                                 {
@@ -10543,7 +10543,7 @@ module.exports={
                     "states": [
                         {
                             "id": "hc",
-                            "type": "history",
+                            "$type": "history",
                             "isDeep": false,
                             "transitions": [
                                 {
