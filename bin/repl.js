@@ -1,8 +1,17 @@
+#!/usr/bin/env node
+//A simple scxml interactive simulation environment
 var scxml = require('..'),
     repl = require('repl');
 
+var pathToScxml = process.argv[2];
+
+if(!pathToScxml){
+  console.log('Usage: scxml foo.scxml');
+  process.exit(1);
+}
+
 //1 - 2. get the xml file and convert it to jsonml
-scxml.pathToModel(process.argv[2],function(err,model){
+scxml.pathToModel(pathToScxml,function(err,model){
 
     if(err){
         throw err;

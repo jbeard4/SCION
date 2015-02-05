@@ -1,6 +1,6 @@
 {
   "name": "scxml",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "An implementation of SCXML in JavaScript.",
   "keywords": [
     "scxml",
@@ -35,7 +35,7 @@
   "dependencies": {
     "optimist": "0.6.1",
     "sax": "0.6.0",
-    "scion-core": "git://github.com/jbeard4/scion-core.git#33a541457b01115fa4362e2020c9a128e700c47e",
+    "scion-core": "1.0.0",
     "esprima": "~1.2.2"
   },
   "devDependencies": {
@@ -48,5 +48,8 @@
   "main": "./lib/runtime/platform-bootstrap/node/index.js",
   "scripts": {
     "test": "cd test && bash run-tests-node.sh"
+  },
+  "bin" : {
+    "scxml" : "./bin/repl.js"
   }
 }
