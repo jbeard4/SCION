@@ -1,6 +1,6 @@
 {
   "name": "scion-core",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "description": "StateCharts Interpretation and Optimization eNgine (SCION) CORE is an implementation of Statecharts in JavaScript.",
   "keywords": [
     "scxml",
