@@ -77,7 +77,6 @@ node scxml-test-framework/lib/test-client.js -v -r console \
   scxml-test-framework/test/w3c-ecma/test378.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test387.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test396.txml.scxml \
-  scxml-test-framework/test/w3c-ecma/test401.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test403b.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test404.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test405.txml.scxml \
