@@ -44,12 +44,19 @@ node scxml-test-framework/lib/test-client.js -v -r console \
   scxml-test-framework/test/w3c-ecma/test155.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test158.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test159.txml.scxml \
+  scxml-test-framework/test/w3c-ecma/test172.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test173.txml.scxml \
+  scxml-test-framework/test/w3c-ecma/test174.txml.scxml \
+  scxml-test-framework/test/w3c-ecma/test175.txml.scxml \
+  scxml-test-framework/test/w3c-ecma/test176.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test183.txml.scxml \
+  scxml-test-framework/test/w3c-ecma/test185.txml.scxml \
+  scxml-test-framework/test/w3c-ecma/test186.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test194.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test199.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test200.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test201.txml.scxml \
+  scxml-test-framework/test/w3c-ecma/test205.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test278.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test279.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test287.txml.scxml \
@@ -72,9 +79,11 @@ node scxml-test-framework/lib/test-client.js -v -r console \
   scxml-test-framework/test/w3c-ecma-modified/test329-1.txml.scxml \
   scxml-test-framework/test/w3c-ecma-modified/test329-2.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test332.txml.scxml \
+  scxml-test-framework/test/w3c-ecma/test333.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test335.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test337.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test339.txml.scxml \
+  scxml-test-framework/test/w3c-ecma/test342.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test346.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test355.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test376.txml.scxml \
@@ -100,6 +109,7 @@ node scxml-test-framework/lib/test-client.js -v -r console \
   scxml-test-framework/test/w3c-ecma/test551.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test552.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test558.txml.scxml \
+  scxml-test-framework/test/w3c-ecma/test560.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test569.txml.scxml \
   scxml-test-framework/test/misc/*.scxml
   #FIXME w3c-ecma-modified/test301 should kill the process not raise error.
