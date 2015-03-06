@@ -35,7 +35,7 @@
   "dependencies": {
     "optimist": "0.6.1",
     "sax": "0.6.0",
-    "scion-core": "git://github.com/jbeard4/SCION-CORE.git#0b1624d780aa8b993ec5a94cdd8617d5a90da321",
+    "scion-core": "git://github.com/jbeard4/SCION-CORE.git#e58cab5c64516f05ffcdc094e40ccfc13bd4f6fb",
     "esprima": "~1.2.2"
   },
   "devDependencies": {
