@@ -48,8 +48,5 @@
   "main": "./lib/runtime/platform-bootstrap/node/index.js",
   "scripts": {
     "test": "cd test && bash run-tests-node.sh"
-  },
-  "bin" : {
-    "scxml" : "./bin/repl.js"
   }
 }
