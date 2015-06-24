@@ -1,47 +1,52 @@
 {
-    "name": "scion",
-    "version": "0.0.10",
-    "description": "StateCharts Interpretation and Optimization eNgine (SCION) is an implementation of SCXML/Statecharts in JavaScript.",
-    "keywords": [
-        "scxml",
-        "statecharts",
-        "w3c",
-        "javascript"
-    ],
-    "maintainers": [{
-        "name": "Jacob Beard",
-        "email": "jbeard4@cs.mcgill.ca",
-        "url": "http://echo-flow.com"
-    }],
-    "bugs": {
-        "email": "jbeard4@cs.mcgill.ca",
-        "url": "https://github.com/jbeard4/SCION/issues"
-    },
-    "licenses": [
-        {
-            "type": "Apache-2.0",
-            "url": "https://github.com/jbeard4/SCION/blob/master/LICENSE.txt"
-        }
-    ],
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/jbeard4/SCION.git"
-        }
-    ],
-    "implements": [
-        "http://www.w3.org/TR/scxml/"
-    ],
-    "dependencies" : {
-        "xmldom" : "git://github.com/jbeard4/xmldom.git"
-    },
-    "devDependencies":{
-        "stitch" : "git://github.com/jbeard4/stitch.git",
-        "uglify-js" : "*"
-    },
-    "engines" : { "node" : ">=0.8" },
-    "main": "./lib/scion",
-    "scripts" : {
-        "test" : "cd test && bash run-tests-node.sh"
+  "name": "scion",
+  "version": "2.0.2",
+  "description": "An implementation of SCXML in JavaScript.",
+  "keywords": [
+    "scxml",
+    "statecharts",
+    "w3c",
+    "javascript"
+  ],
+  "maintainers": [
+    {
+      "name": "Jacob Beard",
+      "email": "jbeard4@cs.mcgill.ca",
+      "url": "http://echo-flow.com"
     }
+  ],
+  "bugs": {
+    "email": "jbeard4@cs.mcgill.ca",
+    "url": "https://github.com/jbeard4/scxml.js/issues"
+  },
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "https://github.com/jbeard4/scxml.js/blob/master/LICENSE.txt"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jbeard4/scxml.js.git"
+  },
+  "implements": [
+    "http://www.w3.org/TR/scxml/"
+  ],
+  "dependencies": {
+    "esprima": "~1.2.2",
+    "optimist": "0.6.1",
+    "sax": "0.6.0",
+    "scion-core": "^1.0.1"
+  },
+  "devDependencies": {
+    "karma": "~0.8"
+  },
+  "engines": {
+    "node": ">=0.8",
+    "npm": ">=2.0.0"
+  },
+  "main": "./lib/runtime/platform-bootstrap/node/index.js",
+  "scripts": {
+    "test": "cd test && bash run-tests-node.sh"
+  }
 }

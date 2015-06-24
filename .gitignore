@@ -1,12 +1,3 @@
-*.pyc
-*.sw*
-Session.vim
-target
 node_modules
-build
-src/demo/node-repl/build/
-src/demo/nodejs/build/
-scion-browser.js
-scion-browser-min.js
-TODO
-log
+components
+out*
