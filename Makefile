@@ -1,14 +1,18 @@
 js = $(shell find lib/ -name "*.js")
 
-all : dist/scion.js dist/scion-min.js
+all : dist/scxml.js dist/scxml.min.js
 
-dist/scion.js : $(js) 
-	mkdir -p dist && node lib/browser/build/stitch.js dist/scion.js
+dist/scxml.js : $(js)
+	component build -o dist -n scxml -s scxml
 
-dist/scion-min.js : dist/scion.js
-	uglifyjs dist/scion.js > dist/scion-min.js
+dist/scxml.min.js : dist/scxml.js
+	uglifyjs dist/scxml.js > dist/scxml.min.js
 
-clean : 
-	rm -rf dist
+get-deps : 
+	npm install -g component uglifyjs
+	component install
 
-.PHONY : clean all
+clean :
+	rm dist/*
+
+.PHONY : get-deps all clean
