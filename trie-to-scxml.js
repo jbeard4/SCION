@@ -39,7 +39,7 @@ var scxmlString =
           return '<state id="' + state.id + '">' + 
             (
               state.emit ? 
-                '<onentry><send type="http://scxml.io/scxmld" target="scxml://publish" event="character" contentexpr="\'' + state.emit + '\'"></send></onentry>' +
+                '<onentry><send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="\'' + state.emit + '\'"></send></onentry>' +
                 '<transition target="idle"/>' //go back to start 
                 : '' ) + 
             state.transitions.map(function(t){
@@ -47,7 +47,7 @@ var scxmlString =
             }).join('') + 
             (
               state.id === 'idle' ? 
-                '<transition target="idle" event="long_pause"><send type="http://scxml.io/scxmld" target="scxml://publish" event="character" contentexpr="\' \'"></send></transition>' 
+                '<transition target="idle" event="long_pause"><send type="https://github.com/jbeard4/SCION#publish" event="character" contentexpr="\' \'"></send></transition>' 
                 : '' ) + 
         '</state>' 
         }).join('') + 

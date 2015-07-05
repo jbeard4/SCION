@@ -1,0 +1,23 @@
+{
+  "name": "scxml-morse-code-parser",
+  "version": "1.0.0",
+  "description": "Morse code parser implemented in SCXML, designed to work with the microexpresscion SCXML orchestration server.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbeard4/scxml-morse-code-parser.git"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/jbeard4/scxml-morse-code-parser/issues"
+  },
+  "homepage": "https://github.com/jbeard4/scxml-morse-code-parser#readme",
+  "dependencies": {
+    "microexpresscion": "^1.0.0",
+    "swagger-client": "^2.1.1"
+  }
+}
