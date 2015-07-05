@@ -8,5 +8,8 @@ button sensors, processes those events, and outputs a message to the LCD RGB
 backlight. This demonstrates how SCXML can be used as a rich language for
 processing IoT sensor events and controlling IoT actuators.
 
+The project uses the [Microexpresscion](https://github.com/JacobeanRnD/expresscion/tree/microexpresscion) 
+SCXML orchestration server, and is designed to be run on the Intel Edison.
+
 ![Parser](http://desm-visualization.herokuapp.com/render?scxml=https://cdn.rawgit.com/jbeard4/scxml-morse-code-parser/master/build/morse.scxml)
 
