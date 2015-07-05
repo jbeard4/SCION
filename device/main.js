@@ -48,8 +48,8 @@ module.exports = function init(swagger, instanceId, hostUrl){
   var buffer = '';
   myLcd.write(buffer);  
   es.on('character',function(e){
-    console.log('event',e);	
     var c = e.data;
+    console.log('c',c);
     buffer += c;
     myLcd.write(c);  
   });
