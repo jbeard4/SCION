@@ -5,13 +5,14 @@ var microexpresscion = require('microexpresscion'),
 
 var PORT = process.env.PORT || 8888;
 var INSTANCEID = '_singleton';
+var hostUrl = 'http://localhost:' + PORT;
 
 //start the server programmatically
 microexpresscion.initExpress({ port: PORT, pathToModel : __dirname + '/build/morse.scxml' }, function (err, express) {
   express.app.listen(PORT, function(){
     //use the swagger js client library to set up singleton instance
     var swagger = new SwaggerClient({
-      url: 'http://localhost:' + PORT + '/smaas.json',
+      url: hostUrl + '/smaas.json',
       success: function(){
         swagger.apis.default.createNamedInstance(
           { InstanceId: INSTANCEID },
@@ -26,8 +27,8 @@ microexpresscion.initExpress({ port: PORT, pathToModel : __dirname + '/build/mor
               }, function (response) {
                 console.log('data',response.data);
                 //TODO: it would be good to mock this interface when we are not running on a real device
-                //var initDevice = require('./device/main');
-                //initDevice(swagger, INSTANCEID);
+                var initDevice = require('./device/main');
+                initDevice(swagger, INSTANCEID, hostUrl);
               }, function (data) {
                 console.log('error response',data);
               });
