@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/jbeard4/scxml-morse-code-parser#readme",
   "dependencies": {
-    "microexpresscion": "^1.0.1",
+    "microexpresscion": "1.1.0",
     "swagger-client": "^2.1.1"
   }
 }

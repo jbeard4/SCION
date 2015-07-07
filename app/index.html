@@ -1,0 +1,45 @@
+<!-- 
+this provides a simple web UI client to emulate
+real hardware for demo and testing purposes
+-->
+<html>
+  <head>
+    <script src="jquery.js"></script>
+    <style type="text/css">
+      #LCD {
+        width : 100px;
+        height : 1em;
+        background-color : grey;
+      }
+    </style>
+  </head>
+  <body>
+    <p><button id="button"> Button </button>  </p>
+    <p>LCD: <div id="LCD"></div></p>
+    <script>
+      var button = document.getElementById('button'); 
+      var lcd = document.getElementById('LCD'); 
+      
+      var es = new EventSource('/api/v3/_singleton/_changes');
+      var buffer = '';
+      es.addEventListener('character',function(e){
+        var c = e.data;
+        console.log('c',c);
+        buffer += c;
+        lcd.innerText = buffer;
+      });
+
+      $(button).on('mousedown',function(){
+        $.post('/api/v3/_singleton',JSON.stringify({name : 'device.press'}),function(response){
+          console.log('response.data',response.data);
+        });
+      });
+
+      $(button).on('mouseup',function(){
+        $.post('/api/v3/_singleton',JSON.stringify({name : 'device.release'}),function(response){
+          console.log('response.data',response.data);
+        });
+      });
+    </script>
+  </body>
+</html>
