@@ -2,12 +2,18 @@ var m = require('mraa'); //require mraa
 var groveSensor = require('jsupm_grove');
 var request = require('request');
 var EventSource = require('eventsource');
+var validUrl = require('valid-url');
+var util = require('./util');
+var outputMorse = require('./outputMorse');
 
 console.log('MRAA Version: ' + m.getVersion()); //write the mraa version to the console
 
 module.exports = function init(swagger, instanceId, hostUrl){
   var myLed = new m.Gpio(4); //LED hooked up to digital pin 13 (or built in pin on Galileo Gen1 & Gen2)
   myLed.dir(m.DIR_OUT); //set the gpio direction to output
+
+  var myBuzzer = new m.Gpio(2); //LED hooked up to digital pin 13 (or built in pin on Galileo Gen1 & Gen2)
+  myBuzzer.dir(m.DIR_OUT); //set the gpio direction to output
 
   // Create the button object using GPIO pin 0
   var button = new groveSensor.GroveButton(3);
@@ -50,8 +56,17 @@ module.exports = function init(swagger, instanceId, hostUrl){
   es.on('character',function(e){
     var c = e.data;
     console.log('c',c);
-    buffer += c;
-    myLcd.write(c);  
+    if(c === ' '){
+      util.fetchPage(buffer, function(text){
+        outputMorse(text, function(){
+          buffer = '';
+          myLcd.write(buffer); //clear the lcd
+        });
+      });
+    } else{
+      buffer += c;
+      myLcd.write(c);  
+    }
   });
   es.onerror = function() {
     console.log('ERROR!');
