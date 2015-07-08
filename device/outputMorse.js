@@ -1,51 +1,76 @@
 var textToMorse = require('../morse-code.json');
+var async = require('async');
 
-var DIT_LENGTH = 250; //ms
-function outputMorseStringToBuzzer(str, cb){
-  var sentences = 
-    str.split('.').map(function(sentence){
-      return sentence.split(/ +/g).map(function(word){
-        return word.map(function(c){
-          return textToMorse[c];
-        }).filter(function(str){
-          return str;
-        });
-      });
+var DIT_LENGTH = 100; //ms
+function outputMorseStringToBuzzer(hardware, str, cb){
+
+  function turnOn(){
+    hardware.led.write(1);
+    hardware.buzzer.write(1);
+  }
+
+  function turnOff(){
+    hardware.led.write(0);
+    hardware.buzzer.write(0);
+  }
+
+  var words = 
+    str.split(/\b\s+(?!$)/g).map(function(word){
+      console.log('word',word);
+      return {
+        original : word,
+        morse : 
+          word.split('').map(function(c){
+            return textToMorse[c].split('');
+          }).filter(function(str){
+            return str;
+          })
+       };
     });
 
-  async.eachSeries(sentences, function(sentence, sentenceCb){
-    async.eachSeries(sentence, function(word, wordCb){
-      async.eachSeries(word, function(morseChar, charCb){
+  async.eachSeries(words, function(word, wordCb){
 
-        myLcd.write(word);
+    console.log('word.original',word.original);
+    hardware.lcd.write(word.original);
 
+    async.eachSeries(word.morse, function(morseSequence, sequenceCb){
+
+      async.eachSeries(morseSequence, function(morseChar, charCb){
+        console.log('morseChar',morseChar);
+        
         function turnOffTheBuzzerAndNext(){
-          myBuzzer.write(0);  //make some noise
-                              //TODO: also write to the LCD
+          turnOff();
           setTimeout(charCb,DIT_LENGTH);
         }
 
-        myBuzzer.write(1);  //make some noise
+        turnOn();
 
         switch(morseChar){
           case '.':
             setTimeout(turnOffTheBuzzerAndNext,DIT_LENGTH);
+            break;
           case '-':
             setTimeout(turnOffTheBuzzerAndNext,DIT_LENGTH * 3);
+            break;
           default:
             throw new Error('Unexpected morse char');
         }
-        
-        setTimeout(DIT_LENGTH, charCb);
       }, function(){
         //word finished
-        setTimeout(DIT_LENGTH * 3, wordCb);
+        setTimeout(sequenceCb, DIT_LENGTH * 3);
       });
     }, function(){
       //sentence finished
-      setTimeout(DIT_LENGTH * 7, sentenceCb);
+      setTimeout(wordCb, DIT_LENGTH * 7);
     });
   }, cb);
 }
 
 module.exports = outputMorseStringToBuzzer;
+
+if(require.main === module){
+  var hardware = require('./initHardware');
+  outputMorseStringToBuzzer(hardware,'hello world',function(){
+    console.log('done');
+  })
+}
