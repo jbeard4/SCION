@@ -4,6 +4,8 @@ var async = require('async');
 var DIT_LENGTH = 100; //ms
 function outputMorseStringToBuzzer(hardware, str, cb){
 
+  var timeoutHandle;
+
   function turnOn(){
     hardware.led.write(1);
     hardware.buzzer.write(1);
@@ -48,30 +50,37 @@ function outputMorseStringToBuzzer(hardware, str, cb){
         
         function turnOffTheBuzzerAndNext(){
           turnOff();
-          setTimeout(charCb,DIT_LENGTH);
+          timeoutHandle = setTimeout(charCb,DIT_LENGTH);
         }
 
         turnOn();
 
         switch(morseChar){
           case '.':
-            setTimeout(turnOffTheBuzzerAndNext,DIT_LENGTH);
+            timeoutHandle = setTimeout(turnOffTheBuzzerAndNext,DIT_LENGTH);
             break;
           case '-':
-            setTimeout(turnOffTheBuzzerAndNext,DIT_LENGTH * 3);
+            timeoutHandle = setTimeout(turnOffTheBuzzerAndNext,DIT_LENGTH * 3);
             break;
           default:
             throw new Error('Unexpected morse char');
         }
       }, function(){
         //word finished
-        setTimeout(sequenceCb, DIT_LENGTH * 3);
+        timeoutHandle = setTimeout(sequenceCb, DIT_LENGTH * 3);
       });
     }, function(){
       //sentence finished
-      setTimeout(wordCb, DIT_LENGTH * 7);
+      timeoutHandle = setTimeout(wordCb, DIT_LENGTH * 7);
     });
   }, cb);
+
+  //return a function to interrupt execution (e.g. if the user presses a button)
+  //TODO: it would be better to move all this logic inside of the state machine
+  return function(){
+    clearTimeout(timeoutHandle);
+    cb();
+  }
 }
 
 module.exports = outputMorseStringToBuzzer;

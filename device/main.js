@@ -10,11 +10,19 @@ module.exports = function init(swagger, instanceId, hostUrl){
 
   // Read the input and print, waiting one second between readings
   var previousButtonState, currentButtonState;
+  var bailOut;
   function readButtonValue() {
     currentButtonState = hardware.button.value();
     
     if(currentButtonState !== previousButtonState){
       var eventName = currentButtonState ? 'device.press' : 'device.release';
+
+      if(bailOut && eventName === 'device.press'){ 
+        bailOut();
+        bailOut = null;
+        return;
+      }
+        
       hardware.led.write(currentButtonState);
       hardware.buzzer.write(currentButtonState);
 
@@ -62,8 +70,7 @@ module.exports = function init(swagger, instanceId, hostUrl){
           },1000);
           return;
         }
-        outputMorse(hardware, text, function(){
-          readButtonValue();
+        bailOut = outputMorse(hardware, text, function(){
           buffer = '';
           hardware.lcd.clear(); //clear the lcd
         });
