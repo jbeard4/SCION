@@ -1,5 +1,5 @@
 {
-  "name": "scxml-morse-code-parser",
+  "name": "umec",
   "version": "1.0.1",
   "description": "Morse code parser implemented in SCXML, designed to work with the microexpresscion SCXML orchestration server.",
   "main": "index.js",
@@ -8,7 +8,7 @@
     "start": "node index.js"
   },
   "bin": {
-    "morse-code-parser": "index.js"
+    "umec": "index.js"
   },
   "repository": {
     "type": "git",
