@@ -1,3 +1,7 @@
+var validUrl = require('valid-url');
+var http = require('http');
+var cheerio = require('cheerio');
+
 function fetchPage(url,cb){
   if(validUrl.isUri(url)){
     http.get(url,function(res){
@@ -9,6 +13,7 @@ function fetchPage(url,cb){
       res.on('end',function(){
         try {
           var text = extractTextContentFromPage(pageContents);
+          console.log('text',text);
         } catch(e){
           return cb(e); 
         }
@@ -23,7 +28,13 @@ function fetchPage(url,cb){
 function extractTextContentFromPage(pageContents){
   var $ = cheerio.load(pageContents);
   //assume some semantic markup
-  return $('body').text();
+  return $('article .body').text();
 }
 
 module.exports.fetchPage = fetchPage;
+
+if(require.main === module){
+  fetchPage('http://slashdot.org/',function(err, pageContents){
+    console.log('pageContents',err, pageContents);
+  });
+}
