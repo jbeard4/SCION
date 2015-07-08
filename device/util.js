@@ -3,26 +3,27 @@ var http = require('http');
 var cheerio = require('cheerio');
 
 function fetchPage(url,cb){
-  if(validUrl.isUri(url)){
-    http.get(url,function(res){
-      var pageContents = '';
-      res.on('data',function(s){
-        pageContents += s;
-      });
+  url = 'http://' + url;    //add URI prefix
 
-      res.on('end',function(){
-        try {
-          var text = extractTextContentFromPage(pageContents);
-          console.log('text',text);
-        } catch(e){
-          return cb(e); 
-        }
-        cb(null, text);
-      });
-    }).on('error',function(err){
-      cb(err);
+  console.log('fetching page',url);
+  http.get(url,function(res){
+    var pageContents = '';
+    res.on('data',function(s){
+      pageContents += s;
     });
-  }
+
+    res.on('end',function(){
+      try {
+        var text = extractTextContentFromPage(pageContents);
+        console.log('text',text);
+      } catch(e){
+        return cb(e); 
+      }
+      cb(null, text);
+    });
+  }).on('error',function(err){
+    cb(err);
+  });
 }
 
 function extractTextContentFromPage(pageContents){

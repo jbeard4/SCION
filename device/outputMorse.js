@@ -15,8 +15,7 @@ function outputMorseStringToBuzzer(hardware, str, cb){
   }
 
   var words = 
-    str.split(/\b\s+(?!$)/g).map(function(word){
-      console.log('word',word);
+    str.split(/\s+/g).map(function(word){
       return {
         original : word,
         morse : 

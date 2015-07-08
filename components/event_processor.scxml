@@ -46,8 +46,20 @@
       </transition>
     </state>
     <state id="sending_dash">
+      <onentry>
+        <send id="long_press_timeout" event="long_press_timeout" delayexpr="dot_duration * 4 + 'ms'"/>
+      </onentry>
+      <onexit>
+        <cancel sendid="long_press_timeout"/>
+      </onexit>
       <transition event="device.release" target="released">
         <send event="dash"/> 
+      </transition>
+      <transition event="long_press_timeout" target="long_press"></transition>
+    </state>
+    <state id="long_press">
+      <transition event="device.release" target="released">
+        <send event="reset"/> 
       </transition>
     </state>
   </state> 

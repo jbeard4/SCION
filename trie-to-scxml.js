@@ -35,6 +35,7 @@ var scxmlString =
         eventProcessorScxml +
       '</state>' +
       '<state id="parsing_state">' +
+        '<transition target="parsing_state" event="reset"/>' + 
         states.map(function(state){
           return '<state id="' + state.id + '">' + 
             (

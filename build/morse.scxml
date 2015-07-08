@@ -3,7 +3,7 @@
   <parallel id="main">
     <state id="event_processor">
       <datamodel>
-        <data id="dot_duration" expr="250"/>
+        <data id="dot_duration" expr="100"/>
       </datamodel>
       <state id="released">
         <state id="initial">
@@ -50,13 +50,26 @@
           </transition>
         </state>
         <state id="sending_dash">
+          <onentry>
+            <send id="long_press_timeout" event="long_press_timeout" delayexpr="dot_duration * 4 + 'ms'"/>
+          </onentry>
+          <onexit>
+            <cancel sendid="long_press_timeout"/>
+          </onexit>
           <transition event="device.release" target="released">
             <send event="dash"/>
+          </transition>
+          <transition event="long_press_timeout" target="long_press"/>
+        </state>
+        <state id="long_press">
+          <transition event="device.release" target="released">
+            <send event="reset"/>
           </transition>
         </state>
       </state>
     </state>
     <state id="parsing_state">
+      <transition target="parsing_state" event="reset"/>
       <state id="idle">
         <transition target="dash" event="dash"/>
         <transition target="dot" event="dot"/>

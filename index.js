@@ -33,10 +33,8 @@ microexpresscion.initExpress({ port: PORT, pathToModel : __dirname + '/build/mor
                 Event: {name : 'system.start'}
               }, function (response) {
                 console.log('data',response.data);
-                if(process.env.EDISON){
-                  var initDevice = require('./device/main');
-                  initDevice(swagger, INSTANCEID, hostUrl);
-                }
+                var initDevice = require('./device/main');
+                initDevice(swagger, INSTANCEID, hostUrl);
               }, function (data) {
                 console.log('error response',data);
               });
