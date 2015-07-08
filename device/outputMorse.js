@@ -21,9 +21,12 @@ function outputMorseStringToBuzzer(hardware, str, cb){
         original : word,
         morse : 
           word.split('').map(function(c){
-            return textToMorse[c].split('');
-          }).filter(function(str){
-            return str;
+            return {
+              original : c,
+              morse : textToMorse[c]
+            };
+          }).filter(function(o){
+            return o.morse;
           })
        };
     });
@@ -31,11 +34,17 @@ function outputMorseStringToBuzzer(hardware, str, cb){
   async.eachSeries(words, function(word, wordCb){
 
     console.log('word.original',word.original);
-    hardware.lcd.write(word.original);
 
     async.eachSeries(word.morse, function(morseSequence, sequenceCb){
+      //hardware output
+      hardware.lcd.clear();
+      hardware.lcd.write(word.original);
+      hardware.lcd.setCursor(1,0);
+      hardware.lcd.write(morseSequence.original);
+      hardware.lcd.write(' ');
+      hardware.lcd.write(morseSequence.morse);
 
-      async.eachSeries(morseSequence, function(morseChar, charCb){
+      async.eachSeries(morseSequence.morse, function(morseChar, charCb){
         console.log('morseChar',morseChar);
         
         function turnOffTheBuzzerAndNext(){
