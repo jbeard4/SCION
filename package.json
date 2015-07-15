@@ -1,6 +1,6 @@
 {
   "name": "umio",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Morse code parser implemented in SCXML, designed to work with the microexpresscion SCXML orchestration server.",
   "main": "index.js",
   "scripts": {
