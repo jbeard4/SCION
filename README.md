@@ -215,7 +215,7 @@ SCION-CORE is then available as the global variable `scion`.
 
 Install SCION-CORE via npm:
 
-    npm install scion-ng
+    npm install scion-core
 
 ## Rhino
 
