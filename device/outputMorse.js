@@ -4,6 +4,8 @@ var async = require('async');
 var DIT_LENGTH = 100; //ms
 function outputMorseStringToBuzzer(hardware, str, cb){
 
+  if(!str) return cb();
+
   var timeoutHandle;
 
   function turnOn(){

@@ -6,6 +6,7 @@ function fetchPage(url,cb){
   url = 'http://' + url;    //add URI prefix
 
   console.log('fetching page',url);
+  var failed = false, failureTimeout;
   http.get(url,function(res){
     var pageContents = '';
     res.on('data',function(s){
@@ -13,6 +14,10 @@ function fetchPage(url,cb){
     });
 
     res.on('end',function(){
+      clearTimeout(failureTimeout);
+      if(failed) return;
+
+      console.log('returned response', pageContents);
       try {
         var text = extractTextContentFromPage(pageContents);
         console.log('text',text);
@@ -22,8 +27,14 @@ function fetchPage(url,cb){
       cb(null, text);
     });
   }).on('error',function(err){
+    console.log('error fetching web page',err);
     cb(err);
   });
+  failureTimeout = setTimeout(
+    function(){
+      failed = true;
+      return cb(new Error('Timeout'));
+    }, 1000);
 }
 
 function extractTextContentFromPage(pageContents){

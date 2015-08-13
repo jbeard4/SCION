@@ -3,7 +3,7 @@
   <parallel id="main">
     <state id="event_processor">
       <datamodel>
-        <data id="dot_duration" expr="100"/>
+        <data id="dot_duration" expr="200"/>
       </datamodel>
       <state id="released">
         <state id="initial">
@@ -51,6 +51,7 @@
         </state>
         <state id="sending_dash">
           <onentry>
+            <log label="sending dash"/>
             <send id="long_press_timeout" event="long_press_timeout" delayexpr="dot_duration * 4 + 'ms'"/>
           </onentry>
           <onexit>
