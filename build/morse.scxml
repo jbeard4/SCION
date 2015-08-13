@@ -1,558 +1,1408 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scxml xmlns="http://www.w3.org/2005/07/scxml" name="morse" datamodel="ecmascript" version="1.0">
-  <parallel id="main">
-    <state id="event_processor">
-      <datamodel>
-        <data id="dot_duration" expr="200"/>
-      </datamodel>
-      <state id="released">
-        <state id="initial">
+<?xml version="1.0" encoding="UTF-8"?> 
+<scxml xmlns="http://www.w3.org/2005/07/scxml" name="morse" datamodel="ecmascript" version="1.0"> 
+  <script>
+    var m = require('mraa'); //require mraa
+    console.log('MRAA Version: ' + m.getVersion()); //write the mraa version to the console
+
+    //TODO: move pin configuration into environment variables
+
+    var groveSensor = require('jsupm_grove');
+
+    var myLed = new m.Gpio(4); //LED hooked up to digital pin 13 
+    myLed.dir(m.DIR_OUT); //set the gpio direction to output
+
+    var myBuzzer = new m.Gpio(3); //LED hooked up to digital pin 13 
+    myBuzzer.dir(m.DIR_OUT); //set the gpio direction to output
+
+    // Create the button object using GPIO pin 0
+    var button = new groveSensor.GroveButton(2);
+
+    // Load lcd module on I2C
+    var LCD = require('jsupm_i2clcd');
+
+    // Initialize Jhd1313m1 at 0x62 (RGB_ADDRESS) and 0x3E (LCD_ADDRESS) 
+    var myLcd = new LCD.Jhd1313m1 (0, 0x3E, 0x62);
+
+    var hardware = {
+      led : myLed,
+      buzzer : myBuzzer,
+      lcd : myLcd,
+      button : button
+    };
+
+    function readButtonValue() {
+      var currentButtonState = hardware.button.value();
+      var eventName = currentButtonState ? 'device.press' : 'device.release';
+      this.send({name : eventName});
+    }
+  </script>
+  <initial>
+    <transition target="input_mode"/>
+  </initial>
+  <state id="main">
+    <onentry>
+      <script>
+        setInterval(readTemperature.bind(this), 1000); 
+      </script>
+    </onentry>
+    <parallel id="input_mode">
+      <state id="event_processor">
+        <datamodel>
+          <data id="dot_duration" expr="250"/>
+        </datamodel>
+        <state id="released">
           <onentry>
-            <send id="short_pause_timeout" event="short_pause_timeout" delayexpr="dot_duration * 3 + 'ms'"/>
+            <script>
+              hardware.led.write(0);
+              hardware.buzzer.write(0);
+            </script>
+          </onentry>
+          <state id="initial">
+            <onentry>
+              <send id="short_pause_timeout" event="short_pause_timeout" delayexpr="dot_duration * 3 + 'ms'"/>
+            </onentry>
+            <onexit>
+              <cancel sendid="short_pause_timeout"/>
+            </onexit>
+            <transition event="short_pause_timeout" target="short_pause">
+            </transition>
+            <transition event="device.press" target="pressed">
+            </transition>
+          </state> 
+          <state id="short_pause">
+            <onentry>
+              <send id="long_pause_timeout" event="long_pause_timeout" delayexpr="dot_duration * 4 + 'ms'"/>
+              <send event="short_pause"/> 
+            </onentry>
+            <onexit>
+              <cancel sendid="long_pause_timeout"/>
+            </onexit>
+            <transition event="long_pause_timeout" target="long_pause"/>
+            <transition event="device.press" target="pressed"/>
+          </state> 
+          <state id="long_pause">
+            <onentry>
+              <send event="long_pause"/> 
+            </onentry>
+            <transition event="device.press" target="pressed"></transition>
+          </state> 
+        </state>
+        <state id="pressed">
+          <onentry>
+            <script>
+              hardware.led.write(1);
+              hardware.buzzer.write(1);
+            </script>
+          </onentry>
+          <state id="sending_dot">
+            <onentry>
+              <send id="dash-timeout" event="dash-timeout" delayexpr="dot_duration * 3 + 'ms'"/>
+            </onentry>
+            <onexit>
+              <cancel sendid="dash-timeout"/>
+            </onexit>
+            <transition event="dash-timeout" target="sending_dash"/>
+            <transition event="device.release" target="released">
+              <send event="dot"/> 
+            </transition>
+          </state>
+          <state id="sending_dash">
+            <onentry>
+              <send id="long_press_timeout" event="long_press_timeout" delayexpr="dot_duration * 4 + 'ms'"/>
+            </onentry>
+            <onexit>
+              <cancel sendid="long_press_timeout"/>
+            </onexit>
+            <transition event="device.release" target="released">
+              <send event="dash"/> 
+            </transition>
+            <transition event="long_press_timeout" target="output_mode"></transition>
+          </state>
+        </state> 
+      </state>
+      <state id="parsing_state">
+        <datamodel>
+          <data id="buffer"/>
+        </datamodel>
+        <onentry>
+          <script>
+            buffer = '';
+            hardware.lcd.clear();
+          </script>
+        </onentry>
+        <transition target="parsing_state" event="reset"/> 
+        
+          <state id="idle"> 
+            
+            
+              <transition target="dash" event="dash"/> 
+            
+              <transition target="dot" event="dot"/> 
+            
+            
+              <transition target="idle" event="long_pause">
+              </transition>
+            
+          </state> 
+        
+          <state id="dash"> 
+            
+            
+              <transition target="dashdash" event="dash"/> 
+            
+              <transition target="dashdot" event="dot"/> 
+            
+              <transition target="t" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="dashdash"> 
+            
+            
+              <transition target="dashdashdash" event="dash"/> 
+            
+              <transition target="dashdashdot" event="dot"/> 
+            
+              <transition target="m" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="dashdashdash"> 
+            
+            
+              <transition target="dashdashdashdash" event="dash"/> 
+            
+              <transition target="dashdashdashdot" event="dot"/> 
+            
+              <transition target="o" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="dashdashdashdash"> 
+            
+            
+              <transition target="dashdashdashdashdash" event="dash"/> 
+            
+              <transition target="dashdashdashdashdot" event="dot"/> 
+            
+            
+          </state> 
+        
+          <state id="dashdashdashdashdash"> 
+            
+            
+              <transition target="zero" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="zero"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dashdashdashdashdot"> 
+            
+            
+              <transition target="nine" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="nine"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dashdashdashdot"> 
+            
+            
+              <transition target="dashdashdashdotdot" event="dot"/> 
+            
+            
+          </state> 
+        
+          <state id="dashdashdashdotdot"> 
+            
+            
+              <transition target="eight" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="eight"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="o"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dashdashdot"> 
+            
+            
+              <transition target="dashdashdotdot" event="dot"/> 
+            
+              <transition target="g" event="short_pause"/> 
+            
+              <transition target="dashdashdotdash" event="dash"/> 
+            
+            
+          </state> 
+        
+          <state id="dashdashdotdot"> 
+            
+            
+              <transition target="dashdashdotdotdot" event="dot"/> 
+            
+              <transition target="z" event="short_pause"/> 
+            
+              <transition target="dashdashdotdotdash" event="dash"/> 
+            
+            
+          </state> 
+        
+          <state id="dashdashdotdotdot"> 
+            
+            
+              <transition target="seven" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="seven"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="z"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dashdashdotdotdash"> 
+            
+            
+              <transition target="dashdashdotdotdashdash" event="dash"/> 
+            
+            
+          </state> 
+        
+          <state id="dashdashdotdotdashdash"> 
+            
+            
+              <transition target="comma" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="comma"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="g"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dashdashdotdash"> 
+            
+            
+              <transition target="q" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="q"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="m"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dashdot"> 
+            
+            
+              <transition target="dashdotdot" event="dot"/> 
+            
+              <transition target="dashdotdash" event="dash"/> 
+            
+              <transition target="n" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="dashdotdot"> 
+            
+            
+              <transition target="dashdotdotdot" event="dot"/> 
+            
+              <transition target="d" event="short_pause"/> 
+            
+              <transition target="dashdotdotdash" event="dash"/> 
+            
+            
+          </state> 
+        
+          <state id="dashdotdotdot"> 
+            
+            
+              <transition target="dashdotdotdotdot" event="dot"/> 
+            
+              <transition target="b" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="dashdotdotdotdot"> 
+            
+            
+              <transition target="six" event="short_pause"/> 
+            
+              <transition target="dashdotdotdotdotdash" event="dash"/> 
+            
+            
+          </state> 
+        
+          <state id="six"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dashdotdotdotdotdash"> 
+            
+            
+              <transition target="hyphen" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="hyphen"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="b"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="d"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dashdotdotdash"> 
+            
+            
+              <transition target="x" event="short_pause"/> 
+            
+              <transition target="dashdotdotdashdot" event="dot"/> 
+            
+            
+          </state> 
+        
+          <state id="x"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dashdotdotdashdot"> 
+            
+            
+              <transition target="slash" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="slash"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dashdotdash"> 
+            
+            
+              <transition target="dashdotdashdot" event="dot"/> 
+            
+              <transition target="k" event="short_pause"/> 
+            
+              <transition target="dashdotdashdash" event="dash"/> 
+            
+            
+          </state> 
+        
+          <state id="dashdotdashdot"> 
+            
+            
+              <transition target="c" event="short_pause"/> 
+            
+              <transition target="dashdotdashdotdash" event="dash"/> 
+            
+            
+          </state> 
+        
+          <state id="c"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dashdotdashdotdash"> 
+            
+            
+              <transition target="dashdotdashdotdashdash" event="dash"/> 
+            
+            
+          </state> 
+        
+          <state id="dashdotdashdotdashdash"> 
+            
+            
+              <transition target="exclamation-mark" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="exclamation-mark"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="k"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dashdotdashdash"> 
+            
+            
+              <transition target="y" event="short_pause"/> 
+            
+              <transition target="dashdotdashdashdot" event="dot"/> 
+            
+            
+          </state> 
+        
+          <state id="y"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dashdotdashdashdot"> 
+            
+            
+              <transition target="open-parens" event="short_pause"/> 
+            
+              <transition target="dashdotdashdashdotdash" event="dash"/> 
+            
+            
+          </state> 
+        
+          <state id="open-parens"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dashdotdashdashdotdash"> 
+            
+            
+              <transition target="close-parens" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="close-parens"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="n"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="t"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dot"> 
+            
+            
+              <transition target="dotdash" event="dash"/> 
+            
+              <transition target="dotdot" event="dot"/> 
+            
+              <transition target="e" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="dotdash"> 
+            
+            
+              <transition target="dotdashdash" event="dash"/> 
+            
+              <transition target="a" event="short_pause"/> 
+            
+              <transition target="dotdashdot" event="dot"/> 
+            
+            
+          </state> 
+        
+          <state id="dotdashdash"> 
+            
+            
+              <transition target="dotdashdashdash" event="dash"/> 
+            
+              <transition target="dotdashdashdot" event="dot"/> 
+            
+              <transition target="w" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="dotdashdashdash"> 
+            
+            
+              <transition target="dotdashdashdashdash" event="dash"/> 
+            
+              <transition target="j" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="dotdashdashdashdash"> 
+            
+            
+              <transition target="one" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="one"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="j"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dotdashdashdot"> 
+            
+            
+              <transition target="p" event="short_pause"/> 
+            
+              <transition target="dotdashdashdotdash" event="dash"/> 
+            
+            
+          </state> 
+        
+          <state id="p"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dotdashdashdotdash"> 
+            
+            
+              <transition target="dotdashdashdotdashdot" event="dot"/> 
+            
+            
+          </state> 
+        
+          <state id="dotdashdashdotdashdot"> 
+            
+            
+              <transition target="at" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="at"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="w"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="a"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dotdashdot"> 
+            
+            
+              <transition target="dotdashdotdot" event="dot"/> 
+            
+              <transition target="r" event="short_pause"/> 
+            
+              <transition target="dotdashdotdash" event="dash"/> 
+            
+            
+          </state> 
+        
+          <state id="dotdashdotdot"> 
+            
+            
+              <transition target="l" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="l"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="r"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dotdashdotdash"> 
+            
+            
+              <transition target="dotdashdotdashdot" event="dot"/> 
+            
+            
+          </state> 
+        
+          <state id="dotdashdotdashdot"> 
+            
+            
+              <transition target="dotdashdotdashdotdash" event="dash"/> 
+            
+            
+          </state> 
+        
+          <state id="dotdashdotdashdotdash"> 
+            
+            
+              <transition target="period" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="period"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dotdot"> 
+            
+            
+              <transition target="dotdotdash" event="dash"/> 
+            
+              <transition target="dotdotdot" event="dot"/> 
+            
+              <transition target="i" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="dotdotdash"> 
+            
+            
+              <transition target="dotdotdashdash" event="dash"/> 
+            
+              <transition target="dotdotdashdot" event="dot"/> 
+            
+              <transition target="u" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="dotdotdashdash"> 
+            
+            
+              <transition target="dotdotdashdashdash" event="dash"/> 
+            
+              <transition target="dotdotdashdashdot" event="dot"/> 
+            
+            
+          </state> 
+        
+          <state id="dotdotdashdashdash"> 
+            
+            
+              <transition target="two" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="two"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dotdotdashdashdot"> 
+            
+            
+              <transition target="dotdotdashdashdotdot" event="dot"/> 
+            
+            
+          </state> 
+        
+          <state id="dotdotdashdashdotdot"> 
+            
+            
+              <transition target="question-mark" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="question-mark"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dotdotdashdot"> 
+            
+            
+              <transition target="f" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="f"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="u"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dotdotdot"> 
+            
+            
+              <transition target="dotdotdotdash" event="dash"/> 
+            
+              <transition target="dotdotdotdot" event="dot"/> 
+            
+              <transition target="s" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="dotdotdotdash"> 
+            
+            
+              <transition target="dotdotdotdashdash" event="dash"/> 
+            
+              <transition target="v" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="dotdotdotdashdash"> 
+            
+            
+              <transition target="three" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="three"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="v"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dotdotdotdot"> 
+            
+            
+              <transition target="dotdotdotdotdash" event="dash"/> 
+            
+              <transition target="dotdotdotdotdot" event="dot"/> 
+            
+              <transition target="h" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="dotdotdotdotdash"> 
+            
+            
+              <transition target="four" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="four"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="dotdotdotdotdot"> 
+            
+            
+              <transition target="five" event="short_pause"/> 
+            
+            
+          </state> 
+        
+          <state id="five"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="h"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="s"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="i"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+          <state id="e"> 
+            
+              <onentry>
+                <script>
+                  buffer += state.emit;
+                  hardware.lcd.write(state.emit);
+                </script>
+              </onentry>
+              <transition target="idle"/> //go back to start 
+            
+            
+            
+          </state> 
+        
+      </state>
+    </parallel>
+    <state id="output_mode">
+      <state id="fetching_page">
+        <onentry>
+          <script>
+            util.fetchPage(buffer, function(err, text){
+              if(err) return this.send({name : 'fetch.error',data : err});
+              this.send({name : 'fetch.success',data : text});
+            }.bind(this));
+          </script>
+        </onentry>
+        <transition event="fetch.success" target="outputting_page"/>
+        <transition event="fetch.error" target="fetch_page_error"/>
+      </state>
+      <state id="outputting_page">
+        <datamodel>
+          <data id="words"/>
+          <data id="word"/>
+          <data id="morseSequence"/>
+          <data id="morseChar"/>
+        </datamodel>
+        <onentry>
+          <script>
+            words = 
+              _event.data.split(/\s+/g).map(function(word){
+                return {
+                  original : word,
+                  morse : 
+                    word.split('').map(function(c){
+                      return {
+                        original : c,
+                        morse : textToMorse[c]
+                      };
+                    }).filter(function(o){
+                      return o.morse;
+                    })
+                 };
+              });
+
+            //init
+            word = words.dequeue();   
+            morseSequence = word.morse.dequeue();
+          </script>
+        </onentry>
+
+        <state id="loop">
+          <onentry>
+            <script>
+              morseChar = morseSequence.morse.dequeue();
+
+              var timeout;
+              switch(morseChar){
+                case '.':
+                  timeout = dot_duration;
+                  break;
+                case '-':
+                  timeout = dot_duration * 3;
+                  break;
+                default:
+                  throw new Error('Unexpected morse char');
+              }
+
+              if(morseChar){
+                this.send({name : 'buzzer.timeout'}, {delay : timeout});
+              }else{
+                morseSequence = word.morse.dequeue();
+                if(morseSequence){
+                  this.send({name : 'word.delay'}, {delay : dot_duration * 3});
+                }else{
+                  word = words.dequeue();   
+                  if(word){
+                    this.send({name : 'sequence.delay'}, {delay : dot_duration * 7});
+                  }else{
+                    this.send({name : 'words.loop.done'});
+                  }
+                }
+              }
+            </script>
+          </onentry>
+          <transition target="buzzer_on" cond="morseChar"/>
+          <transition target="loop" event="word.delay sequence.delay"/>
+          <transition target="input_mode" event="words.loop.done"/>
+        </state>
+        <state id="buzzer_on">
+          <onentry>
+            <script>
+              hardware.led.write(1);
+              hardware.buzzer.write(1);
+            </script>
           </onentry>
           <onexit>
-            <cancel sendid="short_pause_timeout"/>
+            <script>
+              hardware.led.write(0);
+              hardware.buzzer.write(0);
+            </script>
           </onexit>
-          <transition event="short_pause_timeout" target="short_pause">
-      </transition>
-          <transition event="device.press" target="pressed">
-      </transition>
-        </state>
-        <state id="short_pause">
-          <onentry>
-            <send id="long_pause_timeout" event="long_pause_timeout" delayexpr="dot_duration * 4 + 'ms'"/>
-            <send event="short_pause"/>
-          </onentry>
-          <onexit>
-            <cancel sendid="long_pause_timeout"/>
-          </onexit>
-          <transition event="long_pause_timeout" target="long_pause"/>
-          <transition event="device.press" target="pressed"/>
-        </state>
-        <state id="long_pause">
-          <onentry>
-            <send event="long_pause"/>
-          </onentry>
-          <transition event="device.press" target="pressed"/>
+          <transition target="buzzer_off" event="buzzer.timeout"/>
         </state>
       </state>
-      <state id="pressed">
-        <state id="sending_dot">
-          <onentry>
-            <send id="dash-timeout" event="dash-timeout" delayexpr="dot_duration * 3 + 'ms'"/>
-          </onentry>
-          <onexit>
-            <cancel sendid="dash-timeout"/>
-          </onexit>
-          <transition event="dash-timeout" target="sending_dash"/>
-          <transition event="device.release" target="released">
-            <send event="dot"/>
-          </transition>
-        </state>
-        <state id="sending_dash">
-          <onentry>
-            <log label="sending dash"/>
-            <send id="long_press_timeout" event="long_press_timeout" delayexpr="dot_duration * 4 + 'ms'"/>
-          </onentry>
-          <onexit>
-            <cancel sendid="long_press_timeout"/>
-          </onexit>
-          <transition event="device.release" target="released">
-            <send event="dash"/>
-          </transition>
-          <transition event="long_press_timeout" target="long_press"/>
-        </state>
-        <state id="long_press">
-          <transition event="device.release" target="released">
-            <send event="reset"/>
-          </transition>
-        </state>
+      <state id="fetch_page_error">
+        <onentry>
+          <script>
+            hardware.lcd.clear();
+            hardware.lcd.write(_event.data.message);
+          </script>
+        </onentry>
       </state>
+      <transition target="input_mode" event="device.press words.done"/>
     </state>
-    <state id="parsing_state">
-      <transition target="parsing_state" event="reset"/>
-      <state id="idle">
-        <transition target="dash" event="dash"/>
-        <transition target="dot" event="dot"/>
-        <transition target="idle" event="long_pause">
-          <send type="https://github.com/jbeard4/SCION#publish" event="character" contentexpr="' '"/>
-        </transition>
-      </state>
-      <state id="dash">
-        <transition target="dashdash" event="dash"/>
-        <transition target="dashdot" event="dot"/>
-        <transition target="t" event="short_pause"/>
-      </state>
-      <state id="dashdash">
-        <transition target="dashdashdash" event="dash"/>
-        <transition target="dashdashdot" event="dot"/>
-        <transition target="m" event="short_pause"/>
-      </state>
-      <state id="dashdashdash">
-        <transition target="dashdashdashdash" event="dash"/>
-        <transition target="dashdashdashdot" event="dot"/>
-        <transition target="o" event="short_pause"/>
-      </state>
-      <state id="dashdashdashdash">
-        <transition target="dashdashdashdashdash" event="dash"/>
-        <transition target="dashdashdashdashdot" event="dot"/>
-      </state>
-      <state id="dashdashdashdashdash">
-        <transition target="zero" event="short_pause"/>
-      </state>
-      <state id="zero">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'0'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dashdashdashdashdot">
-        <transition target="nine" event="short_pause"/>
-      </state>
-      <state id="nine">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'9'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dashdashdashdot">
-        <transition target="dashdashdashdotdot" event="dot"/>
-      </state>
-      <state id="dashdashdashdotdot">
-        <transition target="eight" event="short_pause"/>
-      </state>
-      <state id="eight">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'8'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="o">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'o'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dashdashdot">
-        <transition target="dashdashdotdot" event="dot"/>
-        <transition target="g" event="short_pause"/>
-        <transition target="dashdashdotdash" event="dash"/>
-      </state>
-      <state id="dashdashdotdot">
-        <transition target="dashdashdotdotdot" event="dot"/>
-        <transition target="z" event="short_pause"/>
-        <transition target="dashdashdotdotdash" event="dash"/>
-      </state>
-      <state id="dashdashdotdotdot">
-        <transition target="seven" event="short_pause"/>
-      </state>
-      <state id="seven">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'7'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="z">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'z'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dashdashdotdotdash">
-        <transition target="dashdashdotdotdashdash" event="dash"/>
-      </state>
-      <state id="dashdashdotdotdashdash">
-        <transition target="comma" event="short_pause"/>
-      </state>
-      <state id="comma">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="','"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="g">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'g'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dashdashdotdash">
-        <transition target="q" event="short_pause"/>
-      </state>
-      <state id="q">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'q'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="m">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'m'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dashdot">
-        <transition target="dashdotdot" event="dot"/>
-        <transition target="dashdotdash" event="dash"/>
-        <transition target="n" event="short_pause"/>
-      </state>
-      <state id="dashdotdot">
-        <transition target="dashdotdotdot" event="dot"/>
-        <transition target="d" event="short_pause"/>
-        <transition target="dashdotdotdash" event="dash"/>
-      </state>
-      <state id="dashdotdotdot">
-        <transition target="dashdotdotdotdot" event="dot"/>
-        <transition target="b" event="short_pause"/>
-      </state>
-      <state id="dashdotdotdotdot">
-        <transition target="six" event="short_pause"/>
-        <transition target="dashdotdotdotdotdash" event="dash"/>
-      </state>
-      <state id="six">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'6'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dashdotdotdotdotdash">
-        <transition target="hyphen" event="short_pause"/>
-      </state>
-      <state id="hyphen">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'-'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="b">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'b'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="d">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'d'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dashdotdotdash">
-        <transition target="x" event="short_pause"/>
-        <transition target="dashdotdotdashdot" event="dot"/>
-      </state>
-      <state id="x">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'x'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dashdotdotdashdot">
-        <transition target="slash" event="short_pause"/>
-      </state>
-      <state id="slash">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'/'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dashdotdash">
-        <transition target="dashdotdashdot" event="dot"/>
-        <transition target="k" event="short_pause"/>
-        <transition target="dashdotdashdash" event="dash"/>
-      </state>
-      <state id="dashdotdashdot">
-        <transition target="c" event="short_pause"/>
-        <transition target="dashdotdashdotdash" event="dash"/>
-      </state>
-      <state id="c">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'c'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dashdotdashdotdash">
-        <transition target="dashdotdashdotdashdash" event="dash"/>
-      </state>
-      <state id="dashdotdashdotdashdash">
-        <transition target="exclamation-mark" event="short_pause"/>
-      </state>
-      <state id="exclamation-mark">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'!'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="k">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'k'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dashdotdashdash">
-        <transition target="y" event="short_pause"/>
-        <transition target="dashdotdashdashdot" event="dot"/>
-      </state>
-      <state id="y">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'y'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dashdotdashdashdot">
-        <transition target="open-parens" event="short_pause"/>
-        <transition target="dashdotdashdashdotdash" event="dash"/>
-      </state>
-      <state id="open-parens">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'('"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dashdotdashdashdotdash">
-        <transition target="close-parens" event="short_pause"/>
-      </state>
-      <state id="close-parens">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="')'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="n">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'n'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="t">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'t'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dot">
-        <transition target="dotdash" event="dash"/>
-        <transition target="dotdot" event="dot"/>
-        <transition target="e" event="short_pause"/>
-      </state>
-      <state id="dotdash">
-        <transition target="dotdashdash" event="dash"/>
-        <transition target="a" event="short_pause"/>
-        <transition target="dotdashdot" event="dot"/>
-      </state>
-      <state id="dotdashdash">
-        <transition target="dotdashdashdash" event="dash"/>
-        <transition target="dotdashdashdot" event="dot"/>
-        <transition target="w" event="short_pause"/>
-      </state>
-      <state id="dotdashdashdash">
-        <transition target="dotdashdashdashdash" event="dash"/>
-        <transition target="j" event="short_pause"/>
-      </state>
-      <state id="dotdashdashdashdash">
-        <transition target="one" event="short_pause"/>
-      </state>
-      <state id="one">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'1'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="j">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'j'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dotdashdashdot">
-        <transition target="p" event="short_pause"/>
-        <transition target="dotdashdashdotdash" event="dash"/>
-      </state>
-      <state id="p">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'p'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dotdashdashdotdash">
-        <transition target="dotdashdashdotdashdot" event="dot"/>
-      </state>
-      <state id="dotdashdashdotdashdot">
-        <transition target="at" event="short_pause"/>
-      </state>
-      <state id="at">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'@'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="w">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'w'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="a">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'a'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dotdashdot">
-        <transition target="dotdashdotdot" event="dot"/>
-        <transition target="r" event="short_pause"/>
-        <transition target="dotdashdotdash" event="dash"/>
-      </state>
-      <state id="dotdashdotdot">
-        <transition target="l" event="short_pause"/>
-      </state>
-      <state id="l">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'l'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="r">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'r'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dotdashdotdash">
-        <transition target="dotdashdotdashdot" event="dot"/>
-      </state>
-      <state id="dotdashdotdashdot">
-        <transition target="dotdashdotdashdotdash" event="dash"/>
-      </state>
-      <state id="dotdashdotdashdotdash">
-        <transition target="period" event="short_pause"/>
-      </state>
-      <state id="period">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'.'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dotdot">
-        <transition target="dotdotdash" event="dash"/>
-        <transition target="dotdotdot" event="dot"/>
-        <transition target="i" event="short_pause"/>
-      </state>
-      <state id="dotdotdash">
-        <transition target="dotdotdashdash" event="dash"/>
-        <transition target="dotdotdashdot" event="dot"/>
-        <transition target="u" event="short_pause"/>
-      </state>
-      <state id="dotdotdashdash">
-        <transition target="dotdotdashdashdash" event="dash"/>
-        <transition target="dotdotdashdashdot" event="dot"/>
-      </state>
-      <state id="dotdotdashdashdash">
-        <transition target="two" event="short_pause"/>
-      </state>
-      <state id="two">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'2'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dotdotdashdashdot">
-        <transition target="dotdotdashdashdotdot" event="dot"/>
-      </state>
-      <state id="dotdotdashdashdotdot">
-        <transition target="question-mark" event="short_pause"/>
-      </state>
-      <state id="question-mark">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'?'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dotdotdashdot">
-        <transition target="f" event="short_pause"/>
-      </state>
-      <state id="f">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'f'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="u">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'u'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dotdotdot">
-        <transition target="dotdotdotdash" event="dash"/>
-        <transition target="dotdotdotdot" event="dot"/>
-        <transition target="s" event="short_pause"/>
-      </state>
-      <state id="dotdotdotdash">
-        <transition target="dotdotdotdashdash" event="dash"/>
-        <transition target="v" event="short_pause"/>
-      </state>
-      <state id="dotdotdotdashdash">
-        <transition target="three" event="short_pause"/>
-      </state>
-      <state id="three">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'3'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="v">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'v'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dotdotdotdot">
-        <transition target="dotdotdotdotdash" event="dash"/>
-        <transition target="dotdotdotdotdot" event="dot"/>
-        <transition target="h" event="short_pause"/>
-      </state>
-      <state id="dotdotdotdotdash">
-        <transition target="four" event="short_pause"/>
-      </state>
-      <state id="four">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'4'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="dotdotdotdotdot">
-        <transition target="five" event="short_pause"/>
-      </state>
-      <state id="five">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'5'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="h">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'h'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="s">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'s'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="i">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'i'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-      <state id="e">
-        <onentry>
-          <send type="https://github.com/jbeard4/SCION#publish" target="scxml://publish" event="character" contentexpr="'e'"/>
-        </onentry>
-        <transition target="idle"/>
-      </state>
-    </state>
-  </parallel>
+  </state>
 </scxml>
+

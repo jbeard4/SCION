@@ -30,11 +30,6 @@ function fetchPage(url,cb){
     console.log('error fetching web page',err);
     cb(err);
   });
-  failureTimeout = setTimeout(
-    function(){
-      failed = true;
-      return cb(new Error('Timeout'));
-    }, 1000);
 }
 
 function extractTextContentFromPage(pageContents){
