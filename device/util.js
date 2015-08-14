@@ -39,9 +39,3 @@ function extractTextContentFromPage(pageContents){
 }
 
 module.exports.fetchPage = fetchPage;
-
-if(require.main === module){
-  fetchPage('http://slashdot.org/',function(err, pageContents){
-    console.log('pageContents',err, pageContents);
-  });
-}

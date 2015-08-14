@@ -39,13 +39,13 @@
       this.send({name : eventName});
     }
   </script>
-  <initial>
-    <transition target="input_mode"/>
-  </initial>
   <state id="main">
+    <transition event="error.*">
+      <log label="uncaught error" expr="_event.data.message"/>
+    </transition>
     <onentry>
       <script>
-        setInterval(readTemperature.bind(this), 1000); 
+        setInterval(readButtonValue.bind(this), 30); 
       </script>
     </onentry>
     <parallel id="input_mode">
@@ -139,11 +139,11 @@
             <% if (state.emit){ %>
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "<%= state.emit %>";
+                  hardware.lcd.write("<%= state.emit %>");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             <% } %>
             <% state.transitions.map(function(t){ %>
               <transition target="<%= t.target %>" event="<%= t.event %>"/> 
@@ -168,6 +168,9 @@
         </onentry>
         <transition event="fetch.success" target="outputting_page"/>
         <transition event="fetch.error" target="fetch_page_error"/>
+      </state>
+      <state id="no_text">
+
       </state>
       <state id="outputting_page">
         <datamodel>
@@ -251,7 +254,7 @@
               hardware.buzzer.write(0);
             </script>
           </onexit>
-          <transition target="buzzer_off" event="buzzer.timeout"/>
+          <transition target="loop" event="buzzer.timeout"/>
         </state>
       </state>
       <state id="fetch_page_error">

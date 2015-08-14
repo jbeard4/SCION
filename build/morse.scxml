@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <scxml xmlns="http://www.w3.org/2005/07/scxml" name="morse" datamodel="ecmascript" version="1.0"> 
   <script>
+    var textToMorse = require('../morse-code.json');
+    var util = require('../device/util');
+
     var m = require('mraa'); //require mraa
     console.log('MRAA Version: ' + m.getVersion()); //write the mraa version to the console
 
@@ -36,13 +39,13 @@
       this.send({name : eventName});
     }
   </script>
-  <initial>
-    <transition target="input_mode"/>
-  </initial>
   <state id="main">
+    <transition event="error.*">
+      <log label="uncaught error" expr="_event.data.message"/>
+    </transition>
     <onentry>
       <script>
-        setInterval(readTemperature.bind(this), 1000); 
+        setInterval(readButtonValue.bind(this), 30); 
       </script>
     </onentry>
     <parallel id="input_mode">
@@ -203,11 +206,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "0";
+                  hardware.lcd.write("0");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -225,11 +228,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "9";
+                  hardware.lcd.write("9");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -255,11 +258,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "8";
+                  hardware.lcd.write("8");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -269,11 +272,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "o";
+                  hardware.lcd.write("o");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -315,11 +318,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "7";
+                  hardware.lcd.write("7");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -329,11 +332,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "z";
+                  hardware.lcd.write("z");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -359,11 +362,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += ",";
+                  hardware.lcd.write(",");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -373,11 +376,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "g";
+                  hardware.lcd.write("g");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -395,11 +398,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "q";
+                  hardware.lcd.write("q");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -409,11 +412,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "m";
+                  hardware.lcd.write("m");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -467,11 +470,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "6";
+                  hardware.lcd.write("6");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -489,11 +492,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "-";
+                  hardware.lcd.write("-");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -503,11 +506,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "b";
+                  hardware.lcd.write("b");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -517,11 +520,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "d";
+                  hardware.lcd.write("d");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -541,11 +544,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "x";
+                  hardware.lcd.write("x");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -563,11 +566,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "/";
+                  hardware.lcd.write("/");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -599,11 +602,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "c";
+                  hardware.lcd.write("c");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -629,11 +632,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "!";
+                  hardware.lcd.write("!");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -643,11 +646,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "k";
+                  hardware.lcd.write("k");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -667,11 +670,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "y";
+                  hardware.lcd.write("y");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -691,11 +694,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "(";
+                  hardware.lcd.write("(");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -713,11 +716,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += ")";
+                  hardware.lcd.write(")");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -727,11 +730,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "n";
+                  hardware.lcd.write("n");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -741,11 +744,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "t";
+                  hardware.lcd.write("t");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -809,11 +812,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "1";
+                  hardware.lcd.write("1");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -823,11 +826,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "j";
+                  hardware.lcd.write("j");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -847,11 +850,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "p";
+                  hardware.lcd.write("p");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -877,11 +880,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "@";
+                  hardware.lcd.write("@");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -891,11 +894,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "w";
+                  hardware.lcd.write("w");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -905,11 +908,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "a";
+                  hardware.lcd.write("a");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -939,11 +942,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "l";
+                  hardware.lcd.write("l");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -953,11 +956,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "r";
+                  hardware.lcd.write("r");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -991,11 +994,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += ".";
+                  hardware.lcd.write(".");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -1047,11 +1050,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "2";
+                  hardware.lcd.write("2");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -1077,11 +1080,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "?";
+                  hardware.lcd.write("?");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -1099,11 +1102,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "f";
+                  hardware.lcd.write("f");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -1113,11 +1116,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "u";
+                  hardware.lcd.write("u");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -1157,11 +1160,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "3";
+                  hardware.lcd.write("3");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -1171,11 +1174,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "v";
+                  hardware.lcd.write("v");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -1205,11 +1208,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "4";
+                  hardware.lcd.write("4");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -1227,11 +1230,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "5";
+                  hardware.lcd.write("5");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -1241,11 +1244,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "h";
+                  hardware.lcd.write("h");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -1255,11 +1258,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "s";
+                  hardware.lcd.write("s");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -1269,11 +1272,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "i";
+                  hardware.lcd.write("i");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -1283,11 +1286,11 @@
             
               <onentry>
                 <script>
-                  buffer += state.emit;
-                  hardware.lcd.write(state.emit);
+                  buffer += "e";
+                  hardware.lcd.write("e");
                 </script>
               </onentry>
-              <transition target="idle"/> //go back to start 
+              <transition target="idle"/>
             
             
             
@@ -1390,7 +1393,7 @@
               hardware.buzzer.write(0);
             </script>
           </onexit>
-          <transition target="buzzer_off" event="buzzer.timeout"/>
+          <transition target="loop" event="buzzer.timeout"/>
         </state>
       </state>
       <state id="fetch_page_error">
