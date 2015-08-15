@@ -160,6 +160,7 @@
       <state id="fetching_page">
         <onentry>
           <script>
+            buffer = 'slashdot.org';
             util.fetchPage(buffer, function(err, text){
               if(err) return this.send({name : 'fetch.error',data : err});
               this.send({name : 'fetch.success',data : text});
@@ -265,7 +266,7 @@
           </script>
         </onentry>
       </state>
-      <transition target="input_mode" event="device.press words.done"/>
+      <transition target="input_mode" event="device.press"/>
     </state>
   </state>
 </scxml>

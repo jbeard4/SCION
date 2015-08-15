@@ -17,10 +17,10 @@ function fetchPage(url,cb){
       clearTimeout(failureTimeout);
       if(failed) return;
 
-      console.log('returned response', pageContents);
+      //console.log('returned response', pageContents);
       try {
+        //pageContents = '<article><div class="body">Foo bar bat.</div><div class="body">Hello. World</div></article>';
         var text = extractTextContentFromPage(pageContents);
-        console.log('text',text);
       } catch(e){
         return cb(e); 
       }
@@ -35,7 +35,7 @@ function fetchPage(url,cb){
 function extractTextContentFromPage(pageContents){
   var $ = cheerio.load(pageContents);
   //assume some semantic markup
-  return $('article .body').text();
+  return $('article .body').text().trim();
 }
 
 module.exports.fetchPage = fetchPage;
