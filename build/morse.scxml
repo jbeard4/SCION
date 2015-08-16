@@ -48,7 +48,7 @@
       hardware.lcd.write(morseSequence.morse.join(''));
     }
   </script>
-  <state id="main">
+  <parallel id="main">
     <transition event="error.*">
       <log label="uncaught error" expr="_event.data.message + '\n' + _event.data.stack"/>
     </transition>
@@ -57,83 +57,84 @@
         setInterval(readButtonValue.bind(this), 30); 
       </script>
     </onentry>
-    <parallel id="input_mode">
-      <state id="event_processor">
-        <datamodel>
-          <data id="dit_duration" expr="100"/>
-          <data id="dash_duration" expr="dit_duration * 3"/>
-        </datamodel>
-        <state id="released">
+    <state id="event_processor">
+      <datamodel>
+        <data id="dit_duration" expr="100"/>
+        <data id="dash_duration" expr="dit_duration * 3"/>
+      </datamodel>
+      <state id="released">
+        <onentry>
+          <script>
+            hardware.led.write(0);
+            hardware.buzzer.write(0);
+          </script>
+          <send event="button.release"/>
+        </onentry>
+        <state id="initial">
           <onentry>
-            <script>
-              hardware.led.write(0);
-              hardware.buzzer.write(0);
-            </script>
+            <send id="short_pause_timeout" event="short_pause_timeout" delayexpr="dash_duration + 'ms'"/>
           </onentry>
-          <state id="initial">
-            <onentry>
-              <send id="short_pause_timeout" event="short_pause_timeout" delayexpr="dash_duration + 'ms'"/>
-            </onentry>
-            <onexit>
-              <cancel sendid="short_pause_timeout"/>
-            </onexit>
-            <transition event="short_pause_timeout" target="short_pause">
-            </transition>
-            <transition event="device.press" target="pressed">
-            </transition>
-          </state> 
-          <state id="short_pause">
-            <onentry>
-              <send id="long_pause_timeout" event="long_pause_timeout" delayexpr="dit_duration * 7 + 'ms'"/>
-              <send event="short_pause"/> 
-            </onentry>
-            <onexit>
-              <cancel sendid="long_pause_timeout"/>
-            </onexit>
-            <transition event="long_pause_timeout" target="long_pause"/>
-            <transition event="device.press" target="pressed"/>
-          </state> 
-          <state id="long_pause">
-            <onentry>
-              <send event="long_pause"/> 
-            </onentry>
-            <transition event="device.press" target="pressed"></transition>
-          </state> 
-        </state>
-        <state id="pressed">
+          <onexit>
+            <cancel sendid="short_pause_timeout"/>
+          </onexit>
+          <transition event="short_pause_timeout" target="short_pause">
+          </transition>
+          <transition event="device.press" target="pressed">
+          </transition>
+        </state> 
+        <state id="short_pause">
           <onentry>
-            <script>
-              hardware.led.write(1);
-              hardware.buzzer.write(1);
-            </script>
+            <send id="long_pause_timeout" event="long_pause_timeout" delayexpr="dit_duration * 7 + 'ms'"/>
+            <send event="short_pause"/> 
           </onentry>
-          <state id="sending_dot">
-            <onentry>
-              <send id="dash-timeout" event="dash-timeout" delayexpr="dash_duration + 'ms'"/>
-            </onentry>
-            <onexit>
-              <cancel sendid="dash-timeout"/>
-            </onexit>
-            <transition event="dash-timeout" target="sending_dash"/>
-            <transition event="device.release" target="released">
-              <send event="dot"/> 
-            </transition>
-          </state>
-          <state id="sending_dash">
-            <onentry>
-              <send id="long_press_timeout" event="long_press_timeout" delayexpr="dit_duration * 4 + 'ms'"/>
-            </onentry>
-            <onexit>
-              <cancel sendid="long_press_timeout"/>
-            </onexit>
-            <transition event="device.release" target="released">
-              <send event="dash"/> 
-            </transition>
-            <transition event="long_press_timeout" target="output_mode"></transition>
-          </state>
+          <onexit>
+            <cancel sendid="long_pause_timeout"/>
+          </onexit>
+          <transition event="long_pause_timeout" target="long_pause"/>
+          <transition event="device.press" target="pressed"/>
+        </state> 
+        <state id="long_pause">
+          <onentry>
+            <send event="long_pause"/> 
+          </onentry>
+          <transition event="device.press" target="pressed"></transition>
         </state> 
       </state>
-      <state id="parsing_state">
+      <state id="pressed">
+        <onentry>
+          <script>
+            hardware.led.write(1);
+            hardware.buzzer.write(1);
+          </script>
+          <send event="button.press"/>
+        </onentry>
+        <state id="sending_dot">
+          <onentry>
+            <send id="dash-timeout" event="dash-timeout" delayexpr="dash_duration + 'ms'"/>
+          </onentry>
+          <onexit>
+            <cancel sendid="dash-timeout"/>
+          </onexit>
+          <transition event="dash-timeout" target="sending_dash"/>
+          <transition event="device.release" target="released">
+            <send event="dot"/> 
+          </transition>
+        </state>
+        <state id="sending_dash">
+          <onentry>
+            <send id="long_press_timeout" event="long_press_timeout" delayexpr="dit_duration * 4 + 'ms'"/>
+          </onentry>
+          <onexit>
+            <cancel sendid="long_press_timeout"/>
+          </onexit>
+          <transition event="device.release" target="released">
+            <send event="dash"/> 
+          </transition>
+        </state>
+      </state> 
+    </state>
+    <state id="application_mode">
+      <state id="input_mode">
         <datamodel>
           <data id="buffer"/>
         </datamodel>
@@ -143,7 +144,6 @@
             hardware.lcd.clear();
           </script>
         </onentry>
-        <transition target="parsing_state" event="reset"/> 
         
           <state id="idle"> 
             
@@ -1306,118 +1306,122 @@
             
           </state> 
         
+        <transition target="output_mode" event="long_press_timeout"/>
       </state>
-    </parallel>
-    <state id="output_mode">
-      <state id="fetching_page">
-        <onentry>
-          <script>
-            hardware.lcd.setCursor(1,0);
-            hardware.lcd.write('Fetching...');
-            util.fetchPage(buffer, function(err, text){
-              if(err) return this.send({name : 'fetch.error',data : err});
-              if(!text.length) return this.send({name : 'words.done'});
-              this.send({name : 'fetch.success',data : text});
-            }.bind(this));
-          </script>
-        </onentry>
-        <transition event="fetch.success" target="outputting_page"/>
-        <transition event="fetch.error" target="fetch_page_error"/>
-      </state>
-      <state id="outputting_page">
-        <datamodel>
-          <data id="words"/>
-          <data id="word"/>
-          <data id="morseSequence"/>
-          <data id="morseChar"/>
-        </datamodel>
-        <onentry>
-          <script>
-            words = 
-            _event.data.split(/\s+/g).
-              filter(function(word){return word;}).
-              map(function(word){
-                return {
-                  original : word,
-                  morse : word.toLowerCase().split('').
-                    filter(function(c){
-                      return textToMorse[c];
-                    }).
-                    map(function(c){
-                      return {
-                        original : c,
-                        morse : textToMorse[c].split('')
-                      };
-                    })
-                 };
-              });
-
-            //init
-            word = words.shift();   
-            morseSequence = word.morse.shift();
-            updateMorseSequence(word, morseSequence);
-          </script>
-        </onentry>
-
-        <state id="loop">
+      <state id="output_mode">
+        <state id="fetching_page">
           <onentry>
             <script>
-              morseChar = morseSequence.morse.shift();
+              hardware.lcd.setCursor(1,0);
+              hardware.lcd.write('Fetching...');
+              util.fetchPage(buffer, function(err, text){
+                if(err) return this.send({name : 'fetch.error',data : err});
+                if(!text.length) return this.send({name : 'words.done'});
+                this.send({name : 'fetch.success',data : text});
+              }.bind(this));
+            </script>
+          </onentry>
+          <transition event="fetch.success" target="outputting_page"/>
+          <transition event="fetch.error" target="fetch_page_error"/>
+        </state>
+        <state id="outputting_page">
+          <datamodel>
+            <data id="words"/>
+            <data id="word"/>
+            <data id="morseSequence"/>
+            <data id="morseChar"/>
+          </datamodel>
+          <onentry>
+            <script>
+              words = 
+              _event.data.split(/\s+/g).
+                filter(function(word){return word;}).
+                map(function(word){
+                  return {
+                    original : word,
+                    morse : word.toLowerCase().split('').
+                      filter(function(c){
+                        return textToMorse[c];
+                      }).
+                      map(function(c){
+                        return {
+                          original : c,
+                          morse : textToMorse[c].split('')
+                        };
+                      })
+                   };
+                });
 
-              if(morseChar === '.'){
-                this.send({name:'morse.char'}, {delay : dit_duration});
-                this.send({name : 'buzzer.timeout'}, {delay : dit_duration + dit_duration});
-              } else if(morseChar === '-'){
-                this.send({name:'morse.char'}, {delay : dit_duration});
-                this.send({name : 'buzzer.timeout'}, {delay : dit_duration + dash_duration});
-              } else {
-                morseSequence = word.morse.shift();
-                if(morseSequence){
-                  updateMorseSequence(word, morseSequence);
-                  this.send({name : 'word.delay'}, {delay : dash_duration});
-                }else{
-                  word = words.shift();   
-                  if(word){
-                    morseSequence = word.morse.shift();
+              //init
+              word = words.shift();   
+              morseSequence = word.morse.shift();
+              updateMorseSequence(word, morseSequence);
+            </script>
+          </onentry>
+
+          <state id="loop">
+            <onentry>
+              <script>
+                morseChar = morseSequence.morse.shift();
+
+                if(morseChar === '.'){
+                  this.send({name:'morse.char'}, {delay : dit_duration});
+                  this.send({name : 'buzzer.timeout'}, {delay : dit_duration + dit_duration});
+                } else if(morseChar === '-'){
+                  this.send({name:'morse.char'}, {delay : dit_duration});
+                  this.send({name : 'buzzer.timeout'}, {delay : dit_duration + dash_duration});
+                } else {
+                  morseSequence = word.morse.shift();
+                  if(morseSequence){
                     updateMorseSequence(word, morseSequence);
-                    this.send({name : 'sequence.delay'}, {delay : dit_duration * 7});
+                    this.send({name : 'word.delay'}, {delay : dash_duration});
                   }else{
-                    this.send({name : 'words.loop.done'});
+                    word = words.shift();   
+                    if(word){
+                      morseSequence = word.morse.shift();
+                      updateMorseSequence(word, morseSequence);
+                      this.send({name : 'sequence.delay'}, {delay : dit_duration * 7});
+                    }else{
+                      this.send({name : 'words.done'});
+                    }
                   }
                 }
-              }
-            </script>
-          </onentry>
-          <transition target="buzzer_on" event="morse.char"/>
-          <transition target="loop" event="word.delay sequence.delay"/>
-          <transition target="input_mode" event="words.loop.done"/>
+              </script>
+            </onentry>
+            <transition target="buzzer_on" event="morse.char"/>
+            <transition target="loop" event="word.delay sequence.delay"/>
+          </state>
+          <state id="buzzer_on">
+            <onentry>
+              <script>
+                hardware.led.write(1);
+                hardware.buzzer.write(1);
+              </script>
+            </onentry>
+            <onexit>
+              <script>
+                hardware.led.write(0);
+                hardware.buzzer.write(0);
+              </script>
+            </onexit>
+            <transition target="loop" event="buzzer.timeout"/>
+          </state>
         </state>
-        <state id="buzzer_on">
+        <state id="fetch_page_error">
           <onentry>
             <script>
-              hardware.led.write(1);
-              hardware.buzzer.write(1);
+              hardware.lcd.clear();
+              hardware.lcd.write(_event.data.message);
             </script>
           </onentry>
-          <onexit>
-            <script>
-              hardware.led.write(0);
-              hardware.buzzer.write(0);
-            </script>
-          </onexit>
-          <transition target="loop" event="buzzer.timeout"/>
         </state>
+        <transition target="input_mode" event="words.done"/>
+        <transition target="output_to_input_mode" event="button.press"/>
       </state>
-      <state id="fetch_page_error">
-        <onentry>
-          <script>
-            hardware.lcd.clear();
-            hardware.lcd.write(_event.data.message);
-          </script>
-        </onentry>
+      <state id="output_to_input_mode">
+        <transition target="input_mode" event="button.release"/>
       </state>
-      <transition target="input_mode" event="words.done"/>
     </state>
-  </state>
+  </parallel>
 </scxml>
 
