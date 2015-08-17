@@ -10,6 +10,17 @@ if(!pathToScxml){
   process.exit(1);
 }
 
+function customSend(event, options) {
+    console.log('SEND: ' +
+        JSON.stringify(event) +
+        ', options: ' +
+        JSON.stringify(options));
+}
+
+var interpOpts = {
+    customSend: customSend
+}
+
 //1 - 2. get the xml file and convert it to jsonml
 scxml.pathToModel(pathToScxml,function(err,model){
 
@@ -18,11 +29,11 @@ scxml.pathToModel(pathToScxml,function(err,model){
     }
 
     //Use the statechart object model to instantiate an instance of the statechart interpreter. Optionally, we can pass to the construct an object to be used as the context object (the 'this' object) in script evaluation. Lots of other parameters are available.
-    var interpreter = new scxml.scion.Statechart(model);
+    var interpreter = new scxml.scion.Statechart(model, interpOpts);
 
     interpreter.start();
 
-    console.log(interpreter.getConfiguration()); 
+    console.log(interpreter.getConfiguration());
 
     var parseRE = /\((.*)\n\)/;
 
@@ -32,9 +43,9 @@ scxml.pathToModel(pathToScxml,function(err,model){
         var conf = interpreter.getConfiguration();
         callback(null,conf);
     }
-        
-    //start 
+
+    //start
     repl.start('#',process.stdin,processEvent);
-    
+
 });
 
