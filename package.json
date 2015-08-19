@@ -1,14 +1,10 @@
 {
   "name": "umio",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Morse code parser implemented in SCXML, designed to work with the microexpresscion SCXML orchestration server.",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
-  },
-  "bin": {
-    "umio": "index.js"
+    "start": "node node_modules/microexpresscion/bin/www -s _singleton build/morse.scxml"
   },
   "repository": {
     "type": "git",
@@ -26,9 +22,8 @@
     "ejs": "^2.3.3",
     "eventsource": "^0.1.6",
     "express": "^4.13.1",
-    "microexpresscion": "1.5.0",
+    "microexpresscion": "1.7.0",
     "request": "^2.58.0",
-    "swagger-client": "^2.1.1",
     "valid-url": "^1.0.9"
   }
 }
