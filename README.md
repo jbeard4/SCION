@@ -475,7 +475,7 @@ If property `isDeep` had not been set on the history state, then the state machi
 
 The context object ("`this`") of onEntry, onExit, and onTransition functions contains the following methods:
 
-* `gen(event)`, which adds an event to the Statechart's outer queue
+* `send(event)`, which adds an event to the Statechart's outer queue
 * `raise(event)`, which adds an event to the Statechart's inner queue 
 
 # API
