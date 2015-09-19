@@ -513,11 +513,18 @@ An SCXML interpreter takes SCXML events as input, where an SCXML event is an obj
     var configuration = sc.gen({name:"eventName",data:{foo:1}}); 
 ```
 
-## sc.registerListener({onEntry : function(stateId){}, onExit : function(stateId){}, onTransition : function(sourceStateId,[targetStateIds,...]){}})
+## sc.registerListener({onEntry : function(stateId){}, onExit : function(stateId){}, onTransition : function(sourceStateId,[targetStateIds,...]){}, onError: function(errorInfo){}})
 
 Registers a callback to receive notification of state changes, as described above.
 
-Each `onEntry`, `onExit` and `onTransition` callback is optional - if the property is not present, it will be ignored.
+Each `onEntry`, `onExit`, `onTransition`, and `onError` callback is optional - if the property is not present, it will be ignored.
+
+The `onError` callback receives an object containing the following properties:
+
+* `tagname` - The name of the element that produced the error. 
+* `line` - The line in the source file in which the error occurred.
+* `column` - The column in the source file in which the error occurred.
+* `reason` - An informative error message. The text is platform-specific and subject to change.
 
 # Development
 
