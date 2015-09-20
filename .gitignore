@@ -10,3 +10,5 @@ scion-browser.js
 scion-browser-min.js
 TODO
 log
+*.sublime-project
+*.sublime-workspace
