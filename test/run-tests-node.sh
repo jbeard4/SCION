@@ -126,7 +126,7 @@ if [ "$status" = '0' ]; then echo SUCCESS; else echo FAILURE; exit $status; fi;
 
 # test platform-tests/node
 # TODO: capture and incorporate return value
-nodeunit platform-tests/node/*/runner.js platform-tests/all/*/runner.js 
+nodeunit platform-tests/node/*/runner.js 
 
 status=$?
 
