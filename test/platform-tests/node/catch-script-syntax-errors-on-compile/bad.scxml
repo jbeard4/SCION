@@ -1,0 +1,37 @@
+<scxml xmlns="http://www.w3.org/2005/07/scxml"
+  version="1.0">
+
+<script>
+// intentional compilation error (extra '=')
+function doError(x) {
+  var ret = true;
+  if (x !=== 2) {
+    ret = false;
+  }
+
+  return ret;
+}
+</script>
+
+<state id="uber">
+  <transition event="fail" target="fail"/>
+
+  <transition event="*" target="fail">
+    <log expr="'Unexpected ' + _event.name + ', data=' + JSON.stringify(_event.data)" label="TEST"/>
+  </transition>
+
+  <state id="s1">
+    <onentry>
+      <script>doError(1);</script>
+      <raise event="fail"/>
+    </onentry>
+  </state>
+</state>
+
+<final id="fail">
+  <onentry>
+    <log expr="'RESULT: fail'" label="TEST"/>
+  </onentry>
+</final>
+
+</scxml>
