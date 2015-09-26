@@ -1,5 +1,5 @@
 if [ ! -e node_modules ]; then mkdir node_modules; fi
-npm install request underscore nopt node-static github cli-table ..   #install scion as a dependency, and scxml-test-framework's dependencies
+npm install request underscore nopt node-static github cli-table nodeunit ..   #install scion as a dependency, and scxml-test-framework's dependencies
 
 #start the server
 node node-test-server.js &
@@ -121,6 +121,14 @@ status=$?
 
 #kill the server
 kill $serverpid
+
+if [ "$status" = '0' ]; then echo SUCCESS; else echo FAILURE; exit $status; fi;
+
+# test platform-tests/node
+# TODO: capture and incorporate return value
+./node_modules/nodeunit/bin/nodeunit platform-tests/node/*/runner.js 
+
+status=$?
 
 if [ "$status" = '0' ]; then echo SUCCESS; else echo FAILURE; fi;
 

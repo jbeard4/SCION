@@ -76,10 +76,10 @@ Note that this will only work if the SCXML `<script>` tags contain local filesys
 
 ## Instantiation
 
-### scxml.urlToModel(url,function(err, model){})
-### scxml.pathToModel(path,function(err, model){})
-### scxml.documentStringToModel(scxmlDocString,function(err, model){})
-### scxml.documentToModel(scxmlDocument,function(err, model){})
+### scxml.urlToModel(url,function(err, model){} [, context])
+### scxml.pathToModel(path,function(err, model){} [, context])
+### scxml.documentStringToModel(scxmlDocString,function(err, model){} [, context])
+### scxml.documentToModel(scxmlDocument,function(err, model){} [, context])
 
 SCION allows you to instantiate SCXML interpreters from SCXML "model" objects, which are SCXML documents that have been processed for easier interpretation. 
 These methods allow you to create an SCXML model from an XML DOM document, document string, or url/path to document.
