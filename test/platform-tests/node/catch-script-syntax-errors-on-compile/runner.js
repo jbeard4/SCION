@@ -24,9 +24,8 @@ function testErrorSurfaced(test) {
 
 function testErrorSuppressed(test) {
   scxml.pathToModel(__dirname + '/bad.scxml', function(err, model) {
-    if (err) {
-        throw 'expected compile error to be suppressed';
-    }
+
+    test.ifError(err);
 
     if (!model) {
         throw 'expected model to be returned';        
