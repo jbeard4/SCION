@@ -39,7 +39,8 @@
     "scion-core": "https://github.com/mattoshry/SCION-CORE.git#e88bfbdbc87404c6b8bee5efc3c0a4ff36f51225"
   },
   "devDependencies": {
-    "karma": "~0.8"
+    "jasmine": "^2.3.2",
+    "underscore": "^1.8.3"
   },
   "engines": {
     "node": ">=0.10",

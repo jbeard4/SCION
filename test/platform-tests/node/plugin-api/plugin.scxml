@@ -1,0 +1,23 @@
+<scxml 
+  xmlns="http://www.w3.org/2005/07/scxml"
+  xmlns:scion="http://scion.io"
+  version="1.0">
+
+  <datamodel>
+    <data id="i" expr="1"/>
+  </datamodel>
+
+  <state id="a">
+    <onentry>
+      <scion:foo alpha="0"/>
+    </onentry>
+    <onexit>
+      <scion:bar betaexpr="i++"/>
+    </onexit>
+    <transition event="t" target="b">
+      <scion:bat scion:deltaexpr="i++"/>
+    </transition>
+  </state>
+
+  <state id="b"/>
+</scxml>
