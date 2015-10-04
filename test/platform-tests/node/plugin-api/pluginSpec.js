@@ -240,6 +240,7 @@ describe("Custom action elements", function(){
     
       var listeners = {
         onEntry : function(stateId){
+          console.log('onentry stateId',stateId);
           if(stateId === 'c'){
             flag = true;
           }
