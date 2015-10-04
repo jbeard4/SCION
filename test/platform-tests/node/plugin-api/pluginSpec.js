@@ -170,7 +170,6 @@ describe("Custom action elements", function(){
 
     scxml.pathToModel(__dirname + '/plugin.scxml', function(err, model) {
 
-      console.log('err',err.message);
       expect(err).not.toBeNull();
       //expect(err.message).toBe('foo');
 

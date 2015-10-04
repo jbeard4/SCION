@@ -127,7 +127,11 @@ if [ "$status" = '0' ]; then echo SUCCESS; else echo FAILURE; exit $status; fi;
 # test platform-tests/node
 # TODO: capture and incorporate return value
 ./node_modules/nodeunit/bin/nodeunit platform-tests/node/*/runner.js 
+status=$?
 
+if [ "$status" = '0' ]; then echo SUCCESS; else echo FAILURE; exit $status; fi;
+
+jasmine-node platform-tests/node/plugin-api/
 status=$?
 
 if [ "$status" = '0' ]; then echo SUCCESS; else echo FAILURE; fi;
