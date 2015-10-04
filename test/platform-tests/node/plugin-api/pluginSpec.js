@@ -211,6 +211,51 @@ describe("Custom action elements", function(){
 
   //TODO: test runtime errors. Expect error.execution to be thrown
   it("dispatches error.execution on runtime error",function(){
+
+    var runtimeTest = {
+      customRuntimeCb1 : function (){throw new Error('foo')},
+    };
+
+    var compileTest = {
+      "foo" : function(action){ 
+        return 'customRuntimeCb1();';
+      },
+      "bar" : function(action){ return ""; },
+      "bat" : function(action){ return ""; }    //bat is not defined
+    };
+
+    var plugin = {
+      "http://scion.io" : compileTest
+    };
+
+    var flag = false;
+    waitsFor(function() {
+      return flag;
+    }, "wait", 750);
+
+    scxml.pathToModel(__dirname + '/plugin.scxml', function(err, model) {
+
+      expect(err).toBeNull();
+
+      var sc = new scxml.scion.Statechart(model);
+    
+      var listeners = {
+        onEntry : function(stateId){
+          if(stateId === 'c'){
+            flag = true;
+          }
+        }
+      };
+      sc.on('onEntry',listeners.onEntry);
+
+      var initialConfig = sc.start();
+
+      expect(initialConfig).toEqual(['c']);
+    }, 
+    {
+      customActionElements : plugin,
+      customRuntimeGlobals : runtimeTest
+    });
   });
 
 });

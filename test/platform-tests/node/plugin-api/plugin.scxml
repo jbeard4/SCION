@@ -17,7 +17,10 @@
     <transition event="t" target="b">
       <scion:bat scion:deltaexpr="i++"/>
     </transition>
+
+    <transition event="error.execution" target="c" cond="_event.data.message === 'foo'" />
   </state>
 
   <state id="b"/>
+  <state id="c"/>
 </scxml>
