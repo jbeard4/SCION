@@ -36,7 +36,7 @@
     "esprima": "~1.2.2",
     "optimist": "0.6.1",
     "sax": "0.6.0",
-    "scion-core": "https://github.com/mattoshry/SCION-CORE.git#e88bfbdbc87404c6b8bee5efc3c0a4ff36f51225"
+    "scion-core": "https://github.com/jbeard4/SCION-CORE.git#73f0a70b5838eaea974d6884f9b7756a575aca36"
   },
   "devDependencies": {
     "jasmine": "^2.3.2",
