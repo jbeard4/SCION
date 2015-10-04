@@ -13,11 +13,10 @@ describe("Custom action elements", function(){
 
   it("works for registering custom elements", function(){
 
-    var x = 1;
     var runtimeTest = {
-      customRuntimeCb1 : function (){console.log('x1',x++)},
-      customRuntimeCb2 : function (){console.log('x2',x++)},
-      customRuntimeCb3 : function (){console.log('x3',x++)}
+      customRuntimeCb1 : function (){},
+      customRuntimeCb2 : function (){},
+      customRuntimeCb3 : function (){}
     };
 
     var compileTest = {
@@ -59,10 +58,6 @@ describe("Custom action elements", function(){
       "http://scion.io" : compileTest
     };
 
-    //spyOn(compileTest, 'foo').andCallThrough();
-    //spyOn(compileTest, 'bar').andCallThrough();
-    //spyOn(compileTest, 'bat').andCallThrough();
-
     spyOn(runtimeTest, 'customRuntimeCb1');
     spyOn(runtimeTest, 'customRuntimeCb2');
     spyOn(runtimeTest, 'customRuntimeCb3');
@@ -96,8 +91,126 @@ describe("Custom action elements", function(){
       customRuntimeGlobals : runtimeTest
     });
   });
+
+  //TODO: test compiler syntax error. Ensure that error propagates.
+  it("propagates syntax error in model through",function(){
+
+    var compileTest = {
+      "foo" : function(action){ 
+        return '*/+-_';      //syntax error in compiled module
+      },
+      "bar" : function(action){ return ""; },
+      "bat" : function(action){ return ""; }
+    };
+
+    var plugin = {
+      "http://scion.io" : compileTest
+    };
+
+    var flag = false;
+    waitsFor(function() {
+      return flag;
+    }, "wait", 750);
+
+    scxml.pathToModel(__dirname + '/plugin.scxml', function(err, model) {
+      expect(err).not.toBeNull();
+      expect(err.name).toBe('SyntaxError');
+
+      flag = true;
+    }, 
+    {
+      customActionElements : plugin
+    });
+  });
+
+  it("propagates compiler error through",function(){
+    var compileTest = {
+      "foo" : function(action){ 
+        throw new Error('foo');
+      },
+      "bar" : function(action){ return ""; },
+      "bat" : function(action){ return ""; }
+    };
+
+    var plugin = {
+      "http://scion.io" : compileTest
+    };
+
+    var flag = false;
+    waitsFor(function() {
+      return flag;
+    }, "wait", 750);
+
+    scxml.pathToModel(__dirname + '/plugin.scxml', function(err, model) {
+      expect(err).not.toBeNull();
+      expect(err.message).toBe('foo');
+
+      flag = true;
+    }, 
+    {
+      customActionElements : plugin
+    });
+  });
+
+  it("propagates catch undefined action element",function(){
+    var compileTest = {
+      "foo" : function(action){ return ""; },
+      "bar" : function(action){ return ""; },
+      //"bat" : function(action){ return ""; }    //bat is not defined
+    };
+
+    var plugin = {
+      "http://scion.io" : compileTest
+    };
+
+    var flag = false;
+    waitsFor(function() {
+      return flag;
+    }, "wait", 750);
+
+    scxml.pathToModel(__dirname + '/plugin.scxml', function(err, model) {
+
+      console.log('err',err.message);
+      expect(err).not.toBeNull();
+      //expect(err.message).toBe('foo');
+
+      flag = true;
+    }, 
+    {
+      customActionElements : plugin
+    });
+  });
+
+  it("handle return undefined from custom action code",function(){
+    var compileTest = {
+      "foo" : function(action){ },
+      "bar" : function(action){ },
+      "bat" : function(action){ }
+    };
+
+    var plugin = {
+      "http://scion.io" : compileTest
+    };
+
+    var flag = false;
+    waitsFor(function() {
+      return flag;
+    }, "wait", 750);
+
+    scxml.pathToModel(__dirname + '/plugin.scxml', function(err, model) {
+
+      expect(err).not.toBeNull();
+      expect(err.message).toBe('Undefined function template');
+
+      flag = true;
+    }, 
+    {
+      customActionElements : plugin
+    });
+  });
+
+  //TODO: test runtime errors. Expect error.execution to be thrown
+  it("dispatches error.execution on runtime error",function(){
+  });
+
 });
-
-//TODO: test compiler syntax error. Ensure that error propagates.
-
-//TODO: test runtime errors. Expect error.execution to be thrown
