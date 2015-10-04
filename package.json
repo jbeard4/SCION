@@ -48,6 +48,6 @@
   },
   "main": "./lib/runtime/platform-bootstrap/node/index.js",
   "scripts": {
-    "test": "cd test && bash run-tests-node.sh"
+    "test": "jasmine-node test/platform-tests/node/plugin-api/"
   }
 }
