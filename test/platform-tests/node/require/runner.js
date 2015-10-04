@@ -10,7 +10,7 @@ function testModel(model, test){
 
     test.deepEqual(nextConfig,['b'],'next configuration');
 
-    console.log("nextConfig",nextConfig);
+    //console.log("nextConfig",nextConfig);
 
     test.done();
 }

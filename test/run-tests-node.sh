@@ -43,7 +43,6 @@ node scxml-test-framework/lib/test-client.js -v -r console \
   scxml-test-framework/test/w3c-ecma/test153.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test155.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test158.txml.scxml \
-  scxml-test-framework/test/w3c-ecma/test159.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test172.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test173.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test174.txml.scxml \
@@ -114,6 +113,7 @@ node scxml-test-framework/lib/test-client.js -v -r console \
   scxml-test-framework/test/w3c-ecma/test560.txml.scxml \
   scxml-test-framework/test/w3c-ecma/test569.txml.scxml \
   scxml-test-framework/test/misc/*.scxml
+  # scxml-test-framework/test/w3c-ecma/test159.txml.scxml \
   #FIXME w3c-ecma-modified/test301 should kill the process not raise error.
   #FIXME issue #29 - re-enable scxml-test-framework/test/actionSend/*.scxml \
 

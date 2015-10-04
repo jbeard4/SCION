@@ -30,7 +30,6 @@
 
     <script>
         util = require('util'); //require built-in module
-        console.log('hello');
         submodule1 = require('./submodule1');
     </script>
 
@@ -42,7 +41,6 @@
                 submodule3 = require('./submodule3'); 
             </script>
             <script src="script4.js"/>
-            <log label="util" expr="util"/>
             <log label="submodules" expr="[submodule1, submodule2, submodule3, submodule4]"/>
        </onentry> 
 
