@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml 
+  xmlns="http://www.w3.org/2005/07/scxml"
+  profile="ecmascript"
+  version="1.0">
+
+    <datamodel>
+      <data id="sub1"/>
+    </datamodel>
+
+    <script src="./bundle.js"/>
+
+    <state id="a">
+       <onentry>
+         <script>
+          sub1 = new tfs.Sub();
+         </script>
+       </onentry> 
+
+        <transition event="t" target="p" cond="sub1.method1() === 'foo'"/>
+        <transition event="t" target="f"/>
+    </state>
+
+    <state id="p"/>
+    <state id="f"/>
+</scxml>
