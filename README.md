@@ -8,7 +8,7 @@ SCION-CORE is a small (2.9kb, minified and gzipped), embeddable implementation o
 
 SCION-CORE is written so as to abstract out platform dependencies, and is implemented as a single UMD module, which makes it easy to deploy in any JavaScript environment. The philosophy of SCION-CORE is **"write once, embed everywhere"**.
 
-SCION-CORE powers [SCION 2.0](https://github.com/jbeard4/SCION/tree/2.0.0), an implementation of [SCXML](http://www.w3.org/TR/scxml) in JavaScript, and as such, it supports all of the features of the SCXML core module, including compound states ( **OR** states), parallel states ( **AND** states), and history states. 
+SCION-CORE powers [SCION](https://github.com/jbeard4/SCION), an implementation of [W3C SCXML](http://www.w3.org/TR/scxml) in JavaScript, and as such, it supports all of the features of the SCXML core module, including compound states ( **OR** states), parallel states ( **AND** states), and history states. 
 
 # Quickstart and Simple Use Case
 
