@@ -8,7 +8,7 @@ SCION-CORE is a small (2.9kb, minified and gzipped), embeddable implementation o
 
 SCION-CORE is written so as to abstract out platform dependencies, and is implemented as a single UMD module, which makes it easy to deploy in any JavaScript environment. The philosophy of SCION-CORE is **"write once, embed everywhere"**.
 
-SCION-CORE powers [SCION 2.0](https://github.com/jbeard4/SCION/tree/2.0.0), an implementation of [SCXML](http://www.w3.org/TR/scxml) in JavaScript, and as such, it supports all of the features of the SCXML core module, including compound states ( **OR** states), parallel states ( **AND** states), and history states. 
+SCION-CORE powers [SCION](https://github.com/jbeard4/SCION), an implementation of [W3C SCXML](http://www.w3.org/TR/scxml) in JavaScript, and as such, it supports all of the features of the SCXML core module, including compound states ( **OR** states), parallel states ( **AND** states), and history states. 
 
 # Quickstart and Simple Use Case
 
@@ -215,7 +215,7 @@ SCION-CORE is then available as the global variable `scion`.
 
 Install SCION-CORE via npm:
 
-    npm install scion-ng
+    npm install scion-core
 
 ## Rhino
 
@@ -475,7 +475,7 @@ If property `isDeep` had not been set on the history state, then the state machi
 
 The context object ("`this`") of onEntry, onExit, and onTransition functions contains the following methods:
 
-* `gen(event)`, which adds an event to the Statechart's outer queue
+* `send(event)`, which adds an event to the Statechart's outer queue
 * `raise(event)`, which adds an event to the Statechart's inner queue 
 
 # API
@@ -513,11 +513,18 @@ An SCXML interpreter takes SCXML events as input, where an SCXML event is an obj
     var configuration = sc.gen({name:"eventName",data:{foo:1}}); 
 ```
 
-## sc.registerListener({onEntry : function(stateId){}, onExit : function(stateId){}, onTransition : function(sourceStateId,[targetStateIds,...]){}})
+## sc.registerListener({onEntry : function(stateId){}, onExit : function(stateId){}, onTransition : function(sourceStateId,[targetStateIds,...]){}, onError: function(errorInfo){}})
 
 Registers a callback to receive notification of state changes, as described above.
 
-Each `onEntry`, `onExit` and `onTransition` callback is optional - if the property is not present, it will be ignored.
+Each `onEntry`, `onExit`, `onTransition`, and `onError` callback is optional - if the property is not present, it will be ignored.
+
+The `onError` callback receives an object containing the following properties:
+
+* `tagname` - The name of the element that produced the error. 
+* `line` - The line in the source file in which the error occurred.
+* `column` - The column in the source file in which the error occurred.
+* `reason` - An informative error message. The text is platform-specific and subject to change.
 
 # Development
 
