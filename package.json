@@ -1,0 +1,27 @@
+{
+  "name": "scxml-tool",
+  "version": "1.0.0",
+  "description": "A tool for developing SCXML.",
+  "main": "index.js",
+  "dependencies": {
+    "klayjs": "^0.4.0",
+    "snapsvg": "^0.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "karma"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbeard4/scxml-tool.git"
+  },
+  "keywords": [
+    "scxml"
+  ],
+  "author": "Jacob Beard <jake@jacobeanrnd.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jbeard4/scxml-tool/issues"
+  },
+  "homepage": "https://github.com/jbeard4/scxml-tool#readme"
+}
