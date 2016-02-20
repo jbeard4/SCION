@@ -5,14 +5,14 @@
     "children": [{
         "id": "g0",
         "labels": [ { "text": "g0" } ],
-        "width": 25,
-        "height": 25,
+        "width": 10,
+        "height": 10,
         "x": 0,
         "y": 0,
         "children": [{
             "id": "n1",
             "labels": [ { "text": "n1" } ],
-            "width": 25, "height": 25,
+            "width": 10, "height": 10,
             "x": 50, "y": 40,
             "properties": {
                 "de.cau.cs.kieler.position": "50, 40"
@@ -20,7 +20,7 @@
         },{
             "id": "n2",
             "labels": [ { "text": "n2" } ],
-            "width": 25, "height": 25,
+            "width": 10, "height": 10,
             "x": 50, "y": 80,
             "properties": {
                 "de.cau.cs.kieler.position": "50, 80"
@@ -28,7 +28,7 @@
         },{
             "id": "n3",
             "labels": [ { "text": "n3" } ],
-            "width": 25, "height": 25,
+            "width": 10, "height": 10,
             "x": 80, "y": 80,
             "properties": {
                 "de.cau.cs.kieler.position": "80, 80"
@@ -36,7 +36,7 @@
         },{
             "id": "n4",
             "labels": [ { "text": "n4" } ],
-            "width": 25, "height": 25,
+            "width": 10, "height": 10,
             "x": 20, "y": 110,
             "properties": {
                 "de.cau.cs.kieler.position": "20, 110"
@@ -44,7 +44,7 @@
         },{
             "id": "n5",
             "labels": [ { "text": "n5" } ],
-            "width": 25, "height": 25,
+            "width": 10, "height": 10,
             "x": 80, "y": 110,
             "properties": {
                 "de.cau.cs.kieler.position": "80, 110"
@@ -52,7 +52,7 @@
         },{
             "id": "n6",
             "labels": [ { "text": "n6" } ],
-            "width": 25, "height": 25,
+            "width": 10, "height": 10,
             "x": 110, "y": 40,
             "properties": {
                 "de.cau.cs.kieler.position": "110, 40"
@@ -88,8 +88,8 @@
     },{
         "id": "g1",
         "labels": [ { "text": "g1" } ],
-        "width": 25,
-        "height": 25,
+        "width": 10,
+        "height": 10,
         "x": 50,
         "y": 180,
         "properties": {
