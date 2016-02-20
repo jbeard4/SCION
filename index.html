@@ -30,7 +30,12 @@
         opacity: 0.1;
       }
       
-      .node {
+      .node rect:hover {
+        stroke : yellow;
+      }
+
+      .node.selected > rect {
+        stroke : blue;
       }
       
       .link {

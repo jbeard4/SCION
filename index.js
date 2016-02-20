@@ -51,6 +51,8 @@ var s,
     
 function init(klayExample){
 
+  $(document).keypress(handleKeypress);
+
   s = Snap("#svg");
 
   var select = $('#select-layout');
@@ -64,7 +66,7 @@ function init(klayExample){
     var graph;
     $klay.layout({
       graph : klayExample,
-      options : options[select.val()],
+      options : options['auto'],
       success : function(g){ 
         graph = g;
       }
@@ -130,6 +132,21 @@ function render(graphRoot){
   graphRoot.edges.forEach(renderEdge.bind(this,graphRoot));
 }
 
+var selectedNode;
+
+function selectNode(group){
+  if(selectedNode){
+    selectedNode.removeClass('selected');
+  } 
+  
+  //deselect others
+  group.addClass('selected');
+  selectedNode = group;
+}
+
+function handleKeypress(e){
+  console.log('keypress',e.which);
+}
 
 function renderGraphNode(parentGraphNode, graphNode){
 
@@ -144,6 +161,12 @@ function renderGraphNode(parentGraphNode, graphNode){
     group.addClass(graphNode.children ? 'compound' : 'leaf');
 
     graphNode._displayNode = group;
+
+    group.click(function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      selectNode(group);
+    });
   } else {
     //animate
     graphNode._displayNode.animate({transform : 't' + graphNode.x + ',' + graphNode.y}, ANIM_DURATION);
