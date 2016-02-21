@@ -205,8 +205,10 @@ function applyInitialCoordinates(parent) {
 }
 
 
+var allEdges;
 
 function render(graphRoot){
+  allEdges = [];
   s.attr('viewBox','0 0 ' + graphRoot.width + ' ' + graphRoot.height);
   if(!graphRoot._displayNode){
     var group = root.group();
@@ -221,8 +223,12 @@ function render(graphRoot){
     rect.animate({x : graphRoot.x, y: graphRoot.y, width : graphRoot.width, height : graphRoot.height}, ANIM_DURATION);
   }
 
+  if(graphRoot.edges){
+    allEdges.push.apply(allEdges, graphRoot.edges);
+  }
+
   graphRoot.children.forEach(renderGraphNode.bind(this,graphRoot));
-  graphRoot.edges.forEach(renderEdge.bind(this,graphRoot));
+   
 }
 
 var selectedNode;
@@ -271,7 +277,18 @@ function renderGraphNode(parentGraphNode, graphNode){
   }
 
   if(graphNode.edges){
-    graphNode.edges.forEach(renderEdge.bind(this,graphNode));
+    //add this node's edges to allEdges
+    allEdges.push.apply(allEdges, graphNode.edges);
+
+    //add matching edges
+    allEdges.filter(function(edge){
+      return graphNode.id === edge.source
+    }).forEach(renderEdge.bind(this,parentGraphNode));
+
+    //update allEdges to only include 
+    allEdges = allEdges.filter(function(edge){
+      return graphNode.id !== edge.source
+    });
   }
 }
 
