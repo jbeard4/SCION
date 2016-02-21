@@ -105,6 +105,7 @@ function init(tests){
   function initScjsonExample(scjsonExample){
     cachedExample = scjsonExample; 
 
+    normalizeStateIds(scjsonExample);
     scjsonExample.id = 'root';
     cachedKgraphRoot = scjsonStateToKlayNode(scjsonExample, scjsonExample);
     applyInitialCoordinates(cachedKgraphRoot);
@@ -219,6 +220,16 @@ function populateIdMap(graphRoot){
   
 }
 
+var generatedIdCount = 0;
+
+function normalizeStateIds(scjson){
+  function walk(node){
+    node.id = node.id || ('$generated-' + generatedIdCount++);
+    if(node.states) node.states.forEach(walk);
+  }
+  walk(scjson);
+}
+
 function render(graphRoot){
   allEdges = [];
   populateIdMap(graphRoot);
@@ -319,7 +330,7 @@ function isSourceAncestorOfTarget(sourceId, targetId){
   }
 
   var sourceNode = idMap[sourceId];
-  walk(sourceNode);
+  if(sourceNode.children) sourceNode.children.forEach(walk);
   return foundTargetInSourceDescendants; 
 }
 
