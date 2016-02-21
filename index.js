@@ -10,8 +10,8 @@ var options = {
     */
     auto: {
       algorithm: "de.cau.cs.kieler.klay.layered",
-      spacing: 20,
-      borderSpacing : 20,
+      spacing: 10,
+      borderSpacing : 10,
       layoutHierarchy: true,
       intCoordinates: true,
       direction: "DOWN",
@@ -52,7 +52,9 @@ var options = {
 
 var s,
     root,
-    ANIM_DURATION = 250;
+    ANIM_DURATION = 250,
+    MIN_NODE_WIDTH = 10,
+    MIN_NODE_HEIGHT = 10;
     
 function init(tests){
 
@@ -150,8 +152,8 @@ function scjsonStateToKlayNode(parentState, state){
     "id" : state.id,
     "labels" : [ { text : state.id || '' } ],
     "edges" : [],
-    "width" : bbox.width,
-    "height" : bbox.height
+    "width" : bbox.width < MIN_NODE_WIDTH ? MIN_NODE_WIDTH : bbox.width,
+    "height" : bbox.height < MIN_NODE_HEIGHT ? MIN_NODE_HEIGHT  : bbox.height
   };
   if(state.transitions){
     parentState._klayNode.edges.push.apply(parentState._klayNode.edges, 
