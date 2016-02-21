@@ -1,4 +1,4 @@
-jQuery.getJSON('./example.klay.json', init)
+jQuery.getJSON('./example.scjson', init)
 
 var options = {
     fix: {
@@ -7,7 +7,8 @@ var options = {
     },
     auto: {
       algorithm: "de.cau.cs.kieler.klay.layered",
-      spacing: 10,
+      spacing: 20,
+      borderSpacing : 20,
       layoutHierarchy: true,
       intCoordinates: true,
       direction: "DOWN",
@@ -49,7 +50,7 @@ var options = {
 var s,
     ANIM_DURATION = 250;
     
-function init(klayExample){
+function init(scjsonExample){
 
   $(document).keypress(handleKeypress);
 
@@ -61,11 +62,15 @@ function init(klayExample){
 
   function layout(){
 
-    applyInitialCoordinates(klayExample);
+    scjsonExample.id = 'root';
+    var kgraphRoot = scjsonStateToKlayNode(scjsonExample, scjsonExample);
+    applyInitialCoordinates(kgraphRoot);
 
+    console.log('scjsonExample',scjsonExample);
+    console.log('kgraphRoot',kgraphRoot);
     var graph;
     $klay.layout({
-      graph : klayExample,
+      graph : kgraphRoot,
       options : options['auto'],
       success : function(g){ 
         graph = g;
@@ -76,6 +81,44 @@ function init(klayExample){
   }
 
   layout();
+}
+
+function measureTextDimensions(text){
+  var text = s.text(0,0,text);
+  var bbox = text.getBBox();
+  text.remove(); 
+  return bbox; 
+}
+
+function scjsonStateToKlayNode(parentState, state){
+
+  var bbox = measureTextDimensions(state.id);
+
+  //TODO: edges
+  //TODO: elminiate padding between child substates
+  //render width/height, measure
+  state._klayNode = {
+    "id" : state.id,
+    "labels" : [ { text : state.id } ],
+    "edges" : [],
+    "width" : bbox.width,
+    "height" : bbox.height
+  };
+  if(state.transitions){
+    parentState._klayNode.edges.push.apply(parentState._klayNode.edges, state.transitions.map(function(transition){
+      return {
+        id : state.id + '_' + transition.target,
+        source : state.id,
+        target : transition.target,
+        labels : [ { text : transition.event } ]
+      };
+    }));
+  }
+  if(state.states){
+    state._klayNode.children = state.states.map(scjsonStateToKlayNode.bind(this,parentState));
+  }
+
+  return state._klayNode;
 }
 
 function clearBendpoints(parent) {
