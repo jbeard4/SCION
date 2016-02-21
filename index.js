@@ -155,6 +155,9 @@ function scjsonStateToKlayNode(parentState, state){
     "width" : bbox.width < MIN_NODE_WIDTH ? MIN_NODE_WIDTH : bbox.width,
     "height" : bbox.height < MIN_NODE_HEIGHT ? MIN_NODE_HEIGHT  : bbox.height
   };
+  if(state.$type){
+    state._klayNode.$type = state.$type;  //copy in type information
+  }
   if(state.transitions){
     parentState._klayNode.edges.push.apply(parentState._klayNode.edges, 
       state.transitions.filter(function(transition){return transition.target})
@@ -285,6 +288,10 @@ function renderGraphNode(parentGraphNode, graphNode){
     // By default its black, lets change its attributes
     group.addClass('node');
     group.addClass(graphNode.children ? 'compound' : 'leaf');
+
+    if(graphNode.$type){
+      group.addClass(graphNode.$type);
+    }
 
     graphNode._displayNode = group;
 
