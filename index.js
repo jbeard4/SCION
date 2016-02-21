@@ -205,11 +205,25 @@ function applyInitialCoordinates(parent) {
 }
 
 
-var allEdges;
+var allEdges, idMap;
+
+function populateIdMap(graphRoot){
+
+  idMap = {};
+  function walk(graphNode){
+    idMap[graphNode.id] = graphNode;
+    if(graphNode.children) graphNode.children.forEach(walk);
+  }
+
+  walk(graphRoot);
+  
+}
 
 function render(graphRoot){
   allEdges = [];
+  populateIdMap(graphRoot);
   s.attr('viewBox','0 0 ' + graphRoot.width + ' ' + graphRoot.height);
+
   if(!graphRoot._displayNode){
     var group = root.group();
     var rect = group.rect(graphRoot.x, graphRoot.y, graphRoot.width, graphRoot.height);
@@ -283,13 +297,30 @@ function renderGraphNode(parentGraphNode, graphNode){
     //add matching edges
     allEdges.filter(function(edge){
       return graphNode.id === edge.source
-    }).forEach(renderEdge.bind(this,parentGraphNode));
+    }).forEach(function(edge){
+      if( isSourceAncestorOfTarget(edge.source, edge.target) ){
+        renderEdge(graphNode, edge);
+      } else {
+        renderEdge(parentGraphNode, edge);
+      }
 
-    //update allEdges to only include 
-    allEdges = allEdges.filter(function(edge){
-      return graphNode.id !== edge.source
+      //remove edge from allEdges
+      allEdges.splice(allEdges.indexOf(edge), 1);
     });
   }
+}
+
+function isSourceAncestorOfTarget(sourceId, targetId){
+  var foundTargetInSourceDescendants = false;
+  function walk(currentNode){
+    foundTargetInSourceDescendants = currentNode.id === targetId;
+    if(foundTargetInSourceDescendants) return;
+    else if(currentNode.children) currentNode.children.forEach(walk);
+  }
+
+  var sourceNode = idMap[sourceId];
+  walk(sourceNode);
+  return foundTargetInSourceDescendants; 
 }
 
 function renderEdge(parentGraphNode, edge){
