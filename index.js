@@ -1,10 +1,13 @@
-jQuery.getJSON('./example.scjson', init)
+jQuery.getJSON('./test/scion-core/test/tests.json', init)
+
 
 var options = {
+    /*
     fix: {
       algorithm: "de.cau.cs.kieler.fixed",
       layoutHierarchy: false
     },
+    */
     auto: {
       algorithm: "de.cau.cs.kieler.klay.layered",
       spacing: 20,
@@ -48,30 +51,75 @@ var options = {
 
 
 var s,
+    root,
     ANIM_DURATION = 250;
     
-function init(scjsonExample){
+function init(tests){
 
   $(document).keypress(handleKeypress);
 
   s = Snap("#svg");
+  root = s.group();
 
   var select = $('#select-layout');
-  select.on('change',layout); 
+  select.on('change',function(){
+    layout(cachedKgraphRoot);
+  }); 
   select.html(Object.keys(options).map(function(k){return '<option value="' + k + '">' + k + '</option>';}).reduce(function(a,b){return a + b;},''));
 
-  function layout(){
+  var selectExample = $('#select-example');
+  selectExample.on('change',initExample); 
+  selectExample.html(tests.map(function(k){return '<option value="' + k + '">' + k + '</option>';}).reduce(function(a,b){return a + b;},''));
+
+  var cachedExample,
+      cachedKgraphRoot;
+  function initExample(){
+    var testUrl = './test/scion-core/test/' + selectExample.val().split('/').slice(1).join('/');
+    if(testUrl.indexOf('.json') > -1){
+      jQuery.get({
+        url : testUrl,
+        dataType : 'json',
+        complete : function(response){
+          initScjsonExample(response.responseJSON);
+        },
+        error : function(){
+          console.error(arguments);
+        } 
+      });
+    }else{
+      jQuery.get({
+        url : testUrl,
+        dataType : 'text',
+        complete : function(response){
+          var module = {};
+          var scjsonExample = eval(response.responseText)();
+          initScjsonExample(scjsonExample); 
+        },
+        error : function(){
+          console.error(arguments);
+        } 
+      });
+    }
+  }
+
+  function initScjsonExample(scjsonExample){
+    cachedExample = scjsonExample; 
 
     scjsonExample.id = 'root';
-    var kgraphRoot = scjsonStateToKlayNode(scjsonExample, scjsonExample);
-    applyInitialCoordinates(kgraphRoot);
+    cachedKgraphRoot = scjsonStateToKlayNode(scjsonExample, scjsonExample);
+    applyInitialCoordinates(cachedKgraphRoot);
 
     console.log('scjsonExample',scjsonExample);
-    console.log('kgraphRoot',kgraphRoot);
+    console.log('kgraphRoot',cachedKgraphRoot );
+    root.clear();
+    layout(cachedKgraphRoot); 
+  }
+
+  function layout(kgraphRoot){
     var graph;
     $klay.layout({
       graph : kgraphRoot,
-      options : options['auto'],
+      options : options[select.val()],
       success : function(g){ 
         graph = g;
       }
@@ -80,7 +128,7 @@ function init(scjsonExample){
     render(graph);
   }
 
-  layout();
+  initExample();
 }
 
 function measureTextDimensions(text){
@@ -99,20 +147,22 @@ function scjsonStateToKlayNode(parentState, state){
   //render width/height, measure
   state._klayNode = {
     "id" : state.id,
-    "labels" : [ { text : state.id } ],
+    "labels" : [ { text : state.id || '' } ],
     "edges" : [],
     "width" : bbox.width,
     "height" : bbox.height
   };
   if(state.transitions){
-    parentState._klayNode.edges.push.apply(parentState._klayNode.edges, state.transitions.map(function(transition){
-      return {
-        id : state.id + '_' + transition.target,
-        source : state.id,
-        target : transition.target,
-        labels : [ { text : transition.event } ]
-      };
-    }));
+    parentState._klayNode.edges.push.apply(parentState._klayNode.edges, 
+      state.transitions.filter(function(transition){return transition.target})
+        .map(function(transition){
+          return {
+            id : state.id + '_' + transition.target,
+            source : state.id,
+            target : transition.target,
+            labels : [ { text : transition.event || ''} ]
+          };
+        }));
   }
   if(state.states){
     state._klayNode.children = state.states.map(scjsonStateToKlayNode.bind(this,parentState));
@@ -159,7 +209,7 @@ function applyInitialCoordinates(parent) {
 function render(graphRoot){
   s.attr('viewBox','0 0 ' + graphRoot.width + ' ' + graphRoot.height);
   if(!graphRoot._displayNode){
-    var group = s.group();
+    var group = root.group();
     var rect = group.rect(graphRoot.x, graphRoot.y, graphRoot.width, graphRoot.height);
 
     graphRoot._displayNode = group;
