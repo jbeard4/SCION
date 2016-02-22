@@ -3,10 +3,7 @@
   "version": "1.0.0",
   "description": "SCJSON to KGraph to SVG rendering library",
   "main": "index.js",
-  "dependencies": {
-    "klayjs": "^0.4.0",
-    "snapsvg": "^0.4.0"
-  },
+  "dependencies": {},
   "devDependencies": {},
   "scripts": {
     "test": "karma"
