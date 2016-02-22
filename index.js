@@ -14,16 +14,16 @@ function SCHVIZ(parentNode){
 SCHVIZ.prototype = {
 
   renderSCJSON : function(scjson, options, cb){
+    this._root.clear();
     this._normalizeStateIds(scjson);
     scjson.id = 'root';
     var kgraphRoot = this._scjsonStateToKlayNode(scjson, scjson);
-    return this.renderKgraph(kgraphRoot, options, cb);
+    return this.updateKgraph(kgraphRoot, options, cb);
 
   },
 
-  renderKgraph : function(kgraph, options, cb){
+  updateKgraph : function(kgraph, options, cb){
     this._applyInitialCoordinates(kgraph);
-    this._root.clear();
     console.log('render kgraph',kgraph);
     window.$klay.layout({
       graph : kgraph,
@@ -164,10 +164,6 @@ SCHVIZ.prototype = {
       graphRoot._displayNode = group;
       group.addClass('node');
       group.addClass('compound');
-    } else {
-      //animate
-      rect = graphRoot._displayNode.select('rect');
-      rect.animate({x : graphRoot.x, y: graphRoot.y, width : graphRoot.width, height : graphRoot.height}, ANIM_DURATION);
     }
 
     if(graphRoot.edges){
@@ -210,7 +206,7 @@ SCHVIZ.prototype = {
         e.preventDefault();
         e.stopPropagation();
         this._selectNode(group);
-      });
+      }.bind(this));
     } else {
       //animate
       graphNode._displayNode.animate({transform : 't' + graphNode.x + ',' + graphNode.y}, ANIM_DURATION);

@@ -59,7 +59,7 @@ function init(tests){
   var select = $('#select-layout');
   select.html(Object.keys(options).map(function(k){return '<option value="' + k + '">' + k + '</option>';}).reduce(function(a,b){return a + b;},''));
   select.on('change',function(){
-    schviz.renderKgraph(cachedKgraphRoot, options[select.val()]);
+    schviz.updateKgraph(cachedKgraphRoot, options[select.val()]);
   }); 
 
   var selectExample = $('#select-example');
