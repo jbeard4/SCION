@@ -1,7 +1,7 @@
 {
-  "name": "scxml-tool",
+  "name": "SCHVIZ2",
   "version": "1.0.0",
-  "description": "A tool for developing SCXML.",
+  "description": "SCJSON to KGraph to SVG rendering library",
   "main": "index.js",
   "dependencies": {
     "klayjs": "^0.4.0",
@@ -13,15 +13,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jbeard4/scxml-tool.git"
+    "url": "git://github.com/JacobeanRnD/SCHVIZ2.git"
   },
   "keywords": [
     "scxml"
   ],
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/jbeard4/scxml-tool/issues"
+    "url": "https://github.com/jbeard4/SCHVIZ2/issues"
   },
-  "homepage": "https://github.com/jbeard4/scxml-tool#readme"
+  "homepage": "https://github.com/jbeard4/SCHVIZ2#readme"
 }

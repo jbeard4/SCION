@@ -1,0 +1,14 @@
+# SCHVIZ2
+
+## Example Usage
+
+```
+var schviz = new SCHVIZ(parent : DOMNode);
+
+schviz.renderSCJSON(parent : DOMNode, jsonDoc : scjson, function(err, layout){})
+schviz.renderKgraph(parent : DOMNode, kgraph : kgraphJson, function(err, layout){})
+```
+
+Coming soon:
+  * Dyanmically update rendering on model change
+  * highlight states and transitions

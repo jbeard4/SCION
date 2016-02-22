@@ -1,0 +1,47 @@
+g.leaf > rect {
+  fill: rgba(0,0,0,.5);
+}
+
+g.leaf > text {
+  fill: #ffffff;
+}
+
+g.compound.parallel > g.node > rect {
+  stroke-dasharray : 1 1;
+} 
+
+.node > rect {
+  fill: rgba(0,0,0,.1);
+  stroke: #AAA;
+}
+
+.node rect:hover {
+  stroke : yellow;
+}
+
+.node.selected > rect {
+  stroke : blue;
+}
+
+.link {
+  stroke: black;
+  stroke-opacity: .6;
+  fill: none;
+  marker-end : url(#end);
+}
+
+.link:hover {
+  stroke : yellow;
+}
+
+.port {
+  stroke: #000;
+  width: 1px;
+  opacity: .6;
+}
+
+#end path {
+  stroke: black;
+  stroke-opacity: .6;
+}
+

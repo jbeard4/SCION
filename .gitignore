@@ -1,4 +1,4 @@
-*.swp
+*.sw*
 Session.vim
 bower_components/
 d3-layout-example.html
@@ -6,3 +6,4 @@ dist/
 graph.annotated-klay.json
 log
 node_modules/
+proto
