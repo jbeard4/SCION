@@ -5,8 +5,8 @@
 ```
 var schviz = new SCHVIZ(parent : DOMNode);
 
-schviz.renderSCJSON(parent : DOMNode, jsonDoc : scjson, function(err, layout){})
-schviz.renderKgraph(parent : DOMNode, kgraph : kgraphJson, function(err, layout){})
+schviz.renderSCJSON(jsonDoc : scjson)
+schviz.updateKgraph(kgraph : kgraphJson)
 ```
 
 Coming soon:
