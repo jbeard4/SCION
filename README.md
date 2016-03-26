@@ -1,6 +1,6 @@
 # Overview
 
-SCION provides an implementation of the [W3C SCXML draft specification](http://www.w3.org/TR/scxml/) in JavaScript. SCXML provides a declarative markup for Statecharts, a powerful modelling language for developing **complex, timed, event-driven, state-based systems**. In the browser, SCION can be used to facilitate the development of **rich, web-based user interfaces**. On the server, SCION can be used to manage **asynchronous control flow**. 
+SCION provides an implementation of the [W3C SCXML specification](http://www.w3.org/TR/scxml/) in JavaScript. SCXML provides a declarative markup for Statecharts, a powerful modelling language for developing **complex, timed, event-driven, state-based systems**. In the browser, SCION can be used to facilitate the development of **rich, web-based user interfaces**. On the server, SCION can be used to manage **asynchronous control flow**. 
 
 SCION is: 
 
