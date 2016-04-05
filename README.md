@@ -10,6 +10,7 @@ SCION is:
 - Optimized: For performance, memory usage and payload size.
 - Modular: Specify state machine in SCXML, or pure JSON using [SCION-CORE](https://github.com/jbeard4/SCION-CORE).
 
+
 # Installation
 
 ## node.js
@@ -29,8 +30,27 @@ Get it with git:
 Rhino 1.7R3 supports CommonJS modules, so SCION can be used as follows:
 
 ```bash
+
 #just put SCION/lib on your modules path
 rhino -modules path/to/SCION/lib -main path/to/your/script.js
+```
+
+# Quickstart
+
+```javascript
+scxml.urlToModel("drag-and-drop.xml",function(err,model){
+
+  if(err) throw err;
+
+  //instantiate the interpreter
+  var interpreter = new scxml.scion.Statechart(model);
+
+  //start the interpreter
+  interpreter.start();
+
+  //send the init event
+  interpreter.gen({name:"init",data:rect});
+})
 ```
 
 # API
