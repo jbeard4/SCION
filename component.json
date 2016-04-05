@@ -10,8 +10,8 @@
     "javascript"
   ],
   "dependencies": {
-    "jbeard4/scion-ng": "*",
-    "isaacs/sax-js": "*"
+    "jbeard4/scion-core": "1.1.3",
+    "isaacs/sax-js": "0.5.3"
   },
   "development": {},
   "license": "Apache-2.0",
