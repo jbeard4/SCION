@@ -3,14 +3,13 @@ js = $(shell find lib/ -name "*.js")
 all : dist/scxml.js dist/scxml.min.js
 
 dist/scxml.js : $(js)
-	component build -o dist -n scxml -s scxml
+	browserify -u optimist --no-builtins -o dist/scxml.js -s scxml -e lib/runtime/platform-bootstrap/browser/index.js
 
 dist/scxml.min.js : dist/scxml.js
 	uglifyjs dist/scxml.js > dist/scxml.min.js
 
 get-deps : 
-	npm install -g component uglifyjs
-	component install
+	npm install -g browserify uglifyjs 
 
 clean :
 	rm dist/*

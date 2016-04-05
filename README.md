@@ -4,7 +4,6 @@ SCION provides an implementation of the [W3C SCXML specification](http://www.w3.
 
 SCION is: 
 
-- Small: Only 8kb minified and gzipped.
 - Robust: automatically tested using a [custom testing framework for SCXML implementations](https://github.com/jbeard4/scxml-test-framework). ![Travis-CI build status](https://travis-ci.org/jbeard4/SCION.svg?branch=master)
 - Persistant: Cheap snapshotting and state machine serialization to secondary storage.
 - Portable: works well in IE6+, modern browsers, node.js, rhino, and various JavaScript shells. 
