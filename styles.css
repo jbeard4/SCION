@@ -16,8 +16,19 @@ g.compound.parallel > g.node > rect {
 }
 
 .node rect:hover {
-  stroke : yellow;
+  stroke : #BBB;
 }
+
+
+.node.highlighted > rect {
+  fill : #f9f2f4;
+  stroke : #c7254e;
+}
+
+.node.highlighted > text {
+  fill : #c7254e;
+}
+
 
 .node.selected > rect {
   stroke : blue;

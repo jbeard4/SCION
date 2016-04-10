@@ -13,6 +13,17 @@ function SCHVIZ(parentNode){
 
 SCHVIZ.prototype = {
 
+  highlightState : function(stateId){
+    $(document.getElementById(stateId)).addClass('highlighted');
+  },
+
+  unhighlightState : function(stateId){
+    $(document.getElementById(stateId)).removeClass('highlighted');
+  },
+
+  highlightTransition : function(sourceStateId, targetStateIds){
+  },
+
   renderSCJSON : function(scjson, options, cb){
     this._root.clear();
     this._normalizeStateIds(scjson);
@@ -188,6 +199,7 @@ SCHVIZ.prototype = {
 
     if(!graphNode._displayNode){
       var group = parentGraphNode._displayNode.group();
+      group.node.setAttributeNS(null,'id',graphNode.id);    //tag him with state id
       var rect = group.rect(0, 0, graphNode.width, graphNode.height);
       var label = group.text(2.5, 6.5, graphNode.id);
       label.attr('font-size','4px');
