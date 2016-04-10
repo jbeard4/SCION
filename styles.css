@@ -1,3 +1,11 @@
+.node > rect {
+  transition : stroke 1s ease-out, fill 1s ease-out;
+}
+
+.node > text {
+  transition : fill 1s ease-out;
+}
+
 g.leaf > rect {
   fill: rgba(0,0,0,.5);
 }
