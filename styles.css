@@ -1,3 +1,7 @@
+text {
+  font-size : 4px;
+}
+
 .node > rect {
   transition : stroke 1s ease-out, fill 1s ease-out;
 }
@@ -23,11 +27,6 @@ g.compound.parallel > g.node > rect {
   stroke: #AAA;
 }
 
-.node rect:hover {
-  stroke : #BBB;
-}
-
-
 .node.highlighted > rect {
   fill : #f9f2f4;
   stroke : #c7254e;
@@ -47,10 +46,6 @@ g.compound.parallel > g.node > rect {
   stroke-opacity: .6;
   fill: none;
   marker-end : url(#end);
-}
-
-.link:hover {
-  stroke : yellow;
 }
 
 .port {
