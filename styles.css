@@ -1,9 +1,9 @@
 .node > rect {
-  transition : stroke 1s ease-out, fill 1s ease-out;
+  transition : stroke .5s ease-out, fill .5s ease-out;
 }
 
 .node > text {
-  transition : fill 1s ease-out;
+  transition : fill .5s ease-out;
 }
 
 g.leaf > rect {
@@ -24,7 +24,7 @@ g.compound.parallel > g.node > rect {
 }
 
 .node rect:hover {
-  stroke : #BBB;
+  stroke : rgba(0,0,0,.6);
 }
 
 
@@ -47,10 +47,6 @@ g.compound.parallel > g.node > rect {
   stroke-opacity: .6;
   fill: none;
   marker-end : url(#end);
-}
-
-.link:hover {
-  stroke : yellow;
 }
 
 .port {
