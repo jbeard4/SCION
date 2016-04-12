@@ -94,13 +94,20 @@ SCHVIZ.prototype = {
       parentState._klayNode.edges.push.apply(parentState._klayNode.edges, 
         state.transitions.filter(function(transition){return transition.target;})
           .map(function(transition){
-            return {
+            var klayTransition = {
               id : state.id + '_' + transition.target,
               source : state.id,
               target : transition.target,
-              labels : [ { text : transition.event || ''} ]
+              labels : []
             };
-          }));
+
+            var event = transition.event;
+            if(event){
+              var eventBBox = this._measureTextDimensions(event); 
+              klayTransition.labels.push({ text : event, width : eventBBox.width, height : eventBBox.height });
+            }
+            return klayTransition;
+          }.bind(this)));
     }
     if(state.states){
       state._klayNode.children = state.states.map(this._scjsonStateToKlayNode.bind(this,parentState));
@@ -202,7 +209,6 @@ SCHVIZ.prototype = {
       group.node.setAttributeNS(null,'id',graphNode.id);    //tag him with state id
       var rect = group.rect(0, 0, graphNode.width, graphNode.height);
       var label = group.text(2.5, 6.5, graphNode.id);
-      label.attr('font-size','4px');
       group.transform('t' + graphNode.x + ',' + graphNode.y); 
       // By default its black, lets change its attributes
       group.addClass('node');
@@ -288,6 +294,19 @@ SCHVIZ.prototype = {
         edge._displayNode = path;
       }
     }
+
+    if(edge.labels && edge.labels.length){
+      edge.labels.forEach(function(label){
+        //render labels
+        if(!label._displayNode){
+          label._displayNode = parentGraphNode._displayNode.text(label.x, label.y, label.text);
+        }else{
+          //update label displayNode
+          label._displayNode.animate({x: label.x, y : label.y});
+        }
+      });
+    }
+
   }
 
 };
