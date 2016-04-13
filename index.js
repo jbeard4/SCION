@@ -1,8 +1,7 @@
 (function(){
 
 var ANIM_DURATION = 250,
-    MIN_NODE_WIDTH = 10,
-    MIN_NODE_HEIGHT = 10;
+    LEAF_NODE_PADDING_W = 2.5, LEAF_NODE_PADDING_H = 2.5;
 
 function SCHVIZ(parentNode){
   this._s = window.Snap(parentNode);
@@ -22,6 +21,12 @@ SCHVIZ.prototype = {
   },
 
   highlightTransition : function(sourceStateId, targetStateIds){
+    var node = $(document.getElementById(sourceStateId + '->' + targetStateIds[0]));
+    node.addClass('highlighted');
+    //TODO: listen for animation end event
+    setTimeout(function(){
+      node.removeClass('highlighted');
+    },250);
   },
 
   renderSCJSON : function(scjson, options, cb){
@@ -29,13 +34,14 @@ SCHVIZ.prototype = {
     this._normalizeStateIds(scjson);
     scjson.id = 'root';
     var kgraphRoot = this._scjsonStateToKlayNode(scjson, scjson);
+    //console.log('kgraphRoot',JSON.stringify(kgraphRoot,4,4));
     return this.updateKgraph(kgraphRoot, options, cb);
 
   },
 
   updateKgraph : function(kgraph, options, cb){
     this._applyInitialCoordinates(kgraph);
-    console.log('render kgraph',kgraph);
+    //console.log('render kgraph',JSON.stringify(kgraph,4,4));
     window.$klay.layout({
       graph : kgraph,
       options : options,
@@ -79,13 +85,12 @@ SCHVIZ.prototype = {
   _scjsonStateToKlayNode : function (parentState, state){
 
     var bbox = this._measureTextDimensions(state.id);
-
     state._klayNode = {
       "id" : state.id,
       "labels" : [ { text : state.id || '' } ],
       "edges" : [],
-      "width" : bbox.width < MIN_NODE_WIDTH ? MIN_NODE_WIDTH : bbox.width,
-      "height" : bbox.height < MIN_NODE_HEIGHT ? MIN_NODE_HEIGHT  : bbox.height
+      "width" : bbox.width + LEAF_NODE_PADDING_W * 2,
+      "height" : bbox.height + LEAF_NODE_PADDING_H * 2
     };
     if(state.$type){
       state._klayNode.$type = state.$type;  //copy in type information
@@ -208,7 +213,7 @@ SCHVIZ.prototype = {
       var group = parentGraphNode._displayNode.group();
       group.node.setAttributeNS(null,'id',graphNode.id);    //tag him with state id
       var rect = group.rect(0, 0, graphNode.width, graphNode.height);
-      var label = group.text(2.5, 6.5, graphNode.id);
+      var label = group.text(LEAF_NODE_PADDING_W, LEAF_NODE_PADDING_H, graphNode.id).attr('dominant-baseline','text-before-edge');
       group.transform('t' + graphNode.x + ',' + graphNode.y); 
       // By default its black, lets change its attributes
       group.addClass('node');
@@ -282,6 +287,8 @@ SCHVIZ.prototype = {
       path.addClass('link');
 
       edge._displayNode = path;
+      console.log('edge',edge);
+      path.node.setAttributeNS(null, 'id', edge.source + '->' + edge.target);
     } else {
       if(edge._displayNode.numberOfItems == ((edge.bendPoints ? edge.bendPoints.length : 0) + 2)){
         //animate
@@ -300,6 +307,7 @@ SCHVIZ.prototype = {
         //render labels
         if(!label._displayNode){
           label._displayNode = parentGraphNode._displayNode.text(label.x, label.y, label.text);
+          label._displayNode.node.setAttributeNS(null,'dominant-baseline','text-before-edge');
         }else{
           //update label displayNode
           label._displayNode.animate({x: label.x, y : label.y});
