@@ -13,15 +13,15 @@ function SCHVIZ(parentNode){
 SCHVIZ.prototype = {
 
   highlightState : function(stateId){
-    $(document.getElementById(stateId)).addClass('highlighted');
+    $(this._s.node.getElementById(stateId)).addClass('highlighted');
   },
 
   unhighlightState : function(stateId){
-    $(document.getElementById(stateId)).removeClass('highlighted');
+    $(this._s.node.getElementById(stateId)).removeClass('highlighted');
   },
 
   highlightTransition : function(sourceStateId, targetStateIds){
-    var node = $(document.getElementById(sourceStateId + '->' + targetStateIds[0]));
+    var node = $(this._s.node.getElementById(sourceStateId + '->' + targetStateIds[0]));
     node.addClass('highlighted');
     //TODO: listen for animation end event
     setTimeout(function(){
