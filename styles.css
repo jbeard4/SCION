@@ -27,13 +27,12 @@ g.compound.parallel > g.node > rect {
   stroke : rgba(0,0,0,.6);
 }
 
-
-.node.highlighted > rect {
+.leaf.highlighted > rect {
   fill : #f9f2f4;
   stroke : #c7254e;
 }
 
-.node.highlighted > text {
+.leaf.highlighted > text {
   fill : #c7254e;
 }
 
@@ -47,6 +46,11 @@ g.compound.parallel > g.node > rect {
   stroke-opacity: .6;
   fill: none;
   marker-end : url(#end);
+  transition : stroke .25s ease-out;
+}
+
+.link.highlighted {
+  stroke : #c7254e;
 }
 
 .port {

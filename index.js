@@ -1,8 +1,7 @@
 (function(){
 
 var ANIM_DURATION = 250,
-    MIN_NODE_WIDTH = 10,
-    MIN_NODE_HEIGHT = 10;
+    LEAF_NODE_PADDING_W = 2.5, LEAF_NODE_PADDING_H = 2.5;
 
 function SCHVIZ(parentNode){
   this._s = window.Snap(parentNode);
@@ -14,14 +13,20 @@ function SCHVIZ(parentNode){
 SCHVIZ.prototype = {
 
   highlightState : function(stateId){
-    $(document.getElementById(stateId)).addClass('highlighted');
+    $(this._s.node.getElementById(stateId)).addClass('highlighted');
   },
 
   unhighlightState : function(stateId){
-    $(document.getElementById(stateId)).removeClass('highlighted');
+    $(this._s.node.getElementById(stateId)).removeClass('highlighted');
   },
 
   highlightTransition : function(sourceStateId, targetStateIds){
+    var node = $(this._s.node.getElementById(sourceStateId + '->' + targetStateIds[0]));
+    node.addClass('highlighted');
+    //TODO: listen for animation end event
+    setTimeout(function(){
+      node.removeClass('highlighted');
+    },250);
   },
 
   renderSCJSON : function(scjson, options, cb){
@@ -29,21 +34,21 @@ SCHVIZ.prototype = {
     this._normalizeStateIds(scjson);
     scjson.id = 'root';
     var kgraphRoot = this._scjsonStateToKlayNode(scjson, scjson);
+    console.log('kgraphRoot',JSON.stringify(kgraphRoot,4,4));
     return this.updateKgraph(kgraphRoot, options, cb);
 
   },
 
   updateKgraph : function(kgraph, options, cb){
     this._applyInitialCoordinates(kgraph);
-    console.log('render kgraph',kgraph);
     window.$klay.layout({
       graph : kgraph,
       options : options,
       success : function(g){ 
+        console.log('render kgraph',JSON.stringify(kgraph,4,4));
         this._render(g);
       }.bind(this)
     });
-
     return kgraph;
   },
 
@@ -79,13 +84,12 @@ SCHVIZ.prototype = {
   _scjsonStateToKlayNode : function (parentState, state){
 
     var bbox = this._measureTextDimensions(state.id);
-
     state._klayNode = {
       "id" : state.id,
       "labels" : [ { text : state.id || '' } ],
       "edges" : [],
-      "width" : bbox.width < MIN_NODE_WIDTH ? MIN_NODE_WIDTH : bbox.width,
-      "height" : bbox.height < MIN_NODE_HEIGHT ? MIN_NODE_HEIGHT  : bbox.height
+      "width" : bbox.width + LEAF_NODE_PADDING_W * 2,
+      "height" : bbox.height + LEAF_NODE_PADDING_H * 2
     };
     if(state.$type){
       state._klayNode.$type = state.$type;  //copy in type information
@@ -94,13 +98,20 @@ SCHVIZ.prototype = {
       parentState._klayNode.edges.push.apply(parentState._klayNode.edges, 
         state.transitions.filter(function(transition){return transition.target;})
           .map(function(transition){
-            return {
+            var klayTransition = {
               id : state.id + '_' + transition.target,
               source : state.id,
               target : transition.target,
-              labels : [ { text : transition.event || ''} ]
+              labels : []
             };
-          }));
+
+            var event = transition.event;
+            if(event){
+              var eventBBox = this._measureTextDimensions(event); 
+              klayTransition.labels.push({ text : event, width : eventBBox.width, height : eventBBox.height });
+            }
+            return klayTransition;
+          }.bind(this)));
     }
     if(state.states){
       state._klayNode.children = state.states.map(this._scjsonStateToKlayNode.bind(this,parentState));
@@ -201,8 +212,7 @@ SCHVIZ.prototype = {
       var group = parentGraphNode._displayNode.group();
       group.node.setAttributeNS(null,'id',graphNode.id);    //tag him with state id
       var rect = group.rect(0, 0, graphNode.width, graphNode.height);
-      var label = group.text(2.5, 6.5, graphNode.id);
-      label.attr('font-size','4px');
+      var label = group.text(LEAF_NODE_PADDING_W, LEAF_NODE_PADDING_H, graphNode.id).attr('dominant-baseline','text-before-edge');
       group.transform('t' + graphNode.x + ',' + graphNode.y); 
       // By default its black, lets change its attributes
       group.addClass('node');
@@ -276,6 +286,7 @@ SCHVIZ.prototype = {
       path.addClass('link');
 
       edge._displayNode = path;
+      path.node.setAttributeNS(null, 'id', edge.source + '->' + edge.target);
     } else {
       if(edge._displayNode.numberOfItems == ((edge.bendPoints ? edge.bendPoints.length : 0) + 2)){
         //animate
@@ -288,6 +299,41 @@ SCHVIZ.prototype = {
         edge._displayNode = path;
       }
     }
+
+    if(edge.labels && edge.labels.length){
+      edge.labels.forEach(function(label){
+
+        //fix edge label coordinates. Workaround for issue OpenKieler/klayjs#8
+        if(edge.source === edge.target){
+          //debugger;
+          label.x = edge.bendPoints[1].x;
+          label.y = edge.bendPoints[1].y;
+          label.textAnchor = 'end';
+
+          //does the self edge loop up or down?
+          if(edge.bendPoints[0].y < edge.bendPoints[1].y){
+            //line has positive slope
+            //goes below the slope
+            label.dominantBaseline = 'text-before-edge';
+          }else {
+            //line has negative slope
+            //goes above the slope
+            label.dominantBaseline = 'text-after-edge';
+          }
+        }
+
+        //render labels
+        if(!label._displayNode){
+          label._displayNode = parentGraphNode._displayNode.text(label.x, label.y, label.text);
+          label._displayNode.node.setAttributeNS(null,'dominant-baseline', label.dominantBaseline || 'text-before-edge');
+          label._displayNode.node.setAttributeNS(null,'text-anchor',label.textAnchor || 'start');
+        }else{
+          //update label displayNode
+          label._displayNode.animate({x: label.x, y : label.y});
+        }
+      });
+    }
+
   }
 
 };
