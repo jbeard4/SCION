@@ -1,3 +1,7 @@
+text {
+  font-size:4px;
+}
+
 .node > rect {
   transition : stroke .5s ease-out, fill .5s ease-out;
 }
