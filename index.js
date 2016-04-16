@@ -34,22 +34,21 @@ SCHVIZ.prototype = {
     this._normalizeStateIds(scjson);
     scjson.id = 'root';
     var kgraphRoot = this._scjsonStateToKlayNode(scjson, scjson);
-    //console.log('kgraphRoot',JSON.stringify(kgraphRoot,4,4));
+    console.log('kgraphRoot',JSON.stringify(kgraphRoot,4,4));
     return this.updateKgraph(kgraphRoot, options, cb);
 
   },
 
   updateKgraph : function(kgraph, options, cb){
     this._applyInitialCoordinates(kgraph);
-    //console.log('render kgraph',JSON.stringify(kgraph,4,4));
     window.$klay.layout({
       graph : kgraph,
       options : options,
       success : function(g){ 
+        console.log('render kgraph',JSON.stringify(kgraph,4,4));
         this._render(g);
       }.bind(this)
     });
-
     return kgraph;
   },
 
@@ -287,7 +286,6 @@ SCHVIZ.prototype = {
       path.addClass('link');
 
       edge._displayNode = path;
-      console.log('edge',edge);
       path.node.setAttributeNS(null, 'id', edge.source + '->' + edge.target);
     } else {
       if(edge._displayNode.numberOfItems == ((edge.bendPoints ? edge.bendPoints.length : 0) + 2)){
