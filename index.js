@@ -302,10 +302,31 @@ SCHVIZ.prototype = {
 
     if(edge.labels && edge.labels.length){
       edge.labels.forEach(function(label){
+
+        //fix edge label coordinates. Workaround for issue OpenKieler/klayjs#8
+        if(edge.source === edge.target){
+          //debugger;
+          label.x = edge.bendPoints[1].x;
+          label.y = edge.bendPoints[1].y;
+          label.textAnchor = 'end';
+
+          //does the self edge loop up or down?
+          if(edge.bendPoints[0].y < edge.bendPoints[1].y){
+            //line has positive slope
+            //goes below the slope
+            label.dominantBaseline = 'text-before-edge';
+          }else {
+            //line has negative slope
+            //goes above the slope
+            label.dominantBaseline = 'text-after-edge';
+          }
+        }
+
         //render labels
         if(!label._displayNode){
           label._displayNode = parentGraphNode._displayNode.text(label.x, label.y, label.text);
-          label._displayNode.node.setAttributeNS(null,'dominant-baseline','text-before-edge');
+          label._displayNode.node.setAttributeNS(null,'dominant-baseline', label.dominantBaseline || 'text-before-edge');
+          label._displayNode.node.setAttributeNS(null,'text-anchor',label.textAnchor || 'start');
         }else{
           //update label displayNode
           label._displayNode.animate({x: label.x, y : label.y});
