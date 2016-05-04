@@ -1,4 +1,3 @@
-require('es5-shim');        //load this first!
 var scion = require('../lib/scion');
 var path = require('path');
 var async = require('async');
