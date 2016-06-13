@@ -40,29 +40,37 @@ var listeners = {
 scxml.pathToModel(pathToScxml,function(err,model){
 
     if(err){
-        throw err;
+        console.error(err);
+        process.exit(1);
     }
 
-    //Use the statechart object model to instantiate an instance of the statechart interpreter. Optionally, we can pass to the construct an object to be used as the context object (the 'this' object) in script evaluation. Lots of other parameters are available.
-    var interpreter = new scxml.scion.Statechart(model, interpOpts);
+    model.prepare(undefined, function(err, fnModel) {
+        if (err) {
+            console.error(err);
+            process.exit(1);
+        }
+
+        //Use the statechart object model to instantiate an instance of the statechart interpreter. Optionally, we can pass to the construct an object to be used as the context object (the 'this' object) in script evaluation. Lots of other parameters are available.
+        var interpreter = new scxml.scion.Statechart(fnModel, interpOpts);
 
 
-    interpreter.registerListener(listeners);
+        interpreter.registerListener(listeners);
 
 
-    interpreter.start();
+        interpreter.start();
 
-    console.log(interpreter.getConfiguration());
+        console.log(interpreter.getConfiguration());
 
-    function processEvent(cmd,dontKnow,alsoDontKnow,callback){
-        cmd = cmd.trim();
-        interpreter.gen({name : cmd});
-        var conf = interpreter.getConfiguration();
-        callback(null,conf);
-    }
+        function processEvent(cmd,dontKnow,alsoDontKnow,callback){
+            cmd = cmd.trim();
+            interpreter.gen({name : cmd});
+            var conf = interpreter.getConfiguration();
+            callback(null,conf);
+        }
 
-    //start
-    repl.start('#',process.stdin,processEvent);
+        //start
+        repl.start('#',process.stdin,processEvent);
+    })
 
 });
 
