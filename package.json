@@ -36,7 +36,7 @@
     "esprima": "2.7.2",
     "optimist": "0.6.1",
     "sax": "1.2.1",
-    "scion-core": "git+ssh://git@github.home.247-inc.net:external/scion-core.git#1.1.5"
+    "scion-core": "jbeard4/SCION-CORE#fb9fe0659a7f1a6eb51d931d4b3e3abdf68be17e"
   },
   "devDependencies": {
     "karma": "0.13.22"
