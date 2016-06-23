@@ -8,11 +8,11 @@ SCION-CORE is a small (2.9kb, minified and gzipped), embeddable implementation o
 
 SCION-CORE is written so as to abstract out platform dependencies, and is implemented as a single UMD module, which makes it easy to deploy in any JavaScript environment. The philosophy of SCION-CORE is **"write once, embed everywhere"**.
 
-SCION-CORE powers [SCION 2.0](https://github.com/jbeard4/SCION/tree/2.0.0), an implementation of [SCXML](http://www.w3.org/TR/scxml) in JavaScript, and as such, it supports all of the features of the SCXML core module, including compound states ( **OR** states), parallel states ( **AND** states), and history states. 
+SCION-CORE powers [SCION](https://github.com/jbeard4/SCION), an implementation of [W3C SCXML](http://www.w3.org/TR/scxml) in JavaScript, and as such, it supports all of the features of the SCXML core module, including compound states ( **OR** states), parallel states ( **AND** states), and history states. 
 
 # Quickstart and Simple Use Case
 
-Let's start with the simple example of drag-and-drop behaviour in the browser. You can run this demo live on jsfiddle [here](http://jsfiddle.net/jbeard4/MDkLe/2/).
+Let's start with the simple example of drag-and-drop behaviour in the browser. You can run this demo live on jsfiddle [here](http://jsfiddle.net/jbeard4/MDkLe/11/).
 
 An entity that can be dragged has two states: idle and dragging. If the entity is in an idle state, and it receives a mousedown event, then it starts dragging. While dragging, if it receives a mousemove event, then it changes its position. Also while dragging, when it receives a mouseup event, it returns to the idle state.
 
