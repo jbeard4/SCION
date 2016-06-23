@@ -37,7 +37,7 @@
     "tape": "0.2.2"
   },
   "engines": {
-    "node": ">=0.8"
+    "node": ">=4.2.2"
   },
   "main": "./lib/scion",
   "scripts": {
