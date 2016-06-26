@@ -18,12 +18,12 @@ var tests = statechartModulePaths.length ?
 
             //try to find a .test.json file
             var testModulePath = statechartModulePath.replace(/\.sc\.js(on)?$/,'.test.json');
-            var sc = require(path.resolve('.',statechartModulePath));
+            var sc = require(path.join(__dirname,statechartModulePath));
 
             return {
                 name : testModulePath,
                 sc : sc,
-                test : require(path.resolve('.',testModulePath))
+                test : require(path.join(__dirname,testModulePath))
             };
         }) : require('./tests.js');
 
