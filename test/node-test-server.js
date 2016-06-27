@@ -40,7 +40,8 @@ http.createServer(function (req, res) {
                                 if (err) {
                                     console.error('model preparation error: ' + err);
                                     res.writeHead(500, {'Content-Type': 'text/plain'});
-                                    res.end(err.message);                                    
+                                    res.end(err.message);
+                                    return;
                                 }
 
                                 var interpreter = new scxml.scion.Statechart(fnModel, { sessionid: sessionCounter });
