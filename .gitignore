@@ -12,3 +12,4 @@ TODO
 log
 *.sublime-project
 *.sublime-workspace
+dist/
