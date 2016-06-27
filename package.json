@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "async": "1.5.2",
+    "babel-plugin-transform-es2015-modules-umd": "^6.8.0",
     "babel-preset-es2015": "^6.9.0",
     "grunt": "^1.0.1",
     "grunt-babel": "^6.0.0",
@@ -47,5 +48,8 @@
   "main": "./lib/scion",
   "scripts": {
     "test": "grunt test"
+  },
+  "dependencies": {
+    "grunt-browserify": "^5.0.0"
   }
 }

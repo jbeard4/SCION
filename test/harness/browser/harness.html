@@ -1,0 +1,14 @@
+<html>
+  <link rel="stylesheet" src="lib/nodeunit.css">
+  <script src="lib/nodeunit.js"></script>
+  <script src="bundle.js"></script>
+  <!--<script src="/lib/scion.js"></script>-->
+  <script src="/dist/scion.js"></script>
+  <body>
+    <script>
+      var allTests = scion_tests(window.scion);
+      console.log(allTests); 
+      nodeunit.run({all : allTests});
+    </script>
+  </body>
+</html>
