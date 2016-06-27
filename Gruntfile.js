@@ -35,7 +35,7 @@ module.exports = function(grunt) {
               standalone: 'scion_tests'
             }
           },
-          src: ['test/setup-nodeunit-tests.js'],
+          src: ['test/harness/common/setup-nodeunit-tests.js'],
           dest: 'test/harness/browser/build/nodeunit-tests-bundle.js'
         }
       }
