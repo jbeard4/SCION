@@ -4,6 +4,44 @@
   <script src="build/nodeunit-tests-bundle.js"></script>
   <script src="/dist/scion.js"></script>
   <body>
+    <!--
+    <script>
+      window.global_test_results = {
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "duration": 4321,
+        "tests": [
+          {
+            "name": "foo test",
+            "result": true,
+            "message": "sumthin bad",
+            "duration": 4000
+          },
+          {
+            "name": "bar test",
+            "result": true,
+            "message": "failure",
+            "duration": 300
+          },
+          {
+            "name": "baz test",
+            "result": true,
+            "message": "passed",
+            "duration": 20
+          },
+          {
+            "name": "qux test",
+            "result": true,
+            "message": "test bad",
+            "duration": 1
+          }
+        ]
+      }
+    </script>
+    -->
+  
+
     <script>
       var allTests = scion_tests(window.scion);
       console.log(allTests); 
