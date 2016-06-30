@@ -1,5 +1,6 @@
 (function(){
-window.jQuery.getJSON('./test/scion-core/test/tests.json', init);
+var baseUrl = './bower_components/scion-core/test/tests/';
+window.jQuery.getJSON(baseUrl + '/tests.json', init);
 
 
 var options = {
@@ -7,6 +8,7 @@ var options = {
       algorithm: "de.cau.cs.kieler.klay.layered",
       spacing: 10,
       borderSpacing : 10,
+      labelSpacing : 1,
       layoutHierarchy: true,
       intCoordinates: true,
       edgeRouting: "ORTHOGONAL"
@@ -68,7 +70,7 @@ function init(tests){
 
   var cachedKgraphRoot;
   function initExample(){
-    var testUrl = './test/scion-core/test/' + selectExample.val().split('/').slice(1).join('/');
+    var testUrl = baseUrl + selectExample.val().split('/').slice(1).join('/');
     if(testUrl.indexOf('.json') > -1){
       window.jQuery.get({
         url : testUrl,
