@@ -209,14 +209,17 @@ SCHVIZ.prototype = {
   _renderGraphNode : function(parentGraphNode, graphNode){
 
     if(!graphNode._displayNode){
+      var isLeaf = !graphNode.children;
       var group = parentGraphNode._displayNode.group();
       group.node.setAttributeNS(null,'id',graphNode.id);    //tag him with state id
       var rect = group.rect(0, 0, graphNode.width, graphNode.height);
-      var label = group.text(LEAF_NODE_PADDING_W, LEAF_NODE_PADDING_H, graphNode.id).attr('dominant-baseline','text-before-edge');
+      var textX = isLeaf ? graphNode.width / 2 : LEAF_NODE_PADDING_W;
+      var textY = isLeaf ? graphNode.height / 2 : LEAF_NODE_PADDING_H;
+      var label = group.text(textX, textY, graphNode.id);
       group.transform('t' + graphNode.x + ',' + graphNode.y); 
       // By default its black, lets change its attributes
       group.addClass('node');
-      group.addClass(graphNode.children ? 'compound' : 'leaf');
+      group.addClass(isLeaf ? 'leaf' : 'compound');
 
       if(graphNode.$type){
         group.addClass(graphNode.$type);
@@ -325,8 +328,7 @@ SCHVIZ.prototype = {
         //render labels
         if(!label._displayNode){
           label._displayNode = parentGraphNode._displayNode.text(label.x, label.y, label.text);
-          label._displayNode.node.setAttributeNS(null,'dominant-baseline', label.dominantBaseline || 'text-before-edge');
-          label._displayNode.node.setAttributeNS(null,'text-anchor',label.textAnchor || 'start');
+          label._displayNode.node.setAttributeNS(null,'class','edge-label');
         }else{
           //update label displayNode
           label._displayNode.animate({x: label.x, y : label.y});

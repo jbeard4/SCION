@@ -68,15 +68,24 @@ function init(tests){
   selectExample.on('change',initExample); 
   selectExample.html(tests.map(function(k){return '<option value="' + k + '">' + k + '</option>';}).reduce(function(a,b){return a + b;},''));
 
+  //cached option, for convenience
+  if(window.localStorage.exampleVal){
+    selectExample.val(window.localStorage.exampleVal);
+  }
+
   var cachedKgraphRoot;
   function initExample(){
-    var testUrl = baseUrl + selectExample.val().split('/').slice(1).join('/');
+    var exampleVal = selectExample.val(), 
+        optionsVal = select.val();
+    window.localStorage.exampleVal = exampleVal;
+      
+    var testUrl = baseUrl + exampleVal.split('/').slice(1).join('/');
     if(testUrl.indexOf('.json') > -1){
       window.jQuery.get({
         url : testUrl,
         dataType : 'json',
         complete : function(response){
-          cachedKgraphRoot = schviz.renderSCJSON(response.responseJSON, options[select.val()]);
+          cachedKgraphRoot = schviz.renderSCJSON(response.responseJSON, options[optionsVal]);
         },
         error : function(){
           console.error(arguments);
@@ -89,7 +98,7 @@ function init(tests){
         complete : function(response){
           var module = {};
           var scjsonExample = eval(response.responseText)();
-          cachedKgraphRoot = schviz.renderSCJSON(scjsonExample, options[select.val()]);
+          cachedKgraphRoot = schviz.renderSCJSON(scjsonExample, options[optionsVal]);
         },
         error : function(){
           console.error(arguments);

@@ -8,6 +8,11 @@ text {
 
 .node > text {
   transition : fill .5s ease-out;
+  dominant-baseline: central; 
+}
+
+text.edge-label {
+  dominant-baseline: text-before-edge;
 }
 
 g.leaf > rect {
@@ -16,6 +21,7 @@ g.leaf > rect {
 
 g.leaf > text {
   fill: #333;
+  text-anchor:middle
 }
 
 g.compound.parallel > g.node > rect {
