@@ -3,7 +3,7 @@ text {
 }
 
 .node > rect {
-  transition : stroke .5s ease-out;
+  transition : stroke .1s ease-out;
 }
 
 .node.history > rect {
@@ -20,7 +20,7 @@ text.edge-label {
 }
 
 g.leaf > rect {
-  fill: rgba(0,0,0,.1);
+  fill: rgba(220,220,220,1);
 }
 
 g.leaf > text {
@@ -33,7 +33,7 @@ g.compound.parallel > g.node > rect {
 } 
 
 .node > rect {
-  fill: rgba(0,0,0,.1);
+  fill: rgba(0,0,0,.025);
   stroke: #AAA;
 }
 
