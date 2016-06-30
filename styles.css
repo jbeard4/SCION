@@ -6,6 +6,10 @@ text {
   transition : stroke .5s ease-out;
 }
 
+.node.history > rect {
+  fill : lightblue;
+}
+
 .node > text {
   transition : fill .5s ease-out;
   dominant-baseline: central; 

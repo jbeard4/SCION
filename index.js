@@ -212,7 +212,7 @@ SCHVIZ.prototype = {
       var isLeaf = !graphNode.children;
       var group = parentGraphNode._displayNode.group();
       group.node.setAttributeNS(null,'id',graphNode.id);    //tag him with state id
-      var rect = group.rect(0, 0, graphNode.width, graphNode.height);
+      var rect = group.rect(0, 0, graphNode.width, graphNode.height).attr({rx : 2, ry : 2});
       var textX = isLeaf ? graphNode.width / 2 : LEAF_NODE_PADDING_W;
       var textY = isLeaf ? graphNode.height / 2 : LEAF_NODE_PADDING_H;
       var label = group.text(textX, textY, graphNode.id);
@@ -328,7 +328,7 @@ SCHVIZ.prototype = {
         //render labels
         if(!label._displayNode){
           label._displayNode = parentGraphNode._displayNode.text(label.x, label.y, label.text);
-          label._displayNode.node.setAttributeNS(null,'class','edge-label');
+          label._displayNode.addClass('edge-label');
         }else{
           //update label displayNode
           label._displayNode.animate({x: label.x, y : label.y});
