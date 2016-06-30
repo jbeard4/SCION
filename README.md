@@ -1,5 +1,13 @@
 # SCHVIZ2
 
+## Getting started
+
+```bash
+npm install
+bower install
+open test.html
+```
+
 ## Example Usage
 
 ```
