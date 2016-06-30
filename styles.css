@@ -3,7 +3,7 @@ text {
 }
 
 .node > rect {
-  transition : stroke .5s ease-out, fill .5s ease-out;
+  transition : stroke .5s ease-out;
 }
 
 .node > text {
