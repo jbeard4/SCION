@@ -1,0 +1,88 @@
+{
+    "": "http://www.w3.org/2005/07/scxml",
+    "initial": "a",
+    "$type": "scxml",
+    "states": [
+        {
+            "id": "a",
+            "$type": "parallel",
+            "states": [
+                {
+                    "id": "b",
+                    "$type": "parallel",
+                    "states": [
+                        {
+                            "id": "c",
+                            "$type": "parallel",
+                            "states": [
+                                {
+                                    "id": "d",
+                                    "$type": "parallel",
+                                    "states": [
+                                        {
+                                            "id": "e",
+                                            "$type": "parallel",
+                                            "states": [
+                                                {
+                                                    "id": "i",
+                                                    "initial": "i1",
+                                                    "states": [
+                                                        {
+                                                            "id": "i1",
+                                                            "transitions": [
+                                                                {
+                                                                    "target": "l",
+                                                                    "event": "t"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "id": "i2"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "id": "j"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": "h"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "g"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "f",
+                            "initial": "f1",
+                            "states": [
+                                {
+                                    "id": "f1",
+                                    "transitions": [
+                                        {
+                                            "target": "f2",
+                                            "event": "t"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "f2"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "k"
+                }
+            ]
+        },
+        {
+            "id": "l"
+        }
+    ]
+}

@@ -1,0 +1,64 @@
+{
+    "": "http://www.w3.org/2005/07/scxml",
+    "initial": "b",
+    "$type": "scxml",
+    "states": [
+        {
+            "id": "b",
+            "$type": "parallel",
+            "states": [
+                {
+                    "id": "c",
+                    "$type": "parallel",
+                    "states": [
+                        {
+                            "id": "e",
+                            "transitions": [
+                                {
+                                    "event": "t",
+                                    "target": "a1"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "f",
+                            "transitions": [
+                                {
+                                    "event": "t",
+                                    "target": "a2"
+                                }
+                            ]
+                        }
+                    ],
+                    "transitions": [
+                        {
+                            "event": "t",
+                            "target": "a3"
+                        }
+                    ]
+                },
+                {
+                    "id": "d",
+                    "transitions": [
+                        {
+                            "event": "t",
+                            "target": "a4"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "a1"
+        },
+        {
+            "id": "a2"
+        },
+        {
+            "id": "a3"
+        },
+        {
+            "id": "a4"
+        }
+    ]
+}

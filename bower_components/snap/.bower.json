@@ -1,0 +1,13 @@
+{
+  "name": "snap",
+  "homepage": "https://github.com/madebycinch/snap",
+  "_release": "bc67a69292",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "bc67a6929201abedef1ad384e6e674c7a9d06ef1"
+  },
+  "_source": "https://github.com/madebycinch/snap.git",
+  "_target": "*",
+  "_originalSource": "snap"
+}
