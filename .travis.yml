@@ -1,3 +1,7 @@
 language: node_js
 node_js:
   - 4.2.2
+addons:
+  username: "jbeard4"
+  access_key:
+    secure: "fXo2TgCZGWoVPFnCl4kg8PKnyJ9fDKRgp+SoX7Pl/8pkp7PdIW0AKFn3+2LIR6PYtquX6HFkZU+KjlzQ7AcjYb+WK53AqxYdi17cylwolhNKdAIb6webFEDZyft8Typ0iCIBebw69QCTKekHfZPOEUshwh2Up49RUnGU62oQcpo="
