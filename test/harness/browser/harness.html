@@ -1,5 +1,6 @@
 <html>
   <link rel="stylesheet" src="lib/nodeunit.css">
+  <script src="lib/polyfill.js"></script>
   <script src="lib/nodeunit.js"></script>
   <script src="build/nodeunit-tests-bundle.js"></script>
   <script src="/dist/scion.js"></script>
@@ -77,7 +78,7 @@
               "failed": results.filter(function(a){return !a.result;}).length,
               "total": results.length,
               "duration": assertions.duration,
-              "tests": results
+              "tests": results.filter(function(test){return !test.result;})
             };
             console.log('window.global_test_results',window.global_test_results);
           } //called after all tests/modules are complete
