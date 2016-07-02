@@ -34,13 +34,14 @@ SCHVIZ.prototype = {
     this._normalizeStateIds(scjson);
     scjson.id = 'root';
     var kgraphRoot = this._scjsonStateToKlayNode(scjson, scjson);
-    console.log('kgraphRoot',JSON.stringify(kgraphRoot,4,4));
     return this.updateKgraph(kgraphRoot, options, cb);
 
   },
 
   updateKgraph : function(kgraph, options, cb){
+    this._normalizeKgraphTransitionTargets(kgraph);
     this._applyInitialCoordinates(kgraph);
+    console.log('kgraph',JSON.stringify(kgraph,4,4));
     window.$klay.layout({
       graph : kgraph,
       options : options,
@@ -50,6 +51,53 @@ SCHVIZ.prototype = {
       }.bind(this)
     });
     return kgraph;
+  },
+
+  _normalizeKgraphTransitionTargets : function(kgraph){
+
+    //walk through states
+    walk.call(this, kgraph);
+
+    function walk(state){
+      //look for state.transitions.targets
+      if(state.edges){
+        state.edges.forEach(function(edge){
+          if(edge.target && Array.isArray(edge.target)){
+
+            var pseudoNodeStateId = this._generateStateId();
+
+            //create a pseudonode with an edge originating for each hyperedge target
+            var pseudoNode = {
+              id :  pseudoNodeStateId,
+              $type: "pseudonode",
+              width : 0,
+              height : 0,
+              edges : []
+            };
+            state.children.push(pseudoNode);
+            state.edges.push.apply(
+              state.edges,
+              edge.target.map(function(targetId, i){
+                return {
+                  id : pseudoNodeStateId + '_' + targetId,
+                  source: pseudoNodeStateId,
+                  target: targetId
+                };
+              })
+            );
+
+            //adjust transition target to target pseudonode
+            edge.target = pseudoNodeStateId; 
+            edge.$type = 'hyperlink';
+          }
+        }, this);
+      }
+
+      //recurse
+      if(state.children){
+        state.children.forEach(walk.bind(this));
+      }
+    }
   },
 
   _initDefs : function(svg){
@@ -99,7 +147,7 @@ SCHVIZ.prototype = {
         state.transitions.filter(function(transition){return transition.target;})
           .map(function(transition){
             var klayTransition = {
-              id : state.id + '_' + transition.target,
+              id : state.id + '_' + (Array.isArray(transition.target) ? transition.target.join('_') : transition.target ),
               source : state.id,
               target : transition.target,
               labels : []
@@ -168,10 +216,14 @@ SCHVIZ.prototype = {
 
   _normalizeStateIds : function(scjson){
     var walk = (function(node){
-      node.id = node.id || ('$generated-' + this._generatedIdCount++);
+      node.id = node.id || this._generateStateId();
       if(node.states) node.states.forEach(walk.bind(this));
     }.bind(this));
     walk(scjson);
+  },
+
+  _generateStateId : function(){
+    return '$generated-' + this._generatedIdCount++;
   },
 
   _render : function(graphRoot){
@@ -287,6 +339,7 @@ SCHVIZ.prototype = {
     if(!edge._displayNode){
       var path = parentGraphNode._displayNode.path(d);
       path.addClass('link');
+      if(edge.$type) path.addClass(edge.$type);
 
       edge._displayNode = path;
       path.node.setAttributeNS(null, 'id', edge.source + '->' + edge.target);
@@ -300,6 +353,8 @@ SCHVIZ.prototype = {
         path = parentGraphNode._displayNode.path(d);
         path.addClass('link');
         edge._displayNode = path;
+
+        if(edge.$type) path.addClass(edge.$type);
       }
     }
 
