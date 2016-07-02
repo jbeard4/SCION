@@ -73,16 +73,19 @@ module.exports = function(grunt) {
 
   grunt.registerTask('replace-reserved-words', 'String replace reserved words in built JavaScript.', function() {
     var fs = require('fs');
-    var fileContents = fs.readFileSync('dist/scion.js');
+    var fileContents = fs.readFileSync('dist/scion.js','utf8');
     ['return','delete'].forEach(function(s){
       fileContents = fileContents.replace(new RegExp('\\.\\b' + s + '\\b','g'), '["' + s + '"]'); 
     });
     fs.writeFileSync('dist/scion.js', fileContents);
   });
 
+  //TODO: copy babel-polyfill and nodeunit-browser into test/harness/browser/lib. I wish these were published via bower. 
+
   grunt.registerTask('build-tests', ['browserify:dev']);
   grunt.registerTask('test', ['build', 'build-tests', 'run-tests']);
   grunt.registerTask('run-tests', ['nodeunit', 'run-browser-tests' ]);
   grunt.registerTask('run-browser-tests', ['connect', 'saucelabs-custom' ]);
   grunt.registerTask('build', ['babel', 'replace-reserved-words', 'uglify']);
+  grunt.registerTask('default', ['build']);
 };
