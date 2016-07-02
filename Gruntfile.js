@@ -11,6 +11,31 @@ module.exports = function(grunt) {
       browserName: 'internet explorer',
       version: '8',
       platform: 'Windows 7'
+    },
+    {
+      browserName: 'internet explorer',
+      version: '9',
+      platform: 'Windows 7'
+    },
+    {
+      browserName: 'internet explorer',
+      version: '10',
+      platform: 'Windows 7'
+    },
+    {
+      browserName: 'internet explorer',
+      version: '11',
+      platform: 'Windows 7'
+    },
+    {
+      browserName: 'firefox',
+      version: '4',
+      platform: 'Windows 7'
+    },
+    {
+      browserName: 'firefox',
+      version: '47',
+      platform: 'Windows 7'
     }
   ];
 
