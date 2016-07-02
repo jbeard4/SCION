@@ -71,9 +71,18 @@ module.exports = function(grunt) {
       }
   });
 
+  grunt.registerTask('replace-reserved-words', 'String replace reserved words in built JavaScript.', function() {
+    var fs = require('fs');
+    var fileContents = fs.readFileSync('dist/scion.js');
+    ['return','delete'].forEach(function(s){
+      fileContents = fileContents.replace(new RegExp('\\.\\b' + s + '\\b','g'), '["' + s + '"]'); 
+    });
+    fs.writeFileSync('dist/scion.js', fileContents);
+  });
+
   grunt.registerTask('build-tests', ['browserify:dev']);
   grunt.registerTask('test', ['build', 'build-tests', 'run-tests']);
   grunt.registerTask('run-tests', ['nodeunit', 'run-browser-tests' ]);
   grunt.registerTask('run-browser-tests', ['connect', 'saucelabs-custom' ]);
-  grunt.registerTask('build', ['babel', 'uglify']);
+  grunt.registerTask('build', ['babel', 'replace-reserved-words', 'uglify']);
 };
