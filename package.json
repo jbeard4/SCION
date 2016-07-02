@@ -52,8 +52,5 @@
   "main": "./lib/scion",
   "scripts": {
     "test": "grunt test"
-  },
-  "dependencies": {
-    "grunt-browserify": "^5.0.0"
   }
 }
