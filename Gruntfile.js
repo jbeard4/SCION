@@ -92,9 +92,9 @@ module.exports = function(grunt) {
               'http://127.0.0.1:9999/test/harness/browser/harness.html'
             ],
             browsers: browsers,
-            //build: process.env.TRAVIS_JOB_ID,
+            build: process.env.TRAVIS_JOB_ID,
             testname: 'custom tests',
-            throttled: 3,
+            throttled: 5,
             sauceConfig: {
               'video-upload-on-pass': false
             }
