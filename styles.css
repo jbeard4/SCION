@@ -10,6 +10,11 @@ text {
   fill : lightblue;
 }
 
+
+.node.pseudonode {
+  display : none;
+}
+
 .node > text {
   transition : fill .5s ease-out;
   dominant-baseline: central; 
@@ -61,6 +66,10 @@ g.compound.parallel > g.node > rect {
   fill: none;
   marker-end : url(#end);
   transition : stroke .25s ease-out;
+}
+
+.link.hyperlink {
+  marker-end : none;
 }
 
 .link.highlighted {
