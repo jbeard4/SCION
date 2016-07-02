@@ -44,7 +44,13 @@
   
 
     <script>
-      var allTests = scion_tests(window.scion);
+      //fake a console for IE8 on sauce labs
+      if(!window.console){
+        window.console = {
+          log : function(){}
+        };
+      }
+      var allTests = window.scion_tests(window.scion);
       console.log(allTests); 
       var moduleStartTime, moduleEndTime, testResults = {};
       nodeunit.runModules({all : allTests},
