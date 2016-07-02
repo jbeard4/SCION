@@ -31,12 +31,14 @@ module.exports = function(grunt) {
       browserName: 'firefox',
       version: '4',
       platform: 'Windows 7'
-    },
+    }
+    /*,
     {
       browserName: 'firefox',
       version: '47',
       platform: 'Windows 7'
     }
+    */
   ];
 
   grunt.initConfig({
