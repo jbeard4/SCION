@@ -45,3 +45,5 @@ addBrowser('safari', 'OS X 10.8', 6);
 _.range(26, 48 + 1).forEach(addBrowser.bind(this, 'chrome', 'Linux'));
 _.range(4, 45 + 1).forEach(addBrowser.bind(this, 'firefox', 'Linux'));
 addBrowser('opera', 'Linux', 12);
+
+module.exports = browsers;
