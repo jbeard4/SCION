@@ -44,7 +44,8 @@
     "load-grunt-tasks": "^3.5.0",
     "minimist": "1.2.0",
     "nodeunit": "0.9.1",
-    "tape": "4.5.1"
+    "tape": "4.5.1",
+    "underscore": "^1.8.3"
   },
   "engines": {
     "node": ">=4.2.2"

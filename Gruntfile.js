@@ -1,45 +1,6 @@
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
-
-  var browsers = [
-    {
-      browserName: 'chrome',
-      version: '46',
-      platform: 'Mac'
-    },
-    {
-      browserName: 'internet explorer',
-      version: '8',
-      platform: 'Windows 7'
-    },
-    {
-      browserName: 'internet explorer',
-      version: '9',
-      platform: 'Windows 7'
-    },
-    {
-      browserName: 'internet explorer',
-      version: '10',
-      platform: 'Windows 7'
-    },
-    {
-      browserName: 'internet explorer',
-      version: '11',
-      platform: 'Windows 7'
-    },
-    {
-      browserName: 'firefox',
-      version: '4',
-      platform: 'Windows 7'
-    }
-    /*,
-    {
-      browserName: 'firefox',
-      version: '47',
-      platform: 'Windows 7'
-    }
-    */
-  ];
+  var browsers = require('./grunt/browsers');
 
   grunt.initConfig({
       pkg: grunt.file.readJSON('package.json'),
