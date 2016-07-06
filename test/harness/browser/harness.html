@@ -83,8 +83,8 @@
               "passed": results.filter(function(a){return a.result;}).length,
               "failed": results.filter(function(a){return !a.result;}).length,
               "total": results.length,
-              "duration": assertions.duration,
-              "tests": results.filter(function(test){return !test.result;})
+              "duration": assertions.duration
+              //,"tests": results.filter(function(test){return !test.result;})    //FIXME: bug in IE9 and grunt-saucelabs requires this to be disabled
             };
             console.log('window.global_test_results',window.global_test_results);
           } //called after all tests/modules are complete
