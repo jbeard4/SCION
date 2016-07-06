@@ -17,6 +17,7 @@ var options = {
       algorithm: "de.cau.cs.kieler.klay.layered",
       spacing: 10,
       borderSpacing : 10,
+      labelSpacing : 1,
       layoutHierarchy: true,
       intCoordinates: true,
       direction: "DOWN",
@@ -25,6 +26,8 @@ var options = {
     layer: {
       algorithm: "de.cau.cs.kieler.klay.layered",
       spacing: 10,
+      borderSpacing : 10,
+      labelSpacing : 1,
       layoutHierarchy: true,
       intCoordinates: true,
       direction: "DOWN",
@@ -60,9 +63,8 @@ function init(tests){
 
   var select = $('#select-layout');
   select.html(Object.keys(options).map(function(k){return '<option value="' + k + '">' + k + '</option>';}).reduce(function(a,b){return a + b;},''));
-  select.on('change',function(){
-    schviz.updateKgraph(cachedKgraphRoot, options[select.val()]);
-  }); 
+  //select.on('change',function(){ schviz.updateKgraph(cachedKgraphRoot, options[select.val()]); }); 
+  select.on('change',initExample); 
 
   var selectExample = $('#select-example');
   selectExample.on('change',initExample); 
