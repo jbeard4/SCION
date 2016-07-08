@@ -58,6 +58,7 @@ module.exports = function(grunt) {
             build: process.env.TRAVIS_JOB_ID,
             testname: 'custom tests',
             throttled: 5,
+            statusCheckAttempts : -1,
             sauceConfig: {
               'video-upload-on-pass': false
             }
