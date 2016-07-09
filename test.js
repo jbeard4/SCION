@@ -105,41 +105,14 @@ function init(tests){
       });
     }
     else if(testUrl.indexOf('.scxml') > -1 || testUrl.indexOf('.xml') > -1){
-      scxml.urlToModel(testUrl, function(err, model){
-        if(err) throw err;
-        console.log('model', model.toString());
 
-        if(testUrl === 'examples/universal-morse-input-output/build/morse.scxml'){
-          //setup mock require
-          window.require = function(module){
-            switch(module){
-              case '../morse-code.json' : 
-                return {};
-              case '../device/util':
-                return {};
-              case 'mraa':
-                return {
-                  getVersion : function() { return 'fake' },
-                  Gpio : function(){
-                    this.dir = function(){}
-                  }
-                };
-              case 'jsupm_grove':
-                return {
-                  GroveButton : function(){}
-                };
-              case 'jsupm_i2clcd':
-                return {
-                  Jhd1313m1 : function (){}
-                }
-            }
-          }
-        }
+      //we could probably just use jquery to fetch the xml as text
+      scxml.ext.platformModule.platform.http.get(testUrl,function(err,doc){
+          if(err) throw err;
+          var scjsonExample = scxml.ext.compilerInternals.scxmlToScjson(doc);
 
-        var scjsonExample = model();
-
-        kgraphJsonTextarea.value = JSON.stringify(scjsonExample,4,4); 
-        doLayout();
+          kgraphJsonTextarea.value = JSON.stringify(scjsonExample,4,4); 
+          doLayout();
       })
     }
     else{
