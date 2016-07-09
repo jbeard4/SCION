@@ -1,3 +1,12 @@
 [submodule "test/scion-core"]
 	path = test/scion-core
 	url = https://github.com/jbeard4/SCION-CORE.git
+[submodule "examples/universal-morse-input-output"]
+	path = examples/universal-morse-input-output
+	url = git@github.com:jbeard4/universal-morse-input-output.git
+[submodule "examples/svg-graphical-modelling-environment-framework"]
+	path = examples/svg-graphical-modelling-environment-framework
+	url = git@github.com:jbeard4/svg-graphical-modelling-environment-framework.git
+[submodule "examples/archive.org-twilio-browser"]
+	path = examples/archive.org-twilio-browser
+	url = git@github.com:jbeard4/archive.org-twilio-browser.git
