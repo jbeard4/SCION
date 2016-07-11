@@ -39,6 +39,9 @@ SCHVIZ.prototype = {
   },
 
   updateKgraph : function(kgraph, options, cb){
+    this._populateIdMap(kgraph);
+    this._populateChildToParentMap(kgraph);
+
     this._normalizeKgraphTransitionTargets(kgraph);
     this._applyInitialCoordinates(kgraph);
     console.log('kgraph',JSON.stringify(kgraph,4,4));
@@ -56,38 +59,68 @@ SCHVIZ.prototype = {
   _normalizeKgraphTransitionTargets : function(kgraph){
 
     //walk through states
-    walk.call(this, kgraph);
+    walk.call(this, kgraph, kgraph);
 
-    function walk(state){
+    function walk(parentState, state){
       //look for state.transitions.targets
       if(state.edges){
         state.edges.forEach(function(edge){
-          if(edge.target && Array.isArray(edge.target)){
 
-            var pseudoNodeStateId = this._generateStateId();
+          //Looking for transitions that: 
+          // 1. originate from parent state, target substate, and @type != 'internal'
+          // 2. !@target  (targetless transitions)
+          // 3. are a hyperedge
 
-            //create a pseudonode with an edge originating for each hyperedge target
-            var pseudoNode = {
-              id :  pseudoNodeStateId,
-              $type: "pseudonode",
-              width : 0,
-              height : 0,
-              edges : []
-            };
-            state.children.push(pseudoNode);
+
+          // 1. originate from parent state, target substate, and @type != 'internal'
+          if(edge.type !== 'internal' //external
+              && !Array.isArray(edge.target)
+              && this._isSourceAncestorOfTarget(edge.source, edge.target) 
+
+          ){
+            /*
+              For 1.: Create a pseudonode that is a sibling of the parent node.
+              Create transitions from parent node to pseudonode, and from
+              pseudonode to child nodes. 
+            */
+
+            console.log('edge.type', edge.type);
+            //if he is a parallel state, then grab the parent
+            var parentId = this._getParentKGraphNode(edge.source);
+            var parentNode = this._getKgraphNodeById(parentId); 
+            this._createPseudonodeAndSpliceEdge(
+              parentNode, 
+              edge);
+          }
+
+          // 2. !@target  (targetless transitions)
+          else if(!edge.target){
+            /*
+            For 2.: Create a pseudonode that is a child of the parent node. Create
+            transitions originating from parent node and targeting pseudonode; and
+            originating from pseudonode, and targeting parent node. 
+            */
+
+            this._createPseudonodeAndSpliceEdge(state, edge);
+          }
+
+          // 3. he is a hyperedge
+          else if(edge.target && Array.isArray(edge.target)){
+
+            var pseudonode = this._createPseudonode(parentState);
             state.edges.push.apply(
               state.edges,
               edge.target.map(function(targetId, i){
                 return {
-                  id : pseudoNodeStateId + '_' + targetId,
-                  source: pseudoNodeStateId,
+                  id : pseudonode.id + '_' + targetId,
+                  source: pseudonode.id,
                   target: targetId
                 };
               })
             );
 
             //adjust transition target to target pseudonode
-            edge.target = pseudoNodeStateId; 
+            edge.target = pseudonode.id; 
             edge.$type = 'hyperlink';
           }
         }, this);
@@ -95,7 +128,7 @@ SCHVIZ.prototype = {
 
       //recurse
       if(state.children){
-        state.children.forEach(walk.bind(this));
+        state.children.forEach(walk.bind(this, state));
       }
     }
   },
@@ -201,6 +234,10 @@ SCHVIZ.prototype = {
     }
   },
 
+  _getKgraphNodeById : function(kgraphNodeId){
+    return this._idMap[kgraphNodeId];
+  },
+
 
   _populateIdMap : function(graphRoot){
 
@@ -228,7 +265,6 @@ SCHVIZ.prototype = {
 
   _render : function(graphRoot){
     this._allEdges = [];
-    this._populateIdMap(graphRoot);
     this._s.attr('viewBox','0 0 ' + graphRoot.width + ' ' + graphRoot.height);
 
     if(!graphRoot._displayNode){
@@ -312,6 +348,63 @@ SCHVIZ.prototype = {
         this._allEdges.splice(this._allEdges.indexOf(edge), 1);
       }.bind(this));
     }
+  },
+
+  _createPseudonode : function(parentNode){
+    var pseudoNodeStateId = this._generateStateId();
+
+    //create a pseudonode with an edge originating for each hyperedge target
+    var pseudonode = {
+      id :  pseudoNodeStateId,
+      $type: "pseudonode",
+      width : 0,
+      height : 0,
+      edges : []
+    };
+
+    parentNode.children.push(pseudonode);
+
+    this._idMap[pseudonode.id] = pseudonode;
+    this._childToParentMap[pseudonode.id] = parentNode.id;
+
+    return pseudonode;
+  },
+
+  _getParentKGraphNode : function(nodeId){
+    return this._childToParentMap[nodeId];
+  },
+
+  _populateChildToParentMap : function(graphRoot){
+
+    this._childToParentMap = {};
+    var walk = (function(parentGraphNode, graphNode){
+      if(parentGraphNode) this._childToParentMap[graphNode.id] = parentGraphNode.id;
+      if(graphNode.children) graphNode.children.forEach(walk.bind(this,graphNode));
+    }.bind(this));
+
+    walk(null, graphRoot);
+  },
+
+  _createPseudonodeAndSpliceEdge : function(parentState, edge){
+    console.log('_createPseudonodeAndSpliceEdge', 'parentState', parentState.id);
+    if(!parentState.children) parentState.children = [];
+
+    var pseudonode = this._createPseudonode(parentState);
+
+    var grandparentNode = this._getKgraphNodeById(this._getParentKGraphNode(parentState.id));
+    if(!grandparentNode) grandparentNode = parentState;
+
+    grandparentNode.edges.push(
+      {
+        id : pseudonode.id + '_' + edge.target,
+        source: pseudonode.id,
+        target: edge.target
+      }
+    );
+
+    //adjust transition target to target pseudonode
+    edge.target = pseudonode.id; 
+    edge.$type = 'hyperlink';
   },
 
   _isSourceAncestorOfTarget : function(sourceId, targetId){

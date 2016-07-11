@@ -135,6 +135,7 @@ function init(tests){
   window.doLayout = function(){
     var optionsVal = select.val();
     var scjsonExample = JSON.parse(kgraphJsonTextarea.value);
+    //this is so we can do queries on him later. 
     cachedKgraphRoot = schviz.renderSCJSON(scjsonExample, options[optionsVal]);
   }
 
