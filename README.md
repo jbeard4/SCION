@@ -1,8 +1,8 @@
-[![Build status](https://travis-ci.org/jbeard4/SCION-CORE.svg?branch=master)](https://travis-ci.org/jbeard4/SCION-CORE)
+[![Build status](https://travis-ci.org/jbeard4/SCION-CORE.svg?branch=sauce-labs)](https://travis-ci.org/jbeard4/SCION-CORE)
 
-[![Sauce Test Status](https://saucelabs.com/buildstatus/jbeard4)](https://saucelabs.com/u/jbeard4)
+[![Sauce Test Status](https://saucelabs.com/buildstatus/jbeard4?branch=sauce-labs)](https://saucelabs.com/u/jbeard4)
 
-[![Sauce Test Status](https://saucelabs.com/browser-matrix/jbeard4.svg)](https://saucelabs.com/u/jbeard4)
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/jbeard4.svg?branch=sauce-labs)](https://saucelabs.com/u/jbeard4)
 
 # Overview
 
