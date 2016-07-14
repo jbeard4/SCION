@@ -14,7 +14,6 @@ var defaultFF = [5, 10, 20, 30, 40, 46, //'dev',
                     'beta'],
     defaultChrome = [26, 36, 51, 'dev', 'beta'];
 
-/*
 addBrowser('internet explorer', 'Windows 10', 11);
 addBrowser('MicrosoftEdge', 'Windows 10', '13.10586');
 defaultChrome.forEach(addBrowser.bind(this, 'chrome', 'Windows 10'));
@@ -62,7 +61,6 @@ addBrowser('safari', 'OS X 10.8', 6);
 [26, 30, 40, 48].forEach(addBrowser.bind(this, 'chrome', 'Linux'));
 [4, 10, 20, 30, 40, 45].forEach(addBrowser.bind(this, 'firefox', 'Linux'));
 addBrowser('opera', 'Linux', 12);
-*/
 
 ['9.4','9.3','9.2','9.1','9.0','8.4','8.3','8.2','8.1','8.0'].forEach(function(version){
   browsers.push({
