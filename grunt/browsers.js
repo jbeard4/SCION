@@ -10,14 +10,13 @@ function addBrowser(browserName, platform, version){
   });
 }
 
-var defaultFF = [5, 10, 20, 30, 40, 46, //'dev', 
-                    'beta'],
+var defaultFF = [5, 10, 20, 30, 40, 46, 47 ],
     defaultChrome = [26, 36, 51, 'dev', 'beta'];
 
 addBrowser('internet explorer', 'Windows 10', 11);
 addBrowser('MicrosoftEdge', 'Windows 10', '13.10586');
 defaultChrome.forEach(addBrowser.bind(this, 'chrome', 'Windows 10'));
-_.difference(defaultFF,[46, 'dev']) //these fail on sauce labs due to sauce labs bugs
+_.difference(defaultFF,[46, 47, 'dev']) //these fail on sauce labs due to sauce labs bugs
   .forEach(addBrowser.bind(this, 'firefox', 'Windows 10'));
 
 [8, 9, 10, 11].forEach(addBrowser.bind(this, 'internet explorer', 'Windows 7'));
