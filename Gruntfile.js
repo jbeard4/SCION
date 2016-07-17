@@ -40,11 +40,24 @@ module.exports = function(grunt) {
           dest: 'test/harness/browser/build/nodeunit-tests-bundle.js'
         }
       },
-      connect: {
-        server: {
+      express: {
+        options: {
+          script: 'grunt/server.js',
+          port: 3000
+        },
+        dev: {
           options: {
-            base: '',
-            port: 9999
+            node_env: 'development'
+          }
+        },
+        prod: {
+          options: {
+            node_env: 'production'
+          }
+        },
+        "prod-require": {
+          options: {
+            node_env: 'production-require'
           }
         }
       },
@@ -52,7 +65,7 @@ module.exports = function(grunt) {
         all: {
           options: {
             urls: [
-              'http://127.0.0.1:9999/test/harness/browser/harness.html'
+              'http://127.0.0.1:3000/'
             ],
             browsers: browsers,
             build: process.env.TRAVIS_JOB_ID,
@@ -80,8 +93,11 @@ module.exports = function(grunt) {
 
   grunt.registerTask('build-tests', ['browserify:dev']);
   grunt.registerTask('test', ['build', 'build-tests', 'run-tests']);
-  grunt.registerTask('run-tests', ['nodeunit', 'run-browser-tests' ]);
-  grunt.registerTask('run-browser-tests', ['connect', 'saucelabs-custom' ]);
+  grunt.registerTask('run-tests', ['nodeunit', 'run-browser-tests-prod' ]);
+  grunt.registerTask('run-browser-tests', [ 'run-browser-tests-dev', 'run-browser-tests-prod', 'run-browser-tests-prod-require']);
+  grunt.registerTask('run-browser-tests-dev', ['express:dev', 'saucelabs-custom', 'express:dev:stop' ]);
+  grunt.registerTask('run-browser-tests-prod', ['express:prod', 'saucelabs-custom', 'express:prod:stop' ]);
+  grunt.registerTask('run-browser-tests-prod-require', ['express:prod-require', 'saucelabs-custom','express:prod-require:stop' ]);
   grunt.registerTask('build', ['babel', 'replace-reserved-words', 'uglify']);
   grunt.registerTask('default', ['build']);
 };
