@@ -1,3 +1,11 @@
+v1.1.6
+------
+
+Added support for EventEmitter API and send type="publish" into scion-core. This extends existing listener API and adds support for custom events.
+Add optional onError listener which is invoked whenever error.execution occurs
+Removed rogue console.log
+Added better support for custom send and cancel.
+
 v0.0.10
 -------
 
@@ -92,3 +100,4 @@ v0.0.1
 ------
 
 * Initial release.
+
