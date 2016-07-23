@@ -1,3 +1,21 @@
+v1.2.0
+------
+
+Instractructure: Improved build, release and test automation.
+
+    * Switch from Makefile to grunt build
+    * Integrate Sauce Labs for browser builds. 
+    * Add support for running tests against production build; vanillaJS and requireJS loaders.
+    * Change minimum supported version of Node.js to 4.2.2. Update travis-ci.
+
+Changes contributed by @mattoshry:
+
+    * simplify initializeModelGeneratorFn; remove unneeded function binding
+    * eliminate forEach overhead
+    * add async interpreter interface so that the execution thread is yielded during macrosteps
+    * add onBigStepBegin, onSmallStepBegin, onBigStepEnd events
+    * remove rogue console.log
+
 v1.1.6
 ------
 
@@ -100,4 +118,5 @@ v0.0.1
 ------
 
 * Initial release.
+
 
