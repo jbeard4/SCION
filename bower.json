@@ -27,9 +27,7 @@
     "**/.*",
     "node_modules",
     "bower_components",
-    "test",
     "dist",
     "binding-examples"
   ]
 }
-
