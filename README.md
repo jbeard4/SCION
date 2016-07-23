@@ -1,5 +1,9 @@
 [![Build status](https://travis-ci.org/jbeard4/SCION-CORE.svg?branch=master)](https://travis-ci.org/jbeard4/SCION-CORE)
 
+[![Sauce Test Status](https://saucelabs.com/buildstatus/jbeard4?branch=master)](https://saucelabs.com/u/jbeard4)
+
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/jbeard4.svg?branch=master)](https://saucelabs.com/u/jbeard4)
+
 # Overview
 
 Statecharts is a powerful modelling language for developing **complex, timed, event-driven, state-based systems**. For an overview of Statecharts see [Statecharts: A Visual Formalism For Complex Systems](http://websrv0a.sdu.dk/ups/ESD/materials/harel-Statecharts.pdf) and [The Rhapsody Semantics of Statecharts](http://research.microsoft.com/pubs/148761/Charts04.pdf).
@@ -9,6 +13,7 @@ SCION-CORE is a small (2.9kb, minified and gzipped), embeddable implementation o
 SCION-CORE is written so as to abstract out platform dependencies, and is implemented as a single UMD module, which makes it easy to deploy in any JavaScript environment. The philosophy of SCION-CORE is **"write once, embed everywhere"**.
 
 SCION-CORE powers [SCION](https://github.com/jbeard4/SCION), an implementation of [W3C SCXML](http://www.w3.org/TR/scxml) in JavaScript, and as such, it supports all of the features of the SCXML core module, including compound states ( **OR** states), parallel states ( **AND** states), and history states. 
+
 
 # Quickstart and Simple Use Case
 
@@ -196,6 +201,7 @@ You can then perform the following steps to script web content:
     </body>
 </html>
 ```
+
 # Installation
 
 ## Browser
@@ -226,6 +232,7 @@ Get it with git:
 Rhino 1.7R3 supports CommonJS modules, so SCION-CORE can be used as follows:
 
 ```bash
+
 #just put SCION-CORE/lib on your modules path
 rhino -modules path/to/SCION-CORE/lib -main path/to/your/script.js
 ```
@@ -478,6 +485,7 @@ The context object ("`this`") of onEntry, onExit, and onTransition functions con
 * `send(event)`, which adds an event to the Statechart's outer queue
 * `raise(event)`, which adds an event to the Statechart's inner queue 
 
+
 # API
 
 ## new scion.Statechart(model)
@@ -513,11 +521,27 @@ An SCXML interpreter takes SCXML events as input, where an SCXML event is an obj
     var configuration = sc.gen({name:"eventName",data:{foo:1}}); 
 ```
 
-## sc.registerListener({onEntry : function(stateId){}, onExit : function(stateId){}, onTransition : function(sourceStateId,[targetStateIds,...]){}, onError: function(errorInfo){}})
+## Event Emitter
 
-Registers a callback to receive notification of state changes, as described above.
+SCION-CORE includes the [tiny-events](https://github.com/ZauberNerd/tiny-events) library, and implements the following EventEmitter methods:
 
-Each `onEntry`, `onExit`, `onTransition`, and `onError` callback is optional - if the property is not present, it will be ignored.
+* on(type: string, listener: Function): EventEmitter
+* once(type: string, listener: Function): EventEmitter
+* off(type: string, listener?: Function): EventEmitter
+* emit(type: string, ...args: any[]): EventEmitter
+
+SCION-CORE emits the following events:
+
+* onEntry
+* onExit
+* onTransition
+* onBigStepBegin
+* onBigStepSuspend
+* onBigStepResume
+* onSmallStepBegin
+* onSmallStepEnd
+* onBigStepEnd
+* onError
 
 The `onError` callback receives an object containing the following properties:
 
@@ -526,10 +550,17 @@ The `onError` callback receives an object containing the following properties:
 * `column` - The column in the source file in which the error occurred.
 * `reason` - An informative error message. The text is platform-specific and subject to change.
 
+## sc.registerListener({onEntry : function(stateId){}, onExit : function(stateId){}, onTransition : function(sourceStateId,[targetStateIds,...]){}, onError: function(errorInfo){}})
+
+This is an alternative interface to `on`.
+
 # Development
 
-Run unit tests: `npm test`
+* Build: `grunt build`
+* Run tests: `grunt test`
+* Release : `grunt release`
 
 # Support
 
 [Mailing list](https://groups.google.com/group/scion-dev)
+
