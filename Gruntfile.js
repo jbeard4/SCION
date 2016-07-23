@@ -77,6 +77,14 @@ module.exports = function(grunt) {
             }
           }
         }
+      },
+      release: {
+        options: {
+          github: {
+            repo: 'jbeard4/SCION-CORE', //put your user/repo here
+            accessTokenVar: 'GITHUB_ACCESS_TOKEN', //ENVIRONMENT VARIABLE that contains GitHub Access Token
+          }
+        }
       }
   });
 
