@@ -78,8 +78,23 @@ module.exports = function(grunt) {
           }
         }
       },
+      gitcommit: {
+          dist: {
+              options: {
+                  message: 'Updated dist files',
+              },
+              files: {
+                  src: [
+                    'dist/scion.js',
+                    'dist/scion.js.map',
+                    'dist/scion.min.js'
+                  ]
+              }
+          }
+      },
       release: {
         options: {
+          beforeRelease : ['build', 'gitcommit:dist'],
           additionalFiles: ['bower.json'],
           github: {
             repo: 'jbeard4/SCION-CORE', //put your user/repo here
