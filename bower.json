@@ -24,16 +24,13 @@
     }
   ],
   "ignore": [
-    'CHANGES.md',
-    'Gruntfile.js',
-    'Makefile',
-    'README.md',
-    'bindings-examples',
-    'bower.json',
-    'component.json',
-    'grunt',
-    'lib',
-    'node_modules',
-    'package.json'
+    "CHANGES.md",
+    "Gruntfile.js",
+    "Makefile",
+    "README.md",
+    "bindings-examples/*",
+    "grunt/*",
+    "lib/*",
+    "node_modules/*"
   ]
 }
