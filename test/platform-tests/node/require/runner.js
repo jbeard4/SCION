@@ -1,4 +1,5 @@
 var scxml = require('../../../../');
+var pm = scxml.ext.platformModule.platform;
 
 function testModel(model, test){
     var sc = new scxml.scion.Statechart(model);
@@ -16,8 +17,12 @@ function testModel(model, test){
 }
 
 exports.testPathToModel = function(test){
-    scxml.pathToModel(__dirname + '/test.scxml',function(err,model){
-        testModel(model,test);
+    var docPath = __dirname + '/test.scxml';
+    var execContext = pm.module.createLocalExecutionContext(docPath);
+    scxml.pathToModel(docPath, function(err,model){
+        model.prepare(execContext, function(err, fnModel) {
+            testModel(fnModel, test);
+        });
     });
 };
 
@@ -36,8 +41,12 @@ function testBundle(model, test){
     test.done();
 }
 
-exports.testBundle = function(test) {
-    scxml.pathToModel(__dirname + '/bundle.scxml',function(err,model){
-        testBundle(model,test);
+exports.testBundle = function(test) {    
+    var docPath = __dirname + '/bundle.scxml';
+    var execContext = pm.module.createLocalExecutionContext(docPath);
+    scxml.pathToModel(docPath,function(err,model){
+        model.prepare(execContext, function(err, fnModel) {
+            testBundle(fnModel, test);
+        });   
     }, {reportAllErrors: true});    
 }
