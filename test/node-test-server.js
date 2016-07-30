@@ -8,6 +8,8 @@ var scxml = require('..'),
 
 var sessionCounter = 0, sessions = {}, timeouts = {}, timeoutMs = 5000;
 
+var PORT = process.env.PORT || 42000;
+
 function loadScxml(scxmlStr){
 }
 
@@ -26,7 +28,6 @@ http.createServer(function (req, res) {
         try{
             var reqJson = JSON.parse(s);
             if(reqJson.load){
-
                 scxml.urlToModel(reqJson.load,function(err,model){
                     //console.log('model',model);
                     if(err){
@@ -35,21 +36,31 @@ http.createServer(function (req, res) {
                         res.end(err.message);
                     }else{
                         try {
-                            var interpreter = new scxml.scion.Statechart(model, { sessionid: sessionCounter });
+                            model.prepare(undefined, function(err, fnModel) {
+                                if (err) {
+                                    console.error('model preparation error: ' + err);
+                                    res.writeHead(500, {'Content-Type': 'text/plain'});
+                                    res.end(err.message);
+                                    return;
+                                }
 
-                            var sessionToken = sessionCounter;
-                            sessionCounter++;
-                            sessions[sessionToken] = interpreter; 
+                                var interpreter = new scxml.scion.Statechart(fnModel, { sessionid: sessionCounter });
 
-                            var conf = interpreter.start(); 
+                                var sessionToken = sessionCounter;
+                                sessionCounter++;
+                                sessions[sessionToken] = interpreter; 
 
-                            res.writeHead(200, {'Content-Type': 'application/json'});
-                            res.end(JSON.stringify({
-                                sessionToken : sessionToken,
-                                nextConfiguration : conf
-                            }));
+                                var conf = interpreter.start(); 
 
-                            timeouts[sessionToken] = setTimeout(function(){cleanUp(sessionToken);},timeoutMs);  
+                                res.writeHead(200, {'Content-Type': 'application/json'});
+                                res.end(JSON.stringify({
+                                    sessionToken : sessionToken,
+                                    nextConfiguration : conf
+                                }));
+
+                                // TODO: timeout should be kicked off before fetch/compilation/preparation
+                                timeouts[sessionToken] = setTimeout(function(){cleanUp(sessionToken);},timeoutMs);  
+                            });
                         } catch(e) {
                           console.log(e.stack);
                           console.log(e);
@@ -83,5 +94,6 @@ http.createServer(function (req, res) {
             res.end(e.message);
         }
     });
-}).listen(42000, '127.0.0.1');
+}).listen(PORT, '127.0.0.1');
 
+console.log('listening on port ' + PORT);

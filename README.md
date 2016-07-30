@@ -57,10 +57,10 @@ scxml.urlToModel("drag-and-drop.xml",function(err,model){
 
 ## Instantiation
 
-### scion.urlToModel(url,function(err, model){}[, context])
-### scion.pathToModel(path,function(err, model){}[, context])
-### scion.documentStringToModel(scxmlDocString,function(err, model){}[, context])
-### scion.documentToModel(scxmlDocument,function(err, model){}[, context])
+### scxml.urlToModel(url,function(err, model){} [, context])
+### scxml.pathToModel(path,function(err, model){} [, context])
+### scxml.documentStringToModel(scxmlDocString,function(err, model){} [, context])
+### scxml.documentToModel(scxmlDocument,function(err, model){} [, context])
 
 SCION allows you to instantiate SCXML interpreters from SCXML "model" objects, which are SCXML documents that have been processed for easier interpretation. 
 These methods allow you to create an SCXML model from an XML DOM document, document string, or url/path to document.
