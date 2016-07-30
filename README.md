@@ -14,6 +14,54 @@ SCION-CORE is written so as to abstract out platform dependencies, and is implem
 
 SCION-CORE powers [SCION](https://github.com/jbeard4/SCION), an implementation of [W3C SCXML](http://www.w3.org/TR/scxml) in JavaScript, and as such, it supports all of the features of the SCXML core module, including compound states ( **OR** states), parallel states ( **AND** states), and history states. 
 
+# Installation
+
+## Browser
+
+Install via bower:
+
+```
+npm install -g bower
+bower install scion-core
+```
+
+Add to your page:
+
+`<script src="bower_components/scion-core/dist/scion.min.js"></script>`
+
+SCION-CORE is then available as the global variable `scion`.
+
+Alternatively, load SCION-CORE via RequireJS:
+
+```html
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js"></script>
+  <script>
+    require(['/bower_components/scion-core/dist/scion.min.js'], function(){
+    }); 
+  </script>
+```
+
+## Node.js
+
+Install SCION-CORE via npm:
+
+    npm install scion-core
+
+
+## Rhino
+
+Get it with git:
+
+    git clone git://github.com/jbeard4/SCION-CORE.git
+
+Rhino 1.7R3 supports CommonJS modules, so SCION-CORE can be used as follows:
+
+```bash
+
+
+#just put SCION-CORE/lib on your modules path
+rhino -modules path/to/SCION-CORE/lib -main path/to/your/script.js
+```
 
 # Quickstart and Simple Use Case
 
@@ -123,7 +171,7 @@ You can then perform the following steps to script web content:
 <html>
     <head>
         <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"></script>
-        <script type="text/javascript" src="http://jbeard4.github.com/SCION-CORE/builds/latest/scion-min.js"></script>
+        <script src="bower_components/scion-core/dist/scion.min.js"></script>
     </head>
     <body>
         <div id="rect"/>
@@ -202,40 +250,8 @@ You can then perform the following steps to script web content:
 </html>
 ```
 
-# Installation
 
-## Browser
 
-Add the following script tags to your web page:
-
-```html
-<script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"></script>
-<script type="text/javascript" src="http://jbeard4.github.io/SCION-CORE/repository/lib/scion.js"></script>
-```
-
-SCION-CORE is then available as the global variable `scion`.
-
-<!-- TODO: test with RequireJS and add documentation for this -->
-
-## Node.js
-
-Install SCION-CORE via npm:
-
-    npm install scion-core
-
-## Rhino
-
-Get it with git:
-
-    git clone git://github.com/jbeard4/SCION-CORE.git
-
-Rhino 1.7R3 supports CommonJS modules, so SCION-CORE can be used as follows:
-
-```bash
-
-#just put SCION-CORE/lib on your modules path
-rhino -modules path/to/SCION-CORE/lib -main path/to/your/script.js
-```
 
 # Statecharts Model Schema
 
