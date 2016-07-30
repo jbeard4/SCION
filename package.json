@@ -36,7 +36,7 @@
     "esprima": "2.7.2",
     "optimist": "0.6.1",
     "sax": "1.2.1",
-    "scion-core": "jbeard4/SCION-CORE#aec7c67d5f381c78e44bfd1087a8e2caa8aa9218",
+    "scion-core": "1.2.1",
     "text-to-js-identifier": "0.0.4"
   },
   "devDependencies": {
