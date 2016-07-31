@@ -28,6 +28,7 @@ module.exports = function(grunt) {
       nodeunit: {
         all : ['test/harness/node/index.js']
       },
+      karma: require('./grunt/config/karma/index.js'),
       browserify : {
         prod : {
           options: {
@@ -38,6 +39,18 @@ module.exports = function(grunt) {
           },
           src: ['lib/runtime/platform-bootstrap/node/index.js'],
           dest: 'dist/scxml.js'
+        },
+        dev: {
+          options: {
+            debug : true,
+            browserifyOptions : {
+              standalone: 'scxml_tests'
+            }
+          },
+
+
+          src: ['test/nodeunit-test-harness/harness/common/setup-nodeunit-tests.js'],
+          dest: 'test/nodeunit-test-harness/harness/browser/build/nodeunit-tests-bundle.js'
         }
       },
       express: {
