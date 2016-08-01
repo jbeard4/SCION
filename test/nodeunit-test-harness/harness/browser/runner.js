@@ -1,4 +1,9 @@
-console.log('args', window.__karma__.config.args);
+var tests = window.__karma__.config.args.filter(function(s){ return s.match(/.*scxml$/); ;});
+
+console.log('tests',tests);
+console.log('scxml',window.scxml);
+
+/*
 if(!window.console){
   window.console = {
     log : function(){}
@@ -54,3 +59,4 @@ nodeunit.runModules({
     console.log('window.global_test_results',window.global_test_results);
   } //called after all tests/modules are complete
 });
+*/
