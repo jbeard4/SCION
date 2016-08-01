@@ -3,6 +3,24 @@ var tests = window.__karma__.config.args.filter(function(s){ return s.match(/.*s
 console.log('tests',tests);
 console.log('scxml',window.scxml);
 
+describe("Generating Tests with Jasmine",function(){
+  tests.forEach(function(test) {
+    $.ajax({
+      url: test.replace('scxml','json'),
+      async: false,
+      dataType: 'json',
+      success: function (response) {
+        it('the initial configuration of test ' + test + ' should be ' + response.initialConfiguration, function(done) {
+          //expect(true);
+          done();
+        });
+      }
+    });
+
+  });
+
+});
+
 /*
 if(!window.console){
   window.console = {
