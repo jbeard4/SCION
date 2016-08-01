@@ -4,7 +4,7 @@ module.exports = function(config) {
     basePath: '../../../',
     frameworks: ['jasmine'],
     files : [
-      {pattern: 'test/scxml-test-framework/test/*/*.scxml', watched: true, served: true, included: false},
+      {pattern: 'test/scxml-test-framework/test/*/*.{scxml,json}}', watched: true, served: true, included: false},
       {pattern: 'dist/scxml.js.map', watched: true, served: true, included: false},
       'test/nodeunit-test-harness/harness/browser/lib/polyfill.js',
       'dist/scxml.js',
