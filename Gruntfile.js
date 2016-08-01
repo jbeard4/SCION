@@ -28,7 +28,7 @@ module.exports = function(grunt) {
       nodeunit: {
         all : ['test/harness/node/index.js']
       },
-      karma: require('./grunt/config/karma/index.js'),
+      karma: require('./grunt/config/karma/index.js')(grunt),
       browserify : {
         prod : {
           options: {
