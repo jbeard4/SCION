@@ -3,6 +3,6 @@ module.exports = function(config) {
   config.set({
     basePath: '../../../',
     frameworks: ['nodeunit'],
-    files : ['dist/test/*/*.js']
+    files : ['test/nodeunit-test-harness/harness/browser/runner.js']
   });
 };
