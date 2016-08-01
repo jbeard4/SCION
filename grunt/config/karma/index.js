@@ -1,10 +1,10 @@
 module.exports = {
   unit: {
     configFile: 'grunt/config/karma/karma.conf.js',
-    singleRun: true,
+    singleRun: false,
     browsers: ['Chrome'],
     client: {
-      args: require('./grunt/scxml-tests.json')
+      args: require('../../scxml-tests.json')
     }
   }
 };
