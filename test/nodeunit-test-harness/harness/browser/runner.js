@@ -3,16 +3,24 @@ var tests = window.__karma__.config.args.filter(function(s){ return s.match(/.*s
 console.log('tests',tests);
 console.log('scxml',window.scxml);
 
-describe("Generating Tests with Jasmine",function(){
-  tests.forEach(function(test) {
-    $.ajax({
-      url: test.replace('scxml','json'),
+tests.forEach(function(test) {
+  describe("SCXML test " + test,function(){
+    window.jQuery.ajax({
+      url: 'base/' + test.replace('\.scxml','.json'),
       async: false,
       dataType: 'json',
       success: function (response) {
-        it('the initial configuration of test ' + test + ' should be ' + response.initialConfiguration, function(done) {
-          //expect(true);
-          done();
+        it('the initial configuration should be ' + response.initialConfiguration, function(done) {
+          scxml.urlToModel('base/' + test,function(err, model){
+            if(err) throw err;
+            model.prepare(undefined, function(err, fnModel) {
+              if(err) throw err;
+              var sc = new scxml.scion.Statechart(fnModel);
+              var initialConfiguration = sc.start();
+              expect(initialConfiguration).toEqual(response.initialConfiguration);
+              done();
+            });
+          });
         });
       }
     });

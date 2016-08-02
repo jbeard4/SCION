@@ -30,27 +30,15 @@ module.exports = function(grunt) {
       },
       karma: require('./grunt/config/karma/index.js')(grunt),
       browserify : {
-        prod : {
+        dev : {
           options: {
-            debug : true,
             browserifyOptions : {
+              debug : true,
               standalone: 'scxml'
             }
           },
           src: ['lib/runtime/platform-bootstrap/node/index.js'],
           dest: 'dist/scxml.js'
-        },
-        dev: {
-          options: {
-            debug : true,
-            browserifyOptions : {
-              standalone: 'scxml_tests'
-            }
-          },
-
-
-          src: ['test/nodeunit-test-harness/harness/common/setup-nodeunit-tests.js'],
-          dest: 'test/nodeunit-test-harness/harness/browser/build/nodeunit-tests-bundle.js'
         }
       },
       express: {
@@ -131,7 +119,7 @@ module.exports = function(grunt) {
 
   //TODO: copy babel-polyfill and nodeunit-browser into test/harness/browser/lib. I wish these were published via bower. 
 
-  grunt.registerTask('build', [ 'browserify:prod', 'babel', 'replace-reserved-words', 'uglify']);
+  grunt.registerTask('build', [ 'browserify:dev', 'babel', 'replace-reserved-words', 'uglify']);
   grunt.registerTask('default', ['build']);
 };
 
