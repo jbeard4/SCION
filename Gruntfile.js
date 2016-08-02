@@ -104,6 +104,25 @@ module.exports = function(grunt) {
             accessTokenVar: 'GITHUB_ACCESS_TOKEN', //ENVIRONMENT VARIABLE that contains GitHub Access Token
           }
         }
+      },
+      watch: {
+        options: {
+          livereload: false
+        },
+        express: {
+          files:  [ 'lib/**/*.js' ],
+          tasks:  [ 'express:dev' ],
+          options: {
+            spawn: false
+          }
+        },
+        browserify: {
+          files: ["lib/**/*.js"],
+          tasks: ["browserify:dev"]
+        },
+        public: {
+          files: [""]
+        }
       }
 
   });

@@ -1,29 +1,29 @@
 <html>
   <link rel="stylesheet" src="lib/nodeunit.css">
+  <script src="lib/jquery.js"></script>
   <script src="lib/polyfill.js"></script>
   <script src="lib/nodeunit.js"></script>
-  <script src="build/nodeunit-tests-bundle.js"></script>
-  <script src="runner.js"></script>
+  <!-- <script src="build/nodeunit-tests-bundle.js"></script> -->
+  <script src="nodeunit-runner.js"></script>
   <% if(env === 'development'){ %>
-  <script src="/dist/scion.js"></script>
+  <script src="/dist/scxml.js"></script>
   <% } %>
   <% if(env === 'production'){ %>
-  <script src="/dist/scion.min.js"></script>
+  <script src="/dist/scxml.min.js"></script>
   <% } %>
   <% if(env === 'development' || env === 'production'){ %>
   <script>
     //vanilla module load
-    start(window.scion);
+    start(window.scxml);
   </script>
   <% } %>
   <% if(env === 'production-require'){ %>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js"></script>
   <script>
-    require(['/dist/scion.min.js'], start); 
+    require(['/dist/scxml.min.js'], start); 
   </script>
   <% } %>
   <body>
-    <script>
-    </script>
+    <script src="//localhost:35729/livereload.js"></script>
   </body>
 </html>
