@@ -1,6 +1,6 @@
 var testSerialization = false;
 
-var testPairs = tests.slice(0,50).map(function(test){
+var testPairs = tests.map(function(test){
   var jsonTest;
   window.jQuery.ajax({
     url: test.replace('\.scxml','.json'),
@@ -29,6 +29,7 @@ testPairs.forEach(function(pair){
       if(err) throw err;
       console.log('Preparing model');
       model.prepare(undefined, function(err, fnModel) {
+        console.log('fnModel', fnModel.toString());
         if(err) throw err;
         console.log('Instantiating machine');
         var sc = new scxml.scion.Statechart(fnModel);
