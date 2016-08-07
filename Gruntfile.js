@@ -112,6 +112,7 @@ module.exports = function(grunt) {
         },
         express: {
           files:  [ 'lib/**/*.js' ],
+          tasks : ['browserify:dev'],
           options: {
             spawn: false
           }
