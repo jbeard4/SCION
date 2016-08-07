@@ -24,16 +24,18 @@ testPairs.forEach(function(pair){
   console.log('scxmlTest', scxmlTest);
   fixtures[scxmlTest] = function(t){
 
+    console.log('Parsing model');
     scxml.urlToModel(scxmlTest,function(err, model){
       if(err) throw err;
+      console.log('Preparing model');
       model.prepare(undefined, function(err, fnModel) {
         if(err) throw err;
+        console.log('Instantiating machine');
         var sc = new scxml.scion.Statechart(fnModel);
-        var initialConfiguration = sc.start();
-
-        console.log('initialConfiguration', initialConfiguration); 
+        console.log('Starting machine');
 
         var actualInitialConf = sc.start();
+        console.log('initialConfiguration', actualInitialConf); 
 
         t.deepEqual(actualInitialConf.sort(),jsonTest.initialConfiguration.sort(),'initial configuration');
 
