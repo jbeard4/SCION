@@ -3,7 +3,10 @@
   <script src="lib/jquery.js"></script>
   <script src="lib/polyfill.js"></script>
   <script src="lib/nodeunit.js"></script>
-  <!-- <script src="build/nodeunit-tests-bundle.js"></script> -->
+  <script>
+
+    var tests = <%- JSON.stringify(scxmlTests) %>;
+  </script>
   <script src="nodeunit-runner.js"></script>
   <% if(env === 'development'){ %>
   <script src="/dist/scxml.js"></script>
