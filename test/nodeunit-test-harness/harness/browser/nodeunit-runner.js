@@ -32,7 +32,7 @@ testPairs.forEach(function(pair){
         console.log('fnModel', fnModel.toString());
         if(err) throw err;
         console.log('Instantiating machine');
-        var sc = new scxml.scion.Statechart(fnModel);
+        var sc = new scxml.scion.Statechart(fnModel, {sessionid : scxmlTest});
         console.log('Starting machine');
 
         var actualInitialConf = sc.start();
