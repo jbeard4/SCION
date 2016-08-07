@@ -1,15 +1,13 @@
 var testSerialization = false;
 
-var tests = ['test/scxml-test-framework/test/data/data_invalid.scxml'];
-
-var testPairs = tests.map(function(test){
+var testPairs = tests.slice(0,50).map(function(test){
   var jsonTest;
   window.jQuery.ajax({
     url: test.replace('\.scxml','.json'),
     async: false,
     dataType: 'json',
     success: function (response) {
-      console.log('response', response);
+      //console.log('response', response);
       jsonTest = response;
     }
   });
@@ -23,6 +21,7 @@ testPairs.forEach(function(pair){
   var scxmlTest = pair[0],
       jsonTest = pair[1];
 
+  console.log('scxmlTest', scxmlTest);
   fixtures[scxmlTest] = function(t){
 
     scxml.urlToModel(scxmlTest,function(err, model){
@@ -32,8 +31,7 @@ testPairs.forEach(function(pair){
         var sc = new scxml.scion.Statechart(fnModel);
         var initialConfiguration = sc.start();
 
-        //console.log('initialConfiguration', initialConfiguration); 
-        //console.log('jsonTest ', jsonTest );
+        console.log('initialConfiguration', initialConfiguration); 
 
         var actualInitialConf = sc.start();
 
@@ -53,11 +51,13 @@ testPairs.forEach(function(pair){
                 //load up state machine state
               //  sc = new scion.Statechart(sc,{snapshot : JSON.parse(mostRecentSnapshot)});
               //}
-              //console.log('sending event',nextEvent.event);
+              console.log('sending event',nextEvent.event);
 
               var actualNextConf = sc.gen(nextEvent.event);
 
-              //console.log('next configuration',actualNextConf);
+              console.log('next configuration',actualNextConf);
+
+              //if(JSON.stringify(actualNextConf.sort()) !== JSON.stringify(nextEvent.nextConfiguration.sort())) debugger;
 
               t.deepEqual(actualNextConf.sort(),nextEvent.nextConfiguration.sort(),'next configuration after sending event ' + nextEvent.event.name);
               //dump state machine state

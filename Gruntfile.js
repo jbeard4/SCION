@@ -48,7 +48,8 @@ module.exports = function(grunt) {
         },
         dev: {
           options: {
-            node_env: 'development'
+            node_env: 'development',
+            livereload: true
           }
         },
         prod: {
@@ -111,7 +112,6 @@ module.exports = function(grunt) {
         },
         express: {
           files:  [ 'lib/**/*.js' ],
-          tasks:  [ 'express:dev' ],
           options: {
             spawn: false
           }
@@ -126,6 +126,8 @@ module.exports = function(grunt) {
       }
 
   });
+
+  grunt.registerTask('mywatch',['express:dev:start','watch:express']);
 
   grunt.registerTask('replace-reserved-words', 'String replace reserved words in built JavaScript.', function() {
     var fs = require('fs');
