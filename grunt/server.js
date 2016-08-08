@@ -9,7 +9,6 @@ var browserHarness = __dirname + '/../test/nodeunit-test-harness/harness/browser
 app.set('views', browserHarness + '/views');
 
 var tests = grunt.file.expand(require('./scxml-tests.json'));
-console.log('tests', tests); 
 
 app.get('/', function(req, res) {
   res.render('harness.ejs', {

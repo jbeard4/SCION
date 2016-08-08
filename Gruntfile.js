@@ -1,6 +1,6 @@
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
-  //var browsers = require('./grunt/browsers');
+  var browsers = require('./grunt/browsers');
 
   grunt.initConfig({
       pkg: grunt.file.readJSON('package.json'),
@@ -63,7 +63,6 @@ module.exports = function(grunt) {
           }
         }
       },
-      /*
       'saucelabs-custom': {
         all: {
           options: {
@@ -81,7 +80,6 @@ module.exports = function(grunt) {
           }
         }
       },
-      */
       gitcommit: {
           dist: {
               options: {
@@ -143,5 +141,12 @@ module.exports = function(grunt) {
 
   grunt.registerTask('build', [ 'browserify:dev', 'babel', 'replace-reserved-words', 'uglify']);
   grunt.registerTask('default', ['build']);
+  grunt.registerTask('test', ['build', 'run-tests']);
+  grunt.registerTask('run-tests', [
+    //'nodeunit', //TODO: enable nodeunit
+    'run-browser-tests-dev' 
+  ]);
+  grunt.registerTask('run-browser-tests-dev', ['express:dev', 'saucelabs-custom', 'express:dev:stop' ]);
+  grunt.registerTask('run-browser-tests-prod', ['express:prod', 'saucelabs-custom', 'express:prod:stop' ]);
 };
 
