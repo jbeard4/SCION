@@ -148,7 +148,7 @@ module.exports = function(grunt) {
   grunt.registerTask('scxml-test-client', 'Run scxml tests in node. ', function(){
     var done = this.async();
     //TODO: convert to submodule. 
-    var startTests = require('./test/scxml-test-framework/lib/test-client.js');
+    var startTests = require('scxml-test-framework');
     startTests({
       verbose : true,
       report : console,
@@ -160,9 +160,9 @@ module.exports = function(grunt) {
   grunt.task.registerTask('test-semantics', ['express:scxml', 'scxml-test-client', 'express:scxml:stop']);
   grunt.registerTask('build', [ 'browserify:dev', 'babel', 'replace-reserved-words', 'uglify']);
   grunt.registerTask('default', ['build']);
+  grunt.registerTask('test-node', ['nodeunit:platform', 'test-semantics']);
   grunt.registerTask('test', [
-    'nodeunit:platform',
-    'test-semantics',
+    'test-node',
     'run-browser-tests-dev' 
   ]);
   grunt.registerTask('run-browser-tests-dev', ['express:dev', 'saucelabs-custom', 'express:dev:stop' ]);
