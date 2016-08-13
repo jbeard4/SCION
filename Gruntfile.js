@@ -42,24 +42,32 @@ module.exports = function(grunt) {
         }
       },
       express: {
-        options: {
-          script: 'grunt/server.js',
-          port: 3000
-        },
         dev: {
           options: {
             node_env: 'development',
-            livereload: true
+            livereload: true,
+            script: 'grunt/server.js',
+            port: 3000
           }
         },
         prod: {
           options: {
-            node_env: 'production'
+            node_env: 'production',
+            script: 'grunt/server.js',
+            port: 3000
           }
         },
         "prod-require": {
           options: {
-            node_env: 'production-require'
+            node_env: 'production-require',
+            script: 'grunt/server.js',
+            port: 3000
+          }
+        },
+        "scxml" : {
+          options: {
+            port : 42000,
+            script: 'test/node-test-server.js'
           }
         }
       },
@@ -137,8 +145,19 @@ module.exports = function(grunt) {
     fs.writeFileSync('dist/scxml.js', fileContents);
   });
 
-  //TODO: copy babel-polyfill and nodeunit-browser into test/harness/browser/lib. I wish these were published via bower. 
+  grunt.registerTask('scxml-test-client', 'Run scxml tests in node. ', function(){
+    var done = this.async();
+    //TODO: convert to submodule. 
+    var startTests = require('./test/scxml-test-framework/lib/test-client.js');
+    startTests({
+      verbose : true,
+      report : console,
+      scxmlTestFiles : grunt.file.expand(require('./grunt/scxml-tests.json'))
+    }, done);
+  });
 
+  //TODO: copy babel-polyfill and nodeunit-browser into test/harness/browser/lib. I wish these were published via bower. 
+  grunt.task.registerTask('test-semantics', ['express:scxml', 'scxml-test-client', 'express:scxml:stop']);
   grunt.registerTask('build', [ 'browserify:dev', 'babel', 'replace-reserved-words', 'uglify']);
   grunt.registerTask('default', ['build']);
   grunt.registerTask('test', ['build', 'run-tests']);

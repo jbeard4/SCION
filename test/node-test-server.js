@@ -94,6 +94,8 @@ http.createServer(function (req, res) {
             res.end(e.message);
         }
     });
-}).listen(PORT, '127.0.0.1');
+}).listen(PORT, function(){
+  console.log("Express server listening on port " + PORT);
+});
 
 console.log('listening on port ' + PORT);
