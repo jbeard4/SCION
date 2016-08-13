@@ -79,6 +79,6 @@
   },
   "main": "./lib/runtime/platform-bootstrap/node/index.js",
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt build test"
   }
 }
