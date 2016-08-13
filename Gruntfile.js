@@ -26,7 +26,7 @@ module.exports = function(grunt) {
           }
       },
       nodeunit: {
-        all : ['test/harness/node/index.js']
+        platform : ['test/platform-tests/node/*/runner.js']
       },
       karma: require('./grunt/config/karma/index.js')(grunt),
       browserify : {
@@ -160,9 +160,9 @@ module.exports = function(grunt) {
   grunt.task.registerTask('test-semantics', ['express:scxml', 'scxml-test-client', 'express:scxml:stop']);
   grunt.registerTask('build', [ 'browserify:dev', 'babel', 'replace-reserved-words', 'uglify']);
   grunt.registerTask('default', ['build']);
-  grunt.registerTask('test', ['build', 'run-tests']);
-  grunt.registerTask('run-tests', [
-    //'nodeunit', //TODO: enable nodeunit
+  grunt.registerTask('test', [
+    'nodeunit:platform',
+    'test-semantics',
     'run-browser-tests-dev' 
   ]);
   grunt.registerTask('run-browser-tests-dev', ['express:dev', 'saucelabs-custom', 'express:dev:stop' ]);
