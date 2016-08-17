@@ -135,6 +135,7 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('mywatch',['express:dev:start','watch:express']);
+  grunt.registerTask('mywatch-prod',['build','express:prod:start','watch:express']);
 
   grunt.registerTask('replace-reserved-words', 'String replace reserved words in built JavaScript.', function() {
     var fs = require('fs');
