@@ -63,7 +63,8 @@
     "nodeunit": "^0.9.1",
     "request": "^2.74.0",
     "scxml-test-framework": "^1.0.2",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "vm-browserify2" : "0.0.6"
   },
   "engines": {
     "node": ">=4.2.2",
@@ -72,5 +73,8 @@
   "main": "./lib/runtime/platform-bootstrap/node/index.js",
   "scripts": {
     "test": "grunt build test"
+  }, 
+  "browser": {
+    "vm": "vm-browserify2"
   }
 }
