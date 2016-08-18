@@ -10,7 +10,7 @@ function addBrowser(browserName, platform, version){
   });
 }
 
-var defaultFF = [20, 30, 40, 46, 47 ],
+var defaultFF = [ 47 ],
     defaultChrome = [26, 36, 51, 'dev', 'beta'];
 
 addBrowser('internet explorer', 'Windows 10', 11);
