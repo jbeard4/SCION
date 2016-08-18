@@ -76,5 +76,16 @@
   }, 
   "browser": {
     "vm": "vm-browserify2"
-  }
+  },
+  "filename" : "scxml.min.js",
+  "npmName": "scion",
+  "npmFileMap": [
+    {
+      "basePath": "dist",
+      "files": [
+        "scxml.js",
+        "scxml.min.js"
+      ]
+    }
+  ]
 }
