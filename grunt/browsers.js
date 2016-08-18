@@ -11,7 +11,7 @@ function addBrowser(browserName, platform, version){
 }
 
 var defaultFF = [5, 10, 20, 30, 40, 46, 47 ],
-    defaultChrome = [26, 36, 51, 'dev', 'beta'];
+    defaultChrome = [26, 36, 51, 'beta'];
 
 addBrowser('internet explorer', 'Windows 10', 11);
 addBrowser('MicrosoftEdge', 'Windows 10', '13.10586');
