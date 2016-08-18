@@ -1,14 +1,9 @@
-[![Build status](https://travis-ci.org/jbeard4/SCION-CORE.svg?branch=master)](https://travis-ci.org/jbeard4/SCION-CORE)
-
-[![Sauce Test Status](https://saucelabs.com/buildstatus/jbeard4?branch=master)](https://saucelabs.com/u/jbeard4)
-
-[![Sauce Test Status](https://saucelabs.com/browser-matrix/jbeard4.svg?branch=master)](https://saucelabs.com/u/jbeard4)
 
 # Overview
 
 Statecharts is a powerful modelling language for developing **complex, timed, event-driven, state-based systems**. For an overview of Statecharts see [Statecharts: A Visual Formalism For Complex Systems](http://websrv0a.sdu.dk/ups/ESD/materials/harel-Statecharts.pdf) and [The Rhapsody Semantics of Statecharts](http://research.microsoft.com/pubs/148761/Charts04.pdf).
 
-SCION-CORE is a small (2.9kb, minified and gzipped), embeddable implementation of Statecharts in ECMAScript (JavaScript). SCION-CORE lets you program with Statecharts using a simple JavaScript/JSON API. It can be used in the browser to manage complex user interface behaviour, or on the server under Node.js or Rhino to manage page navigation and asynchronous control flow. It can even be used in custom JavaScript environments, such as the Mozilla Spidermonkey shell. 
+SCION-CORE is a small implementation of Statecharts in ECMAScript (JavaScript). SCION-CORE lets you program with Statecharts using a simple JavaScript/JSON API. It can be used in the browser to manage complex user interface behaviour, or on the server under Node.js or Rhino to manage page navigation and asynchronous control flow. It can even be used in custom JavaScript environments, such as the Mozilla Spidermonkey shell. 
 
 SCION-CORE is written so as to abstract out platform dependencies, and is implemented as a single UMD module, which makes it easy to deploy in any JavaScript environment. The philosophy of SCION-CORE is **"write once, embed everywhere"**.
 
@@ -47,211 +42,104 @@ Install SCION-CORE via npm:
 
     npm install scion-core
 
+# API
 
-## Rhino
+## new scion.Statechart(model)
 
-Get it with git:
-
-    git clone git://github.com/jbeard4/SCION-CORE.git
-
-Rhino 1.7R3 supports CommonJS modules, so SCION-CORE can be used as follows:
-
-```bash
-
-
-#just put SCION-CORE/lib on your modules path
-rhino -modules path/to/SCION-CORE/lib -main path/to/your/script.js
-```
-
-# Quickstart and Simple Use Case
-
-Let's start with the simple example of drag-and-drop behaviour in the browser. You can run this demo live on jsfiddle [here](http://jsfiddle.net/jbeard4/MDkLe/11/).
-
-An entity that can be dragged has two states: idle and dragging. If the entity is in an idle state, and it receives a mousedown event, then it starts dragging. While dragging, if it receives a mousemove event, then it changes its position. Also while dragging, when it receives a mouseup event, it returns to the idle state.
-
-This natural-language description of behaviour can be described using the following simple state machine:
-
-![Drag and Drop](http://jbeard4.github.com/SCION/img/drag_and_drop.png)
-
-This state machine could be written in SCION-CORE's JSON syntax as follows:
+The SCXML constructor creates an interpreter instance from a model object.
 
 ```javascript
-{
-    "states" : [
-        {
-            "id" : "idle",
-            "transitions" : [
-                {
-                    "event" : "mousedown",
-                    "target" : "dragging",
-                }
-            ]
-        },
-        {
-            "id" : "dragging",
-            "transitions" : [
-                {
-                    "event" : "mouseup",
-                    "target" : "idle",
-                },
-                {
-                    "event" : "mousemove",
-                    "target" : "dragging"
-                }
-            ]
-        }
-    ]
-}
+    //same model can be used to create multiple interpreter instances
+    var sc1 = new scion.Statechart(model),
+        sc2 = new scion.Statechart(model);
 ```
 
-One can add action code in order to script an HTML DOM element, so as to change its position on mousemove events:
+## sc.start() : `<String>`[]
+
+`sc.start` starts the SCION-CORE interpreter. `sc.start` should only be called once, and should be called before `sc.gen` is called for the first time.
+
+Returns a "basic configuration", which is an Array of strings representing the ids all of the basic states the interpreter is in after the call to `sc.start` completes.
+
+## sc.gen(String eventName, Object eventData) : `<String>`[]
+## sc.gen({name : String, data : Object}) : `<String>`[]
+
+An SCXML interpreter takes SCXML events as input, where an SCXML event is an object with "name" and "data" properties. These can be passed to method `gen` as two positional arguments, or as a single object.
+
+`sc.gen` returns a "basic configuration", which is an Array of strings representing the ids all of the basic states the interpreter is in after the call to `sc.gen` completes.
 
 ```javascript
-//declare the your statechart model, same as before
-var firstEvent,
-    eventStamp,
-    rectNode = document.getElementById('rect'),
-    rectX = 0,
-    rectY = 0;
+    var sc = new scion.Statechart(model),
 
-var statechartModel = {
-    states : [
-        {
-            id : 'idle',
-            onEntry : function(){
-                rectNode.textContent='idle';
-            },
-            transitions : [
-                {
-                    event : 'mousedown',
-                    target : 'dragging',
-                    onTransition : function(event){
-                        eventStamp = firstEvent = event.data;
-                    }
-                }
-            ]
-        },
-        {
-            id : 'dragging',
-            onEntry : function(){
-                rectNode.textContent='dragging';
-            },
-            transitions : [
-                {
-                    event : 'mouseup',
-                    target : 'idle'
-                },
-                {
-                    event : 'mousemove',
-                    target : 'dragging',
-                    onTransition : function(event){
-                        var dx = eventStamp.clientX - event.data.clientX;
-                        var dy = eventStamp.clientY - event.data.clientY;
+    var data = {foo:1};
+    var configuration = sc.gen("eventName",data); 
 
-                        rectNode.style.left = (rectX -= dx) + 'px';
-                        rectNode.style.top = (rectY -= dy) + 'px';
-                        
-                        eventStamp = event.data;
-                    }
-                }
-            ]
-        }
-    ]
-};
+    //the following call is equivalent
+    var configuration = sc.gen({name:"eventName",data:{foo:1}}); 
 ```
 
-You can then perform the following steps to script web content:
+## Event Emitter
 
-1. Use the statecharts model object to instantiate the SCXML interpreter.
-2. Connect relevant event listeners to the SCXML interpreter.
-3. Call the `start` method on the SCXML interpreter to start execution of the statechart.
+SCION-CORE includes the [tiny-events](https://github.com/ZauberNerd/tiny-events) library, and implements the following EventEmitter methods:
 
+* on(type: string, listener: Function): EventEmitter
+* once(type: string, listener: Function): EventEmitter
+* off(type: string, listener?: Function): EventEmitter
+* emit(type: string, ...args: any[]): EventEmitter
 
-```html
-<html>
-    <head>
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"></script>
-        <script src="bower_components/scion-core/dist/scion.min.js"></script>
-    </head>
-    <body>
-        <div id="rect"/>
-        <script>
-            //declare the your statechart model, same as before
-            var firstEvent,
-                eventStamp,
-                rectNode = document.getElementById('rect'),
-                rectX = 0,
-                rectY = 0;
+SCION-CORE emits the following events:
 
-            var statechartModel = {
-                states : [
-                    {
-                        id : 'idle',
-                        onEntry : function(){
-                            rectNode.textContent='idle';
-                        },
-                        transitions : [
-                            {
-                                event : 'mousedown',
-                                target : 'dragging',
-                                onTransition : function(event){
-                                    eventStamp = firstEvent = event.data;
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        id : 'dragging',
-                        onEntry : function(){
-                            rectNode.textContent='dragging';
-                        },
-                        transitions : [
-                            {
-                                event : 'mouseup',
-                                target : 'idle'
-                            },
-                            {
-                                event : 'mousemove',
-                                target : 'dragging',
-                                onTransition : function(event){
-                                    var dx = eventStamp.clientX - event.data.clientX;
-                                    var dy = eventStamp.clientY - event.data.clientY;
+* onEntry
+* onExit
+* onTransition
+* onBigStepBegin
+* onBigStepSuspend
+* onBigStepResume
+* onSmallStepBegin
+* onSmallStepEnd
+* onBigStepEnd
+* onError
 
-                                    rectNode.style.left = (rectX -= dx) + 'px';
-                                    rectNode.style.top = (rectY -= dy) + 'px';
-                                    
-                                    eventStamp = event.data;
-                                }
-                            }
-                        ]
-                    }
-                ]
-            };
+The `onError` callback receives an object containing the following properties:
 
-            //instantiate the interpreter
-            var interpreter = new scion.Statechart(statechartModel);
+* `tagname` - The name of the element that produced the error. 
+* `line` - The line in the source file in which the error occurred.
+* `column` - The column in the source file in which the error occurred.
+* `reason` - An informative error message. The text is platform-specific and subject to change.
 
-            //start the interpreter
-            interpreter.start();
+## sc.registerListener({onEntry : function(stateId){}, onExit : function(stateId){}, onTransition : function(sourceStateId,[targetStateIds,...]){}, onError: function(errorInfo){}})
 
-            function handleEvent(e){
-                e.preventDefault();
-                interpreter.gen({name : e.type,data: e});
-            }
+This is an alternative interface to `on`.
 
-            //connect all relevant event listeners
-            rectNode.addEventListener('mousedown',handleEvent,true);
-            document.documentElement.addEventListener('mouseup',handleEvent,true);
-            document.documentElement.addEventListener('mousemove',handleEvent,true);
+## sc.getConfiguration() : String[]
 
+Returns current state machine ***configuration***, the set of basic states in which the state machine resides. 
 
-        </script>
-    </body>
-</html>
+## sc.getFullConfiguration() : String[]
+
+Returns current state machine ***full configuration***, the set of basic states in which the state machine resides, and the hierarchical ancestors of those basic states. 
+
+## sc.isIn(String : stateId) : Boolean
+
+Returns true if the state machine is in state with id `stateId`.
+
+## sc.isFinal() : Boolean
+
+Returns true, if the state machine is in a final state. Otherwise, returns false. 
+
+## sc.getSnapshot() : Snapshot 
+
+Returns a `snapshot` object, of the form : 
+
+```
+[
+    configuration,
+    history,
+    isInFinalState,
+    dataModel
+]
 ```
 
-
-
+The snapshot object can be serialized as JSON and saved to a database. It can later be passed to the SCXML constructor to restore the state machine: `new scion.Statechart(model, {snapshot : snapshot})`.
 
 # Statecharts Model Schema
 
@@ -502,112 +390,201 @@ The context object ("`this`") of onEntry, onExit, and onTransition functions con
 * `raise(event)`, which adds an event to the Statechart's inner queue 
 
 
-# API
 
-## new scion.Statechart(model)
+# Quickstart and Simple Use Case
 
-The SCXML constructor creates an interpreter instance from a model object.
+Let's start with the simple example of drag-and-drop behaviour in the browser. You can run this demo live on jsfiddle [here](http://jsfiddle.net/jbeard4/MDkLe/11/).
 
-```javascript
-    //same model can be used to create multiple interpreter instances
-    var sc1 = new scion.Statechart(model),
-        sc2 = new scion.Statechart(model);
-```
+An entity that can be dragged has two states: idle and dragging. If the entity is in an idle state, and it receives a mousedown event, then it starts dragging. While dragging, if it receives a mousemove event, then it changes its position. Also while dragging, when it receives a mouseup event, it returns to the idle state.
 
-## sc.start() : `<String>`[]
+This natural-language description of behaviour can be described using the following simple state machine:
 
-`sc.start` starts the SCION-CORE interpreter. `sc.start` should only be called once, and should be called before `sc.gen` is called for the first time.
+![Drag and Drop](http://jbeard4.github.com/SCION/img/drag_and_drop.png)
 
-Returns a "basic configuration", which is an Array of strings representing the ids all of the basic states the interpreter is in after the call to `sc.start` completes.
-
-## sc.gen(String eventName, Object eventData) : `<String>`[]
-## sc.gen({name : String, data : Object}) : `<String>`[]
-
-An SCXML interpreter takes SCXML events as input, where an SCXML event is an object with "name" and "data" properties. These can be passed to method `gen` as two positional arguments, or as a single object.
-
-`sc.gen` returns a "basic configuration", which is an Array of strings representing the ids all of the basic states the interpreter is in after the call to `sc.gen` completes.
+This state machine could be written in SCION-CORE's JSON syntax as follows:
 
 ```javascript
-    var sc = new scion.Statechart(model),
-
-    var data = {foo:1};
-    var configuration = sc.gen("eventName",data); 
-
-    //the following call is equivalent
-    var configuration = sc.gen({name:"eventName",data:{foo:1}}); 
+{
+    "states" : [
+        {
+            "id" : "idle",
+            "transitions" : [
+                {
+                    "event" : "mousedown",
+                    "target" : "dragging",
+                }
+            ]
+        },
+        {
+            "id" : "dragging",
+            "transitions" : [
+                {
+                    "event" : "mouseup",
+                    "target" : "idle",
+                },
+                {
+                    "event" : "mousemove",
+                    "target" : "dragging"
+                }
+            ]
+        }
+    ]
+}
 ```
 
-## Event Emitter
+One can add action code in order to script an HTML DOM element, so as to change its position on mousemove events:
 
-SCION-CORE includes the [tiny-events](https://github.com/ZauberNerd/tiny-events) library, and implements the following EventEmitter methods:
+```javascript
+//declare the your statechart model, same as before
+var firstEvent,
+    eventStamp,
+    rectNode = document.getElementById('rect'),
+    rectX = 0,
+    rectY = 0;
 
-* on(type: string, listener: Function): EventEmitter
-* once(type: string, listener: Function): EventEmitter
-* off(type: string, listener?: Function): EventEmitter
-* emit(type: string, ...args: any[]): EventEmitter
+var statechartModel = {
+    states : [
+        {
+            id : 'idle',
+            onEntry : function(){
+                rectNode.textContent='idle';
+            },
+            transitions : [
+                {
+                    event : 'mousedown',
+                    target : 'dragging',
+                    onTransition : function(event){
+                        eventStamp = firstEvent = event.data;
+                    }
+                }
+            ]
+        },
+        {
+            id : 'dragging',
+            onEntry : function(){
+                rectNode.textContent='dragging';
+            },
+            transitions : [
+                {
+                    event : 'mouseup',
+                    target : 'idle'
+                },
+                {
+                    event : 'mousemove',
+                    target : 'dragging',
+                    onTransition : function(event){
+                        var dx = eventStamp.clientX - event.data.clientX;
+                        var dy = eventStamp.clientY - event.data.clientY;
 
-SCION-CORE emits the following events:
-
-* onEntry
-* onExit
-* onTransition
-* onBigStepBegin
-* onBigStepSuspend
-* onBigStepResume
-* onSmallStepBegin
-* onSmallStepEnd
-* onBigStepEnd
-* onError
-
-The `onError` callback receives an object containing the following properties:
-
-* `tagname` - The name of the element that produced the error. 
-* `line` - The line in the source file in which the error occurred.
-* `column` - The column in the source file in which the error occurred.
-* `reason` - An informative error message. The text is platform-specific and subject to change.
-
-## sc.registerListener({onEntry : function(stateId){}, onExit : function(stateId){}, onTransition : function(sourceStateId,[targetStateIds,...]){}, onError: function(errorInfo){}})
-
-This is an alternative interface to `on`.
-
-## sc.getConfiguration() : String[]
-
-Returns current state machine ***configuration***, the set of basic states in which the state machine resides. 
-
-## sc.getFullConfiguration() : String[]
-
-Returns current state machine ***full configuration***, the set of basic states in which the state machine resides, and the hierarchical ancestors of those basic states. 
-
-## sc.isIn(String : stateId) : Boolean
-
-Returns true if the state machine is in state with id `stateId`.
-
-## sc.isFinal() : Boolean
-
-Returns true, if the state machine is in a final state. Otherwise, returns false. 
-
-## sc.getSnapshot() : Snapshot 
-
-Returns a `snapshot` object, of the form : 
-
-```
-[
-    configuration,
-    history,
-    isInFinalState,
-    dataModel
-]
+                        rectNode.style.left = (rectX -= dx) + 'px';
+                        rectNode.style.top = (rectY -= dy) + 'px';
+                        
+                        eventStamp = event.data;
+                    }
+                }
+            ]
+        }
+    ]
+};
 ```
 
-The snapshot object can be serialized as JSON and saved to a database. It can later be passed to the SCXML constructor to restore the state machine: `new scion.Statechart(model, {snapshot : snapshot})`.
+You can then perform the following steps to script web content:
 
-# Development
+1. Use the statecharts model object to instantiate the SCXML interpreter.
+2. Connect relevant event listeners to the SCXML interpreter.
+3. Call the `start` method on the SCXML interpreter to start execution of the statechart.
 
-* Build: `grunt build`
-* Run tests: `grunt test`
-* Release : `grunt release`
 
-# Support
+```html
+<html>
+    <head>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"></script>
+        <script src="bower_components/scion-core/dist/scion.min.js"></script>
+    </head>
+    <body>
+        <div id="rect"/>
+        <script>
+            //declare the your statechart model, same as before
+            var firstEvent,
+                eventStamp,
+                rectNode = document.getElementById('rect'),
+                rectX = 0,
+                rectY = 0;
 
-[Mailing list](https://groups.google.com/group/scion-dev)
+            var statechartModel = {
+                states : [
+                    {
+                        id : 'idle',
+                        onEntry : function(){
+                            rectNode.textContent='idle';
+                        },
+                        transitions : [
+                            {
+                                event : 'mousedown',
+                                target : 'dragging',
+                                onTransition : function(event){
+                                    eventStamp = firstEvent = event.data;
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        id : 'dragging',
+                        onEntry : function(){
+                            rectNode.textContent='dragging';
+                        },
+                        transitions : [
+                            {
+                                event : 'mouseup',
+                                target : 'idle'
+                            },
+                            {
+                                event : 'mousemove',
+                                target : 'dragging',
+                                onTransition : function(event){
+                                    var dx = eventStamp.clientX - event.data.clientX;
+                                    var dy = eventStamp.clientY - event.data.clientY;
 
+                                    rectNode.style.left = (rectX -= dx) + 'px';
+                                    rectNode.style.top = (rectY -= dy) + 'px';
+                                    
+                                    eventStamp = event.data;
+                                }
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            //instantiate the interpreter
+            var interpreter = new scion.Statechart(statechartModel);
+
+            //start the interpreter
+            interpreter.start();
+
+            function handleEvent(e){
+                e.preventDefault();
+                interpreter.gen({name : e.type,data: e});
+            }
+
+            //connect all relevant event listeners
+            rectNode.addEventListener('mousedown',handleEvent,true);
+            document.documentElement.addEventListener('mouseup',handleEvent,true);
+            document.documentElement.addEventListener('mousemove',handleEvent,true);
+
+
+        </script>
+    </body>
+</html>
+```
+
+
+
+
+# Build Status
+
+[![Build status](https://travis-ci.org/jbeard4/SCION-CORE.svg?branch=master)](https://travis-ci.org/jbeard4/SCION-CORE)
+
+[![Sauce Test Status](https://saucelabs.com/buildstatus/jbeard4?branch=master)](https://saucelabs.com/u/jbeard4)
+
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/jbeard4.svg?branch=master)](https://saucelabs.com/u/jbeard4)
