@@ -570,6 +570,37 @@ The `onError` callback receives an object containing the following properties:
 
 This is an alternative interface to `on`.
 
+### sc.getConfiguration() : String[]
+
+Returns current state machine ***configuration***, the set of basic states in which the state machine resides. 
+
+### sc.getFullConfiguration() : String[]
+
+Returns current state machine ***full configuration***, the set of basic states in which the state machine resides, and the hierarchical ancestors of those basic states. 
+
+### sc.isIn(String : stateId) : Boolean
+
+Returns true if the state machine is in state with id `stateId`.
+
+### sc.isFinal() : Boolean
+
+Returns true, if the state machine is in a final state. Otherwise, returns false. 
+
+### sc.getSnapshot() : Snapshot 
+
+Returns a `snapshot` object, of the form : 
+
+```
+[
+    configuration,
+    history,
+    isInFinalState,
+    dataModel
+]
+```
+
+The snapshot object can be serialized as JSON and saved to a database. It can later be passed to the SCXML constructor to restore the state machine: `new scion.Statechart(model, {snapshot : snapshot})`.
+
 # Development
 
 * Build: `grunt build`
