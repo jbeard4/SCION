@@ -1,13 +1,9 @@
 
 # Overview
 
-Statecharts is a powerful modelling language for developing **complex, timed, event-driven, state-based systems**. For an overview of Statecharts see [Statecharts: A Visual Formalism For Complex Systems](http://websrv0a.sdu.dk/ups/ESD/materials/harel-Statecharts.pdf) and [The Rhapsody Semantics of Statecharts](http://research.microsoft.com/pubs/148761/Charts04.pdf).
+SCION-CORE is a small implementation of Statecharts in ECMAScript (JavaScript). SCION-CORE lets you program with Statecharts using a simple JavaScript/JSON API. 
 
-SCION-CORE is a small implementation of Statecharts in ECMAScript (JavaScript). SCION-CORE lets you program with Statecharts using a simple JavaScript/JSON API. It can be used in the browser to manage complex user interface behaviour, or on the server under Node.js or Rhino to manage page navigation and asynchronous control flow. It can even be used in custom JavaScript environments, such as the Mozilla Spidermonkey shell. 
-
-SCION-CORE is written so as to abstract out platform dependencies, and is implemented as a single UMD module, which makes it easy to deploy in any JavaScript environment. The philosophy of SCION-CORE is **"write once, embed everywhere"**.
-
-SCION-CORE powers [SCION](https://github.com/jbeard4/SCION), an implementation of [W3C SCXML](http://www.w3.org/TR/scxml) in JavaScript, and as such, it supports all of the features of the SCXML core module, including compound states ( **OR** states), parallel states ( **AND** states), and history states. 
+SCION-CORE powers [SCION](https://github.com/jbeard4/SCION), an implementation of [W3C SCXML](http://www.w3.org/TR/scxml) in JavaScript.
 
 # Installation
 
