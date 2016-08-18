@@ -3,8 +3,6 @@
 
 SCION-CORE is a small implementation of Statecharts in ECMAScript (JavaScript). SCION-CORE lets you program with Statecharts using a simple JavaScript/JSON API. 
 
-SCION-CORE powers [SCION](https://github.com/jbeard4/SCION), an implementation of [W3C SCXML](http://www.w3.org/TR/scxml) in JavaScript.
-
 # Installation
 
 ## Browser
