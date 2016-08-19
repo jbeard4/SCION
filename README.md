@@ -70,7 +70,7 @@ The SCXML constructor creates an interpreter instance from a model object.
 
 ## SCXML Interpreter API
 
-See (SCION-CORE API)[https://github.com/jbeard4/SCION-CORE#api] for the interpreter instance. 
+See [SCION-CORE API](https://github.com/jbeard4/SCION-CORE#api). 
 
 # Build Status
 
