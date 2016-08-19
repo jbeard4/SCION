@@ -36,7 +36,7 @@ http.createServer(function (req, res) {
                         res.end(err.message);
                     }else{
                         try {
-                            model.prepare(undefined, function(err, fnModel) {
+                            model.prepare(function(err, fnModel) {
                                 if (err) {
                                     console.error('model preparation error: ' + err);
                                     res.writeHead(500, {'Content-Type': 'text/plain'});

@@ -44,7 +44,7 @@ scxml.pathToModel(pathToScxml,function(err,model){
         process.exit(1);
     }
 
-    model.prepare(undefined, function(err, fnModel) {
+    model.prepare(function(err, fnModel) {
         if (err) {
             console.error(err);
             process.exit(1);

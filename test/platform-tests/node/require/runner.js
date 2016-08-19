@@ -20,9 +20,9 @@ exports.testPathToModel = function(test){
     var docPath = __dirname + '/test.scxml';
     var execContext = pm.module.createLocalExecutionContext(docPath);
     scxml.pathToModel(docPath, function(err,model){
-        model.prepare(execContext, function(err, fnModel) {
+        model.prepare(function(err, fnModel) {
             testModel(fnModel, test);
-        });
+        }, execContext);
     });
 };
 
@@ -45,8 +45,8 @@ exports.testBundle = function(test) {
     var docPath = __dirname + '/bundle.scxml';
     var execContext = pm.module.createLocalExecutionContext(docPath);
     scxml.pathToModel(docPath,function(err,model){
-        model.prepare(execContext, function(err, fnModel) {
+        model.prepare(function(err, fnModel) {
             testBundle(fnModel, test);
-        });   
+        }, execContext);   
     }, {reportAllErrors: true});    
 }
