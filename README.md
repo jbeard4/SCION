@@ -53,7 +53,7 @@ scxml.urlToModel("drag-and-drop.xml",function(err,model){
 
 SCXML to JavaScript object "model".
 
-### model.prepare(function(err, fnModel) {}, context, hostContext)
+### model.prepare(function(err, fnModel) {}, executionContext, hostContext)
 
 Prepare the model by downloading source scripts and constructing a host execution context. The resulting `fnModel` can be used to instantiate multiple Statechart instances. 
 
@@ -71,6 +71,7 @@ The SCXML constructor creates an interpreter instance from a model object.
 ## SCXML Interpreter API
 
 See [SCION-CORE API](https://github.com/jbeard4/SCION-CORE#api). 
+
 
 # Build Status
 

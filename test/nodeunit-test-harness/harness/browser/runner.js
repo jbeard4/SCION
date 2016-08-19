@@ -13,7 +13,7 @@ tests.forEach(function(test) {
         it('the initial configuration should be ' + response.initialConfiguration, function(done) {
           scxml.urlToModel('base/' + test,function(err, model){
             if(err) throw err;
-            model.prepare(undefined, function(err, fnModel) {
+            model.prepare(function(err, fnModel) {
               if(err) throw err;
               var sc = new scxml.scion.Statechart(fnModel);
               var initialConfiguration = sc.start();

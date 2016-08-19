@@ -28,7 +28,7 @@ testPairs.forEach(function(pair){
     scxml.urlToModel(scxmlTest,function(err, model){
       if(err) throw err;
       console.log('Preparing model');
-      model.prepare(undefined, function(err, fnModel) {
+      model.prepare(function(err, fnModel) {
         console.log('fnModel', fnModel.toString());
         if(err) throw err;
         console.log('Instantiating machine');
