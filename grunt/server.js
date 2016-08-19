@@ -1,3 +1,4 @@
+var fs      = require('fs');
 var grunt   = require('grunt');
 var express = require('express');
 var app     = module.exports = express();
@@ -10,10 +11,15 @@ app.set('views', browserHarness + '/views');
 
 var tests = grunt.file.expand(require('./scxml-tests.json'));
 
+var testPairs = tests.map(function(test){
+  var filename = test.replace('\.scxml','.json');
+  return [test, require('../' + filename)];
+});
+
 app.get('/', function(req, res) {
   res.render('harness.ejs', {
     env : env
-    ,scxmlTests : tests 
+    ,scxmlTests : testPairs  
   });
 });
 

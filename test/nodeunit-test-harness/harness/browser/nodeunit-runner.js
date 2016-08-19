@@ -1,27 +1,12 @@
 var testSerialization = false;
 
-var testPairs = tests.map(function(test){
-  var jsonTest;
-  window.jQuery.ajax({
-    url: test.replace('\.scxml','.json'),
-    async: false,
-    dataType: 'json',
-    success: function (response) {
-      //console.log('response', response);
-      jsonTest = response;
-    }
-  });
-  return [test, jsonTest];
-});
-
-
 //prepare test fixtures
 var fixtures = {};
 testPairs.forEach(function(pair){
   var scxmlTest = pair[0],
       jsonTest = pair[1];
 
-  console.log('scxmlTest', scxmlTest);
+  //console.log('scxmlTest', scxmlTest);
   fixtures[scxmlTest] = function(t){
 
     console.log('Parsing model');
@@ -29,7 +14,7 @@ testPairs.forEach(function(pair){
       if(err) throw err;
       console.log('Preparing model');
       model.prepare(function(err, fnModel) {
-        console.log('fnModel', fnModel.toString());
+        //console.log('fnModel', fnModel.toString());
         if(err) throw err;
         console.log('Instantiating machine');
         var sc = new scxml.scion.Statechart(fnModel, {sessionid : scxmlTest});
