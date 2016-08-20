@@ -57,7 +57,7 @@ addBrowser('safari', 'OS X 10.9', 7);
 [27, 
   //30, //Chrome 30 not supported
   40, 49].forEach(addBrowser.bind(this, 'chrome', 'OS X 10.8'));
-defaultFF.forEach(addBrowser.bind(this, 'firefox', 'OS X 10.8'));
+//defaultFF.forEach(addBrowser.bind(this, 'firefox', 'OS X 10.8'));
 addBrowser('safari', 'OS X 10.8', 6);
 
 [26, 30, 40, 48].forEach(addBrowser.bind(this, 'chrome', 'Linux'));
