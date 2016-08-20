@@ -1,3 +1,32 @@
+v3.0.0
+------
+
+Refactored out dead code.
+Exposed SCION compiler-internals.
+Exposed new `model.prepare` API to dynamically fetch external script tags. Fixes issue #320.
+
+v2.0.14
+-------
+
+Updated README.
+Report data model (aka javascript) compilation errors before the FSM is executed.
+Support backwards compatibility by only reporting js compilation errors when context.reportAllErrors=true passed to the model compiler.
+Adorn generated action functions with tagname, line, and column properties to provide more context to error.execution and onError listeners when a runtime error occurs when executing an action tag.
+Support send/content/@expr.
+Added preliminary support for preserving custom namespaced attributes, based more or less on the python lxml2 API: http://lxml.de/tutorial.html#namespaces.
+Parse cdata.
+Check foreach system variable.
+Refactoring: changed internal property "type" to "$type" so as not to conflict with SCXML @type attribute on <history>, <transition> and <send> elements. Closes #326, #330.
+Added simple node repl for interactive testing.
+Merge branch '2.0.0-w3c-ecma' of github.com:jbeard4/SCION into 2.0.0-w3c-ecma.
+Support for text data and external "file:" data.
+Fix canceling delayed events.
+Fixed an error on illegal datamodel expression.
+Catching illegal assignment in js expressions.
+Hoist variable declarations from foreach tag to global datamodel scope.
+Add context parameter to xxxToModel APIs to allow host container to pass in additional context.
+Added support for send/@target='#_internal'.
+
 v0.0.10
 -------
 
