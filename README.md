@@ -77,7 +77,7 @@ See [SCION-CORE API](https://github.com/jbeard4/SCION-CORE#api).
 
 [![Build status](https://travis-ci.org/jbeard4/SCION.svg?branch=master)](https://travis-ci.org/jbeard4/SCION-CORE)
 
-[![Sauce Test Status](https://saucelabs.com/buildstatus/jbeard43?branch=build-tools)](https://saucelabs.com/u/jbeard43)
+[![Sauce Test Status](https://saucelabs.com/buildstatus/jbeard43)](https://saucelabs.com/u/jbeard43)
 
-[![Sauce Test Status](https://saucelabs.com/browser-matrix/jbeard43.svg?branch=build-tools)](https://saucelabs.com/u/jbeard43)
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/jbeard43.svg)](https://saucelabs.com/u/jbeard43)
 
