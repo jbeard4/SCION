@@ -1,6 +1,6 @@
 {
   "name": "scxml",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "An implementation of SCXML in JavaScript.",
   "keywords": [
     "scxml",
@@ -64,7 +64,7 @@
     "request": "^2.74.0",
     "scxml-test-framework": "^1.0.2",
     "underscore": "^1.8.3",
-    "vm-browserify2" : "0.0.6"
+    "vm-browserify2": "0.0.6"
   },
   "engines": {
     "node": ">=4.2.2",
@@ -73,11 +73,11 @@
   "main": "./lib/runtime/facade",
   "scripts": {
     "test": "grunt build test"
-  }, 
+  },
   "browser": {
     "vm": "vm-browserify2"
   },
-  "filename" : "scxml.min.js",
+  "filename": "scxml.min.js",
   "npmName": "scion",
   "npmFileMap": [
     {
