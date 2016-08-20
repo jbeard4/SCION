@@ -30,7 +30,7 @@ scxml.urlToModel("drag-and-drop.xml",function(err,model){
     if(err) throw err;
 
     //instantiate the interpreter
-    var sc = new scxml.scion.Statechart(model);
+    var sc = new scxml.scion.Statechart(fnModel);
 
     //start the interpreter
     sc.start();

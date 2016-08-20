@@ -1,7 +1,8 @@
 var scxml = require('../../../../');
-var pm = scxml.ext.platformModule.platform;
+var platform = scxml.ext.platform;
 
 function testModel(model, test){
+    console.log('here 2',scxml);
     var sc = new scxml.scion.Statechart(model);
     var initialConfig = sc.start();
 
@@ -18,8 +19,9 @@ function testModel(model, test){
 
 exports.testPathToModel = function(test){
     var docPath = __dirname + '/test.scxml';
-    var execContext = pm.module.createLocalExecutionContext(docPath);
+    var execContext = platform.module.createLocalExecutionContext(docPath);
     scxml.pathToModel(docPath, function(err,model){
+        console.log('here 1',scxml);
         model.prepare(function(err, fnModel) {
             testModel(fnModel, test);
         }, execContext);
@@ -43,7 +45,7 @@ function testBundle(model, test){
 
 exports.testBundle = function(test) {    
     var docPath = __dirname + '/bundle.scxml';
-    var execContext = pm.module.createLocalExecutionContext(docPath);
+    var execContext = platform.module.createLocalExecutionContext(docPath);
     scxml.pathToModel(docPath,function(err,model){
         model.prepare(function(err, fnModel) {
             testBundle(fnModel, test);

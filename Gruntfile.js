@@ -37,7 +37,7 @@ module.exports = function(grunt) {
               standalone: 'scxml'
             }
           },
-          src: ['lib/runtime/platform-bootstrap/node/index.js'],
+          src: ['lib/runtime/facade.js'],
           dest: 'dist/scxml.js'
         }
       },
