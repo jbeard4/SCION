@@ -57,18 +57,18 @@ Compile SCXML to JavaScript object "model".
 
 Prepare the model by downloading source scripts and constructing a host execution context for the SCXML datamodel.
 
-### new scxml.scion.SCXML(fnModel, options)
+### new scxml.scion.Statechart(fnModel, options)
 
 
-The SCXML constructor creates an interpreter instance from a model object.
+The Statechart constructor creates an interpreter instance from a model object.
 
 ```javascript
     //same model can be used to create multiple interpreter instances
-    var sc1 = new scxml.scion.SCXML(fnModel),
-        sc2 = new scxml.scion.SCXML(fnModel);
+    var sc1 = new scxml.scion.Statechart(fnModel),
+        sc2 = new scxml.scion.Statechart(fnModel);
 ```
 
-## SCXML Interpreter API
+## Statechart Interpreter API
 
 See [SCION-CORE API](https://github.com/jbeard4/SCION-CORE#api). 
 
