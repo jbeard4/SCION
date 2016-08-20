@@ -70,7 +70,7 @@
     "node": ">=4.2.2",
     "npm": ">=2.0.0"
   },
-  "main": "./lib/runtime/platform-bootstrap/node/index.js",
+  "main": "./lib/runtime/facade",
   "scripts": {
     "test": "grunt build test"
   }, 
