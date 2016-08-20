@@ -51,11 +51,11 @@ scxml.urlToModel("drag-and-drop.xml",function(err,model){
 ### scxml.documentStringToModel(scxmlDocString,function(err, model){} [, context])
 ### scxml.documentToModel(scxmlDocument,function(err, model){} [, context])
 
-SCXML to JavaScript object "model".
+Compile SCXML to JavaScript object "model".
 
 ### model.prepare(function(err, fnModel) {}, executionContext, hostContext)
 
-Prepare the model by downloading source scripts and constructing a host execution context. The resulting `fnModel` can be used to instantiate multiple Statechart instances. 
+Prepare the model by downloading source scripts and constructing a host execution context for the SCXML datamodel.
 
 ### new scxml.scion.SCXML(fnModel, options)
 
