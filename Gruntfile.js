@@ -4,6 +4,15 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
       pkg: grunt.file.readJSON('package.json'),
+      concat: {
+        options: {
+          separator: ';',
+        },
+        dist: {
+          src: ['node_modules/babel-polyfill/dist/polyfill.js', 'dist/scxml.js'],
+          dest: 'dist/scxml.js'
+        },
+      },
       uglify: {
         options: {
           banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
@@ -159,7 +168,7 @@ module.exports = function(grunt) {
 
   //TODO: copy babel-polyfill and nodeunit-browser into test/harness/browser/lib. I wish these were published via bower. 
   grunt.task.registerTask('test-semantics', ['express:scxml', 'scxml-test-client', 'express:scxml:stop']);
-  grunt.registerTask('build', [ 'browserify:dev', 'babel', 'replace-reserved-words', 'uglify']);
+  grunt.registerTask('build', [ 'browserify:dev', 'babel', 'replace-reserved-words', 'concat', 'uglify']);
   grunt.registerTask('default', ['build']);
   grunt.registerTask('test-node', ['nodeunit:platform', 'test-semantics']);
   grunt.registerTask('test', [
