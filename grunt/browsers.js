@@ -27,7 +27,7 @@ _.difference(defaultChrome,[36])    //TODO: fix Chrome 36 on Windows 7, which co
   .forEach(addBrowser.bind(this, 'chrome', 'Windows 7'));
 [11, 12].forEach(addBrowser.bind(this, 'opera', 'Windows 7'));
 defaultFF.forEach(addBrowser.bind(this, 'firefox', 'Windows 7'));
-addBrowser('safari', 'Windows 7', 5);
+//addBrowser('safari', 'Windows 7', 5);
 
 
 //addBrowser('internet explorer', 'Windows XP', 8);   //TODO: re-enable this
@@ -44,7 +44,7 @@ defaultFF.forEach(addBrowser.bind(this, 'firefox', 'OS X 10.11'));
 
 _.difference(defaultChrome,[26,36]) //chrome 36 and 26 not supported on OS X 10.10
   .forEach(addBrowser.bind(this, 'chrome', 'OS X 10.10'));
-[32, 
+[ //32, 
   //42,     //FIXME: Firefox 42 times out
   44].forEach(addBrowser.bind(this, 'firefox', 'OS X 10.10'));
 //addBrowser('safari', 'OS X 10.10', 8); TODO: investigate failing test
