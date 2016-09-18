@@ -1,3 +1,8 @@
+v3.0.1
+------
+
+Included babel-polyfill runtime dependency in the browser build.
+
 v3.0.0
 ------
 
