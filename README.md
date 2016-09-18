@@ -16,7 +16,7 @@ SCXML provides a declarative markup for Statecharts, a powerful modelling langua
 
 Or add:
 
-`<script src="https://cdnjs.cloudflare.com/ajax/libs/scion/3.0.0/scion-min.js">`
+`<script src="https://cdnjs.cloudflare.com/ajax/libs/scion/3.0.2/scxml.min.js">`
 
 # Quickstart
 
