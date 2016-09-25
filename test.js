@@ -107,7 +107,7 @@ function init(tests){
     else if(testUrl.indexOf('.scxml') > -1 || testUrl.indexOf('.xml') > -1){
 
       //we could probably just use jquery to fetch the xml as text
-      scxml.ext.platformModule.platform.http.get(testUrl,function(err,doc){
+      scxml.ext.platform.http.get(testUrl,function(err,doc){
           if(err) throw err;
           var scjsonExample = scxml.ext.compilerInternals.scxmlToScjson(doc);
 
