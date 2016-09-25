@@ -2,7 +2,7 @@
   "name": "SCHVIZ2",
   "version": "1.0.0",
   "description": "SCJSON to KGraph to SVG rendering library",
-  "main": "index.js",
+  "main": "lib/Pipeline.js",
   "dependencies": {},
   "devDependencies": {},
   "scripts": {
