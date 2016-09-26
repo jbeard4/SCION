@@ -1,7 +1,6 @@
 (function(){
-var baseUrl = './bower_components/scion-core/test/tests/';
+var baseUrl = '/bower_components/scion-core/test/tests/';
 window.jQuery.getJSON(baseUrl + 'tests.json', init);
-
 
 var options = {
     right: {
