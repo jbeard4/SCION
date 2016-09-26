@@ -71,9 +71,9 @@ function init(tests){
     tests.
       map(function(k){return '<option value="' + baseUrl + k + '">' + k + '</option>';}).
     concat([
-        'examples/universal-morse-input-output/build/morse.scxml',
-        'examples/svg-graphical-modelling-environment-framework/behaviour/default.xml',
-        'examples/archive.org-twilio-browser/content/archive.xml'
+        '/examples/universal-morse-input-output/build/morse.scxml',
+        '/examples/svg-graphical-modelling-environment-framework/behaviour/default.xml',
+        '/examples/archive.org-twilio-browser/content/archive.xml'
       ].map(function(k){return '<option value="' + k + '">' + k + '</option>';})
     )
     .reduce(function(a,b){return a + b;},'')
