@@ -11,6 +11,10 @@
     "snapsvg": "^0.4.0"
   },
   "devDependencies": {
+    "angular": "^1.5.8",
+    "angular-route": "^1.5.8",
+    "angularjs": "0.0.1",
+    "bootstrap": "^3.3.7",
     "grunt": "^1.0.1",
     "grunt-browserify": "^5.0.0",
     "grunt-contrib-watch": "^1.0.0",

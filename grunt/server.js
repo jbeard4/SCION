@@ -2,6 +2,8 @@ var express = require('express');
 var app     = module.exports = express();
 var env     = process.env.NODE_ENV || 'development';
 
+express.static.mime.define({'application/scxml+xml': ['scxml']});
+
 app.set('port', process.env.PORT || 3000);
 
 var testPairs = require('scion/grunt/test-pairs.js'); 
