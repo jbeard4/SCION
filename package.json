@@ -7,7 +7,7 @@
     "jquery": "^3.1.1",
     "klayjs": "^0.4.1",
     "pathseg": "^1.0.2",
-    "scion": "^3.0.2",
+    "scion": "jbeard4/scion#6f3f9bc62464367b42355b807835557485dfebbf",
     "snapsvg": "^0.4.0"
   },
   "devDependencies": {
@@ -16,7 +16,8 @@
     "grunt-contrib-watch": "^1.0.0",
     "grunt-express-server": "^0.5.3",
     "grunt-open": "^0.2.3",
-    "load-grunt-tasks": "^3.5.2"
+    "load-grunt-tasks": "^3.5.2",
+    "scxml-test-framework": "^1.0.2"
   },
   "scripts": {
     "test": "karma"

@@ -1,6 +1,19 @@
 (function(){
+var scxmlExamples = [
+  '/examples/universal-morse-input-output/build/morse.scxml',
+  '/examples/svg-graphical-modelling-environment-framework/behaviour/default.xml',
+  '/examples/archive.org-twilio-browser/content/archive.xml'
+];
 var baseUrl = '/node_modules/scion-core/test/tests/';
-window.jQuery.getJSON(baseUrl + 'tests.json', init);
+window.jQuery.getJSON('/scxml-tests', function(scxmlTestPairs){
+  var scxmlTestUrls = scxmlTestPairs.map(function(pair){ return '/' + pair[0]; });
+  window.jQuery.getJSON(baseUrl + 'tests.json', function(jsonTests){
+    var jsonTestUrls = jsonTests.map(function(testUrl){ return baseUrl + testUrl;});
+
+    var allTests = scxmlTestUrls.concat(jsonTestUrls).concat(scxmlExamples);
+    init(allTests);
+  });
+});
 
 var options = {
     right: {
@@ -68,15 +81,9 @@ function init(tests){
   selectExample.on('change',initExample); 
 
   selectExample.html(
-    tests.
-      map(function(k){return '<option value="' + baseUrl + k + '">' + k + '</option>';}).
-    concat([
-        '/examples/universal-morse-input-output/build/morse.scxml',
-        '/examples/svg-graphical-modelling-environment-framework/behaviour/default.xml',
-        '/examples/archive.org-twilio-browser/content/archive.xml'
-      ].map(function(k){return '<option value="' + k + '">' + k + '</option>';})
-    )
-    .reduce(function(a,b){return a + b;},'')
+    tests
+      .map(function(k){return '<option value="' + k + '">' + k + '</option>';})
+      .reduce(function(a,b){return a + b;},'')
   );
 
   //cached option, for convenience
