@@ -1,4 +1,4 @@
-angular.module('schviz2', ['schviz2.testViz']).
+angular.module('schviz2', ['schviz2.testViz', 'schviz2.testMerge']).
 config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
   $locationProvider.hashPrefix('!');
 

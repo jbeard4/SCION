@@ -12,11 +12,11 @@ function SCHVIZController($element, $scope, $http){
 
   var schviz = new window.SCHVIZ($element.find('svg')[0]);
 
-  var cachedKgraphRoot;
-
   var $ctrl = this;
   $scope.$watch('$ctrl.layout',function(){
-    if(cachedKgraphRoot) schviz.updateKgraph(cachedKgraphRoot, $ctrl.layout);
+    if($ctrl.scjson) schviz.updateLayout($ctrl.scjson, $ctrl.layout, function(){
+      console.log('finished layout');
+    });
   });
 
   $scope.$watch('$ctrl.modelUrl', initExample);
@@ -48,10 +48,11 @@ function SCHVIZController($element, $scope, $http){
   }
 
   function doLayout(scjson){
+    $ctrl.scjson = scjson;
     //this is so we can do queries on him later. 
     var layout = JSON.parse(JSON.stringify($ctrl.layout));
     delete layout.$$hashKey; 
-    cachedKgraphRoot = schviz.renderSCJSON(scjson, layout);
+    schviz.renderSCJSON(scjson, layout);
   }
 
   $ctrl.openInNewWindow = function(){
