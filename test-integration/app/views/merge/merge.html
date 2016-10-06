@@ -1,13 +1,14 @@
 <div class="container">
   <div class="col-sm-4">
     <h3> Source </h3>
-    <select-viz></select-viz>
+    <select-viz on-update="$ctrl.onUpdateSource"></select-viz>
   </div>
   <div class="col-sm-4">
     <h3> Target </h3>
-    <select-viz></select-viz>
+    <select-viz on-update="$ctrl.onUpdateTarget"></select-viz>
   </div>
   <div class="col-sm-4">
     <h3> Merge </h3>
+    <merge-viz source-scjson="$ctrl.sourceScjson" target-scjson="$ctrl.targetScjson"></merge-viz>
   </div>
 </div>

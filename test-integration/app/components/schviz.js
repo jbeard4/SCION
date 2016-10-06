@@ -1,9 +1,10 @@
 angular.module('schviz2.viz', []).component('schviz', {
-  template: '<svg xmlns="http://www.w3.org/2000/svg" id="svg" width="100%" height="100%" ng-dblclick="$ctrl.openInNewWindow()">',
+  template: '<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" ng-dblclick="$ctrl.openInNewWindow()">',
   controller: SCHVIZController,
   bindings: {
     modelUrl : '<',
-    layout : '<'
+    layout : '<',
+    onUpdate : '<'
   }
 });
 
@@ -49,6 +50,7 @@ function SCHVIZController($element, $scope, $http){
 
   function doLayout(scjson){
     $ctrl.scjson = scjson;
+    if($ctrl.onUpdate) $ctrl.onUpdate(scjson);
     //this is so we can do queries on him later. 
     var layout = JSON.parse(JSON.stringify($ctrl.layout));
     delete layout.$$hashKey; 

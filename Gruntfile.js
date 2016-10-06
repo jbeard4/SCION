@@ -7,7 +7,8 @@ module.exports = function(grunt) {
           options: {
             browserifyOptions : {
               debug : true,
-              standalone: 'SCHVIZ'
+              standalone: 'SCHVIZ',
+              'no-builtins' : true
             }
           },
           src: ['lib/index.js'],
@@ -44,7 +45,7 @@ module.exports = function(grunt) {
           livereload: true
         },
         express: {
-          files:  [ 'lib/*.js', 'test-integration/*.{html,js}' ],
+          files:  [ 'lib/*.js', 'test-integration/**/*.{html,js}' ],
           tasks : ['browserify:dev'],
           options: {
             spawn: false
