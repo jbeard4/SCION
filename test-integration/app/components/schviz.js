@@ -15,7 +15,7 @@ function SCHVIZController($element, $scope, $http){
 
   var $ctrl = this;
   $scope.$watch('$ctrl.layout',function(){
-    if($ctrl.scjson) schviz.updateLayout($ctrl.scjson, $ctrl.layout, function(){
+    schviz.updateLayout($ctrl.layout, function(){
       console.log('finished layout');
     });
   });

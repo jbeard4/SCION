@@ -34,7 +34,7 @@ function MergeSCHVIZController($element, $scope, $http, klayOptions){
   function merge(){
     var layout = JSON.parse(JSON.stringify(klayOptions.right));
     delete layout.$$hashKey; 
-    schviz.updateSCJSON($ctrl.targetScjson, $ctrl.sourceScjson, layout, function(){
+    schviz.updateSCJSON($ctrl.sourceScjson, layout, function(){
       console.log('update complete');
     });
   }
