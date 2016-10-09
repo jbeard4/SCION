@@ -41,6 +41,9 @@ function SCHVIZController($element, $scope, $http){
           case 'application/json':
             doLayout(response.data);
             break;
+          case 'application/javascript':
+            doLayout(eval(response.data.replace(/module.exports *= */,''))());
+            break;
           default:
             throw new Error('Unrecognized mime type in response');
             break;
