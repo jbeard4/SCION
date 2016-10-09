@@ -29,19 +29,21 @@ function MergeSCHVIZController($element, $scope, $http, klayOptions){
     if(targetScjson) render(targetScjson); 
   });
 
-  $ctrl.merge = merge;
-
-  $ctrl.undo = function(){
-    $ctrl.sourceScjson = $ctrl.cachedTargetScjson;
-    merge();
+  $ctrl.merge = function(){
+    merge($ctrl.sourceScjson);
   };
 
-  function merge(){
+  $ctrl.undo = function(){
+    merge($ctrl.cachedTargetScjson);
+    $ctrl.cachedTargetScjson = null;  //clear the cache
+  };
+
+  function merge(scjsonToMerge){
     var layout = JSON.parse(JSON.stringify(klayOptions.right));
     delete layout.$$hashKey; 
 
     $ctrl.cachedTargetScjson = JSON.parse(JSON.stringify($ctrl.targetScjson));
-    schviz.updateSCJSON($ctrl.sourceScjson, layout, function(){
+    schviz.updateSCJSON(scjsonToMerge, layout, function(){
       console.log('update complete');
     });
   }
