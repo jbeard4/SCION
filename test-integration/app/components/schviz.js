@@ -51,13 +51,28 @@ function SCHVIZController($element, $scope, $http){
     });
   }
 
+  var rendered = false, 
+      doMerge = true;
+
   function doLayout(scjson){
     $ctrl.scjson = scjson;
     if($ctrl.onUpdate) $ctrl.onUpdate(scjson);
     //this is so we can do queries on him later. 
     var layout = JSON.parse(JSON.stringify($ctrl.layout));
     delete layout.$$hashKey; 
-    schviz.renderSCJSON(scjson, layout);
+    
+    if(!rendered){
+      schviz.renderSCJSON(scjson, layout);
+      rendered = true;
+    }else{
+      if(doMerge){ 
+        schviz.updateSCJSON(scjson, layout, function(){
+          console.log('update complete');
+        });
+      }else{
+        schviz.renderSCJSON(scjson, layout);
+      }
+    }
   }
 
   $ctrl.openInNewWindow = function(){
