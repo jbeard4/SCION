@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml 
+    datamodel="ecmascript"
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0">
+
+    <state id="a">
+        <transition target="b" event="t"/>  
+    </state>
+
+    <state id="b"/>
+
+</scxml>
+

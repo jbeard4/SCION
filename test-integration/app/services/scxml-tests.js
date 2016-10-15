@@ -1,6 +1,6 @@
 
 angular.module('schviz2.service',['schviz2.constants'])
-  .service('allTests', function($http, $q, scxmlExamples){
+  .service('allTests', function($http, $q, scxmlExamples, transitionTypeTests){
     var scionCoreBaseUrl= '/node_modules/scion-core/test/tests/';
     return $q.all([
       $http.get('/scxml-tests').then(function(response){
@@ -12,6 +12,10 @@ angular.module('schviz2.service',['schviz2.constants'])
     ]).then(function(responses){
       var scxmlTestUrls = responses[0],
           jsonTestUrls = responses[1];
-      return scxmlTestUrls.concat(jsonTestUrls).concat(scxmlExamples);
+
+      return transitionTypeTests
+                .concat(scxmlTestUrls)
+                .concat(jsonTestUrls)
+                .concat(scxmlExamples);
     });
   });
