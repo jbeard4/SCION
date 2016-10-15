@@ -5,8 +5,8 @@
     version="1.0">
 
     <state id="A">
+      <transition target="a1" event="e" type="internal"></transition>
       <state id="a1">
-        <transition target="a1" event="e" type="internal"></transition>
       </state>
       <state id="a2"/>
     </state>
