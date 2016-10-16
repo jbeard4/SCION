@@ -1,4 +1,4 @@
-# Overview
+# Overview [![CDNJS](https://img.shields.io/cdnjs/v/scion.svg)](https://cdnjs.com/libraries/scion)
 
 SCION is an industrial-strength implementation of [W3C SCXML](http://www.w3.org/TR/scxml/) in JavaScript. 
 
