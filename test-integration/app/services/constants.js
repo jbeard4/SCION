@@ -61,7 +61,8 @@ angular.module('schviz2.constants',[])
   '/tests/transition-types/test6.scxml',
   '/tests/transition-types/test7.scxml',
   '/tests/transition-types/test8.scxml',
-  '/tests/transition-types/test9.scxml'
+  '/tests/transition-types/test9.scxml',
+  '/tests/transition-types/test10.scxml'
 ])
 
 .constant('scxmlExamples', [

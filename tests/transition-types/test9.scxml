@@ -4,11 +4,8 @@
     xmlns="http://www.w3.org/2005/07/scxml"
     version="1.0">
 
-    <state id="C">
-      <transition event="e" target="a1 b2"></transition>
-    </state>
-
     <parallel id="P">
+      <transition event="e" target="a1 b2" type="internal"></transition>
       <state id="A">
         <state id="a1">
         </state>
