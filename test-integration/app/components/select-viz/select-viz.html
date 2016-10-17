@@ -1,0 +1,17 @@
+<div>
+  <div>
+    <form class="form-horizontal">
+      <div class="form-group">
+        <label class="control-label">Example</label>
+        <select class="form-control" id="select-example" ng-model="$ctrl.testUrl" ng-options="val for val in $ctrl.allTests"></select>
+      </div>
+      <div class="form-group">
+        <label class="control-label">Layout</label>
+        <select class="form-control" id="select-layout" ng-model="$ctrl.layout" ng-options="k for (k, v) in $ctrl.klayOptions"></select>
+      </div>
+    </form>
+  </div>
+  <div style="width:100%; height:100%">
+    <schviz model-url="$ctrl.testUrl" layout="$ctrl.layout" on-update="$ctrl.onUpdate"/>
+  </div>
+</div>

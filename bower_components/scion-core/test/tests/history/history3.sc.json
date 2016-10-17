@@ -1,0 +1,78 @@
+{
+    "": "http://www.w3.org/2005/07/scxml",
+    "initial": "a",
+    "$type": "scxml",
+    "states": [
+        {
+            "id": "a",
+            "transitions": [
+                {
+                    "target": "p",
+                    "event": "t1"
+                },
+                {
+                    "target": "h",
+                    "event": "t4"
+                }
+            ]
+        },
+        {
+            "id": "p",
+            "$type": "parallel",
+            "states": [
+                {
+                    "id": "h",
+                    "$type": "history",
+                    "isDeep": true,
+                    "transitions": [
+                        {
+                            "target": "b"
+                        }
+                    ]
+                },
+                {
+                    "id": "b",
+                    "initial": "b1",
+                    "states": [
+                        {
+                            "id": "b1",
+                            "transitions": [
+                                {
+                                    "target": "b2",
+                                    "event": "t2"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "b2"
+                        }
+                    ]
+                },
+                {
+                    "id": "c",
+                    "initial": "c1",
+                    "states": [
+                        {
+                            "id": "c1",
+                            "transitions": [
+                                {
+                                    "target": "c2",
+                                    "event": "t2"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "c2"
+                        }
+                    ]
+                }
+            ],
+            "transitions": [
+                {
+                    "target": "a",
+                    "event": "t3"
+                }
+            ]
+        }
+    ]
+}

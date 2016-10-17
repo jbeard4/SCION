@@ -25,6 +25,7 @@
     "jquery": "^2.2.0",
     "klayjs": "^0.4.0",
     "Snap.svg": "snap.svg#^0.4.1",
+    "scion": "jbeard4/scion#3.0.1",
     "scion-core": "jbeard4/scion-core#d66ee80ed9eddc2d23dc9a33da80683d2623f9bc",
     "pathseg": "^1.0.2",
     "snap": "*"

@@ -1,0 +1,32 @@
+{
+  "name": "pathseg",
+  "version": "1.0.2",
+  "description": "A polyfill for SVG's SVGPathSeg and SVGPathSegList",
+  "main": "pathseg.js",
+  "authors": [
+    "Philip Rogers"
+  ],
+  "license": "Chromium's License",
+  "keywords": [
+    "SVG",
+    "polyfill",
+    "pathseg",
+    "SVGPathSeg",
+    "SVGPathSegList"
+  ],
+  "homepage": "https://github.com/progers/pathseg",
+  "moduleType": "globals",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/progers/pathseg.git"
+  },
+  "_release": "1.0.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.0.2",
+    "commit": "bfdb80e6a1c6cac1c6d57e74a170561dade2cbbd"
+  },
+  "_source": "https://github.com/progers/pathseg.git",
+  "_target": "^1.0.2",
+  "_originalSource": "pathseg"
+}

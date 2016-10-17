@@ -1,0 +1,17 @@
+<div>
+<!--
+  <div>
+    <form class="form-horizontal">
+      <div class="form-group">
+        <label class="control-label">Layout</label>
+        <select class="form-control" id="select-layout" ng-model="$ctrl.layout" ng-options="k for (k, v) in $ctrl.klayOptions"></select>
+      </div>
+    </form>
+  </div>
+-->
+  <div style="width:100%; height:100%">
+    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" ng-dblclick="$ctrl.openInNewWindow()">
+  </div>
+  <button ng-click="$ctrl.merge()" ng-disabled="!($ctrl.sourceScjson && $ctrl.targetScjson)"> Merge </button>
+  <button ng-click="$ctrl.undo()" ng-disabled="!($ctrl.sourceScjson && $ctrl.targetScjson && $ctrl.cachedTargetScjson)"> Undo </button>
+</div>

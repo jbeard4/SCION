@@ -2,9 +2,30 @@
   "name": "SCHVIZ2",
   "version": "1.0.0",
   "description": "SCJSON to KGraph to SVG rendering library",
-  "main": "index.js",
-  "dependencies": {},
-  "devDependencies": {},
+  "main": "lib/index.js",
+  "dependencies": {
+    "jquery": "^3.1.1",
+    "jsondiffpatch": "^0.2.4",
+    "klayjs": "^0.4.1",
+    "pathseg": "^1.0.2",
+    "scion": "jbeard4/scion#6f3f9bc62464367b42355b807835557485dfebbf",
+    "snapsvg": "^0.4.0",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "angular": "^1.5.8",
+    "angular-route": "^1.5.8",
+    "angularjs": "0.0.1",
+    "bootstrap": "^3.3.7",
+    "express": "^4.14.0",
+    "grunt": "^1.0.1",
+    "grunt-browserify": "^5.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-express-server": "^0.5.3",
+    "grunt-open": "^0.2.3",
+    "load-grunt-tasks": "^3.5.2",
+    "scxml-test-framework": "^1.0.2"
+  },
   "scripts": {
     "test": "karma"
   },
@@ -16,7 +37,7 @@
     "scxml"
   ],
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "license": "Apache-2.0",
+  "license": "AGPL-3.0",
   "bugs": {
     "url": "https://github.com/jbeard4/SCHVIZ2/issues"
   },

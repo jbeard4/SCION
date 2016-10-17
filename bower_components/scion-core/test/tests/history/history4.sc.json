@@ -1,0 +1,170 @@
+{
+    "": "http://www.w3.org/2005/07/scxml",
+    "initial": "a",
+    "$type": "scxml",
+    "states": [
+        {
+            "id": "a",
+            "transitions": [
+                {
+                    "target": "p",
+                    "event": "t1"
+                },
+                {
+                    "target": "p",
+                    "event": "t6"
+                },
+                {
+                    "target": "hp",
+                    "event": "t9"
+                }
+            ]
+        },
+        {
+            "id": "p",
+            "$type": "parallel",
+            "states": [
+                {
+                    "id": "hp",
+                    "$type": "history",
+                    "isDeep": true,
+                    "transitions": [
+                        {
+                            "target": "b"
+                        }
+                    ]
+                },
+                {
+                    "id": "b",
+                    "initial": "hb",
+                    "states": [
+                        {
+                            "id": "hb",
+                            "$type": "history",
+                            "isDeep": true,
+                            "transitions": [
+                                {
+                                    "target": "b1"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "b1",
+                            "initial": "b1.1",
+                            "states": [
+                                {
+                                    "id": "b1.1",
+                                    "transitions": [
+                                        {
+                                            "target": "b1.2",
+                                            "event": "t2"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "b1.2",
+                                    "transitions": [
+                                        {
+                                            "target": "b2",
+                                            "event": "t3"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "b2",
+                            "initial": "b2.1",
+                            "states": [
+                                {
+                                    "id": "b2.1",
+                                    "transitions": [
+                                        {
+                                            "target": "b2.2",
+                                            "event": "t4"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "b2.2",
+                                    "transitions": [
+                                        {
+                                            "target": "a",
+                                            "event": "t5"
+                                        },
+                                        {
+                                            "target": "a",
+                                            "event": "t8"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "c",
+                    "initial": "hc",
+                    "states": [
+                        {
+                            "id": "hc",
+                            "$type": "history",
+                            "isDeep": false,
+                            "transitions": [
+                                {
+                                    "target": "c1"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "c1",
+                            "initial": "c1.1",
+                            "states": [
+                                {
+                                    "id": "c1.1",
+                                    "transitions": [
+                                        {
+                                            "target": "c1.2",
+                                            "event": "t2"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "c1.2",
+                                    "transitions": [
+                                        {
+                                            "target": "c2",
+                                            "event": "t3"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "c2",
+                            "initial": "c2.1",
+                            "states": [
+                                {
+                                    "id": "c2.1",
+                                    "transitions": [
+                                        {
+                                            "target": "c2.2",
+                                            "event": "t4"
+                                        },
+                                        {
+                                            "target": "c2.2",
+                                            "event": "t7"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "c2.2"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
