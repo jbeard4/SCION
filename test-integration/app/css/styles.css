@@ -87,3 +87,25 @@ g.compound.parallel > g.node > rect {
   stroke-opacity: .6;
 }
 
+html, body {
+  width : 100%;
+  height: 100%;
+}
+
+body {
+  display : flex;
+  flex-direction: column;
+}
+
+[ng-view], [ng-view] .container, select-viz, select-viz > div, .schviz-container {
+  display : flex;
+  flex-direction: column;
+  flex-grow: 1;
+  position:relative;
+}
+
+schviz {
+  position:absolute;
+  width:100%;
+  height:100%;
+}
