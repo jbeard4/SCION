@@ -92,14 +92,12 @@ html, body {
   height: 100%;
 }
 
-body {
+.flex {
   display : flex;
   flex-direction: column;
 }
 
-[ng-view], [ng-view] .container, select-viz, select-viz > div, .schviz-container {
-  display : flex;
-  flex-direction: column;
+.grow {
   flex-grow: 1;
   position:relative;
 }
