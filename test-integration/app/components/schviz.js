@@ -4,7 +4,8 @@ angular.module('schviz2.viz', []).component('schviz', {
   bindings: {
     modelUrl : '<',
     layout : '<',
-    onUpdate : '<'
+    onUpdate : '<',
+    doMerge : '<'
   }
 });
 
@@ -51,8 +52,7 @@ function SCHVIZController($element, $scope, $http){
     });
   }
 
-  var rendered = false, 
-      doMerge = true;
+  var rendered = false;
 
   function doLayout(scjson){
     $ctrl.scjson = scjson;
@@ -65,7 +65,7 @@ function SCHVIZController($element, $scope, $http){
       schviz.renderSCJSON(scjson, layout);
       rendered = true;
     }else{
-      if(doMerge){ 
+      if($ctrl.doMerge){ 
         schviz.updateSCJSON(scjson, layout, function(){
           console.log('update complete');
         });

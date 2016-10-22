@@ -8,6 +8,7 @@
     "jsondiffpatch": "^0.2.4",
     "klayjs": "^0.4.1",
     "pathseg": "^1.0.2",
+    "q": "^1.4.1",
     "scion": "jbeard4/scion#6f3f9bc62464367b42355b807835557485dfebbf",
     "snapsvg": "^0.4.0",
     "underscore": "^1.8.3"
