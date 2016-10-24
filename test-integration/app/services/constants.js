@@ -1,5 +1,6 @@
 angular.module('schviz2.constants',[])
 .constant('klayOptions',
+//TODO: remove and use SCHVIZ.layouts
 {
     right: {
       algorithm: "de.cau.cs.kieler.klay.layered",
