@@ -2,6 +2,27 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
 
   grunt.initConfig({
+      concat: {
+        options: {
+          separator: ';',
+        },
+        dist: {
+          src: ['node_modules/babel-polyfill/dist/polyfill.js', 'dist/schviz.js'],
+          dest: 'dist/scxml.js'
+        },
+      },
+      babel: {
+          options: {
+              sourceMap: true,
+              presets: ['es2015'],
+              plugins : ['transform-es2015-modules-umd']
+          },
+          dist: {
+              files: {
+                  'dist/scxml.js' : 'dist/scxml.js'
+              }
+          }
+      },
       browserify : {
         dev : {
           options: {

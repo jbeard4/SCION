@@ -62,11 +62,14 @@ function SCHVIZController($element, $scope, $http){
     delete layout.$$hashKey; 
     
     if(!rendered){
-      schviz.renderSCJSON(scjson, layout);
+      schviz.renderSCJSON(scjson, layout, function(err){
+        if(err) console.error(err);
+      });
       rendered = true;
     }else{
       if($ctrl.doMerge){ 
-        schviz.updateSCJSON(scjson, layout, function(){
+        schviz.updateSCJSON(scjson, layout, function(err){
+          if(err) console.error(err);
           console.log('update complete');
         });
       }else{
