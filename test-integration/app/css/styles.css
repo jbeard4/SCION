@@ -15,13 +15,18 @@ text {
   display : none;
 }
 
-.node.initial > text {
+.node.initial > text, .node.final > text  {
   visibility : hidden;
 }
 
 .node.initial > rect {
   fill: black;
   stroke: none;
+}
+
+.node.final > rect {
+  fill:url(#finalStateGradient); 
+  stroke:black;
 }
 
 .node > text {
