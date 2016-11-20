@@ -73,7 +73,11 @@ function SCHVIZController($element, $scope, $http){
           console.log('update complete');
         });
       }else{
-        schviz.renderSCJSON(scjson, layout);
+        var tic = new Date();
+        schviz.renderSCJSON(scjson, layout, function(err){
+          var toc = new Date();
+          console.log('rendering completed in',toc - tic,'milliseconds');
+        });
       }
     }
   }
