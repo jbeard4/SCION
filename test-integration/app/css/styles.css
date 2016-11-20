@@ -15,6 +15,15 @@ text {
   display : none;
 }
 
+.node.initial > text {
+  visibility : hidden;
+}
+
+.node.initial > rect {
+  fill: black;
+  stroke: none;
+}
+
 .node > text {
   transition : fill .5s ease-out;
   dominant-baseline: central; 
