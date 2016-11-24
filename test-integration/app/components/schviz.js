@@ -23,6 +23,16 @@ function SCHVIZController($element, $scope, $http){
 
   $scope.$watch('$ctrl.modelUrl', initExample);
 
+  $scope.$on('scxml.sim.onEntry',function(event,stateId){
+    schviz.highlightState(stateId);
+  });
+  $scope.$on('scxml.sim.onExit',function(event,stateId){
+    schviz.unhighlightState(stateId);
+  });
+  $scope.$on('scxml.sim.onTransition',function(event, sourceStateId, targetIds){
+    schviz.highlightTransition(sourceStateId, targetIds);
+  });
+
   function initExample(){
     var testUrl = $ctrl.modelUrl;
 

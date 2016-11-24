@@ -1,0 +1,32 @@
+<div class="flex grow">
+  <div>
+    <form class="form-horizontal" ng-submit="$ctrl.sendEvent($event)">
+      <div class="control-group">
+        <label class="control-label">Example</label>
+        <div class="controls">
+          <select ng-model="$ctrl.testPair" ng-options="val[0] for val in $ctrl.allTestPairs"></select>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">Layout</label>
+        <div class="controls">
+          <select ng-model="$ctrl.layout" ng-options="k for (k, v) in $ctrl.klayOptions"></select>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">Simulation Controls</label>
+        <div class="controls">
+          <button class="btn" ng-click="$ctrl.startOrStopMachine($event)">{{$ctrl.isStarted ? 'Stop Machine' : 'Start Machine'}}</button>
+          <button class="btn">Run Test Script</button>
+          <input ng-disabled="!$ctrl.isStarted" type="text" ng-model="$ctrl.event"></input>
+          <input ng-disabled="!$ctrl.isStarted" type="submit" class="btn btn-primary" val="Send event"></input>
+          <span>&nbsp;|&nbsp;</span>
+          <button class="btn btn-primary"> Run all tests </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="grow">
+    <schviz model-url="'/' + $ctrl.testPair[0]" layout="$ctrl.layout" on-update="$ctrl.onUpdate" do-merge="$ctrl.doMerge"/>
+  </div>
+</div>
