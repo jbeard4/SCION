@@ -54,6 +54,7 @@ g.compound.parallel > g.node > rect {
 .node > rect {
   fill: rgba(0,0,0,.025);
   stroke: #AAA;
+  transition : stroke .25s ease-out;
 }
 
 .node rect:hover {

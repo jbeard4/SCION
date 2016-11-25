@@ -29,7 +29,10 @@ function SCHVIZController($element, $scope, $http){
   $scope.$on('scxml.sim.onExit',function(event,stateId){
     schviz.unhighlightState(stateId);
   });
-  $scope.$on('scxml.sim.onTransition',function(event, sourceStateId, targetIds){
+  $scope.$on('scxml.sim.machine.stop',function(){
+    schviz.unhighlightAllStates();
+  });
+  $scope.$on('scxml.sim.onTransition',function(event, [sourceStateId, targetIds]){
     schviz.highlightTransition(sourceStateId, targetIds);
   });
 
