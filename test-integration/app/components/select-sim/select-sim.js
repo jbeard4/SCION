@@ -8,7 +8,7 @@ angular.module('schviz2.components.selectSim', ['schviz2.service', 'schviz2.cons
   }
 });
 
-function SelectSimController(klayOptions, scxmlTestPairs, $scope, $window){
+function SelectSimController(klayOptions, scxmlTestPairs, $scope, $window, $timeout){
 
   var $ctrl = this;
   $ctrl.layout = klayOptions.right;
@@ -77,7 +77,7 @@ function SelectSimController(klayOptions, scxmlTestPairs, $scope, $window){
     })
   }
 
-  $ctrl.runTestScript = function(){
+  $ctrl.runTestScript = function(cb){
     var test = $ctrl.testPair[1];
     if(!test) return;
 
@@ -85,10 +85,10 @@ function SelectSimController(klayOptions, scxmlTestPairs, $scope, $window){
       stopMachine();
     }
 
-    startMachine(runTest.bind(this, test));
+    startMachine(runTest.bind(this, cb, test));
   };
 
-  function runTest(test, sc){
+  function runTest(cb, test, sc){
     //TODO: run tests on this
     if(!test) return;
     checkConfiguration(sc, test.initialConfiguration);
@@ -102,10 +102,39 @@ function SelectSimController(klayOptions, scxmlTestPairs, $scope, $window){
       if(event){
         nextStep(event)
         setTimeout(poll, 250);
+      } else {
+        if(cb) cb();
       }
     }
 
     setTimeout(poll, 250);
+  }
+
+  $ctrl.handleKeypress = function(e){
+    var code = (e.keyCode ? e.keyCode : e.which);
+    if (code == 13) { //Enter keycode                        
+      e.preventDefault();
+
+      $timeout(function(){
+        $("#myForm").submit();
+      });
+    }
+  };
+
+  $ctrl.runAllTests = function(){
+    var allTestPairs = $ctrl.allTestPairs.slice();
+    function poll(){
+      var testPair = allTestPairs.shift(); 
+      if(!testPair) return;
+      $ctrl.testPair = testPair;
+      //TODO: better use a promise or event mechanism to be notified when the animation completes
+      $timeout(function(){
+        $ctrl.runTestScript(function(){
+          $timeout(poll, 250);
+        });
+      },750);
+    }
+    poll();
   }
 
   function checkConfiguration(sc, expectedConfiguration){
@@ -114,7 +143,7 @@ function SelectSimController(klayOptions, scxmlTestPairs, $scope, $window){
         return actualConfiguration.indexOf(s) > -1;
     });
     if(!pass){
-      return console.error('Unexpected initial configuration');
+      return console.error('Unexpected configuration');
     }
   }
 

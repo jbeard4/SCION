@@ -1,6 +1,6 @@
 <div class="flex grow">
   <div>
-    <form class="form-horizontal" ng-submit="$ctrl.sendEvent($event)">
+    <form class="form-horizontal" id="myForm" ng-submit="$ctrl.sendEvent($event)">
       <div class="control-group">
         <label class="control-label">Example</label>
         <div class="controls">
@@ -19,10 +19,11 @@
           <button class="btn" ng-click="$ctrl.startOrStopMachine($event)">{{$ctrl.sc ? 'Stop Machine' : 'Start Machine'}}</button>
           <button class="btn" data-toggle="modal" data-target="#myModal">Show Test Script</button>
           <button class="btn" ng-click="$ctrl.runTestScript()">Run Test Script</button>
-          <input ng-disabled="!$ctrl.sc" type="text" ng-model="$ctrl.event"></input>
-          <input ng-disabled="!$ctrl.sc" type="submit" class="btn btn-primary" val="Send event"></input>
           &nbsp;
-          <button class="btn btn-primary"> Run all tests </button>
+          <input ng-disabled="!$ctrl.sc" type="text" ng-model="$ctrl.event" ng-keypress="$ctrl.handleKeypress($event)" placeholder="Name of event to send"></input>
+          <input ng-disabled="!$ctrl.sc" type="submit" class="btn btn-primary" value="Send event"></input>
+          &nbsp;
+          <button class="btn btn-primary" ng-click="$ctrl.runAllTests()"> Run all tests </button>
         </div>
       </div>
     </form>
