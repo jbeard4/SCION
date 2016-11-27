@@ -29,6 +29,10 @@ text {
   stroke:black;
 }
 
+.node.final.highlighted > rect {
+  fill:url(#finalStateGradientHighlighted); 
+}
+
 .node > text {
   transition : fill .5s ease-out;
   dominant-baseline: central; 
@@ -50,6 +54,42 @@ g.leaf > text {
 g.compound.parallel > g.node > rect {
   stroke-dasharray : 1 1;
 } 
+
+#finalStateGradient stop {
+  stop-opacity:1;
+}
+
+#finalStateGradient stop:nth-child(1) {
+  stop-color:#000000;
+}
+
+#finalStateGradient stop:nth-child(2){
+  stop-color:#000000;
+}
+
+#finalStateGradient stop:nth-child(3){
+  stop-color:#ffffff;
+}
+
+#finalStateGradient stop:nth-child(4){
+  stop-color:#ffffff;
+}
+
+#finalStateGradientHighlighted stop:nth-child(1) {
+  stop-color:red;
+}
+
+#finalStateGradientHighlighted stop:nth-child(2){
+  stop-color:red;
+}
+
+#finalStateGradientHighlighted stop:nth-child(3){
+  stop-color:#ffffff;
+}
+
+#finalStateGradientHighlighted stop:nth-child(4){
+  stop-color:#ffffff;
+}
 
 .node > rect {
   fill: rgba(0,0,0,.025);
