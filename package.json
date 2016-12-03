@@ -1,6 +1,6 @@
 {
-  "name": "SCHVIZ2",
-  "version": "1.0.0",
+  "name": "schviz",
+  "version": "2.0.0",
   "description": "SCJSON to KGraph to SVG rendering library",
   "main": "lib/index.js",
   "dependencies": {
