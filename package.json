@@ -1,6 +1,6 @@
 {
   "name": "scxml",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "An implementation of SCXML in JavaScript.",
   "keywords": [
     "scxml",
@@ -36,7 +36,7 @@
     "esprima": "2.7.2",
     "optimist": "0.6.1",
     "sax": "1.2.1",
-    "scion-core": "1.2.1",
+    "scion-core": "1.2.2",
     "text-to-js-identifier": "0.0.4"
   },
   "devDependencies": {
