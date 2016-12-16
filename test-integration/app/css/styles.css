@@ -6,6 +6,11 @@ text {
   transition : stroke .1s ease-out;
 }
 
+
+.node.virtual > rect {
+  stroke-dasharray : 1 1;
+}
+
 .node.history > rect {
   fill : lightblue;
 }
