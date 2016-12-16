@@ -7,34 +7,34 @@ text {
 }
 
 
-.node.virtual > rect {
+.node.type__virtual > rect {
   stroke-dasharray : 1 1;
 }
 
-.node.history > rect {
+.node.type__history > rect {
   fill : lightblue;
 }
 
 
-.node.pseudonode {
+.node.type__pseudonode {
   display : none;
 }
 
-.node.initial > text, .node.final > text  {
+.node.type__initial > text, .node.type__final > text  {
   visibility : hidden;
 }
 
-.node.initial > rect {
+.node.type__initial > rect {
   fill: black;
   stroke: none;
 }
 
-.node.final > rect {
+.node.type__final > rect {
   fill:url(#finalStateGradient); 
   stroke:black;
 }
 
-.node.final.highlighted > rect {
+.node.type__final.highlighted > rect {
   fill:url(#finalStateGradientHighlighted); 
 }
 
