@@ -8,7 +8,8 @@ text {
 
 
 .node.type__virtual > rect {
-  stroke-dasharray : 1 1;
+  stroke-dasharray : .5 .5;
+  stroke-width : .2;
 }
 
 .node.type__history > rect {
@@ -56,7 +57,7 @@ g.leaf > text {
   text-anchor:middle
 }
 
-g.compound.parallel > g.node > rect {
+g.compound.type__parallel > g.node > rect {
   stroke-dasharray : 1 1;
 } 
 
