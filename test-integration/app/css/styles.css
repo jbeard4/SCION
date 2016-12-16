@@ -42,6 +42,7 @@ text {
 .node > text {
   transition : fill .5s ease-out;
   dominant-baseline: central; 
+  text-anchor: middle;
 }
 
 text.edge-label {
@@ -56,6 +57,12 @@ g.leaf > text {
   fill: #333;
   text-anchor:middle
 }
+
+g.node.compound > line {
+  stroke: black;
+  stroke-opacity: .6;
+  stroke-width:.1;
+} 
 
 g.compound.type__parallel > g.node > rect {
   stroke-dasharray : 1 1;
