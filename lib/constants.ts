@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   STATE_TYPES : ['history','initial','parallel','final','virtual'],
   HIGHLIGHT_ANIM_DURATION : 250,
   ANIM_DURATION : 750,

@@ -1,9 +1,9 @@
-const events = require('./events').node;
+import events from './events';
 
-class DefaultInteractiveBehavior {
+export default class DefaultInteractiveBehavior {
 
   attachListeners(kgraphRoot){
-    events.forEach(function(eventName){
+    events.node.forEach(function(eventName){
       console.log('listening to kgraphRoot', kgraphRoot, eventName);
       kgraphRoot.on('node:' + eventName, this.handleEvent.bind(this, kgraphRoot, eventName));
     }.bind(this));
@@ -19,5 +19,3 @@ class DefaultInteractiveBehavior {
     }
   }
 }
-
-module.exports = DefaultInteractiveBehavior;

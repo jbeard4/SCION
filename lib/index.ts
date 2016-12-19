@@ -1,14 +1,27 @@
-var KGraph = require('./KGraph'),
-    constants = require('./constants'),
-    SVGRenderer = require('./SVG');
+import KGraph from './KGraph';
+import SVGRenderer from './SVG';
+import constants from './constants';
+import IdGenerator from './IdGenerator';
+import {SCState, SCTransition, SCGraph, KGraphNode, KGraphEdge, KGraphLabel} from './types';
 
 class SCHVIZ {
 
+  static layouts = constants.layouts;
+  static events = require('./events').node;
+
+  _scjsonStateToKGraphNodeMap: Map<SCState,KGraphNode>;
+  _scjsonTransitionToKGraphNodeMap: Map<SCTransition,KGraphNode>;
+  _kgraphNodeToSVGElementMap: Map<KGraphNode,SVGElement>;
+  _svgRenderer: SVGRenderer;
+  _kgraph: KGraph;
+  _scjson: SCGraph;
+  _idGenerator: IdGenerator; 
+
   constructor(parentNode){
-    this._generatedIdCount = 0;
-    this._scjsonStateToKGraphNodeMap = new Map();
-    this._scjsonTransitionToKGraphNodeMap = new Map();
-    this._kgraphNodeToSVGElementMap = new Map();
+    this._scjsonStateToKGraphNodeMap = new Map<SCState,KGraphNode>();
+    this._scjsonTransitionToKGraphNodeMap = new Map<SCTransition,KGraphNode>();
+    this._kgraphNodeToSVGElementMap = new Map<KGraphNode,SVGElement>();
+    this._idGenerator = new IdGenerator();
 
     this._svgRenderer = new SVGRenderer(parentNode);
   }
@@ -29,7 +42,7 @@ class SCHVIZ {
     //initialize states added: convert scjson to klay node
     //they get appended as _kgraphNode
     
-    var newKgraph = new KGraph(this._generateStateId.bind(this), this._svgRenderer, sourceSCJSON); 
+    var newKgraph = new KGraph(this._idGenerator, this._svgRenderer, sourceSCJSON); 
     this._kgraph.patch(newKgraph, cb);
   }
 
@@ -38,18 +51,12 @@ class SCHVIZ {
     var newKlayToScjsonMap, newKgraphRoot;
     this._scjson = scjson;
     this._svgRenderer.clear();
-    this._kgraph = new KGraph(this._generateStateId.bind(this), this._svgRenderer, scjson); 
+    this._kgraph = new KGraph(this._idGenerator, this._svgRenderer, scjson); 
     this._kgraph.on('update', this.updateSCJSON.bind(this, scjson, options, function(){
       console.log('Update complete');
     }));
     this._kgraph.update(options, cb);
   }
-
-
-  _generateStateId(){
-    return '$generated-' + this._generatedIdCount++;
-  }
-
 
   highlightState(stateId){
     this._svgRenderer.highlightState(stateId);
@@ -70,7 +77,5 @@ class SCHVIZ {
 
 }
 
-SCHVIZ.layouts = constants.layouts;
-SCHVIZ.events = require('./events').node;
 
 module.exports = SCHVIZ;

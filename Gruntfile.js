@@ -11,21 +11,10 @@ module.exports = function(grunt) {
           dest: 'dist/scxml.js'
         },
       },
-      babel: {
-          options: {
-              sourceMap: true,
-              presets: ['es2015'],
-              plugins : ['transform-es2015-modules-umd']
-          },
-          dist: {
-              files: {
-                  'dist/scxml.js' : 'dist/scxml.js'
-              }
-          }
-      },
       browserify : {
         dev : {
           options: {
+            plugin: ['tsify'],
             browserifyOptions : {
               debug : true,
               standalone: 'SCHVIZ',
@@ -37,11 +26,12 @@ module.exports = function(grunt) {
         },
         prod : {
           options: {
+            plugin: ['tsify'],
             browserifyOptions : {
               standalone: 'SCHVIZ'
             }
           },
-          src: ['lib/index.js'],
+          src: ['lib/index.ts'],
           dest: 'dist/schviz.js'
         }
       },

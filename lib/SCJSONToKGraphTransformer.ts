@@ -1,16 +1,25 @@
-var constants = require('./constants'),
-    EventEmitter = require('events'),
-    events = require('./events'),
-    DefaultInteractiveBehavior = require('./interactivity'),
-    _ = require('underscore');
+import constants from './constants';
+import events from './events';
+import IdGenerator from './IdGenerator';
+import SVGRenderer from './SVG';
+import {measureTextDimensions} from './svg-util';
+import DefaultInteractiveBehavior from './interactivity';
+import EventEmitter = require('events');
+import _ = require('underscore');
+import {SCState, KGraph, KGraphNode, KGraphEdge, KGraphLabel} from './types';
 
-class SCJSONToKGraphTransformer extends EventEmitter{
+export default class SCJSONToKGraphTransformer extends EventEmitter{
 
-  constructor(idGeneratorFn, svg){
+  _idGenerator : IdGenerator; 
+  _stateToKlayNodeMap : Map<SCState,KGraphNode>;
+  _behavior : DefaultInteractiveBehavior; 
+  _svgRenderer : SVGRenderer;
+
+  constructor(idGenerator: IdGenerator, svgRenderer : SVGRenderer){
     super();
-    this._svg = svg;
-    this._generateStateId = idGeneratorFn;
-    this._stateToKlayNodeMap = new Map();
+    this._idGenerator = idGenerator;
+    this._svgRenderer = svgRenderer;
+    this._stateToKlayNodeMap = new Map<SCState,KGraphNode>();
     this._behavior = new DefaultInteractiveBehavior();
   }
 
@@ -20,7 +29,6 @@ class SCJSONToKGraphTransformer extends EventEmitter{
     var klayNodeToScjsonMap = new Map();
     var idMap = this._getIdMap(scjson);
     var transformedScjsonCopy = this._transformScjsonVirtualCollapsedStates(scjson, scjson);
-    console.log('updated scjson ', JSON.stringify(scjson,4,4));
     var rootNode = this._scjsonStateToKlayNode(klayNodeToScjsonMap, idMap, transformedScjsonCopy, transformedScjsonCopy, transformedScjsonCopy);
     this._behavior.attachListeners(rootNode);   //initialize default behavior
     return [klayNodeToScjsonMap, rootNode];
@@ -47,8 +55,8 @@ class SCJSONToKGraphTransformer extends EventEmitter{
   _transformScjsonVirtualCollapsedStates(rootState, scjson){
     //0. copy
     var newScjson = JSON.parse(JSON.stringify(scjson));
-    var stateIdMap = new Map();
-    var stateToVirtualAncestorMap = new Map();
+    var stateIdMap = new Map<string,SCState>();
+    var stateToVirtualAncestorMap = new Map<SCState,SCState>();
 
     //initialize state id map
     this._getDescendants('states',newScjson).forEach( d => {stateIdMap.set(d.id, d);});
@@ -58,7 +66,7 @@ class SCJSONToKGraphTransformer extends EventEmitter{
       if(state.$meta && state.$meta.isCollapsed && state.states && state.states.length){
         var substates = state.states;
         var virtualState = {
-          id : this._generateStateId(),
+          id : this._idGenerator.generateId(),
           states : substates,
           $type : 'virtual'
         };
@@ -200,7 +208,7 @@ class SCJSONToKGraphTransformer extends EventEmitter{
   }
 
   _scjsonStateToKlayNode(klayNodeToScjsonMap, idMap, rootState, parentState, state){
-    var stateKlayNode = Object.create(new EventEmitter());
+    var stateKlayNode = (<KGraphNode> Object.create(new EventEmitter()));
     if(state.$type === 'initial' || state.$type === 'final'){
       _.extend(stateKlayNode, {
         "id" : state.id,
@@ -211,7 +219,7 @@ class SCJSONToKGraphTransformer extends EventEmitter{
       });
     }else{
       var label = state.$type === 'virtual' ? '...' : state.id;
-      var bbox = this._svg.measureTextDimensions(label);
+      var bbox = this._svgRenderer.measureTextDimensions(label);
       _.extend(stateKlayNode, {
         "id" : state.id,
         "labels" : [ { text : label || '' } ],
@@ -242,7 +250,7 @@ class SCJSONToKGraphTransformer extends EventEmitter{
         state.transitions
           .filter(function(transition){return transition.target;})   //TODO: also render targetless transitions 
           .map(function(transition){
-            var klayEdge = Object.create(new EventEmitter());
+            var klayEdge = new KGraphEdge();
             _.extend(klayEdge, {
               id : state.id + '_' + (Array.isArray(transition.target) ? transition.target.join('_') : transition.target ),
               source : state.id,
@@ -253,8 +261,8 @@ class SCJSONToKGraphTransformer extends EventEmitter{
 
             var event = transition.event;
             if(event){
-              var eventBBox = this._svg.measureTextDimensions(event); 
-              var klayLabel = Object.create(new EventEmitter()); 
+              var eventBBox = this._svgRenderer.measureTextDimensions(event); 
+              var klayLabel = new KGraphLabel();
               _.extend(klayLabel, { 
                 text : event, 
                 width : eventBBox.width, 
@@ -287,7 +295,7 @@ class SCJSONToKGraphTransformer extends EventEmitter{
           transition.target = transition.target[0];
         }
         fakeInitialState = {
-          id : this._generateStateId(),
+          id : this._idGenerator.generateId(),
           $type : 'initial',
           transitions : [transition] 
         };
@@ -300,7 +308,7 @@ class SCJSONToKGraphTransformer extends EventEmitter{
 
           if(!initialChildren.length && state.$type !== 'parallel'){
             fakeInitialState = {
-              id : this._generateStateId(),
+              id : this._idGenerator.generateId(),
               $type : 'initial',
               transitions : [{
                 target : state.states[0].id
@@ -321,7 +329,7 @@ class SCJSONToKGraphTransformer extends EventEmitter{
 
   _normalizeStateIds(scjson){
     var walk = (function(node){
-      node.id = node.id || this._generateStateId();
+      node.id = node.id || this._idGenerator.generateId();
       if(node.states) node.states.forEach(walk.bind(this));
     }.bind(this));
     walk(scjson);

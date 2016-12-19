@@ -1,58 +1,80 @@
-var constants = require('./constants'),
-    events = require('./events'),
-    Snap = require('snapsvg'),
-    pathseg = require('pathseg'),
-    _ = require('underscore'),
-    q = require('q'),
-    $ = require('jquery');
+import constants from './constants';
+import events from './events';
+import pathseg = require('pathseg');
+import _ = require('underscore');
+import q = require('q');
+import $ = require('jquery');
+
+import {KGraph, KGraphNode, KGraphEdge, KGraphLabel} from './types';
 
 const SVGNS = 'http://www.w3.org/2000/svg';
 
-function SVGRenderer(parentNode){
-  this._s = Snap(parentNode);
-  this._root = this._s.group();
-  this._initDefs(this._s.node);
-  this._generatedIdCount = 0;
-  this._kgraphNodeToSVGNode = new Map();
-  this._cachedKGraphNodeChildren = new Map();
-  this._cachedKGraphNodeEdges = new Map();
-  this._cachedKGraphEdgeLabels = new Map();
-  this._stateHighlightAnimationPromiseMap = new Map();
-  this._cachedHyperlinkAnimationPromise = null;
-  this._cachedHyperlinkAnimationDeferred = null;
-  this._edgeIdToEdgeMap = null;
-  this._firstRender = true;
-}
+export default class SVGRenderer{
 
-SVGRenderer.prototype = {
-  clear : function(){
-    this._root.clear();
+  private _s: Snap.Paper;
+  private _root: Snap.Element;
+  private _generatedIdCount:number;
+  private _kgraphNodeToSVGNode:Map<KGraphNode, Snap.Element>;
+  private _cachedKGraphNodeChildren:Map<KGraphNode, Array<KGraphNode>>;
+  private _cachedKGraphNodeEdges:Map<KGraphNode, Array<KGraphEdge>>;
+  private _cachedKGraphEdgeLabels:Map<KGraphNode, Array<KGraphLabel>>;
+  private _cachedHyperlinkAnimationPromise:Map<KGraphEdge, Q.Promise<KGraphEdge>>;
+  private _cachedHyperlinkAnimationDeferred:Map<KGraphEdge, Q.Deferred<KGraphEdge>>;
+  private _edgeIdToEdgeMap:Map<string, KGraphEdge>;
+  private _firstRender:boolean;
+  private _kgraph:KGraph;
+  private _allEdges:Array<KGraphEdge>;
+
+  public constructor(parentNode){
+    this._s = Snap(parentNode);
+    this._root = this._s.group();
+    this._initDefs(this._s.node);
+    this._generatedIdCount = 0;
+    this._kgraphNodeToSVGNode = new Map<KGraphNode, Snap.Element>();
+    this._cachedKGraphNodeChildren = new Map<KGraphNode, Array<KGraphNode>>();
+    this._cachedKGraphNodeEdges = new Map<KGraphNode, Array<KGraphEdge>>();
+    this._cachedKGraphEdgeLabels = new Map<KGraphNode, Array<KGraphLabel>>();
+    this._cachedHyperlinkAnimationPromise = null;
+    this._cachedHyperlinkAnimationDeferred = null;
+    this._edgeIdToEdgeMap = null;
     this._firstRender = true;
-  },
+  }
 
-  highlightState : function(stateId){
-    $(this._s.node.getElementById(stateId)).addClass('highlighted');
-  },
+  public measureTextDimensions (text){
+    var txt = this._s.text(0,0,text);
+    var bbox = txt.getBBox();
+    txt.remove(); 
+    return bbox; 
+  }
 
-  unhighlightState : function(stateId){
-    $(this._s.node.getElementById(stateId)).removeClass('highlighted');
-  },
+  public clear(){
+    this._s.clear();
+    this._firstRender = true;
+  }
 
-  unhighlightAllStates : function(){
+  public highlightState(stateId){
+    $(this._s.node.ownerDocument.getElementById(stateId)).addClass('highlighted');
+  }
+
+  public unhighlightState(stateId){
+    $(this._s.node.ownerDocument.getElementById(stateId)).removeClass('highlighted');
+  }
+
+  public unhighlightAllStates(){
     $(this._s.node).find('.highlighted').removeClass('highlighted');
-  },
+  }
 
-  highlightTransition : function(sourceStateId, targetStateIds){
+  public highlightTransition(sourceStateId, targetStateIds){
     if(!targetStateIds) return;
-    var node = $(this._s.node.getElementById(sourceStateId + '->' + (targetStateIds && targetStateIds.length ? targetStateIds[0] : '')));
+    var node = $(this._s.node.ownerDocument.getElementById(sourceStateId + '->' + (targetStateIds && targetStateIds.length ? targetStateIds[0] : '')));
     node.addClass('highlighted');
     //TODO: listen for animation end event
     setTimeout(function(){
       node.removeClass('highlighted');
     },constants.HIGHLIGHT_ANIM_DURATION);
-  },
+  }
 
-  _initDefs : function(svg){
+  private _initDefs(svg){
 
     var defs = document.createElementNS(SVGNS,'defs'); 
     var marker = document.createElementNS(SVGNS,'marker'); 
@@ -69,12 +91,13 @@ SVGRenderer.prototype = {
     ['','Highlighted'].forEach(function(idSuffix){
       var radialGradient = document.createElementNS(SVGNS,'radialGradient'); 
       radialGradient.setAttributeNS(null,'id',constants.finalStateGradientId + idSuffix);
-      var c = constants.INITIAL_RADIUS/2;
+      var c = (constants.INITIAL_RADIUS/2).toString();
+      var r = (constants.INITIAL_RADIUS/4).toString();
       radialGradient.setAttributeNS(null,'cx',c);
       radialGradient.setAttributeNS(null,'cy',c);
       radialGradient.setAttributeNS(null,'fx',c);
       radialGradient.setAttributeNS(null,'fy',c);
-      radialGradient.setAttributeNS(null,'r',constants.INITIAL_RADIUS/4);
+      radialGradient.setAttributeNS(null,'r',r);
       radialGradient.setAttributeNS(null,'gradientUnits','userSpaceOnUse');
 
       [
@@ -93,19 +116,12 @@ SVGRenderer.prototype = {
     svg.appendChild(defs);
     defs.appendChild(marker);
     marker.appendChild(path);
-  },
+  }
 
   //TODO: update
 
-  measureTextDimensions : function (text){
-    var txt = this._s.text(0,0,text);
-    var bbox = txt.getBBox();
-    txt.remove(); 
-    return bbox; 
-  },
-
-  _traverseGraphForHyperEdges : function(node){
-    if(node.edges) node.edges.forEach(function(edge){
+  private _traverseGraphForHyperEdges(node : KGraphNode){
+    if(node.edges) node.edges.forEach(function(edge : KGraphEdge){
       if(edge.$type === 'hyperlink'){
         var dfd = q.defer();
         this._cachedHyperlinkAnimationDeferred.set(edge, dfd);
@@ -114,14 +130,14 @@ SVGRenderer.prototype = {
       }
     },this);
     if(node.children) node.children.forEach(this._traverseGraphForHyperEdges.bind(this));
-  },
+  }
 
-  render : function(kgraph){
+  public render(kgraph){
     this._kgraph = kgraph;
     var graphRoot = this._kgraph.root;
-    this._edgeIdToEdgeMap = new Map();
-    this._cachedHyperlinkAnimationPromise = new Map();
-    this._cachedHyperlinkAnimationDeferred = new Map();
+    this._edgeIdToEdgeMap = new Map<string, KGraphEdge>();
+    this._cachedHyperlinkAnimationPromise = new Map<KGraphEdge, Q.Promise<KGraphEdge>>();
+    this._cachedHyperlinkAnimationDeferred = new Map<KGraphEdge, Q.Deferred<KGraphEdge>>();
     this._traverseGraphForHyperEdges(graphRoot);
 
     this._allEdges = [];
@@ -130,7 +146,7 @@ SVGRenderer.prototype = {
       this._firstRender = false;
     } else{
       Snap.animate(
-        this._s.attr("viewBox").vb.split(' '), 
+        this._s.attr("viewBox").vb.split(' ').map( (d:string) => parseInt(d) ), 
         [ 0, 0, graphRoot.width, graphRoot.height ], 
         function(values){ this._s.attr("viewBox", values.join(" ")); }.bind(this), 
         constants.ANIM_DURATION, 
@@ -158,22 +174,22 @@ SVGRenderer.prototype = {
 
     graphRoot.children.forEach(this._renderGraphNode.bind(this,graphRoot));
      
-  },
+  }
 
   //trigger exit animation
-  _exitNodeChildren : function(node, recursiveDelete){
+  private _exitNodeChildren(node:KGraphNode, recursiveDelete?:boolean):void{
     this._exitKGraphObject(node, 'children', recursiveDelete);
-  },
+  }
 
-  _exitEdges : function(node, recursiveDelete){
+  private _exitEdges(node:KGraphNode, recursiveDelete?:boolean):void{
     this._exitKGraphObject(node, 'edges', recursiveDelete);
-  },
+  }
 
-  _exitLabels : function(node, recursiveDelete){
+  private _exitLabels(node:KGraphNode, recursiveDelete?:boolean):void{
     this._exitKGraphObject(node, 'labels', recursiveDelete);
-  },
+  }
 
-  _exitKGraphObject : function(kgraphNode, property, recursiveDelete){
+  private _exitKGraphObject(kgraphNode, property, recursiveDelete){
     var cache;
     switch(property){
       case 'children': 
@@ -226,9 +242,9 @@ SVGRenderer.prototype = {
     }, this);
     var nodesToCache = (kgraphNode[property] || []).slice();
     cache.set(kgraphNode, nodesToCache);  //keep a copy so that we can animate node exit
-  },
+  }
 
-  _renderGraphNode : function(parentGraphNode, graphNode){
+  private _renderGraphNode(parentGraphNode, graphNode){
 
     var isLeaf = !graphNode.children;
     var labelTextParams = getStateLabelTextParams();
@@ -240,10 +256,10 @@ SVGRenderer.prototype = {
       var rect = group.rect(graphNode.width / 2, graphNode.height / 2, 0, 0).attr({rx : 2, ry : 2, strokeWidth : 0});
       var label = group.text.apply(group, labelTextParams).attr({opacity : 0});
       if(!isLeaf){
-        var bbox = label.getBBox();
+        var bbox = (<Snap.BBox> label.getBBox());
         //add a decoration
         //TODO: clean this up later
-        var line = group.line(0, bbox.height, graphNode.width, bbox.height).attr({opacity:0});
+        var line = (<Snap.Element>group.line(0, bbox.height, graphNode.width, bbox.height).attr({opacity:0}));
       }
 
       //start animations
@@ -340,9 +356,9 @@ SVGRenderer.prototype = {
       var textContent = graphNode.$type === 'virtual' ? graphNode.labels[0].text : graphNode.id;
       return [textX, textY, textContent];
     }
-  },
+  }
 
-  _computeEdgeLength : function(edge){
+  private _computeEdgeLength(edge){
     var length = 0;
     var lastPoint = edge.sourcePoint;
     (edge.bendPoints || []).concat(edge.targetPoint).forEach(function(nextPoint){
@@ -350,15 +366,15 @@ SVGRenderer.prototype = {
       lastPoint = nextPoint;
     }, this);
     return length;
-  },
+  }
 
-  _computeDistance : function(nextPoint, lastPoint){
+  private _computeDistance(nextPoint, lastPoint){
     return Math.sqrt(
           Math.pow(nextPoint.y - lastPoint.y, 2) + 
           Math.pow(nextPoint.x - lastPoint.x, 2));
-  },
+  }
 
-  _getDAtLength : function(points, length){
+  private _getDAtLength(points, length){
 
     var sourcePoint = points[0];
     var d = 'M'+ sourcePoint.x + ' ' + sourcePoint.y,
@@ -393,15 +409,15 @@ SVGRenderer.prototype = {
     }
 
     return d;
-  },
+  }
 
-  _edgeToPoints : function(edge){
+  private _edgeToPoints(edge){
     return [edge.sourcePoint].
             concat(edge.bendPoints || []).
             concat([edge.targetPoint]);
-  },
+  }
 
-  _renderEdge : function(parentGraphNode, edge){
+  private _renderEdge(parentGraphNode, edge){
     if(!this._kgraphNodeToSVGNode.has(edge)){
       var path = this._kgraphNodeToSVGNode.get(parentGraphNode).path();
       path.addClass('link');
@@ -418,19 +434,6 @@ SVGRenderer.prototype = {
 
       this._kgraphNodeToSVGNode.set(edge, path);
 
-      function beginEntryAnimation(halfTime){
-        var _getDAtLength = this._getDAtLength.bind(this, this._edgeToPoints(edge));
-        //animate
-        Snap.animate(
-          0, 
-          this._computeEdgeLength(edge), 
-          function(length){ path.attr('d', _getDAtLength(length)); }.bind(this), 
-          constants.ANIM_DURATION / ( halfTime ? 2 : 1),
-          function(){
-            var deferred = this._cachedHyperlinkAnimationDeferred.get(edge);
-            if(deferred) deferred.resolve(); 
-          }.bind(this));
-      }
     } else {
       var edgeDisplayNode = this._kgraphNodeToSVGNode.get(edge);
       edgeDisplayNode.remove(); 
@@ -438,15 +441,16 @@ SVGRenderer.prototype = {
 
       //update edge segments
       var newPointList = this._edgeToPoints(edge);
-      var pathSegList = edgeDisplayNode.node.animatedPathSegList;
-      var mSeg = pathSegList.getItem(0);
+      var pathNode = (<SVGPathElement>edgeDisplayNode.node);
+      var pathSegList = pathNode.pathSegList;
+      var mSeg = (<SVGPathSegMovetoAbs>pathSegList.getItem(0));
 
       //normalize segments
       if(newPointList.length > pathSegList.numberOfItems){
         //create some new dummy segments
         var numberOfNewPoints = newPointList.length - pathSegList.numberOfItems;
         for(var i = 0; i < numberOfNewPoints; i++){
-          var newSeg = new SVGPathSegLinetoAbs(pathSegList, mSeg.x, mSeg.y);
+          var newSeg = pathNode.createSVGPathSegLinetoAbs(mSeg.x, mSeg.y);
           pathSegList.insertItemBefore(newSeg,1)
         }
       } else {
@@ -461,7 +465,7 @@ SVGRenderer.prototype = {
       for(var i = 0; i < pathSegList.numberOfItems; i++){
         promises.push( 
           (function(i){
-            var seg = pathSegList.getItem(i),
+            var seg = (<SVGPathSegMovetoAbs>pathSegList.getItem(i)),
                 point = newPointList[i],
                 dfd = q.defer();
 
@@ -471,6 +475,7 @@ SVGRenderer.prototype = {
               [point.x, point.y], 
               function(values){ seg.x = values[0]; seg.y = values[1]; }, 
               constants.ANIM_DURATION, 
+              mina.easein,
               function(){
                 dfd.resolve();
               });
@@ -547,7 +552,19 @@ SVGRenderer.prototype = {
     }
 
     this._exitLabels(edge);
+
+    function beginEntryAnimation(halfTime){
+      var _getDAtLength = this._getDAtLength.bind(this, this._edgeToPoints(edge));
+      //animate
+      Snap.animate(
+        0, 
+        this._computeEdgeLength(edge), 
+        function(length){ path.attr('d', _getDAtLength(length)); }.bind(this), 
+        constants.ANIM_DURATION / ( halfTime ? 2 : 1),
+        function(){
+          var deferred = this._cachedHyperlinkAnimationDeferred.get(edge);
+          if(deferred) deferred.resolve(); 
+        }.bind(this));
+    }
   }
 }
-
-module.exports = SVGRenderer;
