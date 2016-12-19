@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "declaration": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "mapRoot": "./",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmitOnError": true,
+    "noImplicitAny": false,
+    "outDir": "./dist",
+    "sourceMap": true,
+    "target": "es5",
+    "files" : [
+      "KGraph.ts",
+      "SCJSON.ts",
+      "SCJSONToKGraphTransformer.ts",
+      "SVG.ts",
+      "constants.ts",
+      "events.ts",
+      "index.ts",
+      "interactivity.ts"
+    ],
+    "typeRoots": [
+      "./node_modules/@types"
+    ]
+  }
+}
