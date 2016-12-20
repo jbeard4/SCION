@@ -35,7 +35,9 @@
     "typescript": "^2.1.4"
   },
   "scripts": {
-    "test": "karma"
+    "test": "karma",
+    "build": "tsc -p .  --outDir dist/",
+    "clean": "rm -rf dist/"
   },
   "repository": {
     "type": "git",

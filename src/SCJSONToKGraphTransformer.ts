@@ -2,7 +2,6 @@ import constants from './constants';
 import events from './events';
 import IdGenerator from './IdGenerator';
 import SVGRenderer from './SVG';
-import {measureTextDimensions} from './svg-util';
 import DefaultInteractiveBehavior from './interactivity';
 import EventEmitter = require('events');
 import _ = require('underscore');
