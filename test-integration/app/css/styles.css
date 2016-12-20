@@ -47,6 +47,7 @@ text {
 
 text.edge-label {
   dominant-baseline: text-before-edge;
+  text-anchor: start;
 }
 
 g.leaf > rect {
