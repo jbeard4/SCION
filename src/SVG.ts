@@ -48,7 +48,7 @@ export default class SVGRenderer{
   }
 
   public clear(){
-    this._s.clear();
+    this._root.clear();
     this._firstRender = true;
   }
 
