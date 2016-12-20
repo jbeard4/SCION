@@ -6,6 +6,7 @@ import SCJSONToKGraphTransformer from './SCJSONToKGraphTransformer';
 import IdGenerator from './IdGenerator';
 import SVGRenderer from './SVG';
 import {SCState, KGraphNode, KGraphEdge, KGraphLabel} from './types';
+import constants from './constants';
 
 export default class KGraph extends SCJSONToKGraphTransformer {
 
@@ -50,18 +51,35 @@ export default class KGraph extends SCJSONToKGraphTransformer {
     return this._updateKgraph(this._kgraphRoot, options, cb);
   }
 
+  _processKGraphPostLayout(kgraph){
+    //make sure that the width of the state is 
+    function walk(node){
+      if(node.labels && node.labels.length){
+        var label = node.labels[0].text;
+        var [minWidth, height] =  this._getStateMinDimensions(label);
+        if(node.width < minWidth){
+          node.width = minWidth; 
+        }
+      }
+      if(node.children) node.children.forEach(walk.bind(this));
+    }
+    walk.call(this, kgraph);
+  }
+
   _updateKgraph(kgraph, options, cb){
     this._populateIdMap(kgraph);
     this._populateChildToParentMap(kgraph);
 
     this._applyInitialCoordinates(kgraph);
-    //console.log('kgraph',JSON.stringify(kgraph,4,4));   //TODO: enable debug module
+    console.log('kgraph before layout',JSON.stringify(kgraph,null,4));   //TODO: enable debug module
     try {
       $klay.layout({
         graph : kgraph,
         options : options,
         success : function(g){ 
           try {
+            this._processKGraphPostLayout(kgraph);
+            console.log('kgraph after layout',JSON.stringify(kgraph,null,4));   //TODO: enable debug module
             this._svgRenderer.render(this);   //TODO: move this back out?
             cb(null, kgraph);
           } catch(e){
