@@ -30,15 +30,16 @@
     "grunt-express-server": "^0.5.3",
     "grunt-open": "^0.2.3",
     "load-grunt-tasks": "^3.5.2",
+    "pathseg": "^1.0.2",
     "scxml-test-framework": "^1.0.2",
     "tsify": "^2.0.5",
     "typescript": "^2.1.4"
   },
   "scripts": {
     "test": "karma",
-    "build" : "browserify -p tsify --project . src/index.ts  --standalone SCHVIZ --debug > dist/schviz.js",
-    "watch" : "browserify -p watchify -p tsify --project .  src/index.ts  --standalone SCHVIZ --debug > dist/schviz.js", 
-    "minfiy" : "uglify -s dist/schviz.js -o dist/schviz.min.js", 
+    "build": "browserify -p tsify --project . src/index.ts  --standalone SCHVIZ --debug > dist/schviz.js",
+    "watch": "browserify -p watchify -p tsify --project .  src/index.ts  --standalone SCHVIZ --debug > dist/schviz.js",
+    "minfiy": "uglify -s dist/schviz.js -o dist/schviz.min.js",
     "clean": "rm -rf dist/"
   },
   "repository": {

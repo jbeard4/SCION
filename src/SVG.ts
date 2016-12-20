@@ -1,6 +1,5 @@
 import constants from './constants';
 import events from './events';
-import pathseg = require('pathseg');
 import _ = require('underscore');
 import q = require('q');
 import $ = require('jquery');
