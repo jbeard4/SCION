@@ -36,7 +36,13 @@
   },
   "scripts": {
     "test": "karma",
-    "build": "tsc -p .  --outDir dist/",
+    "tsc": "mkdir -p dist/tsc; tsc -p .  --outDir dist/tsc",
+    "browserify" : "mkdir -p dist/browserify; browserify dist/tsc/index.js --debug --standalone SCHVIZ > dist/browserify/index.js",
+    "concat" : "mkdir -p dist/concat && cat node_modules/snapsvg/dist/snap.svg.js dist/browserify/index.js > dist/concat/index.js",
+    "cp" : "cp dist/browserify/index.js dist/schviz.js",
+    "uglify" : "uglify dist/schviz.js > dist/schviz.min.js",
+    "build" : "npm run tsc; npm run browserify; npm run cp; npm run uglify",
+    "tsify": "browserify -p tsify --project .  src/index.ts > dist/index.js",
     "clean": "rm -rf dist/"
   },
   "repository": {

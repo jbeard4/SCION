@@ -56,15 +56,11 @@ module.exports = function(grunt) {
           livereload: true
         },
         express: {
-          files:  [ 'lib/*.js', 'test-integration/**/*.{html,js}' ],
-          tasks : ['browserify:dev'],
+          files:  [ 'src/*.js', 'test-integration/**/*.{html,ts}' ],
+          tasks : [],
           options: {
             spawn: false
           }
-        },
-        browserify: {
-          files:  [ 'lib/*.js' ],
-          tasks: ["browserify:dev"]
         },
         public: {
           files: [""]
