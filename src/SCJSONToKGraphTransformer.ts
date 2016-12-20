@@ -335,7 +335,3 @@ export default class SCJSONToKGraphTransformer extends EventEmitter{
   }
 
 }
-
-
-module.exports = SCJSONToKGraphTransformer;
-

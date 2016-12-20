@@ -62,7 +62,7 @@ export default class KGraph extends SCJSONToKGraphTransformer {
         options : options,
         success : function(g){ 
           try {
-            this._svg.render(this);   //TODO: move this back out?
+            this._svgRenderer.render(this);   //TODO: move this back out?
             cb(null, kgraph);
           } catch(e){
             cb(e); 
@@ -456,6 +456,3 @@ export default class KGraph extends SCJSONToKGraphTransformer {
   }
 
 }
-
-
-module.exports = KGraph;
