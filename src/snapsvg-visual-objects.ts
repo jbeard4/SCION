@@ -15,7 +15,6 @@ export abstract class VisualObject {
   }
 
   public abstract enter(graphNode : IKGraphNode);
-  public abstract update(graphNode : IKGraphNode);
 
   public exit(graphNode : IKGraphNode){
     //default exit behavior
@@ -60,7 +59,7 @@ export class SnapSvgCanvas extends VisualObject {
   }
 
   public clear(){
-    this._paper.clear();
+    if(this.displayNode) this.displayNode.clear();
   }
 
   public highlightState(stateId){
@@ -340,9 +339,10 @@ export class SnapSvgEdge extends VisualObject {
   }
 
 
-  public update(edge : KGraphEdge){
+  public update(edge : KGraphEdge, newParent : VisualObject){
     //reparent the edge
     this.displayNode.remove(); 
+    this.parent = newParent;
     this.parent.displayNode.append(this.displayNode);
 
     //update edge segments
@@ -413,10 +413,11 @@ export class SnapSvgLabel extends VisualObject {
     this.displayNode.animate({y : label.y}, constants.ANIM_DURATION, mina.bounce);
   }
 
-  public update(label : KGraphLabel){
+  public update(label : KGraphLabel, newParent : VisualObject){
     //reparent
     //TODO: it would be better to move the label into its own layer so that we we can animate the reparenting
     this.displayNode.remove(); 
+    this.parent = newParent;
     this.parent.displayNode.append(this.displayNode);
 
     //update text, if it has changed

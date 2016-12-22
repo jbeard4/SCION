@@ -89,6 +89,7 @@ export default class SCJSONToKGraphTransformer extends EventEmitter{
         state.transitions = state.transitions || [];
         var descendantIds = new Set(descendants.map( d => d.id ));
         descendants.forEach(function(d){
+            if(!d.transitions) return;
             d.transitions = d.transitions.filter( transition => {
               var targets = this._getTransitionTargets(transition);
               return targets.some(targetId => !descendantIds.has(targetId));

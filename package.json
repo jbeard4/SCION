@@ -38,7 +38,7 @@
   "scripts": {
     "test": "karma",
     "build": "browserify -p tsify --project . src/index.ts  --standalone SCHVIZ --debug -o dist/schviz.js",
-    "watch": "browserify -p watchify -p tsify --project .  src/index.ts  --standalone SCHVIZ --debug > dist/schviz.js",
+    "watch": "watchify -p tsify --project . src/index.ts --standalone SCHVIZ --debug -o dist/schviz.js  --verbose",
     "minfiy": "uglify -s dist/schviz.js -o dist/schviz.min.js",
     "clean": "rm -rf dist/"
   },

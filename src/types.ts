@@ -4,8 +4,12 @@ export class KGraph{
   root : KGraphNode;
 }
 
-export class KGraphNode extends EventEmitter {
+export interface IKGraphNode {
+}
+
+export class KGraphNode extends EventEmitter implements IKGraphNode {
   id : string;
+  labels : KGraphLabel[];
   edges? : KGraphEdge[];
   children? : KGraphNode[];
   width?:number;
@@ -15,19 +19,29 @@ export class KGraphNode extends EventEmitter {
   $type? : string;
 }
 
-export class KGraphEdge{
+export class KGraphEdge implements IKGraphNode {
   id : string;
   $type? : string;
   labels : KGraphLabel[];
   source: string;
   target: string;
   $hyperlink? : string;
+  bendPoints? : Point[];
 }
 
-export class KGraphLabel{
+export class KGraphLabel implements IKGraphNode {
   text : string;
-  width : number;
-  height : number;
+  x?:number;
+  y?:number;
+  width? : number;
+  height? : number;
+  textAnchor?: string;
+  dominantBaseline?: string;
+}
+
+export interface Point {
+  x?:number;
+  y?:number;
 }
 
 export interface SCGraph extends EventEmitter{

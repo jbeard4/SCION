@@ -71,7 +71,7 @@ export default class KGraph extends SCJSONToKGraphTransformer {
     this._populateChildToParentMap(kgraph);
 
     this._applyInitialCoordinates(kgraph);
-    console.log('kgraph before layout',JSON.stringify(kgraph,null,4));   //TODO: enable debug module
+    //console.log('kgraph before layout',JSON.stringify(kgraph,null,4));   //TODO: enable debug module
     try {
       $klay.layout({
         graph : kgraph,
@@ -79,7 +79,7 @@ export default class KGraph extends SCJSONToKGraphTransformer {
         success : function(g){ 
           try {
             this._processKGraphPostLayout(kgraph);
-            console.log('kgraph after layout',JSON.stringify(kgraph,null,4));   //TODO: enable debug module
+            //console.log('kgraph after layout',JSON.stringify(kgraph,null,4));   //TODO: enable debug module
             this._svgRenderer.render(this);   //TODO: move this back out?
             cb(null, kgraph);
           } catch(e){
