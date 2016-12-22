@@ -136,7 +136,7 @@ export class SnapSvgNode extends VisualObject {
   }
 
   private _isLeaf(graphNode : KGraphNode){
-    return !graphNode.children;
+    return !(graphNode.children && graphNode.children.length);
   } 
 
   private _getStateLabelTextParams(graphNode : KGraphNode, isLeaf : boolean){
@@ -195,8 +195,8 @@ export class SnapSvgNode extends VisualObject {
   update(graphNode : KGraphNode){
     //animate
     var displayNode = this.displayNode;
-    var labelTextParams = this._getStateLabelTextParams(graphNode, isLeaf);
     var isLeaf = this._isLeaf(graphNode);
+    var labelTextParams = this._getStateLabelTextParams(graphNode, isLeaf);
     var text = displayNode.select('text')
       .attr({'text': labelTextParams[2]})
       .animate({x : labelTextParams[0], y: labelTextParams[1]}, constants.ANIM_DURATION);
