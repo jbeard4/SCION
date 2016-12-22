@@ -35,6 +35,10 @@ export class KGraphLabel implements IKGraphNode {
   y?:number;
   width? : number;
   height? : number;
+  $meta? : KGraphLabelMeta;
+}
+
+interface KGraphLabelMeta {
   textAnchor?: string;
   dominantBaseline?: string;
 }

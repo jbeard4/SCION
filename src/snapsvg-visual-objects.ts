@@ -14,8 +14,6 @@ export abstract class VisualObject {
     this.parent = parent;
   }
 
-  public abstract enter(graphNode : IKGraphNode);
-
   public exit(graphNode : IKGraphNode){
     //default exit behavior
     this.displayNode.animate({opacity : 0}, constants.ANIM_DURATION, mina.easein, function(){
@@ -36,7 +34,7 @@ export class SnapSvgCanvas extends VisualObject {
 
   public enter(graphRoot : KGraphNode){
     this._paper.attr('viewBox','0 0 ' + graphRoot.width + ' ' + graphRoot.height);
-    this.displayNode = this._paper.group();
+    if(!this.displayNode) this.displayNode = this._paper.group();
     var rect = this.displayNode.rect(graphRoot.x, graphRoot.y, graphRoot.width, graphRoot.height);
     this.displayNode.addClass('node');
     this.displayNode.addClass('compound');
@@ -404,8 +402,11 @@ export class SnapSvgEdge extends VisualObject {
 }
 
 export class SnapSvgLabel extends VisualObject {
-  public enter(label : KGraphLabel){
+
+  public enter(label : KGraphLabel,  edge: KGraphEdge){
+    this._normalizeSelfLoopEdgeCoordinates(label, edge);
     this.displayNode = this.parent.displayNode.text(label.x, -10, label.text).attr({opacity : 0});
+    if(label.$meta) this.displayNode.attr(label.$meta);
     this.displayNode.addClass('edge-label');
 
     //animate
@@ -413,12 +414,15 @@ export class SnapSvgLabel extends VisualObject {
     this.displayNode.animate({y : label.y}, constants.ANIM_DURATION, mina.bounce);
   }
 
-  public update(label : KGraphLabel, newParent : VisualObject){
+  public update(label : KGraphLabel, edge: KGraphEdge, newParent : VisualObject){
+    this._normalizeSelfLoopEdgeCoordinates(label, edge);
     //reparent
     //TODO: it would be better to move the label into its own layer so that we we can animate the reparenting
     this.displayNode.remove(); 
     this.parent = newParent;
     this.parent.displayNode.append(this.displayNode);
+
+    if(label.$meta) this.displayNode.attr(label.$meta);
 
     //update text, if it has changed
     if(label.text !== this.displayNode.attr('text')){
@@ -432,23 +436,24 @@ export class SnapSvgLabel extends VisualObject {
     this.displayNode.animate({x: label.x, y : label.y}, constants.ANIM_DURATION);
   }
 
-  public static normalizeSelfLoopEdgeCoordinates(edge : KGraphEdge, label : KGraphLabel){
+  private _normalizeSelfLoopEdgeCoordinates(label : KGraphLabel, edge : KGraphEdge){
     //fix edge label coordinates. Workaround for issue OpenKieler/klayjs#8
     if(edge.source === edge.target){
       //debugger;
       label.x = edge.bendPoints[1].x;
       label.y = edge.bendPoints[1].y;
-      label.textAnchor = 'end';
+      label.$meta = {};
+      label.$meta.textAnchor = 'end';
 
       //does the self edge loop up or down?
       if(edge.bendPoints[0].y < edge.bendPoints[1].y){
         //line has positive slope
         //goes below the slope
-        label.dominantBaseline = 'text-before-edge';
+        label.$meta.dominantBaseline = 'text-before-edge';
       }else {
         //line has negative slope
         //goes above the slope
-        label.dominantBaseline = 'text-after-edge';
+        label.$meta.dominantBaseline = 'text-after-edge';
       }
     }
   }

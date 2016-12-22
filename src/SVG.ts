@@ -220,12 +220,12 @@ export default class SVGRenderer{
         //render labels
         if(!this._kgraphNodeToVisualObject.has(label)){
           var vo = new SnapSvgLabel(parentVO); 
-          vo.enter(label);
+          vo.enter(label, edge);
           this._kgraphNodeToVisualObject.set(label, vo);
         }else{
           //update label displayNode
           var labelDisplayNode = this._kgraphNodeToVisualObject.get(label);
-          labelDisplayNode.update(label, parentVO); 
+          labelDisplayNode.update(label, edge, parentVO); 
         }
       }, this);
     }
