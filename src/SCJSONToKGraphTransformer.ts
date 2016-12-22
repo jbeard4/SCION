@@ -5,7 +5,8 @@ import SVGRenderer from './SVG';
 import DefaultInteractiveBehavior from './interactivity';
 import EventEmitter = require('events');
 import _ = require('underscore');
-import {SCState, KGraph, KGraphNode, KGraphEdge, KGraphLabel} from './types';
+import {SCState} from './SCJSON';
+import {KGraphNode, KGraphEdge, KGraphLabel} from './KGraph';
 
 export default class SCJSONToKGraphTransformer extends EventEmitter{
 

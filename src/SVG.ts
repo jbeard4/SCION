@@ -3,7 +3,7 @@ import events from './events';
 import _ = require('underscore');
 import q = require('q');
 
-import {KGraph, KGraphNode, KGraphEdge, KGraphLabel} from './types';
+import {KGraph, KGraphNode, KGraphEdge, KGraphLabel} from './KGraph';
 import {VisualObject, SnapSvgCanvas, SnapSvgNode, SnapSvgEdge, SnapSvgLabel} from './snapsvg-visual-objects';
 
 const SVGNS = 'http://www.w3.org/2000/svg';
