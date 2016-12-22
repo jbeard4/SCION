@@ -56,7 +56,7 @@ module.exports = function(grunt) {
           livereload: true
         },
         express: {
-          files:  [ 'src/*.js', 'test-integration/**/*.{html,ts}' ],
+          files:  [ 'src/*.js', 'test-integration/**/*.{html,ts}', 'dist/schviz.js' ],
           tasks : [],
           options: {
             spawn: false
