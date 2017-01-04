@@ -16,7 +16,7 @@
     var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
         return typeof obj;
     } : function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
     };
 
     //   Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
@@ -32,6 +32,7 @@
     //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     //   See the License for the specific language governing permissions and
     //   limitations under the License.
+
 
     var extend = Object.assign || function (to, from) {
         Object.keys(from).forEach(function (k) {
@@ -557,30 +558,37 @@
         }
     };
 
-    var scxmlPrefixTransitionSelector = function () {
+    var RX_TRAILING_WILDCARD = /\.\*$/;
 
-        var eventNameReCache = {};
+    function isEventPrefixMatch(prefix, fullName) {
+        prefix = prefix.replace(RX_TRAILING_WILDCARD, '');
 
-        function eventNameToRe(name) {
-            return new RegExp("^" + name.replace(/\./g, "\\.") + "(\\.[0-9a-zA-Z]+)*$");
+        if (prefix === fullName) {
+            return true;
         }
 
-        function retrieveEventRe(name) {
-            return eventNameReCache[name] ? eventNameReCache[name] : eventNameReCache[name] = eventNameToRe(name);
+        if (prefix.length > fullName.length) {
+            return false;
         }
 
-        function nameMatch(t, event) {
-            return event && event.name && (t.events.indexOf("*") > -1 ? true : t.events.filter(function (tEvent) {
-                return retrieveEventRe(tEvent).test(event.name);
-            }).length);
+        if (fullName.charAt(prefix.length) !== '.') {
+            return false;
         }
 
-        return function (state, event, evaluator) {
-            return state.transitions.filter(function (t) {
-                return (!t.events || nameMatch(t, event)) && (!t.cond || evaluator(t.cond));
-            });
-        };
-    }();
+        return fullName.indexOf(prefix) === 0;
+    }
+
+    function isTransitionMatch(t, eventName) {
+        return t.events.some(function (tEvent) {
+            return tEvent === '*' || isEventPrefixMatch(tEvent, eventName);
+        });
+    }
+
+    function scxmlPrefixTransitionSelector(state, event, evaluator) {
+        return state.transitions.filter(function (t) {
+            return (!t.events || event && event.name && isTransitionMatch(t, event.name)) && (!t.cond || evaluator(t.cond));
+        });
+    }
 
     //model accessor functions
     var query = {
@@ -991,7 +999,7 @@
             //States exited are defined to be active states that are
             //descendants of the scope of each priority-enabled transition.
             //Here, we iterate through the transitions, and collect states
-            //that match this condition.
+            //that match this condition. 
             var transitionList = transitions.iter();
             for (var txIdx = 0, txLen = transitionList.length; txIdx < txLen; txIdx++) {
                 var transition = transitionList[txIdx];
@@ -1128,9 +1136,7 @@
                 states = statesAndParents.iter();
             }
 
-            var usePrefixMatchingAlgorithm = currentEvent && currentEvent.name && currentEvent.name.search(".");
-
-            var transitionSelector = usePrefixMatchingAlgorithm ? scxmlPrefixTransitionSelector : this.opts.transitionSelector;
+            var transitionSelector = this.opts.transitionSelector;
             var enabledTransitions = new this.opts.Set();
 
             var e = this._evaluateAction.bind(this, currentEvent);
@@ -1243,7 +1249,7 @@
               onSmallStepEnd: function(){}
             }
         */
-        //TODO: refactor this to be event emitter?
+        //TODO: refactor this to be event emitter? 
 
         /** @expose */
         registerListener: function registerListener(listener) {
