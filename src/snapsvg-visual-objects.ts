@@ -48,7 +48,8 @@ export class SnapSvgCanvas extends VisualObject {
 
   public measureTextDimensions (text){
     var txt = this._paper.text(0,0,text);
-    var bbox = txt.getBBox();
+    var el:SVGTextElement = <SVGTextElement> txt.node;
+    var bbox = el.getBBox();
     txt.remove(); 
     return bbox; 
   }
@@ -59,7 +60,10 @@ export class SnapSvgCanvas extends VisualObject {
       [ 0, 0, graphRoot.width, graphRoot.height ], 
       function(values){ this._paper.attr("viewBox", values.join(" ")); }.bind(this), 
       constants.ANIM_DURATION, 
-      mina.easein);
+      mina.easein,
+      function(){
+        console.profileEnd();
+      });
   }
 
   public clear(){

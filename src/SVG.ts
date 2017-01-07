@@ -72,6 +72,7 @@ export default class SVGRenderer{
   }
 
   public render(kgraph){
+    console.profile('render');
     this._kgraph = kgraph;
     var graphRoot = this._kgraph.root;
     this._kgraphNodeToVisualObject.set(graphRoot, this._canvas);
