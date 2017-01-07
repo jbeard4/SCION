@@ -29,6 +29,12 @@ export class SnapSvgCanvas extends VisualObject {
   constructor(parentNode : SVGElement){
     super(null);
     this._paper = Snap(parentNode);
+    var oldEl = this._paper.el;
+    this._paper.el = (name, attr) => {
+      var el = oldEl.call(this._paper, name, attr);
+      el.node.setAttributeNS(null, 'shape-rendering', 'optimizeSpeed');
+      return el;
+    };
     this._initDefs(this._paper.node);
   }
 
