@@ -1,8 +1,8 @@
-import constants from './constants';
 import $ = require('jquery');
 import q = require('q');
-import events from './events';
-import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, IKGraphNode} from './KGraph';
+import events from '../../events';
+import constants from '../../constants';
+import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, IKGraphNode} from '../../KGraph';
 
 const SVGNS = 'http://www.w3.org/2000/svg';
 

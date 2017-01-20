@@ -1,14 +1,16 @@
-import constants from './constants';
-import events from './events';
+import constants from '../../constants';
+import events from '../../events';
 import _ = require('underscore');
 import q = require('q');
 
-import {KGraph, KGraphNode, KGraphEdge, KGraphLabel} from './KGraph';
+import {KGraph, KGraphNode, KGraphEdge, KGraphLabel} from '../../KGraph';
 import {VisualObject, SnapSvgCanvas, SnapSvgNode, SnapSvgEdge, SnapSvgLabel} from './snapsvg-visual-objects';
+
+import {IKGraphRenderBackend} from '../IKGraphRenderBackend';
 
 const SVGNS = 'http://www.w3.org/2000/svg';
 
-export default class SVGRenderer{
+export default class SVGRenderer implements IKGraphRenderBackend {
 
   private _canvas: SnapSvgCanvas;
   private _kgraphNodeToVisualObject:Map<KGraphNode, VisualObject>;

@@ -4,7 +4,7 @@ import jsondiffpatch = require('jsondiffpatch');
 import _ = require('underscore');
 import SCJSONToKGraphTransformer from './SCJSONToKGraphTransformer';
 import IdGenerator from './IdGenerator';
-import SVGRenderer from './SVG';
+import SVGRenderer from './renderers/snap/index';
 import {SCState} from './SCJSON';
 import constants from './constants';
 
