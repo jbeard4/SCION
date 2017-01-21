@@ -1,11 +1,11 @@
 import constants from './constants';
 import events from './events';
 import IdGenerator from './IdGenerator';
-import SVGRenderer from './renderers/snap/index';
 import DefaultInteractiveBehavior from './interactivity';
 import EventEmitter = require('events');
 import _ = require('underscore');
 import {SCState} from './SCJSON';
+import IKGraphRenderBackend from './renderers/IKGraphRenderBackend';
 import {KGraphNode, KGraphEdge, KGraphLabel} from './KGraph';
 
 export default class SCJSONToKGraphTransformer extends EventEmitter{
@@ -13,9 +13,9 @@ export default class SCJSONToKGraphTransformer extends EventEmitter{
   _idGenerator : IdGenerator; 
   _stateToKlayNodeMap : Map<SCState,KGraphNode>;
   _behavior : DefaultInteractiveBehavior; 
-  _svgRenderer : SVGRenderer;
+  _svgRenderer : IKGraphRenderBackend;
 
-  constructor(idGenerator: IdGenerator, svgRenderer : SVGRenderer){
+  constructor(idGenerator: IdGenerator, svgRenderer : IKGraphRenderBackend){
     super();
     this._idGenerator = idGenerator;
     this._svgRenderer = svgRenderer;

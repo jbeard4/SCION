@@ -1,5 +1,5 @@
 import {KGraph, KGraphNode, KGraphEdge, KGraphLabel} from './KGraph';
-import SVGRenderer from './renderers/snap/index';
+import SVGRenderer from './renderers/react/index';
 import constants from './constants';
 import IdGenerator from './IdGenerator';
 import {SCState, SCTransition, SCGraph} from './SCJSON';

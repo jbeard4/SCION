@@ -4,7 +4,8 @@ import jsondiffpatch = require('jsondiffpatch');
 import _ = require('underscore');
 import SCJSONToKGraphTransformer from './SCJSONToKGraphTransformer';
 import IdGenerator from './IdGenerator';
-import SVGRenderer from './renderers/snap/index';
+import IKGraphRenderBackend from './renderers/IKGraphRenderBackend';
+
 import {SCState} from './SCJSON';
 import constants from './constants';
 
@@ -16,7 +17,7 @@ export class KGraph extends SCJSONToKGraphTransformer {
   _childToParentMap : Map<string, KGraphNode>;
   _options : any;   //TODO: enumerate these options
 
-  constructor(idGenerator: IdGenerator, svgRenderer : SVGRenderer, scjson: any){
+  constructor(idGenerator: IdGenerator, svgRenderer : IKGraphRenderBackend, scjson: any){
     super(idGenerator, svgRenderer);
 
     var newKlayToScjsonMap, newKgraphRoot; 

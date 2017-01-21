@@ -1,6 +1,6 @@
 import {KGraph, KGraphNode, KGraphEdge, KGraphLabel} from '../KGraph';
 
-export interface IKGraphRenderBackend {
+interface IKGraphRenderBackend {
   clear();
   highlightState(stateId:string);
   unhighlightState(stateId:string);
@@ -9,3 +9,5 @@ export interface IKGraphRenderBackend {
   measureTextDimensions(text:string);
   render(kgraph:KGraph);
 }
+
+export default IKGraphRenderBackend;
