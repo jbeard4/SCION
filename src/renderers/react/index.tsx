@@ -38,7 +38,9 @@ export default class SVGRenderer implements IKGraphRenderBackend {
   }
   public render(kgraph:KGraph){
     var root = <GraphRoot node={kgraph.root}/>;
+    var t1 = Date.now();
     var x = ReactDOM.render(root, this._parentNode);
+    console.log('Rendered in %sms',Date.now() - t1);
   }
 
 }
@@ -55,6 +57,9 @@ class GraphRoot extends React.Component<GraphNodeProps, {}> {
         <rect x={this.props.node.x} y={this.props.node.y} width={this.props.node.width} height={this.props.node.height}/>
         {this.props.node.children && this.props.node.children.map(child => (
           <GraphNode node={child} key={child.id} />
+        ))}
+        {this.props.node.edges && this.props.node.edges.map(edge => (
+          <GraphEdge edge={edge} key={edge.source + '->' + edge.target} />
         ))}
       </g>
     </svg>;
@@ -75,8 +80,150 @@ class GraphNode extends React.Component<GraphNodeProps, {}> {
       <text x={this.props.node.width / 2} y={isLeaf ? this.props.node.height / 2 : constants.LEAF_NODE_PADDING_H}>
         {this.props.node.$type === 'virtual' ? this.props.node.labels[0].text : this.props.node.id}
       </text>
+      {this.props.node.children && this.props.node.children.map(child => (
+        <GraphNode node={child} key={child.id} />
+      ))}
+      {this.props.node.edges && this.props.node.edges.map(edge => (
+        <GraphEdge edge={edge} key={edge.source + '->' + edge.target} />
+      ))}
     </g>;
+  }
+}
+
+
+interface GraphEdgeProps {
+  edge : KGraphEdge;
+}
+
+export class GraphEdge extends React.Component<GraphEdgeProps, {}> {
+
+  public render(){
+    return <path 
+      className={'link ' + (this.props.edge.$type || '')} 
+      id={this.props.edge.source + '->' + this.props.edge.target}
+      d={this._getDAtLength(this._edgeToPoints(this.props.edge), this._computeEdgeLength(this.props.edge))}
+      />
+  }
+
+  private _computeEdgeLength(edge){
+    var length = 0;
+    var lastPoint = edge.sourcePoint;
+    (edge.bendPoints || []).concat(edge.targetPoint).forEach(function(nextPoint){
+      length += this._computeDistance(nextPoint, lastPoint);
+      lastPoint = nextPoint;
+    }, this);
+    return length;
+  }
+
+  private _computeDistance(nextPoint, lastPoint){
+    return Math.sqrt(
+          Math.pow(nextPoint.y - lastPoint.y, 2) + 
+          Math.pow(nextPoint.x - lastPoint.x, 2));
+  }
+
+
+  private _getDAtLength(points, length){
+
+    var sourcePoint = points[0];
+    var d = 'M'+ sourcePoint.x + ' ' + sourcePoint.y,
+        cumulativeLength = 0;
+
+    for(var i = 1; i < points.length && cumulativeLength < length; i++){
+      var p1 = points[i], p2 = points[i-1];
+      var segmentDistance = this._computeDistance(p1, p2);
+      var newCumulativeLength = cumulativeLength + segmentDistance; 
+      var x = p1.x, y = p1.y;
+      if(newCumulativeLength > length){
+        var overflow = newCumulativeLength - length;
+        if(p1.x === p2.x){
+          if(p1.y > p2.y){
+            y -= overflow; 
+          }else{
+            y += overflow; 
+          }
+        } else if(p1.y === p2.y){
+          if(p1.x > p2.x){
+            x -= overflow; 
+          }else{
+            x += overflow; 
+          }
+        } else {
+          throw new Error('Not horizontal or vertical');
+        }
+      }
+
+      d += ' L' + x + ' ' + y;
+      cumulativeLength = newCumulativeLength;
+    }
+
+    return d;
+  }
+
+
+  private _edgeToPoints(edge){
+    return [edge.sourcePoint].
+            concat(edge.bendPoints || []).
+            concat([edge.targetPoint]);
+  }
+}
+/*
+
+export class SnapSvgLabel extends VisualObject {
+
+  public enter(label : KGraphLabel,  edge: KGraphEdge){
+    this._normalizeSelfLoopEdgeCoordinates(label, edge);
+    this.displayNode = this.parent.displayNode.text(label.x, -10, label.text).attr({opacity : 0});
+    if(label.$meta) this.displayNode.attr(label.$meta);
+    this.displayNode.addClass('edge-label');
+
+    //animate
+    this.displayNode.animate({opacity : 1}, constants.ANIM_DURATION, mina.easein);
+    this.displayNode.animate({y : label.y}, constants.ANIM_DURATION, mina.bounce);
+  }
+
+  public update(label : KGraphLabel, edge: KGraphEdge, newParent : VisualObject){
+    this._normalizeSelfLoopEdgeCoordinates(label, edge);
+    //reparent
+    //TODO: it would be better to move the label into its own layer so that we we can animate the reparenting
+    this.displayNode.remove(); 
+    this.parent = newParent;
+    this.parent.displayNode.append(this.displayNode);
+
+    if(label.$meta) this.displayNode.attr(label.$meta);
+
+    //update text, if it has changed
+    if(label.text !== this.displayNode.attr('text')){
+      this.displayNode.animate({'opacity' : 0}, constants.ANIM_DURATION/2, function(){
+        this.displayNode.attr({text : label.text});
+        this.displayNode.animate({'opacity' : 1}, constants.ANIM_DURATION/2);
+      }.bind(this));
+    }
+
+    //move
+    this.displayNode.animate({x: label.x, y : label.y}, constants.ANIM_DURATION);
+  }
+
+  private _normalizeSelfLoopEdgeCoordinates(label : KGraphLabel, edge : KGraphEdge){
+    //fix edge label coordinates. Workaround for issue OpenKieler/klayjs#8
+    if(edge.source === edge.target){
+      //debugger;
+      label.x = edge.bendPoints[1].x;
+      label.y = edge.bendPoints[1].y;
+      label.$meta = {};
+      label.$meta.textAnchor = 'end';
+
+      //does the self edge loop up or down?
+      if(edge.bendPoints[0].y < edge.bendPoints[1].y){
+        //line has positive slope
+        //goes below the slope
+        label.$meta.dominantBaseline = 'text-before-edge';
+      }else {
+        //line has negative slope
+        //goes above the slope
+        label.$meta.dominantBaseline = 'text-after-edge';
+      }
+    }
   }
 
 }
-
+*/
