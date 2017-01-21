@@ -1,5 +1,5 @@
 angular.module('schviz2.viz', []).component('schviz', {
-  template: '<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" ng-dblclick="$ctrl.openInNewWindow()">',
+  template: '<div style="width:100%;height:100%;">',
   controller: SCHVIZController,
   bindings: {
     modelUrl : '<',
@@ -12,7 +12,7 @@ angular.module('schviz2.viz', []).component('schviz', {
 
 function SCHVIZController($element, $scope, $http){
 
-  var schviz = new window.SCHVIZ($element.find('svg')[0]);
+  var schviz = new window.SCHVIZ($element.find('*')[0]);
 
   var $ctrl = this;
   $scope.$watch('$ctrl.layout',function(){
