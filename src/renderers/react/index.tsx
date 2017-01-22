@@ -111,7 +111,7 @@ class GraphNode extends React.Component<GraphNodeProps, {}> {
                         (isLeaf ? 'leaf' : 'compound') + ' ' + 
                         (this.props.node.$type ? 'type__' + this.props.node.$type : '')} 
             transform={'translate(' + (this.props.node.x || 0) + ',' + (this.props.node.y || 0) + ')'}>
-      <rect x="0" y="0" width={this.props.node.width} height={this.props.node.height} visibility={this.props.isRoot ? 'hidden' : 'visible'}/>
+      <rect x="0" y="0" width={this.props.node.width} height={this.props.node.height} visibility={this.props.isRoot ? 'hidden' : 'visible'} rx="2" ry="2"/>
       <text   
         x={this.props.node.width / 2} 
         y={isLeaf ? this.props.node.height / 2 : constants.LEAF_NODE_PADDING_H}  
@@ -230,7 +230,7 @@ class GraphLabel extends React.Component<GraphLabelProps, {}>  {
         textAnchor={this.props.label.$meta && this.props.label.$meta.textAnchor}
         dominantBaseline={this.props.label.$meta && this.props.label.$meta.dominantBaseline}
       >
-      this.props.label.text
+      {this.props.label.text}
     </text>;
   }
 
