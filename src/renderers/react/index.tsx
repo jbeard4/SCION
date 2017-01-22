@@ -40,7 +40,6 @@ export default class SVGRenderer implements IKGraphRenderBackend {
   }
   public render(kgraph:KGraph){
     var allEdges = this._getAllEdges(kgraph);
-    console.log('allEdges ', allEdges );
     var t1 = Date.now();
     var root = <GraphRoot node={kgraph.root} allEdges={allEdges} kgraph={kgraph} isRoot={true}/>;
     var x = ReactDOM.render(root, this._parentNode);
@@ -94,18 +93,18 @@ class GraphNode extends React.Component<GraphNodeProps, {}> {
   render(){
     var isLeaf = !(this.props.node.children && this.props.node.children.length);
 
-    let edgesOriginatingFromThisStateAndNotTargetingDescendant = [];
-
     let edgesOriginatingFromChildStateAndNotTargetingDescendant = 
       !this.props.node.children ? [] : 
       this.props.node.children.map((child) => 
-        this.props.allEdges.
-          filter(
-            (edge) => (child.id === edge.source)
-          )
+          this.props.allEdges.
+            filter( (edge) => (child.id === edge.source && !this.props.kgraph.isSourceAncestorOfTarget(edge.source, edge.target)))
         ).reduce( ((a,b) => a.concat(b) ), []);
 
-    let myEdges = edgesOriginatingFromThisStateAndNotTargetingDescendant.concat(
+    let edgesOriginatingFromThisStateAndTargetingDescendant = 
+        this.props.allEdges.
+          filter( (edge) => (this.props.node.id === edge.source && this.props.kgraph.isSourceAncestorOfTarget(edge.source, edge.target) ) )
+
+    let myEdges = edgesOriginatingFromThisStateAndTargetingDescendant.concat(
                       edgesOriginatingFromChildStateAndNotTargetingDescendant); 
 
     return <g id={this.props.node.id} 
