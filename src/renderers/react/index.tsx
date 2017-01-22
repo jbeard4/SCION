@@ -68,6 +68,19 @@ class GraphRoot extends React.Component<GraphNodeProps, {}> {
 
   render(){
     return <svg width="100%" height="100%" viewBox={'0 0 ' + this.props.node.width + ' ' + this.props.node.height}>
+      <defs>
+        { 
+          ['','Highlighted'].map( (s) => (
+            <radialGradient id={'finalStateGradient' + s} cx="2" cy="2" fx="2" fy="2" r="1" gradientUnits="userSpaceOnUse" key={s}>
+              <stop offset="0"></stop>
+              <stop offset="0.85576922"></stop>
+              <stop offset="0.85576922"></stop>
+              <stop offset="1"></stop>
+            </radialGradient>
+          ))
+        }
+        <marker id="end" viewBox="0 -5 10 10" refX="10" refY="0" markerWidth="3" markerHeight="5" orient="auto"><path d="M0,-5L10,0L0,5"></path></marker>
+      </defs>
       <GraphNode node={this.props.node} allEdges={this.props.allEdges} kgraph={this.props.kgraph} isRoot={true}/>
     </svg>;
   }
