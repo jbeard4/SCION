@@ -124,14 +124,21 @@ interface GraphEdgeProps {
   edge : KGraphEdge;
 }
 
-export class GraphEdge extends React.Component<GraphEdgeProps, {}> {
+class GraphEdge extends React.Component<GraphEdgeProps, {}> {
 
   public render(){
-    return <path 
-      className={'link ' + (this.props.edge.$type || '')} 
-      id={this.props.edge.source + '->' + this.props.edge.target}
-      d={this._getDAtLength(this._edgeToPoints(this.props.edge), this._computeEdgeLength(this.props.edge))}
-      />
+    return <g>
+      <path 
+        className={'link ' + (this.props.edge.$type || '')} 
+        id={this.props.edge.source + '->' + this.props.edge.target}
+        d={this._getDAtLength(this._edgeToPoints(this.props.edge), this._computeEdgeLength(this.props.edge))}
+        />
+      {
+        this.props.edge.labels && this.props.edge.labels.map((label, i) => (
+          <GraphLabel edge={this.props.edge} key={i} label={label}/>
+        ))
+      }
+    </g>;
   }
 
   private _computeEdgeLength(edge){
@@ -195,41 +202,23 @@ export class GraphEdge extends React.Component<GraphEdgeProps, {}> {
             concat([edge.targetPoint]);
   }
 }
-/*
 
-export class SnapSvgLabel extends VisualObject {
+interface GraphLabelProps {
+  edge : KGraphEdge; 
+  label : KGraphLabel;
+}
 
-  public enter(label : KGraphLabel,  edge: KGraphEdge){
-    this._normalizeSelfLoopEdgeCoordinates(label, edge);
-    this.displayNode = this.parent.displayNode.text(label.x, -10, label.text).attr({opacity : 0});
-    if(label.$meta) this.displayNode.attr(label.$meta);
-    this.displayNode.addClass('edge-label');
+class GraphLabel extends React.Component<GraphLabelProps, {}>  {
 
-    //animate
-    this.displayNode.animate({opacity : 1}, constants.ANIM_DURATION, mina.easein);
-    this.displayNode.animate({y : label.y}, constants.ANIM_DURATION, mina.bounce);
-  }
-
-  public update(label : KGraphLabel, edge: KGraphEdge, newParent : VisualObject){
-    this._normalizeSelfLoopEdgeCoordinates(label, edge);
-    //reparent
-    //TODO: it would be better to move the label into its own layer so that we we can animate the reparenting
-    this.displayNode.remove(); 
-    this.parent = newParent;
-    this.parent.displayNode.append(this.displayNode);
-
-    if(label.$meta) this.displayNode.attr(label.$meta);
-
-    //update text, if it has changed
-    if(label.text !== this.displayNode.attr('text')){
-      this.displayNode.animate({'opacity' : 0}, constants.ANIM_DURATION/2, function(){
-        this.displayNode.attr({text : label.text});
-        this.displayNode.animate({'opacity' : 1}, constants.ANIM_DURATION/2);
-      }.bind(this));
-    }
-
-    //move
-    this.displayNode.animate({x: label.x, y : label.y}, constants.ANIM_DURATION);
+  public render(){
+    this._normalizeSelfLoopEdgeCoordinates(this.props.label, this.props.edge);
+    
+    return <text className="edge-label" x={this.props.label.x} y={this.props.label.y}
+        textAnchor={this.props.label.$meta && this.props.label.$meta.textAnchor}
+        dominantBaseline={this.props.label.$meta && this.props.label.$meta.dominantBaseline}
+      >
+      this.props.label.text
+    </text>;
   }
 
   private _normalizeSelfLoopEdgeCoordinates(label : KGraphLabel, edge : KGraphEdge){
@@ -255,4 +244,3 @@ export class SnapSvgLabel extends VisualObject {
   }
 
 }
-*/
