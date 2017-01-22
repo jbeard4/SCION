@@ -37,31 +37,38 @@ export default class SVGRenderer implements IKGraphRenderBackend {
     return bbox; 
   }
   public render(kgraph:KGraph){
-    var root = <GraphRoot node={kgraph.root}/>;
+    var allEdges = this._getAllEdges(kgraph);
+    console.log('allEdges ', allEdges );
     var t1 = Date.now();
+    var root = <GraphRoot node={kgraph.root} allEdges={allEdges} kgraph={kgraph} isRoot={true}/>;
     var x = ReactDOM.render(root, this._parentNode);
     console.log('Rendered in %sms',Date.now() - t1);
+  }
+
+  private _getAllEdges(kgraph:KGraph){
+    let allEdges = [];
+    function walk(s:KGraphNode){
+      if(s.edges) s.edges.forEach((edge) => allEdges.push(edge));
+      if(s.children) s.children.forEach(walk);
+    }
+    walk(kgraph.root);
+    return allEdges;
   }
 
 }
 
 interface GraphNodeProps {
-  node : KGraphNode
+  node : KGraphNode;
+  allEdges : KGraphEdge[];
+  kgraph : KGraph;
+  isRoot : boolean;
 }
 
 class GraphRoot extends React.Component<GraphNodeProps, {}> {
 
   render(){
     return <svg width="100%" height="100%" viewBox={'0 0 ' + this.props.node.width + ' ' + this.props.node.height}>
-      <g className="node compound">
-        <rect x={this.props.node.x} y={this.props.node.y} width={this.props.node.width} height={this.props.node.height}/>
-        {this.props.node.children && this.props.node.children.map(child => (
-          <GraphNode node={child} key={child.id} />
-        ))}
-        {this.props.node.edges && this.props.node.edges.map(edge => (
-          <GraphEdge edge={edge} key={edge.source + '->' + edge.target} />
-        ))}
-      </g>
+      <GraphNode node={this.props.node} allEdges={this.props.allEdges} kgraph={this.props.kgraph} isRoot={true}/>
     </svg>;
   }
 
@@ -71,21 +78,43 @@ class GraphNode extends React.Component<GraphNodeProps, {}> {
 
   render(){
     var isLeaf = !(this.props.node.children && this.props.node.children.length);
+
+    let edgesOriginatingFromThisStateAndNotTargetingDescendant = [];
+
+    let edgesOriginatingFromChildStateAndNotTargetingDescendant = 
+      !this.props.node.children ? [] : 
+      this.props.node.children.map((child) => 
+        this.props.allEdges.
+          filter(
+            (edge) => (child.id === edge.source)
+          )
+        ).reduce( ((a,b) => a.concat(b) ), []);
+
+    let myEdges = edgesOriginatingFromThisStateAndNotTargetingDescendant.concat(
+                      edgesOriginatingFromChildStateAndNotTargetingDescendant); 
+
     return <g id={this.props.node.id} 
             className={'node ' + 
                         (isLeaf ? 'leaf' : 'compound') + ' ' + 
                         (this.props.node.$type ? 'type__' + this.props.node.$type : '')} 
-            transform={'translate(' + this.props.node.x + ',' + this.props.node.y + ')'}>
-      <rect x="0" y="0" width={this.props.node.width} height={this.props.node.height}/>
-      <text x={this.props.node.width / 2} y={isLeaf ? this.props.node.height / 2 : constants.LEAF_NODE_PADDING_H}>
+            transform={'translate(' + (this.props.node.x || 0) + ',' + (this.props.node.y || 0) + ')'}>
+      <rect x="0" y="0" width={this.props.node.width} height={this.props.node.height} visibility={this.props.isRoot ? 'hidden' : 'visible'}/>
+      <text   
+        x={this.props.node.width / 2} 
+        y={isLeaf ? this.props.node.height / 2 : constants.LEAF_NODE_PADDING_H}  
+        visibility={this.props.isRoot ? 'hidden' : 'visible'}>
         {this.props.node.$type === 'virtual' ? this.props.node.labels[0].text : this.props.node.id}
       </text>
-      {this.props.node.children && this.props.node.children.map(child => (
-        <GraphNode node={child} key={child.id} />
-      ))}
-      {this.props.node.edges && this.props.node.edges.map(edge => (
-        <GraphEdge edge={edge} key={edge.source + '->' + edge.target} />
-      ))}
+      {
+        this.props.node.children && this.props.node.children.map(child => (
+          <GraphNode node={child} key={child.id} allEdges={this.props.allEdges} kgraph={this.props.kgraph} isRoot={false}/>
+        ))
+      }
+      {
+        myEdges.map((edge) => (
+          <GraphEdge edge={edge} key={edge.source + '->' + edge.target} />
+        ))
+      }
     </g>;
   }
 }
