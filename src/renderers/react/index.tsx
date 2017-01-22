@@ -29,11 +29,13 @@ export default class SVGRenderer implements IKGraphRenderBackend {
   public highlightTransition(sourceStateId:string, targetStateIds:string[]){
   }
   public measureTextDimensions(text:string){
+    var svg = document.createElementNS(SVGNS,'svg');
     var txt = document.createElementNS(SVGNS,'text');
     txt.textContent = text; 
-    this._parentNode.appendChild(txt);
+    this._parentNode.appendChild(svg);
+    svg.appendChild(txt);
     var bbox = txt.getBBox();
-    this._parentNode.removeChild(txt);
+    this._parentNode.removeChild(svg);
     return bbox; 
   }
   public render(kgraph:KGraph){
