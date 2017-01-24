@@ -1,3 +1,4 @@
+/// <reference path="./intrinsics.d.ts" />…
 import constants from '../../constants';
 import events from '../../events';
 import _ = require('underscore');
@@ -112,12 +113,33 @@ class GraphNode extends React.Component<GraphNodeProps, {}> {
                         (isLeaf ? 'leaf' : 'compound') + ' ' + 
                         (this.props.node.$type ? 'type__' + this.props.node.$type : '')} 
             transform={'translate(' + (this.props.node.x || 0) + ',' + (this.props.node.y || 0) + ')'}>
-      <rect x="0" y="0" width={this.props.node.width} height={this.props.node.height} visibility={this.props.isRoot ? 'hidden' : 'visible'} rx="2" ry="2"/>
+      <rect visibility={this.props.isRoot ? 'hidden' : 'visible'} rx="2" ry="2">
+        <animate attributeName="x" attributeType="XML"
+                 begin="0s" fill="freeze" 
+                 dur={constants.ANIM_DURATION + 'ms'} 
+                 from={this.props.node.width / 2} to={0} />
+        <animate attributeName="y" attributeType="XML"
+                 begin="0s" fill="freeze" 
+                 dur={constants.ANIM_DURATION + 'ms'} 
+                 from={this.props.node.height / 2} to={0} />
+        <animate attributeName="width" attributeType="XML"
+                 begin="0s" fill="freeze" 
+                 dur={constants.ANIM_DURATION + 'ms'} 
+                 from={0} to={this.props.node.width} />
+        <animate attributeName="height" attributeType="XML"
+                 begin="0s" fill="freeze" 
+                 dur={constants.ANIM_DURATION + 'ms'} 
+                 from={0} to={this.props.node.height} />
+      </rect>
       <text   
         x={this.props.node.width / 2} 
         y={isLeaf ? this.props.node.height / 2 : constants.LEAF_NODE_PADDING_H}  
         visibility={this.props.isRoot ? 'hidden' : 'visible'}>
         {this.props.node.$type === 'virtual' ? this.props.node.labels[0].text : this.props.node.id}
+        <animate attributeName="opacity" attributeType="CSS"
+                 begin="0s" fill="freeze" 
+                 dur={constants.ANIM_DURATION + 'ms'} 
+                 from={0} to={1} />
       </text>
       {
         this.props.node.children && this.props.node.children.map(child => (
@@ -141,12 +163,20 @@ interface GraphEdgeProps {
 class GraphEdge extends React.Component<GraphEdgeProps, {}> {
 
   public render(){
+    var edgeLength = this._computeEdgeLength(this.props.edge);
+    //TODO: animate hyperlink
     return <g>
       <path 
         className={'link ' + (this.props.edge.$type || '')} 
         id={this.props.edge.source + '->' + this.props.edge.target}
-        d={this._getDAtLength(this._edgeToPoints(this.props.edge), this._computeEdgeLength(this.props.edge))}
-        />
+        d={this._getDAtLength(this._edgeToPoints(this.props.edge), edgeLength)}
+        strokeDasharray={edgeLength + ' ' + edgeLength}
+        >
+        <animate attributeName="stroke-dashoffset" attributeType="XML"
+                 begin="0s" fill="freeze" 
+                 dur={constants.ANIM_DURATION + 'ms'} 
+                 from={edgeLength} to="0" />
+      </path>
       {
         this.props.edge.labels && this.props.edge.labels.map((label, i) => (
           <GraphLabel edge={this.props.edge} key={i} label={label}/>
