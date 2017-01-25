@@ -148,7 +148,7 @@ class GraphNode extends React.Component<GraphNodeProps, {}> {
       }
       {
         myEdges.map((edge) => (
-          <GraphEdge edge={edge} key={edge.source + '->' + edge.target} />
+          <GraphEdge edge={edge} key={edge.source + '_' + edge.target} />
         ))
       }
     </g>;
@@ -162,20 +162,67 @@ interface GraphEdgeProps {
 
 class GraphEdge extends React.Component<GraphEdgeProps, {}> {
 
+  private _toPointStr(point){
+    return point.x.toString() + ',' + point.y.toString();
+  }
+
+  private _edgeToD({ sourcePoint , targetPoints, fillLength }){
+    var s = 'M' + this._toPointStr(sourcePoint) + ' '  + (targetPoints.map( (point) => {
+              return 'L' + this._toPointStr(point);
+            })).join(' ');
+    for(var i=0; i <  fillLength - targetPoints.length; i++){
+      s += 'L' + this._toPointStr(targetPoints[targetPoints.length - 1])
+    }
+    return s;
+  }
+
+  private _toAnimationSegments(edge){
+    //start point
+    var allSegments = [];
+    var targetPoints = (edge.bendPoints || []).concat(edge.targetPoint);
+    allSegments.push(this._edgeToD({
+      sourcePoint: edge.sourcePoint,
+      targetPoints: [edge.sourcePoint],
+      fillLength : targetPoints.length 
+    }));
+    for(var i = 0; i < targetPoints.length; i++){
+      allSegments.push(this._edgeToD({
+        sourcePoint: edge.sourcePoint,
+        targetPoints: targetPoints.slice(0,i+1),
+        fillLength : targetPoints.length 
+      }));
+    }
+    return allSegments;
+  }
+
   public render(){
-    var edgeLength = this._computeEdgeLength(this.props.edge);
+    var edgeId = this.props.edge.source + '_' + this.props.edge.target;
+    var animationSegments = this._toAnimationSegments(this.props.edge);
+    var animationSegmentPairs = (function(){
+      var toReturn = [];
+      for(var i = 1; i < animationSegments.length; i++){
+        toReturn.push([animationSegments[i-1],animationSegments[i]]);
+      }
+      return toReturn;
+    })();
+    var animDurSlice = constants.ANIM_DURATION/animationSegmentPairs.length;
     //TODO: animate hyperlink
     return <g>
       <path 
         className={'link ' + (this.props.edge.$type || '')} 
-        id={this.props.edge.source + '->' + this.props.edge.target}
-        d={this._getDAtLength(this._edgeToPoints(this.props.edge), edgeLength)}
-        strokeDasharray={edgeLength + ' ' + edgeLength}
+        id={edgeId}
         >
-        <animate attributeName="stroke-dashoffset" attributeType="XML"
-                 begin="0s" fill="freeze" 
-                 dur={constants.ANIM_DURATION + 'ms'} 
-                 from={edgeLength} to="0" />
+          {
+            animationSegmentPairs.map( ([fromD, toD], i) => (
+                <animate attributeName="d" attributeType="XML" fill="freeze" 
+                         key={i}
+                         id={edgeId + i.toString()}
+                         begin={i === 0 ? '0ms' : edgeId  + (i-1).toString() +'.end'} 
+                         dur={animDurSlice + 'ms'} 
+                         from={fromD} 
+                         to={toD} />
+            ))
+          }
       </path>
       {
         this.props.edge.labels && this.props.edge.labels.map((label, i) => (
