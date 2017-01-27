@@ -264,6 +264,7 @@ export class KGraph extends SCJSONToKGraphTransformer {
                   $hyperlink : edge.id,
                   labels : []
                 };
+                console.log('innerEdge.$hyperlink', innerEdge.$hyperlink);
                 grandparentNode.edges.push(innerEdge);
                 return innerEdge;
               }, this);

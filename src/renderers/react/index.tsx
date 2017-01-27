@@ -53,7 +53,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
     });
   }
   private _beginAnimation(){
-    Array.from(document.querySelectorAll('path > animate:first-child, text > animate, rect > animate')).forEach( 
+    Array.from(document.querySelectorAll('path > animate:first-child:not(.firstSegmentOfHyperlink), text > animate, rect > animate')).forEach( 
       (e:SVGAnimationElement) => e.beginElement()
     );
   }
@@ -212,7 +212,7 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
   }
 
   public render(){
-    var edgeId = this.props.edge.source + '_' + this.props.edge.target;
+    var edgeId = this.props.edge.id;
     var animationSegments = this._toAnimationSegments(this.props.edge);
     var animationSegmentPairs = (function(){
       var toReturn = [];
@@ -222,7 +222,11 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
       return toReturn;
     })();
     var animDurSlice = constants.ANIM_DURATION/animationSegmentPairs.length;
-    //TODO: animate hyperlink
+
+    var firstSegmentOfHyperlink = (function(i){ 
+      return this.props.edge.$hyperlink && i === 0;
+    }.bind(this));
+
     return <g>
       <path 
         className={'link ' + (this.props.edge.$type || '')} 
@@ -232,8 +236,17 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
             animationSegmentPairs.map( ([fromD, toD], i) => (
                 <animate attributeName="d" attributeType="XML" fill="freeze" 
                          key={i}
-                         id={edgeId + i.toString()}
-                         begin={i === 0 ? 'indefinite' : edgeId  + (i-1).toString() +'.end'} 
+                         id={ i === (animationSegmentPairs.length - 1) ? edgeId + '_last' : edgeId + i.toString() }
+                         begin={
+                             firstSegmentOfHyperlink(i) ? 
+                              this.props.edge.$hyperlink + '_last' + '.end' : 
+                              (
+                                i === 0 ? 
+                                  'indefinite' : 
+                                  edgeId  + (i-1).toString() +'.end'
+                              )
+                         } 
+                         className={firstSegmentOfHyperlink(i) ? 'firstSegmentOfHyperlink' : ''}
                          dur={animDurSlice + 'ms'} 
                          from={fromD} 
                          to={toD} />
