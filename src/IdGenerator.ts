@@ -5,6 +5,6 @@ export default class IdGenerator{
   }
 
   public generateId():string{
-    return '$generated-' + Number(this._count++).toString();
+    return '$generated_' + Number(this._count++).toString();
   }
 }
