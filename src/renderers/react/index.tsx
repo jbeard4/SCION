@@ -53,7 +53,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
     });
   }
   private _beginAnimation(){
-    Array.from(document.querySelectorAll('path > animate:first-child:not(.firstSegmentOfHyperlink), text > animate, rect > animate')).forEach( 
+    Array.from(document.querySelectorAll('path > animate.firstPathSegment, text > animate, rect > animate')).forEach( 
       (e:SVGAnimationElement) => e.beginElement()
     );
   }
@@ -92,10 +92,32 @@ class GraphRoot extends React.Component<GraphNodeProps, {}> {
             </radialGradient>
           ))
         }
-        <marker id="end" viewBox="0 -5 10 10" refX="10" refY="0" markerWidth="3" markerHeight="5" orient="auto"><path d="M0,-5L10,0L0,5"></path></marker>
+        {
+          this._markers()
+        }
       </defs>
       <GraphNode node={this.props.node} allEdges={this.props.allEdges} kgraph={this.props.kgraph} isRoot={true}/>
     </svg>;
+  }
+
+  private _markers(){
+    var toReturn = [];
+    var ids = {
+      'right' : 10,
+      'down' : 10,
+      'left' : 0,
+      'up' : 0
+    };
+    
+    var id;
+    var i = 0;
+    for(id in ids){
+      toReturn.push(
+        <marker key={id} id={id} viewBox="0 -5 10 10" refX="10" refY="0" markerWidth="3" markerHeight="5" orient={90 * i}><path d="M0,-5L10,0L0,5"></path></marker>
+      );
+      i++;
+    }
+    return toReturn;
   }
 
 }
@@ -227,11 +249,43 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
       return this.props.edge.$hyperlink && i === 0;
     }.bind(this));
 
+    var points = this._edgeToPoints(this.props.edge);
+
     return <g>
       <path 
         className={'link ' + (this.props.edge.$type || '')} 
         id={edgeId}
         >
+          <animate attributeName="marker-end" attributeType="CSS" fill="freeze" 
+                  className="firstPathSegment"
+                  dur={constants.ANIM_DURATION + 'ms'}
+                  values={
+                    (function(){
+                      var arr = [];
+                      var from, to;
+                      function add(type){
+                        arr.push(`url(#${type})`); 
+                      }
+                      for(var i = 1; i < points.length; i++){
+                        [from, to] = points.slice(i-1, i+1);
+                        if(!to) continue;
+                        if(from.x <= to.x && from.y == to.y){
+                          add('right');
+                        } else if(from.x <= to.x && from.y == to.y){
+                          add('left');
+                        } else if(from.x == to.x && from.y <= to.y){
+                          add('down');
+                        } else if(from.x == to.x && from.y >= to.y){
+                          add('up');
+                        } else {
+                          add('right');
+                        }
+                      }
+                      if(this.props.edge.$type === 'hyperlink') arr.push('none');
+                      return arr.join(';');
+                    }.bind(this)())
+                  }
+                  begin="indefinite" />
           {
             animationSegmentPairs.map( ([fromD, toD], i) => (
                 <animate attributeName="d" attributeType="XML" fill="freeze" 
@@ -246,8 +300,8 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
                                   edgeId  + (i-1).toString() +'.end'
                               )
                          } 
-                         className={firstSegmentOfHyperlink(i) ? 'firstSegmentOfHyperlink' : ''}
-                         dur={animDurSlice + 'ms'} 
+                         className={ i === 0 && !firstSegmentOfHyperlink(i) ? 'firstPathSegment' : '' }
+                         dur={animDurSlice + 'ms'}
                          from={fromD} 
                          to={toD} />
             ))

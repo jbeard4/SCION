@@ -133,7 +133,6 @@ g.compound.type__parallel > g.node > rect {
   stroke: black;
   stroke-opacity: .6;
   fill: none;
-  marker-end : url(#end);
   transition : stroke .25s ease-out;
 }
 
