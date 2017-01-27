@@ -53,7 +53,8 @@ export default class SVGRenderer implements IKGraphRenderBackend {
     });
   }
   private _beginAnimation(){
-    Array.from(document.querySelectorAll('path > animate.firstPathSegment, text > animate, rect > animate')).forEach( 
+    var arr = Array.from(document.querySelectorAll('path > animate.firstPathSegment, text > animate, rect > animate'));
+    arr.forEach( 
       (e:SVGAnimationElement) => e.beginElement()
     );
   }
@@ -257,7 +258,7 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
         id={edgeId}
         >
           <animate attributeName="marker-end" attributeType="CSS" fill="freeze" 
-                  className="firstPathSegment"
+                  className={this.props.edge.$hyperlink ? '' : 'firstPathSegment'}
                   dur={constants.ANIM_DURATION + 'ms'}
                   values={
                     (function(){
@@ -285,7 +286,12 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
                       return arr.join(';');
                     }.bind(this)())
                   }
-                  begin="indefinite" />
+                  begin={
+                    this.props.edge.$hyperlink ? 
+                      this.props.edge.$hyperlink + '_last' + '.end' : 
+                      'indefinite' 
+                  }
+                  />
           {
             animationSegmentPairs.map( ([fromD, toD], i) => (
                 <animate attributeName="d" attributeType="XML" fill="freeze" 
