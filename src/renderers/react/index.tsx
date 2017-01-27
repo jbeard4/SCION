@@ -1,4 +1,6 @@
 /// <reference path="./intrinsics.d.ts" />…
+/// <reference path="../../smil.d.ts" />…
+
 import constants from '../../constants';
 import events from '../../events';
 import _ = require('underscore');
@@ -40,11 +42,20 @@ export default class SVGRenderer implements IKGraphRenderBackend {
     return bbox; 
   }
   public render(kgraph:KGraph){
+    console.log('render',kgraph);
     var allEdges = this._getAllEdges(kgraph);
     var t1 = Date.now();
     var root = <GraphRoot node={kgraph.root} allEdges={allEdges} kgraph={kgraph} isRoot={true}/>;
-    var x = ReactDOM.render(root, this._parentNode);
-    console.log('Rendered in %sms',Date.now() - t1);
+    var x = ReactDOM.render(root, this._parentNode, () => {
+      console.log('Rendered in %sms',Date.now() - t1);
+      //this._beginAnimation();
+      setTimeout(this._beginAnimation.bind(this), 100);
+    });
+  }
+  private _beginAnimation(){
+    Array.from(document.querySelectorAll('path > animate:first-child, text > animate, rect > animate')).forEach( 
+      (e:SVGAnimationElement) => e.beginElement()
+    );
   }
 
   private _getAllEdges(kgraph:KGraph){
@@ -115,19 +126,23 @@ class GraphNode extends React.Component<GraphNodeProps, {}> {
             transform={'translate(' + (this.props.node.x || 0) + ',' + (this.props.node.y || 0) + ')'}>
       <rect visibility={this.props.isRoot ? 'hidden' : 'visible'} rx="2" ry="2">
         <animate attributeName="x" attributeType="XML"
-                 begin="0s" fill="freeze" 
+                 fill="freeze" 
+                 begin="indefinite"
                  dur={constants.ANIM_DURATION + 'ms'} 
                  from={this.props.node.width / 2} to={0} />
         <animate attributeName="y" attributeType="XML"
-                 begin="0s" fill="freeze" 
+                 fill="freeze" 
+                 begin="indefinite"
                  dur={constants.ANIM_DURATION + 'ms'} 
                  from={this.props.node.height / 2} to={0} />
         <animate attributeName="width" attributeType="XML"
-                 begin="0s" fill="freeze" 
+                 fill="freeze" 
+                 begin="indefinite"
                  dur={constants.ANIM_DURATION + 'ms'} 
                  from={0} to={this.props.node.width} />
         <animate attributeName="height" attributeType="XML"
-                 begin="0s" fill="freeze" 
+                 fill="freeze" 
+                 begin="indefinite"
                  dur={constants.ANIM_DURATION + 'ms'} 
                  from={0} to={this.props.node.height} />
       </rect>
@@ -137,7 +152,8 @@ class GraphNode extends React.Component<GraphNodeProps, {}> {
         visibility={this.props.isRoot ? 'hidden' : 'visible'}>
         {this.props.node.$type === 'virtual' ? this.props.node.labels[0].text : this.props.node.id}
         <animate attributeName="opacity" attributeType="CSS"
-                 begin="0s" fill="freeze" 
+                 fill="freeze" 
+                 begin="indefinite"
                  dur={constants.ANIM_DURATION + 'ms'} 
                  from={0} to={1} />
       </text>
@@ -217,7 +233,7 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
                 <animate attributeName="d" attributeType="XML" fill="freeze" 
                          key={i}
                          id={edgeId + i.toString()}
-                         begin={i === 0 ? '0ms' : edgeId  + (i-1).toString() +'.end'} 
+                         begin={i === 0 ? 'indefinite' : edgeId  + (i-1).toString() +'.end'} 
                          dur={animDurSlice + 'ms'} 
                          from={fromD} 
                          to={toD} />
