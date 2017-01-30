@@ -260,6 +260,16 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
           <animate attributeName="marker-end" attributeType="CSS" fill="freeze" 
                   className={this.props.edge.$hyperlink ? '' : 'firstPathSegment'}
                   dur={constants.ANIM_DURATION + 'ms'}
+                  keyTimes={
+                    (function(){
+                      var arr = [];
+                      for(var i = 0; i < points.length-1; i++){
+                        arr.push(i/(points.length-1));
+                      }
+                      arr.push(1);
+                      return arr.join(';');
+                    }.bind(this)())
+                  }
                   values={
                     (function(){
                       var arr = [];
@@ -282,7 +292,11 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
                           add('right');
                         }
                       }
-                      if(this.props.edge.$type === 'hyperlink') arr.push('none');
+                      if(this.props.edge.$type === 'hyperlink'){ 
+                        arr.push('none');
+                      } else {
+                        arr.push(arr[arr.length - 1]);
+                      }
                       return arr.join(';');
                     }.bind(this)())
                   }
