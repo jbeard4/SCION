@@ -1,6 +1,6 @@
 import {KGraph, KGraphNode, KGraphEdge, KGraphLabel} from '../KGraph';
 
-interface IKGraphRenderBackend {
+export interface IKGraphRenderBackend {
   clear();
   highlightState(stateId:string);
   unhighlightState(stateId:string);
@@ -10,4 +10,14 @@ interface IKGraphRenderBackend {
   render(kgraph:KGraph);
 }
 
-export default IKGraphRenderBackend;
+export interface LayoutOptions {
+  algorithm: string;
+  spacing: number;
+  borderSpacing? : number;
+  labelSpacing? : number;
+  layoutHierarchy: boolean;
+  intCoordinates: boolean;
+  edgeRouting: string;
+  cycleBreaking?: string;
+  nodeLayering?: string;
+}

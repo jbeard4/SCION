@@ -5,7 +5,7 @@ import DefaultInteractiveBehavior from './interactivity';
 import EventEmitter = require('events');
 import _ = require('underscore');
 import {SCState} from './SCJSON';
-import IKGraphRenderBackend from './renderers/IKGraphRenderBackend';
+import {IKGraphRenderBackend} from './renderers/IKGraphRenderBackend';
 import {KGraphNode, KGraphEdge, KGraphLabel} from './KGraph';
 
 export default class SCJSONToKGraphTransformer extends EventEmitter{

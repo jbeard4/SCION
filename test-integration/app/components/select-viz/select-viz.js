@@ -11,7 +11,7 @@ angular.module('schviz2.components.selectViz', ['schviz2.service', 'schviz2.cons
 function SelectVizController(klayOptions, allTests, $scope, $window){
 
   var $ctrl = this;
-  $ctrl.layout = klayOptions.right;
+  $ctrl.layout = 'right';
   $ctrl.klayOptions = klayOptions;
   allTests.then(function(tests){
       $ctrl.allTests = tests;

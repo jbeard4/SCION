@@ -6,7 +6,7 @@ import q = require('q');
 import {KGraph, KGraphNode, KGraphEdge, KGraphLabel} from '../../KGraph';
 import {VisualObject, SnapSvgCanvas, SnapSvgNode, SnapSvgEdge, SnapSvgLabel} from './snapsvg-visual-objects';
 
-import IKGraphRenderBackend from '../IKGraphRenderBackend';
+import {IKGraphRenderBackend} from '../IKGraphRenderBackend';
 
 const SVGNS = 'http://www.w3.org/2000/svg';
 

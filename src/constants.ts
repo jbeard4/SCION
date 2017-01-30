@@ -1,3 +1,5 @@
+import {LayoutOptions} from './renderers/IKGraphRenderBackend';
+
 export default {
   STATE_TYPES : ['history','initial','parallel','final','virtual'],
   HIGHLIGHT_ANIM_DURATION : 250,
@@ -7,7 +9,7 @@ export default {
   INITIAL_RADIUS : 4,
   finalStateGradientId : 'finalStateGradient',
   layouts : {
-    right: {
+    right: (<LayoutOptions>{
       algorithm: "de.cau.cs.kieler.klay.layered",
       spacing: 10,
       borderSpacing : 10,
@@ -15,8 +17,8 @@ export default {
       layoutHierarchy: true,
       intCoordinates: true,
       edgeRouting: "ORTHOGONAL"
-    },
-    auto: {
+    }),
+    auto: (<LayoutOptions>{
       algorithm: "de.cau.cs.kieler.klay.layered",
       spacing: 10,
       borderSpacing : 10,
@@ -24,8 +26,8 @@ export default {
       intCoordinates: true,
       direction: "DOWN",
       edgeRouting: "ORTHOGONAL"
-    },
-    layer: {
+    }),
+    layer: (<LayoutOptions>{
       algorithm: "de.cau.cs.kieler.klay.layered",
       spacing: 10,
       layoutHierarchy: true,
@@ -34,7 +36,7 @@ export default {
       edgeRouting: "ORTHOGONAL",
       cycleBreaking: "INTERACTIVE",
       nodeLayering: "INTERACTIVE"
-    }/*,
+    })/*,
     order: {
       algorithm: "de.cau.cs.kieler.klay.layered",
       spacing: 10,

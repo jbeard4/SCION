@@ -10,9 +10,13 @@ import * as React from "react";
 
 import {KGraph, KGraphNode, KGraphEdge, KGraphLabel} from '../../KGraph';
 
-import IKGraphRenderBackend from '../IKGraphRenderBackend';
+import {IKGraphRenderBackend, LayoutOptions} from '../IKGraphRenderBackend';
 
 const SVGNS = 'http://www.w3.org/2000/svg';
+const STROKE_WIDTH = 1;
+const ARROW_WIDTH = 3;
+const ARROW_HEIGHT = 5;
+const HYPERLINK_TYPE = 'hyperlink';
 
 export default class SVGRenderer implements IKGraphRenderBackend {
 
@@ -81,7 +85,7 @@ interface GraphNodeProps {
 class GraphRoot extends React.Component<GraphNodeProps, {}> {
 
   render(){
-    return <svg width="100%" height="100%" viewBox={'0 0 ' + this.props.node.width + ' ' + this.props.node.height}>
+    return <svg width="100%" height="100%" viewBox={[0,0,this.props.node.width,this.props.node.height].join(' ')}>
       <defs>
         { 
           ['','Highlighted'].map( (s) => (
@@ -97,7 +101,7 @@ class GraphRoot extends React.Component<GraphNodeProps, {}> {
           this._markers()
         }
       </defs>
-      <GraphNode node={this.props.node} allEdges={this.props.allEdges} kgraph={this.props.kgraph} isRoot={true}/>
+      <GraphNode node={this.props.node} allEdges={this.props.allEdges} kgraph={this.props.kgraph} isRoot={true} />
     </svg>;
   }
 
@@ -114,7 +118,7 @@ class GraphRoot extends React.Component<GraphNodeProps, {}> {
     var i = 0;
     for(id in ids){
       toReturn.push(
-        <marker key={id} id={id} viewBox="0 -5 10 10" refX="10" refY="0" markerWidth="3" markerHeight="5" orient={90 * i}><path d="M0,-5L10,0L0,5"></path></marker>
+        <marker key={id} id={id} viewBox="0 -5 10 10" refX="0" refY="0" markerWidth={ARROW_WIDTH} markerHeight={ARROW_HEIGHT} orient={90 * i}><path d="M0,-5L10,0L0,5"></path></marker>
       );
       i++;
     }
@@ -186,8 +190,8 @@ class GraphNode extends React.Component<GraphNodeProps, {}> {
         ))
       }
       {
-        myEdges.map((edge) => (
-          <GraphEdge edge={edge} key={edge.source + '_' + edge.target} />
+        myEdges.map((edge,i) => (
+          <GraphEdge edge={edge} key={edge.source + '_' + edge.target + i}/>
         ))
       }
     </g>;
@@ -215,24 +219,80 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
     return s;
   }
 
+  private _isHyperlink(edge){
+    return edge.$type === HYPERLINK_TYPE;
+  }
+
   private _toAnimationSegments(edge){
     //start point
     var allSegments = [];
-    var targetPoints = (edge.bendPoints || []).concat(edge.targetPoint);
+    var sourcePoint = {
+      x : edge.sourcePoint.x,
+      y : edge.sourcePoint.y
+    };
+    var initialFrom;
+    if(edge.bendPoints && edge.bendPoints.length){
+      initialFrom = edge.bendPoints[edge.bendPoints.length - 1];
+    } else {
+      initialFrom = sourcePoint;
+    }
+    var lastSegmentDirection = this._getBendpointDirection(initialFrom, edge.targetPoint);
+    console.log('lastSegmentDirection ',lastSegmentDirection);
+    if(lastSegmentDirection === 'right'){
+      var markerOffset = this._isHyperlink(edge) ? 0 : ARROW_WIDTH;
+      var x = edge.targetPoint.x - markerOffset;
+      var y = edge.targetPoint.y;
+    }else if(lastSegmentDirection === 'left'){
+      markerOffset = this._isHyperlink(edge) ? 0 : ARROW_WIDTH;
+      x = edge.targetPoint.x + markerOffset;
+      y = edge.targetPoint.y;
+    }else if(lastSegmentDirection === 'up'){
+      markerOffset = this._isHyperlink(edge) ? 0 : ARROW_WIDTH;
+      x = edge.targetPoint.x;
+      y = edge.targetPoint.y + markerOffset;
+    }else if(lastSegmentDirection === 'down'){
+      markerOffset = this._isHyperlink(edge) ? 0 : ARROW_WIDTH;
+      x = edge.targetPoint.x;
+      y = edge.targetPoint.y - markerOffset;
+    } else {
+      throw new Error('Layout not recognized');
+    }
+    var targetPoint = {
+      x : x,
+      y : y
+    };
+    var targetPoints = (edge.bendPoints || []).concat(targetPoint);
     allSegments.push(this._edgeToD({
-      sourcePoint: edge.sourcePoint,
-      targetPoints: [edge.sourcePoint],
+      sourcePoint: sourcePoint,
+      targetPoints: [sourcePoint],
       fillLength : targetPoints.length 
     }));
     for(var i = 0; i < targetPoints.length; i++){
       allSegments.push(this._edgeToD({
-        sourcePoint: edge.sourcePoint,
+        sourcePoint: sourcePoint,
         targetPoints: targetPoints.slice(0,i+1),
         fillLength : targetPoints.length 
       }));
     }
     return allSegments;
   }
+
+  private _getBendpointDirection(from, to){
+    var toReturn;
+    if(from.x <= to.x && from.y == to.y){
+      toReturn = 'right';
+    } else if(from.x >= to.x && from.y == to.y){
+      toReturn = 'left';
+    } else if(from.x == to.x && from.y <= to.y){
+      toReturn = 'down';
+    } else if(from.x == to.x && from.y >= to.y){
+      toReturn = 'up';
+    } else {
+      toReturn = 'right';
+    }
+    return toReturn;
+  }
+
 
   public render(){
     var edgeId = this.props.edge.id;
@@ -280,19 +340,9 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
                       for(var i = 1; i < points.length; i++){
                         [from, to] = points.slice(i-1, i+1);
                         if(!to) continue;
-                        if(from.x <= to.x && from.y == to.y){
-                          add('right');
-                        } else if(from.x >= to.x && from.y == to.y){
-                          add('left');
-                        } else if(from.x == to.x && from.y <= to.y){
-                          add('down');
-                        } else if(from.x == to.x && from.y >= to.y){
-                          add('up');
-                        } else {
-                          add('right');
-                        }
+                        add(this._getBendpointDirection(from, to));
                       }
-                      if(this.props.edge.$type === 'hyperlink'){ 
+                      if(this._isHyperlink(this.props.edge)){ 
                         arr.push('none');
                       } else {
                         arr.push(arr[arr.length - 1]);

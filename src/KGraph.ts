@@ -4,7 +4,7 @@ import jsondiffpatch = require('jsondiffpatch');
 import _ = require('underscore');
 import SCJSONToKGraphTransformer from './SCJSONToKGraphTransformer';
 import IdGenerator from './IdGenerator';
-import IKGraphRenderBackend from './renderers/IKGraphRenderBackend';
+import {IKGraphRenderBackend} from './renderers/IKGraphRenderBackend';
 
 import {SCState} from './SCJSON';
 import constants from './constants';
@@ -77,7 +77,7 @@ export class KGraph extends SCJSONToKGraphTransformer {
     try {
       $klay.layout({
         graph : kgraph,
-        options : options,
+        options : constants.layouts[options],
         success : function(g){ 
           try {
             this._processKGraphPostLayout(kgraph);
