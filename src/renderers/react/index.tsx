@@ -225,7 +225,6 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
 
   private _toAnimationSegments(edge){
     //start point
-    var allSegments = [];
     var sourcePoint = {
       x : edge.sourcePoint.x,
       y : edge.sourcePoint.y
@@ -261,20 +260,7 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
       x : x,
       y : y
     };
-    var targetPoints = (edge.bendPoints || []).concat(targetPoint);
-    allSegments.push(this._edgeToD({
-      sourcePoint: sourcePoint,
-      targetPoints: [sourcePoint],
-      fillLength : targetPoints.length 
-    }));
-    for(var i = 0; i < targetPoints.length; i++){
-      allSegments.push(this._edgeToD({
-        sourcePoint: sourcePoint,
-        targetPoints: targetPoints.slice(0,i+1),
-        fillLength : targetPoints.length 
-      }));
-    }
-    return allSegments;
+    return [sourcePoint].concat(edge.bendPoints || []).concat(targetPoint);
   }
 
   private _getBendpointDirection(from, to){
@@ -297,20 +283,16 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
   public render(){
     var edgeId = this.props.edge.id;
     var animationSegments = this._toAnimationSegments(this.props.edge);
-    var animationSegmentPairs = (function(){
-      var toReturn = [];
-      for(var i = 1; i < animationSegments.length; i++){
-        toReturn.push([animationSegments[i-1],animationSegments[i]]);
-      }
-      return toReturn;
-    })();
-    var animDurSlice = constants.ANIM_DURATION/animationSegmentPairs.length;
-
-    var firstSegmentOfHyperlink = (function(i){ 
-      return this.props.edge.$hyperlink && i === 0;
-    }.bind(this));
-
     var points = this._edgeToPoints(this.props.edge);
+
+    var getKeyTimes = () => {
+      var arr = [];
+      for(var i = 0; i < points.length-1; i++){
+        arr.push(i/(points.length-1));
+      }
+      arr.push(1);
+      return arr.join(';');
+    }
 
     return <g>
       <path 
@@ -320,16 +302,7 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
           <animate attributeName="marker-end" attributeType="CSS" fill="freeze" 
                   className={this.props.edge.$hyperlink ? '' : 'firstPathSegment'}
                   dur={constants.ANIM_DURATION + 'ms'}
-                  keyTimes={
-                    (function(){
-                      var arr = [];
-                      for(var i = 0; i < points.length-1; i++){
-                        arr.push(i/(points.length-1));
-                      }
-                      arr.push(1);
-                      return arr.join(';');
-                    }.bind(this)())
-                  }
+                  keyTimes={ getKeyTimes() }
                   values={
                     (function(){
                       var arr = [];
@@ -356,26 +329,35 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
                       'indefinite' 
                   }
                   />
-          {
-            animationSegmentPairs.map( ([fromD, toD], i) => (
-                <animate attributeName="d" attributeType="XML" fill="freeze" 
-                         key={i}
-                         id={ i === (animationSegmentPairs.length - 1) ? edgeId + '_last' : edgeId + i.toString() }
-                         begin={
-                             firstSegmentOfHyperlink(i) ? 
-                              this.props.edge.$hyperlink + '_last' + '.end' : 
-                              (
-                                i === 0 ? 
-                                  'indefinite' : 
-                                  edgeId  + (i-1).toString() +'.end'
-                              )
-                         } 
-                         className={ i === 0 && !firstSegmentOfHyperlink(i) ? 'firstPathSegment' : '' }
-                         dur={animDurSlice + 'ms'}
-                         from={fromD} 
-                         to={toD} />
-            ))
-          }
+          <animate attributeName="d" attributeType="XML" fill="freeze" 
+                   id={ edgeId + '_last' }
+                   keyTimes={ getKeyTimes() }
+                   values={
+                     (function(){
+                      var allSegments = [];
+                      var sourcePoint = animationSegments[0];
+                      allSegments.push(this._edgeToD({
+                        sourcePoint: sourcePoint,
+                        targetPoints: [sourcePoint],
+                        fillLength : animationSegments.length  - 1
+                      }));
+                      for(var i = 1; i < animationSegments.length; i++){
+                        allSegments.push(this._edgeToD({
+                          sourcePoint: sourcePoint,
+                          targetPoints: animationSegments.slice(1,i+1),
+                          fillLength : animationSegments.length - 1 
+                        }));
+                      }
+                      return allSegments.join(';');
+                     }.bind(this)())
+                   }
+                   begin={
+                       this.props.edge.$hyperlink ? 
+                         this.props.edge.$hyperlink + '_last' + '.end' : 
+                         'indefinite' 
+                   } 
+                   className={ !this.props.edge.$hyperlink ? 'firstPathSegment' : '' }
+                   dur={constants.ANIM_DURATION + 'ms'} />
       </path>
       {
         this.props.edge.labels && this.props.edge.labels.map((label, i) => (
