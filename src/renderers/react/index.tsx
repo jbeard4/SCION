@@ -49,6 +49,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
     console.log('render',kgraph);
     var allEdges = this._getAllEdges(kgraph);
     var t1 = Date.now();
+    this._parentNode.innerHTML = '';
     var root = <GraphRoot node={kgraph.root} allEdges={allEdges} kgraph={kgraph} isRoot={true}/>;
     var x = ReactDOM.render(root, this._parentNode, () => {
       console.log('Rendered in %sms',Date.now() - t1);
