@@ -272,7 +272,7 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
                         if(!to) continue;
                         if(from.x <= to.x && from.y == to.y){
                           add('right');
-                        } else if(from.x <= to.x && from.y == to.y){
+                        } else if(from.x >= to.x && from.y == to.y){
                           add('left');
                         } else if(from.x == to.x && from.y <= to.y){
                           add('down');
