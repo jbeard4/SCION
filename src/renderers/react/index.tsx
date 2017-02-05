@@ -7,6 +7,7 @@ import _ = require('underscore');
 import q = require('q');
 import ReactDOM = require('react-dom');
 import * as React from "react";
+import EventEmitter = require('events');
 
 import {KGraph, KGraphNode, KGraphEdge, KGraphLabel} from '../../KGraph';
 
@@ -18,9 +19,17 @@ const ARROW_WIDTH = 3;
 const ARROW_HEIGHT = 5;
 const HYPERLINK_TYPE = 'hyperlink';
 
+function beginAnimation(){
+  var arr = Array.from(document.querySelectorAll('path > animate.firstPathSegment, text > animate, rect > animate'));
+  arr.forEach( 
+    (e:SVGAnimationElement) => e.beginElement()
+  );
+}
+
 export default class SVGRenderer implements IKGraphRenderBackend {
 
   _parentNode:SVGElement;
+  _root : GraphRoot;
 
   public constructor(parentNode:SVGElement){
     this._parentNode = parentNode;
@@ -49,19 +58,21 @@ export default class SVGRenderer implements IKGraphRenderBackend {
     console.log('render',kgraph);
     var allEdges = this._getAllEdges(kgraph);
     var t1 = Date.now();
-    this._parentNode.innerHTML = '';
     var root = <GraphRoot node={kgraph.root} allEdges={allEdges} kgraph={kgraph} isRoot={true}/>;
-    var x = ReactDOM.render(root, this._parentNode, () => {
-      console.log('Rendered in %sms',Date.now() - t1);
-      //this._beginAnimation();
-      setTimeout(this._beginAnimation.bind(this), 100);
-    });
-  }
-  private _beginAnimation(){
-    var arr = Array.from(document.querySelectorAll('path > animate.firstPathSegment, text > animate, rect > animate'));
-    arr.forEach( 
-      (e:SVGAnimationElement) => e.beginElement()
-    );
+    if(!this._root) {
+      this._root = ReactDOM.render(root, this._parentNode, () => {
+        console.log('Rendered in %sms',Date.now() - t1);
+        //this._beginAnimation();
+        setTimeout(beginAnimation.bind(this), 100);
+      }) as GraphRoot;
+    }else {
+      this._root.setState({
+          node:kgraph.root, 
+          allEdges:allEdges, 
+          kgraph:kgraph,
+          isRoot:true
+      });
+    }
   }
 
   private _getAllEdges(kgraph:KGraph){
@@ -83,9 +94,30 @@ interface GraphNodeProps {
   isRoot : boolean;
 }
 
-class GraphRoot extends React.Component<GraphNodeProps, {}> {
+interface KGraphNodeAnimation {
+  node : KGraphNode;
+  translate : {
+    x : number;
+    y : number;
+  }
+}
+
+interface GraphNodeAnimation {
+  from : KGraphNodeAnimation;
+  to : KGraphNodeAnimation;
+}
+
+class GraphRoot extends React.Component<GraphNodeProps, GraphNodeProps> {
+
+  constructor(props){
+    super(props);
+
+    this.state = props;
+  }
 
   render(){
+    console.log('GraphRoot this.props',this.props);
+    //TODO: animate viewBox
     return <svg width="100%" height="100%" viewBox={[0,0,this.props.node.width,this.props.node.height].join(' ')}>
       <defs>
         { 
@@ -102,7 +134,7 @@ class GraphRoot extends React.Component<GraphNodeProps, {}> {
           this._markers()
         }
       </defs>
-      <GraphNode node={this.props.node} allEdges={this.props.allEdges} kgraph={this.props.kgraph} isRoot={true} />
+      <GraphNode node={this.state.node} allEdges={this.state.allEdges} kgraph={this.state.kgraph} isRoot={true} />
     </svg>;
   }
 
@@ -128,7 +160,67 @@ class GraphRoot extends React.Component<GraphNodeProps, {}> {
 
 }
 
-class GraphNode extends React.Component<GraphNodeProps, {}> {
+class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
+
+  constructor(props){
+    super(props);
+
+    let fromNode = Object.create(new EventEmitter()) as KGraphNode;
+    _.extend(fromNode, {
+      id : this.props.node.id,
+      $type : this.props.node.$type,
+      labels : this.props.node.labels,
+      x : this.props.node.width / 2,
+      y : this.props.node.height / 2,
+      width : 0,
+      height : 0
+    });
+
+    let toNode = Object.create(new EventEmitter()) as KGraphNode;
+    _.extend(toNode, {
+      labels : this.props.node.labels,
+      id : this.props.node.id,
+      $type : this.props.node.$type,
+      x : 0,
+      y : 0,
+      width : this.props.node.width,
+      height : this.props.node.height
+    });
+    this.state = { 
+      from : {
+        node : fromNode,
+        translate : {
+          x : this.props.node.x,
+          y : this.props.node.y
+        }
+      },
+      to : {
+        node : toNode,
+        translate : {
+          x : this.props.node.x,
+          y : this.props.node.y
+        }
+      }
+    };
+  }
+
+  componentWillReceiveProps(props : GraphNodeProps){
+    console.log('componentWillReceiveProps', 'this.state',this.state);
+    this.state = { 
+      from : this.state.to,
+      to : { 
+        node : props.node,
+        translate : {
+          x : props.node.x,
+          y : props.node.y
+        }
+      }
+    };
+  }
+
+  componentDidUpdate(prevProps, prevState){
+    setTimeout(beginAnimation.bind(this), 100);
+  }
 
   render(){
     var isLeaf = !(this.props.node.children && this.props.node.children.length);
@@ -147,32 +239,38 @@ class GraphNode extends React.Component<GraphNodeProps, {}> {
     let myEdges = edgesOriginatingFromThisStateAndTargetingDescendant.concat(
                       edgesOriginatingFromChildStateAndNotTargetingDescendant); 
 
-    return <g id={this.props.node.id} 
+    if(this.state.to.node.id === 'P') console.log('this.state.to.node', this.state.to.node);
+    //TODO: animate transform. 
+    return <g id={this.state.to.node.id} 
             className={'node ' + 
                         (isLeaf ? 'leaf' : 'compound') + ' ' + 
-                        (this.props.node.$type ? 'type__' + this.props.node.$type : '')} 
-            transform={'translate(' + (this.props.node.x || 0) + ',' + (this.props.node.y || 0) + ')'}>
+                        (this.state.to.node.$type ? 'type__' + this.state.to.node.$type : '')} 
+            transform={'translate(' + (this.state.to.translate.x || 0) + ',' + (this.state.to.translate.y || 0) + ')'}>
       <rect visibility={this.props.isRoot ? 'hidden' : 'visible'} rx="2" ry="2">
         <animate attributeName="x" attributeType="XML"
                  fill="freeze" 
                  begin="indefinite"
                  dur={constants.ANIM_DURATION + 'ms'} 
-                 from={this.props.node.width / 2} to={0} />
+                 from={this.state.from.node.x} 
+                 to={this.state.to.node.x} />
         <animate attributeName="y" attributeType="XML"
                  fill="freeze" 
                  begin="indefinite"
                  dur={constants.ANIM_DURATION + 'ms'} 
-                 from={this.props.node.height / 2} to={0} />
+                 from={this.state.from.node.y}
+                 to={this.state.to.node.y} />
         <animate attributeName="width" attributeType="XML"
                  fill="freeze" 
                  begin="indefinite"
                  dur={constants.ANIM_DURATION + 'ms'} 
-                 from={0} to={this.props.node.width} />
+                 from={this.state.from.node.width} 
+                 to={this.state.to.node.width} />
         <animate attributeName="height" attributeType="XML"
                  fill="freeze" 
                  begin="indefinite"
                  dur={constants.ANIM_DURATION + 'ms'} 
-                 from={0} to={this.props.node.height} />
+                 from={this.state.from.node.height} 
+                 to={this.state.to.node.height} />
       </rect>
       <text   
         x={this.props.node.width / 2} 

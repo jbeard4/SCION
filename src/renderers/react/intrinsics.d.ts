@@ -1,5 +1,6 @@
 declare module JSX {  
     interface IntrinsicElements {
-        animate: any
+        animate: any,
+        animateTransform: any
     }
 }

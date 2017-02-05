@@ -28,13 +28,9 @@ class SCHVIZ {
 
   updateLayout(options, cb){
     if(!this._kgraph) return;
-    //delete kgraphRoot.$H;
-    //console.log('kgraphRoot ', kgraphRoot );
-    var options = JSON.parse(JSON.stringify(options));
-    delete options.$$hashKey;
-    this._kgraph.update(options, (err, graph) => {
-      if(err) return cb(err);
-    });
+    this._idGenerator.reset();
+    var newKgraph = new KGraph(this._idGenerator, this._svgRenderer, this._scjson, options); 
+    this._kgraph.patch(newKgraph.root, options, cb);
   }
 
 
@@ -42,8 +38,10 @@ class SCHVIZ {
     //initialize states added: convert scjson to klay node
     //they get appended as _kgraphNode
     
-    var newKgraph = new KGraph(this._idGenerator, this._svgRenderer, sourceSCJSON); 
-    this._kgraph.patch(newKgraph, cb);
+    this._scjson = sourceSCJSON;
+    this._idGenerator.reset();
+    var newKgraph = new KGraph(this._idGenerator, this._svgRenderer, this._scjson, options); 
+    this._kgraph.patch(newKgraph.root, options, cb);
   }
 
 
@@ -51,7 +49,7 @@ class SCHVIZ {
     var newKlayToScjsonMap, newKgraphRoot;
     this._scjson = scjson;
     this._svgRenderer.clear();
-    this._kgraph = new KGraph(this._idGenerator, this._svgRenderer, scjson); 
+    this._kgraph = new KGraph(this._idGenerator, this._svgRenderer, this._scjson, options); 
     this._kgraph.on('update', this.updateSCJSON.bind(this, scjson, options, function(){
       console.log('Update complete');
     }));

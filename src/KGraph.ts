@@ -1,6 +1,5 @@
 import $klay = require('klayjs');
 import EventEmitter = require('events');
-import jsondiffpatch = require('jsondiffpatch');
 import _ = require('underscore');
 import SCJSONToKGraphTransformer from './SCJSONToKGraphTransformer';
 import IdGenerator from './IdGenerator';
@@ -17,26 +16,26 @@ export class KGraph extends SCJSONToKGraphTransformer {
   _childToParentMap : Map<string, KGraphNode>;
   _options : any;   //TODO: enumerate these options
 
-  constructor(idGenerator: IdGenerator, svgRenderer : IKGraphRenderBackend, scjson: any){
+  constructor(idGenerator: IdGenerator, svgRenderer : IKGraphRenderBackend, scjson: any, options : any){
     super(idGenerator, svgRenderer);
-
     var newKlayToScjsonMap, newKgraphRoot; 
-    [newKlayToScjsonMap, newKgraphRoot] = super.transform(scjson);
+    [newKlayToScjsonMap, newKgraphRoot] = this.transform(scjson);
     newKgraphRoot.on('update', function(){
       this.emit('update');
     }.bind(this));
     this._klayToScjsonMap = newKlayToScjsonMap; 
     this._kgraphRoot = newKgraphRoot;
     this._normalize(this._kgraphRoot);
+    this._options = options;
   }
 
   get root (){
     return this._kgraphRoot;
   } 
 
-  patch(newKgraph, cb){
-    var patch = jsondiffpatch.diff(this._kgraphRoot, newKgraph.root);
-    jsondiffpatch.patch(this._kgraphRoot, patch);   
+  patch(newKgraph, options, cb){
+    this._kgraphRoot = newKgraph;
+    this._options = options;
     return this._updateKgraph(this._kgraphRoot, this._options, cb);
   }
 
