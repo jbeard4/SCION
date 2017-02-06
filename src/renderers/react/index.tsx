@@ -20,7 +20,7 @@ const ARROW_HEIGHT = 5;
 const HYPERLINK_TYPE = 'hyperlink';
 
 function beginAnimation(){
-  var arr = Array.from(document.querySelectorAll('path > animate.firstPathSegment, text > animate, rect > animate'));
+  var arr = Array.from(document.querySelectorAll('path > animate.firstPathSegment, text > animate, rect > animate, g > animateTransform'));
   arr.forEach( 
     (e:SVGAnimationElement) => e.beginElement()
   );
@@ -107,18 +107,17 @@ interface GraphNodeAnimation {
   to : KGraphNodeAnimation;
 }
 
+const DUR = constants.ANIM_DURATION + 'ms';
+
 class GraphRoot extends React.Component<GraphNodeProps, GraphNodeProps> {
 
   constructor(props){
     super(props);
-
     this.state = props;
   }
 
   render(){
-    console.log('GraphRoot this.props',this.props);
-    //TODO: animate viewBox
-    return <svg width="100%" height="100%" viewBox={[0,0,this.props.node.width,this.props.node.height].join(' ')}>
+    return <svg width="100%" height="100%" viewBox={[0,0,this.state.node.width,this.state.node.height].join(' ')}>
       <defs>
         { 
           ['','Highlighted'].map( (s) => (
@@ -176,16 +175,6 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
       height : 0
     });
 
-    let toNode = Object.create(new EventEmitter()) as KGraphNode;
-    _.extend(toNode, {
-      labels : this.props.node.labels,
-      id : this.props.node.id,
-      $type : this.props.node.$type,
-      x : 0,
-      y : 0,
-      width : this.props.node.width,
-      height : this.props.node.height
-    });
     this.state = { 
       from : {
         node : fromNode,
@@ -194,12 +183,26 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
           y : this.props.node.y
         }
       },
-      to : {
-        node : toNode,
-        translate : {
-          x : this.props.node.x,
-          y : this.props.node.y
-        }
+      to : this._toNode(this.props.node)
+    };
+  }
+
+  _toNode(node){
+    let toNode = Object.create(new EventEmitter()) as KGraphNode;
+    _.extend(toNode, {
+      labels : node.labels,
+      id : node.id,
+      $type : node.$type,
+      x : 0,
+      y : 0,
+      width : node.width,
+      height : node.height
+    });
+    return {
+      node : toNode,
+      translate : {
+        x : node.x,
+        y : node.y
       }
     };
   }
@@ -208,13 +211,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
     console.log('componentWillReceiveProps', 'this.state',this.state);
     this.state = { 
       from : this.state.to,
-      to : { 
-        node : props.node,
-        translate : {
-          x : props.node.x,
-          y : props.node.y
-        }
-      }
+      to : this._toNode(props.node)
     };
   }
 
@@ -244,31 +241,37 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
     return <g id={this.state.to.node.id} 
             className={'node ' + 
                         (isLeaf ? 'leaf' : 'compound') + ' ' + 
-                        (this.state.to.node.$type ? 'type__' + this.state.to.node.$type : '')} 
-            transform={'translate(' + (this.state.to.translate.x || 0) + ',' + (this.state.to.translate.y || 0) + ')'}>
+                        (this.state.to.node.$type ? 'type__' + this.state.to.node.$type : '')} >
+      <animateTransform attributeName="transform" attributeType="XML"
+               type="translate"
+               fill="freeze" 
+               begin="indefinite"
+               dur={DUR} 
+               from={this.state.from.translate.x + ',' + this.state.from.translate.y} 
+               to={this.state.to.translate.x + ',' + this.state.to.translate.y} />
       <rect visibility={this.props.isRoot ? 'hidden' : 'visible'} rx="2" ry="2">
         <animate attributeName="x" attributeType="XML"
                  fill="freeze" 
                  begin="indefinite"
-                 dur={constants.ANIM_DURATION + 'ms'} 
+                 dur={DUR} 
                  from={this.state.from.node.x} 
                  to={this.state.to.node.x} />
         <animate attributeName="y" attributeType="XML"
                  fill="freeze" 
                  begin="indefinite"
-                 dur={constants.ANIM_DURATION + 'ms'} 
+                 dur={DUR} 
                  from={this.state.from.node.y}
                  to={this.state.to.node.y} />
         <animate attributeName="width" attributeType="XML"
                  fill="freeze" 
                  begin="indefinite"
-                 dur={constants.ANIM_DURATION + 'ms'} 
+                 dur={DUR} 
                  from={this.state.from.node.width} 
                  to={this.state.to.node.width} />
         <animate attributeName="height" attributeType="XML"
                  fill="freeze" 
                  begin="indefinite"
-                 dur={constants.ANIM_DURATION + 'ms'} 
+                 dur={DUR} 
                  from={this.state.from.node.height} 
                  to={this.state.to.node.height} />
       </rect>
@@ -280,7 +283,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
         <animate attributeName="opacity" attributeType="CSS"
                  fill="freeze" 
                  begin="indefinite"
-                 dur={constants.ANIM_DURATION + 'ms'} 
+                 dur={DUR} 
                  from={0} to={1} />
       </text>
       {
@@ -400,7 +403,7 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
         >
           <animate attributeName="marker-end" attributeType="CSS" fill="freeze" 
                   className={this.props.edge.$hyperlink ? '' : 'firstPathSegment'}
-                  dur={constants.ANIM_DURATION + 'ms'}
+                  dur={DUR}
                   keyTimes={ getKeyTimes() }
                   values={
                     (function(){
@@ -456,7 +459,7 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
                          'indefinite' 
                    } 
                    className={ !this.props.edge.$hyperlink ? 'firstPathSegment' : '' }
-                   dur={constants.ANIM_DURATION + 'ms'} />
+                   dur={DUR} />
       </path>
       {
         this.props.edge.labels && this.props.edge.labels.map((label, i) => (
