@@ -36,6 +36,9 @@ export default class SVGRenderer implements IKGraphRenderBackend {
     this._parentNode = parentNode;
   }
   public clear(){
+    this._root = null;
+    this._kgraphRoot = null;
+    this._parentNode.innerHTML = '';
   }
   public highlightState(stateId:string){
   }
