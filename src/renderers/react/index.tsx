@@ -19,8 +19,8 @@ const ARROW_WIDTH = 3;
 const ARROW_HEIGHT = 5;
 const HYPERLINK_TYPE = 'hyperlink';
 
-function beginAnimation(){
-  var arr = Array.from(document.querySelectorAll('path > animate.firstPathSegment, text > animate, rect > animate, g > animateTransform, svg > animate'));
+function beginAnimation(update){
+  var arr = Array.from(document.querySelectorAll(`path > animate${update ? '' : '.firstPathSegment'}, text > animate, rect > animate, g > animateTransform, svg > animate`));
   arr.forEach( 
     (e:SVGAnimationElement) => e.beginElement()
   );
@@ -67,7 +67,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
       this._root = ReactDOM.render(root, this._parentNode, () => {
         console.log('Rendered in %sms',Date.now() - t1);
         //this._beginAnimation();
-        setTimeout(beginAnimation.bind(this), 100);
+        setTimeout(beginAnimation.bind(this, false), 100);
       }) as GraphRoot;
     }else {
       this._root.setState({
@@ -77,7 +77,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
           kgraph:kgraph,
           isRoot:true
       }, () => {
-        setTimeout(beginAnimation.bind(this), 100);
+        setTimeout(beginAnimation.bind(this, true), 100);
       });
     }
     this._kgraphRoot = kgraph.root;
