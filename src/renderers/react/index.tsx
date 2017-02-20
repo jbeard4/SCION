@@ -325,7 +325,8 @@ interface GraphEdgeProps {
 interface GraphEdgeAnimation {
   keyTimes : string,
   marker : string,
-  path : string
+  path : string,
+  begin : string
 }
 
 class GraphEdge extends React.Component<GraphEdgeProps, GraphEdgeAnimation> {
@@ -380,7 +381,12 @@ class GraphEdge extends React.Component<GraphEdgeProps, GraphEdgeAnimation> {
           }));
         }
         return allSegments.join(';');
-       })()
+       })(),
+      begin : (
+        this.props.edge.$hyperlink ? 
+          this.props.edge.$hyperlink + '_last' + '.end' : 
+          'indefinite' 
+      )
     }
   }
 
@@ -416,7 +422,8 @@ class GraphEdge extends React.Component<GraphEdgeProps, GraphEdgeAnimation> {
           fillLength : animationSegments.length - 1 
         }));
         return allSegments.join(';');
-       })()
+       })(),
+       begin : 'indefinite' 
     }
   }
 
@@ -506,21 +513,13 @@ class GraphEdge extends React.Component<GraphEdgeProps, GraphEdgeAnimation> {
                   dur={DUR}
                   keyTimes={ this.state.keyTimes }
                   values={ this.state.marker }
-                  begin={
-                    this.props.edge.$hyperlink ? 
-                      this.props.edge.$hyperlink + '_last' + '.end' : 
-                      'indefinite' 
-                  }
+                  begin={ this.state.begin }
                   />
           <animate attributeName="d" attributeType="XML" fill="freeze" 
                    id={ edgeId + '_last' }
                    keyTimes={ this.state.keyTimes }
                    values={ this.state.path }
-                   begin={
-                       this.props.edge.$hyperlink ? 
-                         this.props.edge.$hyperlink + '_last' + '.end' : 
-                         'indefinite' 
-                   } 
+                   begin={ this.state.begin }
                    className={ !this.props.edge.$hyperlink ? 'firstPathSegment' : '' }
                    dur={DUR} />
       </path>
