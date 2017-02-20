@@ -71,6 +71,8 @@ export default class SVGRenderer implements IKGraphRenderBackend {
           allEdges:allEdges, 
           kgraph:kgraph,
           isRoot:true
+      }, () => {
+        setTimeout(beginAnimation.bind(this), 100);
       });
     }
   }
@@ -213,10 +215,6 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
       from : this.state.to,
       to : this._toNode(props.node)
     };
-  }
-
-  componentDidUpdate(prevProps, prevState){
-    setTimeout(beginAnimation.bind(this), 100);
   }
 
   render(){
