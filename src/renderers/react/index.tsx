@@ -20,7 +20,7 @@ const ARROW_HEIGHT = 5;
 const HYPERLINK_TYPE = 'hyperlink';
 
 function beginAnimation(){
-  var arr = Array.from(document.querySelectorAll('path > animate.firstPathSegment, text > animate, rect > animate, g > animateTransform'));
+  var arr = Array.from(document.querySelectorAll('path > animate.firstPathSegment, text > animate, rect > animate, g > animateTransform, svg > animate'));
   arr.forEach( 
     (e:SVGAnimationElement) => e.beginElement()
   );
@@ -30,6 +30,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
 
   _parentNode:SVGElement;
   _root : GraphRoot;
+  _kgraphRoot : KGraphNode;
 
   public constructor(parentNode:SVGElement){
     this._parentNode = parentNode;
@@ -66,8 +67,10 @@ export default class SVGRenderer implements IKGraphRenderBackend {
         setTimeout(beginAnimation.bind(this), 100);
       }) as GraphRoot;
     }else {
+      console.log('this._kgraph.root === kgraph.root', this._kgraphRoot === kgraph.root);
       this._root.setState({
           node:kgraph.root, 
+          fromNode: this._kgraphRoot,    //not yet updated. use as prev kgraph root
           allEdges:allEdges, 
           kgraph:kgraph,
           isRoot:true
@@ -75,6 +78,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
         setTimeout(beginAnimation.bind(this), 100);
       });
     }
+    this._kgraphRoot = JSON.parse(JSON.stringify(kgraph.root));  //FIXME: remove this ugly hack when we are using immutable data structures
   }
 
   private _getAllEdges(kgraph:KGraph){
@@ -109,17 +113,33 @@ interface GraphNodeAnimation {
   to : KGraphNodeAnimation;
 }
 
+interface GraphRootAnimation extends GraphNodeProps {
+  fromNode : KGraphNode;
+}
+
 const DUR = constants.ANIM_DURATION + 'ms';
 
-class GraphRoot extends React.Component<GraphNodeProps, GraphNodeProps> {
+class GraphRoot extends React.Component<GraphNodeProps, GraphRootAnimation> {
 
   constructor(props){
     super(props);
-    this.state = props;
+    this.state = {
+      node : props.node,
+      allEdges : props.allEdges,
+      kgraph : props.kgraph,
+      isRoot : props.isRoot,
+      fromNode : props.node
+    };
   }
 
   render(){
-    return <svg width="100%" height="100%" viewBox={[0,0,this.state.node.width,this.state.node.height].join(' ')}>
+    return <svg width="100%" height="100%" >
+      <animate attributeName="viewBox" fill="freeze" 
+        dur={DUR} 
+        values={
+          [0,0,this.state.fromNode.width,this.state.fromNode.height].join(' ') + ';' + 
+          [0,0,this.state.node.width,this.state.node.height].join(' ')
+        }/>
       <defs>
         { 
           ['','Highlighted'].map( (s) => (
