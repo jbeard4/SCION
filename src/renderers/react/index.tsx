@@ -78,7 +78,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
         setTimeout(beginAnimation.bind(this), 100);
       });
     }
-    this._kgraphRoot = JSON.parse(JSON.stringify(kgraph.root));  //FIXME: remove this ugly hack when we are using immutable data structures
+    this._kgraphRoot = kgraph.root;
   }
 
   private _getAllEdges(kgraph:KGraph){
