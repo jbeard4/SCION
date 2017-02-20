@@ -402,11 +402,11 @@ class GraphEdge extends React.Component<GraphEdgeProps, GraphEdgeAnimation> {
         if(props.edge.$type === 'hyperlink'){
           markers.push('none','none');  //SMIL will override the CSS class, believe it or not
         } else {
-          markers.push(this.state.marker.split(';').pop());
           var from, to;
           [from, to] = points.slice(points.length-2);
           var type = this._getBendpointDirection(from, to);
-          markers.push(`url(#${type})`);
+          var markerUrl = `url(#${type})`;
+          markers.push(markerUrl, markerUrl);
         }
         return markers.join(';');
       })(),   
