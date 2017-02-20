@@ -390,7 +390,17 @@ class GraphEdge extends React.Component<GraphEdgeProps, GraphEdgeAnimation> {
     var points = this._edgeToPoints(props.edge);
     this.state = {
       keyTimes : '0; 1',
-      marker : 'url(#right); url(#right)',   //TODO: come back to this one
+      marker : (() => {
+        //get the last segment and find out what direction he's facing
+        var markers = [];
+        markers.push(this.state.marker.split(';').pop());
+
+        var from, to;
+        [from, to] = points.slice(points.length-2);
+        var type = this._getBendpointDirection(from, to);
+        markers.push(`url(#${type})`);
+        return markers.join(';');
+      })(),   
       path : (() => {
         //take final path of last layout
         //take final path of current layout
