@@ -67,7 +67,6 @@ export default class SVGRenderer implements IKGraphRenderBackend {
         setTimeout(beginAnimation.bind(this), 100);
       }) as GraphRoot;
     }else {
-      console.log('this._kgraph.root === kgraph.root', this._kgraphRoot === kgraph.root);
       this._root.setState({
           node:kgraph.root, 
           fromNode: this._kgraphRoot,    //not yet updated. use as prev kgraph root
@@ -230,7 +229,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
   }
 
   componentWillReceiveProps(props : GraphNodeProps){
-    console.log('componentWillReceiveProps', 'this.state',this.state);
+    //console.log('componentWillReceiveProps', 'this.state',this.state);
     this.state = { 
       from : this.state.to,
       to : this._toNode(props.node)
@@ -254,7 +253,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
     let myEdges = edgesOriginatingFromThisStateAndTargetingDescendant.concat(
                       edgesOriginatingFromChildStateAndNotTargetingDescendant); 
 
-    if(this.state.to.node.id === 'P') console.log('this.state.to.node', this.state.to.node);
+    //if(this.state.to.node.id === 'P') console.log('this.state.to.node', this.state.to.node);
     //TODO: animate transform. 
     return <g id={this.state.to.node.id} 
             className={'node ' + 
@@ -323,7 +322,90 @@ interface GraphEdgeProps {
   edge : KGraphEdge;
 }
 
-class GraphEdge extends React.Component<GraphEdgeProps, {}> {
+interface GraphEdgeAnimation {
+  keyTimes : string,
+  marker : string,
+  path : string
+}
+
+class GraphEdge extends React.Component<GraphEdgeProps, GraphEdgeAnimation> {
+
+  constructor(props){
+    super(props);
+    //take everything currently in render, and move into the constructor to compute values for entry animation
+    //subsequent updates will be simpler
+    var animationSegments = this._toAnimationSegments(this.props.edge);
+    var points = this._edgeToPoints(this.props.edge);
+
+    this.state = {
+      keyTimes : (() => {
+        var arr = [];
+        for(var i = 0; i < points.length-1; i++){
+          arr.push(i/(points.length-1));
+        }
+        arr.push(1);
+        return arr.join(';');
+      })(),
+      marker : (() => {
+        var arr = [];
+        var from, to;
+        function add(type){
+          arr.push(`url(#${type})`); 
+        }
+        for(var i = 1; i < points.length; i++){
+          [from, to] = points.slice(i-1, i+1);
+          if(!to) continue;
+          add(this._getBendpointDirection(from, to));
+        }
+        if(this._isHyperlink(this.props.edge)){ 
+          arr.push('none');
+        } else {
+          arr.push(arr[arr.length - 1]);
+        }
+        return arr.join(';');
+      })(),
+      path : (() => {
+        var allSegments = [];
+        var sourcePoint = animationSegments[0];
+        allSegments.push(this._edgeToD({
+          sourcePoint: sourcePoint,
+          targetPoints: [sourcePoint],
+          fillLength : animationSegments.length  - 1
+        }));
+        for(var i = 1; i < animationSegments.length; i++){
+          allSegments.push(this._edgeToD({
+            sourcePoint: sourcePoint,
+            targetPoints: animationSegments.slice(1,i+1),
+            fillLength : animationSegments.length - 1 
+          }));
+        }
+        return allSegments.join(';');
+       })()
+    }
+  }
+
+  componentWillReceiveProps(props : GraphEdgeProps){
+    //compute updated props
+    var animationSegments = this._toAnimationSegments(props.edge);
+    var points = this._edgeToPoints(props.edge);
+    this.state = {
+      keyTimes : '0; 1',
+      marker : 'url(#right); url(#right)',   //TODO: come back to this one
+      path : (() => {
+        //take final path of last layout
+        //take final path of current layout
+        var allSegments = [];
+        var sourcePoint = animationSegments[0];
+        allSegments.push(this.state.path.split(';').pop());
+        allSegments.push(this._edgeToD({
+          sourcePoint: sourcePoint,
+          targetPoints: animationSegments.slice(1),
+          fillLength : animationSegments.length - 1 
+        }));
+        return allSegments.join(';');
+       })()
+    }
+  }
 
   private _toPointStr(point){
     return point.x.toString() + ',' + point.y.toString();
@@ -356,7 +438,7 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
       initialFrom = sourcePoint;
     }
     var lastSegmentDirection = this._getBendpointDirection(initialFrom, edge.targetPoint);
-    console.log('lastSegmentDirection ',lastSegmentDirection);
+    //console.log('lastSegmentDirection ',lastSegmentDirection);
     if(lastSegmentDirection === 'right'){
       var markerOffset = this._isHyperlink(edge) ? 0 : ARROW_WIDTH;
       var x = edge.targetPoint.x - markerOffset;
@@ -399,21 +481,8 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
     return toReturn;
   }
 
-
   public render(){
     var edgeId = this.props.edge.id;
-    var animationSegments = this._toAnimationSegments(this.props.edge);
-    var points = this._edgeToPoints(this.props.edge);
-
-    var getKeyTimes = () => {
-      var arr = [];
-      for(var i = 0; i < points.length-1; i++){
-        arr.push(i/(points.length-1));
-      }
-      arr.push(1);
-      return arr.join(';');
-    }
-
     return <g>
       <path 
         className={'link ' + (this.props.edge.$type || '')} 
@@ -422,27 +491,8 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
           <animate attributeName="marker-end" attributeType="CSS" fill="freeze" 
                   className={this.props.edge.$hyperlink ? '' : 'firstPathSegment'}
                   dur={DUR}
-                  keyTimes={ getKeyTimes() }
-                  values={
-                    (function(){
-                      var arr = [];
-                      var from, to;
-                      function add(type){
-                        arr.push(`url(#${type})`); 
-                      }
-                      for(var i = 1; i < points.length; i++){
-                        [from, to] = points.slice(i-1, i+1);
-                        if(!to) continue;
-                        add(this._getBendpointDirection(from, to));
-                      }
-                      if(this._isHyperlink(this.props.edge)){ 
-                        arr.push('none');
-                      } else {
-                        arr.push(arr[arr.length - 1]);
-                      }
-                      return arr.join(';');
-                    }.bind(this)())
-                  }
+                  keyTimes={ this.state.keyTimes }
+                  values={ this.state.marker }
                   begin={
                     this.props.edge.$hyperlink ? 
                       this.props.edge.$hyperlink + '_last' + '.end' : 
@@ -451,26 +501,8 @@ class GraphEdge extends React.Component<GraphEdgeProps, {}> {
                   />
           <animate attributeName="d" attributeType="XML" fill="freeze" 
                    id={ edgeId + '_last' }
-                   keyTimes={ getKeyTimes() }
-                   values={
-                     (function(){
-                      var allSegments = [];
-                      var sourcePoint = animationSegments[0];
-                      allSegments.push(this._edgeToD({
-                        sourcePoint: sourcePoint,
-                        targetPoints: [sourcePoint],
-                        fillLength : animationSegments.length  - 1
-                      }));
-                      for(var i = 1; i < animationSegments.length; i++){
-                        allSegments.push(this._edgeToD({
-                          sourcePoint: sourcePoint,
-                          targetPoints: animationSegments.slice(1,i+1),
-                          fillLength : animationSegments.length - 1 
-                        }));
-                      }
-                      return allSegments.join(';');
-                     }.bind(this)())
-                   }
+                   keyTimes={ this.state.keyTimes }
+                   values={ this.state.path }
                    begin={
                        this.props.edge.$hyperlink ? 
                          this.props.edge.$hyperlink + '_last' + '.end' : 

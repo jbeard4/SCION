@@ -336,7 +336,9 @@ export default class SCJSONToKGraphTransformer extends EventEmitter{
 
   _normalizeStateIds(scjson){
     var walk = (function(node){
-      node.id = node.id || this._idGenerator.generateId();
+      if(node.$type !== 'scxml'){ 
+        node.id = node.id || this._idGenerator.generateId();
+      }
       if(node.states) node.states.forEach(walk.bind(this));
     }.bind(this));
     walk(scjson);
