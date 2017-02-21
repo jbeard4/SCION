@@ -327,9 +327,20 @@ interface GraphEdgeProps {
 
 interface GraphEdgeAnimation {
   keyTimes : string,
-  marker : string,
-  path : string,
+  marker : string[],
+  path : PathSegment[],
   begin : string
+}
+
+interface PathSegment {
+  sourcePoint: Point;
+  targetPoints: Point[];
+  fillLength: number;
+}
+
+interface Point {
+  x : number;
+  y : number;
 }
 
 class GraphEdge extends React.Component<GraphEdgeProps, GraphEdgeAnimation> {
@@ -366,24 +377,24 @@ class GraphEdge extends React.Component<GraphEdgeProps, GraphEdgeAnimation> {
         } else {
           arr.push(arr[arr.length - 1]);
         }
-        return arr.join(';');
+        return arr;
       })(),
       path : (() => {
-        var allSegments = [];
+        var allSegments:PathSegment[] = [];
         var sourcePoint = animationSegments[0];
-        allSegments.push(this._edgeToD({
+        allSegments.push({
           sourcePoint: sourcePoint,
           targetPoints: [sourcePoint],
           fillLength : animationSegments.length  - 1
-        }));
+        });
         for(var i = 1; i < animationSegments.length; i++){
-          allSegments.push(this._edgeToD({
+          allSegments.push({
             sourcePoint: sourcePoint,
             targetPoints: animationSegments.slice(1,i+1),
             fillLength : animationSegments.length - 1 
-          }));
+          });
         }
-        return allSegments.join(';');
+        return allSegments;
        })(),
       begin : (
         this.props.edge.$hyperlink ? 
@@ -411,20 +422,19 @@ class GraphEdge extends React.Component<GraphEdgeProps, GraphEdgeAnimation> {
           var markerUrl = `url(#${type})`;
           markers.push(markerUrl, markerUrl);
         }
-        return markers.join(';');
+        return markers;
       })(),   
       path : (() => {
         //take final path of last layout
         //take final path of current layout
         var allSegments = [];
         var sourcePoint = animationSegments[0];
-        allSegments.push(this.state.path.split(';').pop());
-        allSegments.push(this._edgeToD({
+        allSegments.push(this.state.path[this.state.path.length - 1]);
+        allSegments.push({
           sourcePoint: sourcePoint,
-          targetPoints: animationSegments.slice(1),
-          fillLength : animationSegments.length - 1 
-        }));
-        return allSegments.join(';');
+          targetPoints: animationSegments.slice(1)
+        });
+        return allSegments;
        })(),
        begin : 'indefinite' 
     }
@@ -515,13 +525,13 @@ class GraphEdge extends React.Component<GraphEdgeProps, GraphEdgeAnimation> {
                   className={this.props.edge.$hyperlink ? '' : 'firstPathSegment'}
                   dur={DUR}
                   keyTimes={ this.state.keyTimes }
-                  values={ this.state.marker }
+                  values={ this.state.marker.join(';') }
                   begin={ this.state.begin }
                   />
           <animate attributeName="d" attributeType="XML" fill="freeze" 
                    id={ edgeId + '_last' }
                    keyTimes={ this.state.keyTimes }
-                   values={ this.state.path }
+                   values={ this.state.path.map(this._edgeToD.bind(this)).join(';') }
                    begin={ this.state.begin }
                    className={ !this.props.edge.$hyperlink ? 'firstPathSegment' : '' }
                    dur={DUR} />
