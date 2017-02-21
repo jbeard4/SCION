@@ -427,13 +427,20 @@ class GraphEdge extends React.Component<GraphEdgeProps, GraphEdgeAnimation> {
       path : (() => {
         //take final path of last layout
         //take final path of current layout
-        var allSegments = [];
+        var allSegments:PathSegment[]  = [];
         var sourcePoint = animationSegments[0];
-        allSegments.push(this.state.path[this.state.path.length - 1]);
+        var fillLength = animationSegments.length - 1; 
+        var prevPath = this.state.path[this.state.path.length - 1];
+        var maxFillLength = Math.max(prevPath.fillLength, fillLength);
+
+        prevPath.fillLength = maxFillLength;
+        allSegments.push(prevPath);
         allSegments.push({
           sourcePoint: sourcePoint,
-          targetPoints: animationSegments.slice(1)
+          targetPoints: animationSegments.slice(1),
+          fillLength : maxFillLength
         });
+
         return allSegments;
        })(),
        begin : 'indefinite' 
