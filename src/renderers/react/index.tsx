@@ -67,7 +67,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
       this._root = ReactDOM.render(root, this._parentNode, () => {
         console.log('Rendered in %sms',Date.now() - t1);
         //this._beginAnimation();
-        setTimeout(beginAnimation.bind(this, false), 100);
+        setTimeout(beginAnimation.bind(this, false), 10);
       }) as GraphRoot;
     }else {
       this._root.setState({
@@ -77,7 +77,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
           kgraph:kgraph,
           isRoot:true
       }, () => {
-        setTimeout(beginAnimation.bind(this, true), 100);
+        setTimeout(beginAnimation.bind(this, true), 10);
       });
     }
     this._kgraphRoot = kgraph.root;
@@ -637,3 +637,4 @@ class GraphLabel extends React.Component<GraphLabelProps, {}>  {
   }
 
 }
+
