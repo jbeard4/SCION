@@ -451,13 +451,14 @@ export class KGraph extends SCJSONToKGraphTransformer {
 
 
   _createPseudonode(parentNode){
-    var pseudoNodeStateId = this._idGenerator.generateId();
+    let $type = 'pseudonode';
+    var pseudoNodeStateId = this._idGenerator.generateId(parentNode.id, $type);
 
     //create a pseudonode with an edge originating for each hyperedge target
     var pseudonode = (<KGraphNode> Object.create(new EventEmitter()));
     _.extend(pseudonode, {
       id :  pseudoNodeStateId,
-      $type: "pseudonode",
+      $type: $type,
       width : 0,
       height : 0,
       edges : []

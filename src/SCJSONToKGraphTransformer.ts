@@ -66,7 +66,7 @@ export default class SCJSONToKGraphTransformer extends EventEmitter{
       if(state.$meta && state.$meta.isCollapsed && state.states && state.states.length){
         var substates = state.states;
         var virtualState = {
-          id : this._idGenerator.generateId(),
+          id : this._idGenerator.generateId(),    //FIXME: add support back in for virtual states
           states : substates,
           $type : 'virtual'
         };
@@ -301,9 +301,10 @@ export default class SCJSONToKGraphTransformer extends EventEmitter{
         if(transition.target.length === 1){
           transition.target = transition.target[0];
         }
+        let $type = 'initial';
         fakeInitialState = {
-          id : this._idGenerator.generateId(),
-          $type : 'initial',
+          id : this._idGenerator.generateId(parentState.id, $type),
+          $type : $type,
           transitions : [transition] 
         };
       }else{
@@ -314,9 +315,10 @@ export default class SCJSONToKGraphTransformer extends EventEmitter{
           });
 
           if(!initialChildren.length && state.$type !== 'parallel'){
+            let $type = 'initial';
             fakeInitialState = {
-              id : this._idGenerator.generateId(),
-              $type : 'initial',
+              id : this._idGenerator.generateId(parentState.id, $type),
+              $type : $type,
               transitions : [{
                 target : state.states[0].id
               }] 
@@ -335,13 +337,13 @@ export default class SCJSONToKGraphTransformer extends EventEmitter{
 
 
   _normalizeStateIds(scjson){
-    var walk = (function(node){
+    var walk = (function(parentNode, nodeIndex, node){
       if(node.$type !== 'scxml'){ 
-        node.id = node.id || this._idGenerator.generateId();
+        node.id = node.id || this._idGenerator.generateId(parentNode.id, node.$type || 'state', nodeIndex);
       }
-      if(node.states) node.states.forEach(walk.bind(this));
+      if(node.states) node.states.forEach((substate, i) => { walk(node, i, substate); });
     }.bind(this));
-    walk(scjson);
+    walk(null, 0, scjson);
   }
 
 }
