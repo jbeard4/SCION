@@ -20,7 +20,14 @@ const ARROW_HEIGHT = 5;
 const HYPERLINK_TYPE = 'hyperlink';
 
 function beginAnimation(update){
-  var arr = Array.from(document.querySelectorAll(`path > animate${update ? '' : '.firstPathSegment'}, text > animate, rect > animate, g > animateTransform, svg > animate`));
+  var arr = Array.from(document.querySelectorAll(`
+    path > animate${update ? '' : '.firstPathSegment'}, 
+    ${update ? '' : '.node > text > animate,'} 
+    rect > animate, 
+    g > animateTransform, 
+    svg > animate, 
+    text.edge-label > animate
+  `));
   arr.forEach( 
     (e:SVGAnimationElement) => e.beginElement()
   );
@@ -618,15 +625,53 @@ interface GraphLabelProps {
   label : KGraphLabel;
 }
 
-class GraphLabel extends React.Component<GraphLabelProps, {}>  {
+interface GraphLabelAnimation {
+  from : Point;
+  to : Point;
+}
+
+class GraphLabel extends React.Component<GraphLabelProps, GraphLabelAnimation>  {
+
+  constructor(props){
+    super(props);
+    this._normalizeSelfLoopEdgeCoordinates(props.label, props.edge);
+    var point = {
+      x : props.label.x,
+      y : props.label.y,
+    };
+    this.state = {
+      from : point,
+      to : point
+    };
+  }
+
+  componentWillReceiveProps(props : GraphLabelProps){
+    this._normalizeSelfLoopEdgeCoordinates(props.label, props.edge);
+    var point = {
+      x : props.label.x,
+      y : props.label.y,
+    };
+    this.state = {
+      from : this.state.to,
+      to : point
+    };
+  }
 
   public render(){
-    this._normalizeSelfLoopEdgeCoordinates(this.props.label, this.props.edge);
-    
-    return <text className="edge-label" x={this.props.label.x} y={this.props.label.y}
+    return <text className="edge-label"
         textAnchor={this.props.label.$meta && this.props.label.$meta.textAnchor}
         dominantBaseline={this.props.label.$meta && this.props.label.$meta.dominantBaseline}
       >
+        <animate attributeName="x" attributeType="XML" fill="freeze" begin="indefinite"
+          from={this.state.from.x}
+          to={this.state.to.x}
+          dur={DUR}
+          />
+        <animate attributeName="y" attributeType="XML" fill="freeze" begin="indefinite"
+          from={this.state.from.y}
+          to={this.state.to.y}
+          dur={DUR}
+          />
       {this.props.label.text}
     </text>;
   }
