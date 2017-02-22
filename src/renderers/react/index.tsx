@@ -405,7 +405,7 @@ class GraphEdge extends React.Component<GraphEdgeProps, GraphEdgeAnimation> {
        })(),
       begin : (
         this.props.edge.$hyperlink ? 
-          this.props.edge.$hyperlink + '_last' + '.end' : 
+          this.props.edge.$hyperlink + '_last' + '.endEvent' : 
           'indefinite' 
       )
     }
