@@ -33,10 +33,10 @@ export class KGraph extends SCJSONToKGraphTransformer {
     return this._kgraphRoot;
   } 
 
-  patch(newKgraph, options, cb){
+  patch(newKgraph, options, cb, updateLayout){
     this._kgraphRoot = newKgraph;
     this._options = options;
-    return this._updateKgraph(this._kgraphRoot, this._options, cb);
+    return this._updateKgraph(this._kgraphRoot, this._options, cb, updateLayout);
   }
 
   _normalize(kgraph){
@@ -48,7 +48,7 @@ export class KGraph extends SCJSONToKGraphTransformer {
 
   update(options, cb){
     this._options = options;
-    return this._updateKgraph(this._kgraphRoot, options, cb);
+    return this._updateKgraph(this._kgraphRoot, options, cb, false);
   }
 
   _processKGraphPostLayout(kgraph){
@@ -66,7 +66,7 @@ export class KGraph extends SCJSONToKGraphTransformer {
     walk.call(this, kgraph);
   }
 
-  _updateKgraph(kgraph, options, cb){
+  _updateKgraph(kgraph, options, cb, updateLayout){
     this._populateIdMap(kgraph);
     this._populateChildToParentMap(kgraph);
 
@@ -82,7 +82,7 @@ export class KGraph extends SCJSONToKGraphTransformer {
             this._processKGraphPostLayout(kgraph);
             console.log('Layout in %sms',Date.now() - t1);
             console.log('kgraph after layout',JSON.stringify(kgraph,null,4));   //TODO: enable debug module
-            this._svgRenderer.render(this);   //TODO: move this back out?
+            this._svgRenderer.render(this, updateLayout);   //TODO: move this back out?
             cb(null, kgraph);
           } catch(e){
             cb(e); 

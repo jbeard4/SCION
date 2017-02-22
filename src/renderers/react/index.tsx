@@ -19,10 +19,10 @@ const ARROW_WIDTH = 3;
 const ARROW_HEIGHT = 5;
 const HYPERLINK_TYPE = 'hyperlink';
 
-function beginAnimation(update){
+function beginAnimation(updatKgraph, updateLayout){
   var arr = Array.from(document.querySelectorAll(`
-    path > animate${update ? '' : '.firstPathSegment'}, 
-    ${update ? '' : '.node > text > animate,'} 
+    path > animate${updateLayout ? '' : '.firstPathSegment'}, 
+    ${!updatKgraph && !updateLayout ? '' : '.node > text > animate,'} 
     rect > animate, 
     g > animateTransform, 
     svg > animate, 
@@ -65,7 +65,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
     this._parentNode.removeChild(svg);
     return bbox; 
   }
-  public render(kgraph:KGraph){
+  public render(kgraph:KGraph, updateLayout){
     console.log('render',kgraph);
     var allEdges = this._getAllEdges(kgraph);
     var t1 = Date.now();
@@ -74,7 +74,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
       this._root = ReactDOM.render(root, this._parentNode, () => {
         console.log('Rendered in %sms',Date.now() - t1);
         //this._beginAnimation();
-        setTimeout(beginAnimation.bind(this, false), 10);
+        setTimeout(beginAnimation.bind(this, false, updateLayout), 10);
       }) as GraphRoot;
     }else {
       this._root.setState({
@@ -84,7 +84,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
           kgraph:kgraph,
           isRoot:true
       }, () => {
-        setTimeout(beginAnimation.bind(this, true), 10);
+        setTimeout(beginAnimation.bind(this, true, updateLayout), 10);
       });
     }
     this._kgraphRoot = kgraph.root;

@@ -30,7 +30,7 @@ class SCHVIZ {
     if(!this._kgraph) return;
     this._idGenerator.reset();
     var newKgraph = new KGraph(this._idGenerator, this._svgRenderer, this._scjson, options); 
-    this._kgraph.patch(newKgraph.root, options, cb);
+    this._kgraph.patch(newKgraph.root, options, cb, true);
   }
 
 
@@ -41,7 +41,7 @@ class SCHVIZ {
     this._scjson = sourceSCJSON;
     this._idGenerator.reset();
     var newKgraph = new KGraph(this._idGenerator, this._svgRenderer, this._scjson, options); 
-    this._kgraph.patch(newKgraph.root, options, cb);
+    this._kgraph.patch(newKgraph.root, options, cb, false);
   }
 
 

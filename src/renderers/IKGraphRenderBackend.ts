@@ -7,7 +7,7 @@ export interface IKGraphRenderBackend {
   unhighlightAllStates();
   highlightTransition(sourceStateId:string, targetStateIds:string[]);
   measureTextDimensions(text:string);
-  render(kgraph:KGraph);
+  render(kgraph:KGraph, updateLayout?:boolean);
 }
 
 export interface LayoutOptions {
