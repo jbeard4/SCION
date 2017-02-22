@@ -19,10 +19,10 @@ const ARROW_WIDTH = 3;
 const ARROW_HEIGHT = 5;
 const HYPERLINK_TYPE = 'hyperlink';
 
-function beginAnimation(updatKgraph, updateLayout){
+function beginAnimation(updateKgraph, updateLayout){
   var arr = Array.from(document.querySelectorAll(`
     path > animate${updateLayout ? '' : '.firstPathSegment'}, 
-    ${!updatKgraph && !updateLayout ? '' : '.node > text > animate,'} 
+    ${updateKgraph || updateLayout ? '' : '.node > text > animate,'} 
     rect > animate, 
     g > animateTransform, 
     svg > animate, 
