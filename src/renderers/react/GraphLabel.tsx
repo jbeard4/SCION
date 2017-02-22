@@ -1,0 +1,87 @@
+/// <reference path="./intrinsics.d.ts" />…
+/// <reference path="../../smil.d.ts" />…
+
+import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, Point} from '../../KGraph';
+import * as React from "react";
+import constants from '../../constants';
+
+interface GraphLabelProps {
+  edge : KGraphEdge; 
+  label : KGraphLabel;
+}
+
+interface GraphLabelAnimation {
+  from : Point;
+  to : Point;
+}
+
+export default class GraphLabel extends React.Component<GraphLabelProps, GraphLabelAnimation>  {
+
+  constructor(props){
+    super(props);
+    this._normalizeSelfLoopEdgeCoordinates(props.label, props.edge);
+    var point = {
+      x : props.label.x,
+      y : props.label.y,
+    };
+    this.state = {
+      from : point,
+      to : point
+    };
+  }
+
+  componentWillReceiveProps(props : GraphLabelProps){
+    this._normalizeSelfLoopEdgeCoordinates(props.label, props.edge);
+    var point = {
+      x : props.label.x,
+      y : props.label.y,
+    };
+    this.state = {
+      from : this.state.to,
+      to : point
+    };
+  }
+
+  public render(){
+    return <text className="edge-label"
+        textAnchor={this.props.label.$meta && this.props.label.$meta.textAnchor}
+        dominantBaseline={this.props.label.$meta && this.props.label.$meta.dominantBaseline}
+      >
+        <animate attributeName="x" attributeType="XML" fill="freeze" begin="indefinite"
+          from={this.state.from.x}
+          to={this.state.to.x}
+          dur={constants.ANIM_DURATION}
+          />
+        <animate attributeName="y" attributeType="XML" fill="freeze" begin="indefinite"
+          from={this.state.from.y}
+          to={this.state.to.y}
+          dur={constants.ANIM_DURATION}
+          />
+      {this.props.label.text}
+    </text>;
+  }
+
+  private _normalizeSelfLoopEdgeCoordinates(label : KGraphLabel, edge : KGraphEdge){
+    //fix edge label coordinates. Workaround for issue OpenKieler/klayjs#8
+    if(edge.source === edge.target){
+      //debugger;
+      label.x = edge.bendPoints[1].x;
+      label.y = edge.bendPoints[1].y;
+      label.$meta = {};
+      label.$meta.textAnchor = 'end';
+
+      //does the self edge loop up or down?
+      if(edge.bendPoints[0].y < edge.bendPoints[1].y){
+        //line has positive slope
+        //goes below the slope
+        label.$meta.dominantBaseline = 'text-before-edge';
+      }else {
+        //line has negative slope
+        //goes above the slope
+        label.$meta.dominantBaseline = 'text-after-edge';
+      }
+    }
+  }
+
+}
+

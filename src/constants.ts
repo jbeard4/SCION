@@ -3,11 +3,16 @@ import {LayoutOptions} from './renderers/IKGraphRenderBackend';
 export default {
   STATE_TYPES : ['history','initial','parallel','final','virtual'],
   HIGHLIGHT_ANIM_DURATION : 250,
-  ANIM_DURATION : 1500,
+  ANIM_DURATION : '1500ms',
   LEAF_NODE_PADDING_W : 2.5, 
   LEAF_NODE_PADDING_H : 2.5,
   INITIAL_RADIUS : 4,
   finalStateGradientId : 'finalStateGradient',
+  SVGNS : 'http://www.w3.org/2000/svg',
+  STROKE_WIDTH : 1,
+  ARROW_WIDTH : 3,
+  ARROW_HEIGHT : 5,
+  HYPERLINK_TYPE : 'hyperlink',
   layouts : {
     right: (<LayoutOptions>{
       algorithm: "de.cau.cs.kieler.klay.layered",
