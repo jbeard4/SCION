@@ -320,7 +320,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
       }
       {
         myEdges.map((edge,i) => (
-          <GraphEdge edge={edge} key={edge.id}/>
+          <GraphEdge edge={edge} key={`${edge.id}_${i}`}/>
         ))
       }
     </g>;
