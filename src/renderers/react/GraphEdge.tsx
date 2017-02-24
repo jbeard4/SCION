@@ -5,6 +5,7 @@ import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, Point} from '../../KGraph';
 import * as React from "react";
 import constants from '../../constants';
 import GraphLabel from './GraphLabel';
+const beginAnimationId = constants.beginAnimationId;
 
 interface GraphEdgeProps {
   edge : KGraphEdge;
@@ -79,7 +80,7 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
       begin : (
         this.props.edge.$hyperlink ? 
           this.props.edge.$hyperlink + '_last' + '.endEvent' : 
-          'indefinite' 
+          beginAnimationId 
       )
     }
   }
@@ -129,7 +130,7 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
        })(),
        begin : ( this.props.edge.$hyperlink ? 
           this.props.edge.$hyperlink + '_last' + '.endEvent' : 
-          'indefinite' 
+          beginAnimationId 
       )
     }
   }

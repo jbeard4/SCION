@@ -4,6 +4,7 @@
 import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, Point} from '../../KGraph';
 import * as React from "react";
 import constants from '../../constants';
+const beginAnimationId = constants.beginAnimationId;
 
 interface GraphLabelProps {
   edge : KGraphEdge; 
@@ -47,12 +48,12 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
         textAnchor={this.props.label.$meta && this.props.label.$meta.textAnchor}
         dominantBaseline={this.props.label.$meta && this.props.label.$meta.dominantBaseline}
       >
-        <animate attributeName="x" attributeType="XML" fill="freeze" begin="indefinite"
+        <animate attributeName="x" attributeType="XML" fill="freeze" begin={beginAnimationId}
           from={this.state.from.x}
           to={this.state.to.x}
           dur={constants.ANIM_DURATION}
           />
-        <animate attributeName="y" attributeType="XML" fill="freeze" begin="indefinite"
+        <animate attributeName="y" attributeType="XML" fill="freeze" begin={beginAnimationId}
           from={this.state.from.y}
           to={this.state.to.y}
           dur={constants.ANIM_DURATION}

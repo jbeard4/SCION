@@ -13,6 +13,10 @@ export default {
   ARROW_WIDTH : 3,
   ARROW_HEIGHT : 5,
   HYPERLINK_TYPE : 'hyperlink',
+  VIEWBOX_ANIM_ID : 'viewBoxAnimation',
+  get beginAnimationId(){
+    return `${this.VIEWBOX_ANIM_ID}.beginEvent`;
+  },
   layouts : {
     right: (<LayoutOptions>{
       algorithm: "de.cau.cs.kieler.klay.layered",

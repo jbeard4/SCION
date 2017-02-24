@@ -9,6 +9,8 @@ import EventEmitter = require('events');
 import _ = require('underscore');
 let ReactTransitionGroup = require('react-addons-transition-group');
 
+const beginAnimationId = constants.beginAnimationId;
+
 interface GraphNodeProps {
   node : KGraphNode;
   allEdges : KGraphEdge[];
@@ -35,6 +37,9 @@ interface GraphRootAnimation extends GraphNodeProps {
 
 export default class GraphRoot extends React.Component<GraphNodeProps, GraphRootAnimation> {
 
+  private svgRootElement : SVGSVGElement;
+  private viewBoxAnimation : SVGAnimationElement;
+
   constructor(props){
     super(props);
     this.state = {
@@ -46,9 +51,24 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
     };
   }
 
+  public pauseAnimation(){
+    console.log('pauseAnimation');
+    this.svgRootElement.pauseAnimations();
+  }
+
+  public beginAnimation(){
+    console.log('beginAnimation');
+    this.viewBoxAnimation.beginElement();    
+    this.svgRootElement.unpauseAnimations();    
+  }
+
   render(){
-    return <svg width="100%" height="100%" >
-      <animate attributeName="viewBox" fill="freeze" 
+    return <svg width="100%" height="100%" 
+      ref={(e: SVGSVGElement) => { this.svgRootElement = e; }}
+      >
+      <animate 
+        ref={(e: SVGAnimationElement) => { this.viewBoxAnimation = e; }}
+        id={constants.VIEWBOX_ANIM_ID} attributeName="viewBox" fill="freeze" 
         dur={constants.ANIM_DURATION} 
         values={
           [0,0,this.state.fromNode.width,this.state.fromNode.height].join(' ') + ';' + 
@@ -216,32 +236,32 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
       <animateTransform attributeName="transform" attributeType="XML"
                type="translate"
                fill="freeze" 
-               begin="indefinite"
+               begin={constants.beginAnimationId}
                dur={constants.ANIM_DURATION} 
                from={this.state.from.translate.x + ',' + this.state.from.translate.y} 
                to={this.state.to.translate.x + ',' + this.state.to.translate.y} />
       <rect visibility={this.props.isRoot ? 'hidden' : 'visible'} rx="2" ry="2">
         <animate attributeName="x" attributeType="XML"
                  fill="freeze" 
-                 begin="indefinite"
+                 begin={constants.beginAnimationId}
                  dur={constants.ANIM_DURATION} 
                  from={this.state.from.node.x} 
                  to={this.state.to.node.x} />
         <animate attributeName="y" attributeType="XML"
                  fill="freeze" 
-                 begin="indefinite"
+                 begin={constants.beginAnimationId}
                  dur={constants.ANIM_DURATION} 
                  from={this.state.from.node.y}
                  to={this.state.to.node.y} />
         <animate attributeName="width" attributeType="XML"
                  fill="freeze" 
-                 begin="indefinite"
+                 begin={constants.beginAnimationId}
                  dur={constants.ANIM_DURATION} 
                  from={this.state.from.node.width} 
                  to={this.state.to.node.width} />
         <animate attributeName="height" attributeType="XML"
                  fill="freeze" 
-                 begin="indefinite"
+                 begin={constants.beginAnimationId}
                  dur={constants.ANIM_DURATION} 
                  from={this.state.from.node.height} 
                  to={this.state.to.node.height} />
@@ -253,7 +273,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
         {this.props.node.$type === 'virtual' ? this.props.node.labels[0].text : this.props.node.id}
         <animate attributeName="opacity" attributeType="CSS"
                  fill="freeze" 
-                 begin="indefinite"
+                 begin={constants.beginAnimationId}
                  dur={constants.ANIM_DURATION} 
                  from={0} to={1} />
       </text>

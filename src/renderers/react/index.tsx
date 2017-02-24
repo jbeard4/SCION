@@ -12,20 +12,6 @@ import {KGraph, KGraphNode, KGraphEdge, KGraphLabel} from '../../KGraph';
 
 import {IKGraphRenderBackend, LayoutOptions} from '../IKGraphRenderBackend';
 
-function beginAnimation(updateKgraph, updateLayout){
-  var arr = Array.from(document.querySelectorAll(`
-    path > animate${updateLayout ? '' : '.firstPathSegment'}, 
-    ${updateKgraph || updateLayout ? '' : '.node > text > animate,'} 
-    rect > animate, 
-    g > animateTransform, 
-    svg > animate, 
-    text.edge-label > animate
-  `));
-  arr.forEach( 
-    (e:SVGAnimationElement) => e.beginElement()
-  );
-}
-
 export default class SVGRenderer implements IKGraphRenderBackend {
 
   _parentNode:SVGElement;
@@ -62,14 +48,15 @@ export default class SVGRenderer implements IKGraphRenderBackend {
     console.log('render',kgraph);
     var allEdges = this._getAllEdges(kgraph);
     var t1 = Date.now();
-    var root = <GraphRoot node={kgraph.root} allEdges={allEdges} kgraph={kgraph} isRoot={true}/>;
     if(!this._root) {
+      var root = <GraphRoot node={kgraph.root} allEdges={allEdges} kgraph={kgraph} isRoot={true}/>;
       this._root = ReactDOM.render(root, this._parentNode, () => {
         console.log('Rendered in %sms',Date.now() - t1);
-        //this._beginAnimation();
-        setTimeout(beginAnimation.bind(this, false, updateLayout), 10);
+        setTimeout(() => {this._root.beginAnimation();},1);
       }) as GraphRoot;
+      this._root.pauseAnimation();
     }else {
+      this._root.pauseAnimation();
       this._root.setState({
           node:kgraph.root, 
           fromNode: this._kgraphRoot,    //not yet updated. use as prev kgraph root
@@ -77,7 +64,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
           kgraph:kgraph,
           isRoot:true
       }, () => {
-        setTimeout(beginAnimation.bind(this, true, updateLayout), 10);
+        setTimeout(() => {this._root.beginAnimation();},1);
       });
     }
     this._kgraphRoot = kgraph.root;
