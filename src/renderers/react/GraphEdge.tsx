@@ -86,6 +86,10 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
 
   componentWillReceiveProps(props : GraphEdgeProps){
     //compute updated props
+    console.log('componentWillReceiveProps', this.props.edge.id);
+    //discard null change.
+    if(JSON.stringify(props) === JSON.stringify(this.props)) return;
+
     var animationSegments = this._toAnimationSegments(props.edge);
     var points = this._edgeToPoints(props.edge);
     this.state = {
@@ -123,7 +127,10 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
 
         return allSegments;
        })(),
-       begin : 'indefinite' 
+       begin : ( this.props.edge.$hyperlink ? 
+          this.props.edge.$hyperlink + '_last' + '.endEvent' : 
+          'indefinite' 
+      )
     }
   }
 
@@ -291,5 +298,33 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
             concat(edge.bendPoints || []).
             concat([edge.targetPoint]);
   }
+
+  componentWillUnmount () {
+    console.log('componentWillUnmount', this.props.edge.id);
+  }
+
+  componentWillAppear (callback) {
+    console.log('componentWillAppear', this.props.edge.id);
+    setTimeout(callback,1);
+  }
+
+  componentWillEnter (callback) {
+    console.log('componentWillEnter', this.props.edge.id);
+    setTimeout(callback,1);
+  }
+
+  componentWillLeave (callback) {
+    console.log('componentWillLeave', this.props.edge.id);
+    setTimeout(callback,1);
+  }
+
+  componentWillMount(){
+    console.log('componentWillMount', this.props.edge.id);
+  }
+
+  componentDidMount() {
+    console.log('componentDidMount', this.props.edge.id);
+  }
+
 }
 

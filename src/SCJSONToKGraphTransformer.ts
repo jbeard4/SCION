@@ -303,7 +303,7 @@ export default class SCJSONToKGraphTransformer extends EventEmitter{
         }
         let $type = 'initial';
         fakeInitialState = {
-          id : this._idGenerator.generateId(parentState.id, $type),
+          id : this._idGenerator.generateId(state.id, $type),
           $type : $type,
           transitions : [transition] 
         };
@@ -317,7 +317,7 @@ export default class SCJSONToKGraphTransformer extends EventEmitter{
           if(!initialChildren.length && state.$type !== 'parallel'){
             let $type = 'initial';
             fakeInitialState = {
-              id : this._idGenerator.generateId(parentState.id, $type),
+              id : this._idGenerator.generateId(state.id, $type),
               $type : $type,
               transitions : [{
                 target : state.states[0].id

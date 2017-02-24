@@ -191,7 +191,7 @@ export class KGraph extends SCJSONToKGraphTransformer {
             var targetStates = edge.target.map(function(target){return this._idMap.get(target);}, this);
 
             //we'll add our edges to the parent of the source state
-            var grandparentNode = this._getKgraphNodeById(this._getParentKGraphNode(sourceState.id));
+            var grandparentNode = this.getKgraphNodeById(this._getParentKGraphNode(sourceState.id));
             if(!grandparentNode) grandparentNode = parentState;
 
             if(sourceIsAncestorOfTarget) {
@@ -293,7 +293,7 @@ export class KGraph extends SCJSONToKGraphTransformer {
   _getLCA(states){
     var stateAncestors = states.map(function(state){ return this._getAncestors(state); }, this);
     var lcaId = _.intersection.apply(_, stateAncestors)[0];
-    return this._getKgraphNodeById(lcaId);
+    return this.getKgraphNodeById(lcaId);
   }
 
 
@@ -382,7 +382,7 @@ export class KGraph extends SCJSONToKGraphTransformer {
   }
 
 
-  _getKgraphNodeById(kgraphNodeId){
+  public getKgraphNodeById(kgraphNodeId){
     return this._idMap.get(kgraphNodeId);
   }
 
@@ -418,7 +418,7 @@ export class KGraph extends SCJSONToKGraphTransformer {
 
     var pseudonode = this._createPseudonode(parentState);
 
-    var grandparentNode = this._getKgraphNodeById(this._getParentKGraphNode(parentState.id));
+    var grandparentNode = this.getKgraphNodeById(this._getParentKGraphNode(parentState.id));
     if(!grandparentNode) grandparentNode = parentState;
 
     grandparentNode.edges.push(

@@ -7,6 +7,7 @@ import constants from '../../constants';
 import GraphEdge from './GraphEdge';
 import EventEmitter = require('events');
 import _ = require('underscore');
+let ReactTransitionGroup = require('react-addons-transition-group');
 
 interface GraphNodeProps {
   node : KGraphNode;
@@ -68,7 +69,9 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
           this._markers()
         }
       </defs>
-      <GraphNode node={this.state.node} allEdges={this.state.allEdges} kgraph={this.state.kgraph} isRoot={true} />
+      <ReactTransitionGroup component="g">
+        <GraphNode node={this.state.node} allEdges={this.state.allEdges} kgraph={this.state.kgraph} isRoot={true} />
+      </ReactTransitionGroup>
     </svg>;
   }
 
@@ -123,6 +126,38 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
     };
   }
 
+  shouldComponentUpdate(nextProps, nextState){
+    //TODO: also do shallow compare of current and previous?
+    return nextProps.kgraph.getKgraphNodeById(nextProps.node.id) !== undefined;   //verify that node exists on the given kgraph
+  }
+
+  componentWillUnmount () {
+    console.log('componentWillUnmount', this.props.node.id);
+  }
+
+  componentWillAppear (callback) {
+    console.log('componentWillAppear', this.props.node.id);
+    setTimeout(callback,1);
+  }
+
+  componentWillEnter (callback) {
+    console.log('componentWillEnter', this.props.node.id);
+    setTimeout(callback,1);
+  }
+
+  componentWillLeave (callback) {
+    console.log('componentWillLeave', this.props.node.id);
+    setTimeout(callback,1);
+  }
+
+  componentWillMount(){
+    console.log('componentWillMount', this.props.node.id);
+  }
+
+  componentDidMount() {
+    console.log('componentDidMount', this.props.node.id);
+  }
+
   _toNode(node){
     let toNode = Object.create(new EventEmitter()) as KGraphNode;
     _.extend(toNode, {
@@ -144,7 +179,9 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
   }
 
   componentWillReceiveProps(props : GraphNodeProps){
-    //console.log('componentWillReceiveProps', 'this.state',this.state);
+    console.log('componentWillReceiveProps', this.props.node.id);
+
+    if(JSON.stringify(props.node) === JSON.stringify(this.props.node)) return;
     this.state = { 
       from : this.state.to,
       to : this._toNode(props.node)
@@ -167,6 +204,8 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
 
     let myEdges = edgesOriginatingFromThisStateAndTargetingDescendant.concat(
                       edgesOriginatingFromChildStateAndNotTargetingDescendant); 
+
+    var edgeKeys = {};
 
     //if(this.state.to.node.id === 'P') console.log('this.state.to.node', this.state.to.node);
     //TODO: animate transform. 
@@ -218,16 +257,21 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
                  dur={constants.ANIM_DURATION} 
                  from={0} to={1} />
       </text>
-      {
-        this.props.node.children && this.props.node.children.map(child => (
-          <GraphNode node={child} key={child.id} allEdges={this.props.allEdges} kgraph={this.props.kgraph} isRoot={false}/>
-        ))
-      }
-      {
-        myEdges.map((edge,i) => (
-          <GraphEdge edge={edge} key={`${edge.id}_${i}`}/>
-        ))
-      }
+
+      <ReactTransitionGroup component="g">
+        { 
+          this.props.node.children && this.props.node.children.map(child => (
+            <GraphNode node={child} key={child.id} allEdges={this.props.allEdges} kgraph={this.props.kgraph} isRoot={false}/>
+          ))
+        }
+      </ReactTransitionGroup>
+      <ReactTransitionGroup component="g">
+        { 
+          myEdges.map((edge) => (
+            <GraphEdge edge={edge} key={`${edge.id}_${edgeKeys[edge.id] === undefined ? edgeKeys[edge.id] = 0 : edgeKeys[edge.id]++}`}/>
+          )) 
+        }
+      </ReactTransitionGroup>
     </g>;
   }
 }
