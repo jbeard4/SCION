@@ -10,6 +10,7 @@ let ReactTransitionGroup = require('react-addons-transition-group');
 
 interface GraphEdgeProps {
   edge : KGraphEdge;
+  semaphore : any;
 }
 
 interface GraphEdgeAnimation {
@@ -84,13 +85,17 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
           beginAnimationId 
       )
     }
+
+    props.semaphore[this.props.edge.id] = true;
   }
 
   componentWillReceiveProps(props : GraphEdgeProps){
     //compute updated props
-    console.log('componentWillReceiveProps', this.props.edge.id);
-    //discard null change.
-    if(JSON.stringify(props) === JSON.stringify(this.props)) return;
+    console.log('componentWillReceiveProps', this.props.edge.id, props.semaphore[this.props.edge.id]);
+
+    if(props.semaphore[this.props.edge.id]) return;
+
+    props.semaphore[this.props.edge.id] = true;
 
     var animationSegments = this._toAnimationSegments(props.edge);
     var points = this._edgeToPoints(props.edge);

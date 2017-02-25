@@ -16,6 +16,7 @@ interface GraphNodeProps {
   allEdges : KGraphEdge[];
   kgraph : KGraph;
   isRoot : boolean;
+  semaphore : any;
 }
 
 interface KGraphNodeAnimation {
@@ -47,8 +48,10 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
       allEdges : props.allEdges,
       kgraph : props.kgraph,
       isRoot : props.isRoot,
-      fromNode : props.node
+      fromNode : props.node,
+      semaphore : props.semaphore 
     };
+    props.semaphore[props.node.id] = true;
   }
 
   public pauseAnimation(){
@@ -93,7 +96,7 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
         }
       </defs>
       <ReactTransitionGroup component="g">
-        <GraphNode node={this.state.node} allEdges={this.state.allEdges} kgraph={this.state.kgraph} isRoot={true} />
+        <GraphNode node={this.state.node} allEdges={this.state.allEdges} kgraph={this.state.kgraph} isRoot={true} semaphore={this.state.semaphore} />
       </ReactTransitionGroup>
     </svg>;
   }
@@ -202,21 +205,17 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
   }
 
   componentWillReceiveProps(props : GraphNodeProps){
-    console.log('componentWillReceiveProps', this.props.node.id);
+    console.log('componentWillReceiveProps', this.props.node.id, props.semaphore[this.props.node.id]);
 
-    if(JSON.stringify(props.node) === JSON.stringify(this.props.node)) return;
-    //populate "from" by querying the state of the DOM...
+    if(props.semaphore[this.props.node.id]) return;
 
-    //node : KGraphNode;
-    //translate : {
-    //  x : number;
-    //  y : number;
-    //}
+    props.semaphore[this.props.node.id] = true;
 
     this.state = { 
       from : this.state.to,
       to : this._toNode(props.node)
     };
+    console.log('this.state', JSON.stringify(this.state));
   }
 
   render(){
@@ -294,14 +293,14 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
       <ReactTransitionGroup component="g">
         { 
           this.props.node.children && this.props.node.children.map(child => (
-            <GraphNode node={child} key={child.id} allEdges={this.props.allEdges} kgraph={this.props.kgraph} isRoot={false}/>
+            <GraphNode node={child} key={child.id} allEdges={this.props.allEdges} kgraph={this.props.kgraph} isRoot={false} semaphore={this.props.semaphore}/>
           ))
         }
       </ReactTransitionGroup>
       <ReactTransitionGroup component="g">
         { 
           myEdges.map((edge) => (
-            <GraphEdge edge={edge} key={`${edge.id}_${edgeKeys[edge.id] === undefined ? edgeKeys[edge.id] = 0 : edgeKeys[edge.id]++}`}/>
+            <GraphEdge edge={edge} key={`${edge.id}_${edgeKeys[edge.id] === undefined ? edgeKeys[edge.id] = 0 : edgeKeys[edge.id]++}`} semaphore={this.props.semaphore}/>
           )) 
         }
       </ReactTransitionGroup>
