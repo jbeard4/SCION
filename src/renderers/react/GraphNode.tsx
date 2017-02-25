@@ -17,6 +17,7 @@ interface GraphNodeProps {
   kgraph : KGraph;
   isRoot : boolean;
   semaphore : any;
+  updateLayout : boolean;
 }
 
 interface KGraphNodeAnimation {
@@ -49,7 +50,8 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
       kgraph : props.kgraph,
       isRoot : props.isRoot,
       fromNode : props.node,
-      semaphore : props.semaphore 
+      semaphore : props.semaphore,
+      updateLayout : props.updateLayout
     };
     props.semaphore[props.node.id] = true;
   }
@@ -66,6 +68,8 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
   }
 
   render(){
+
+    console.log('render graphroot', this.props.updateLayout);
     
     let from = `${[0,0,this.state.fromNode.width,this.state.fromNode.height].join(' ')}`;
     let to = `${[0,0,this.state.node.width,this.state.node.height].join(' ')}`;
@@ -96,7 +100,7 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
         }
       </defs>
       <ReactTransitionGroup component="g">
-        <GraphNode node={this.state.node} allEdges={this.state.allEdges} kgraph={this.state.kgraph} isRoot={true} semaphore={this.state.semaphore} />
+        <GraphNode node={this.state.node} allEdges={this.state.allEdges} kgraph={this.state.kgraph} isRoot={true} semaphore={this.state.semaphore} updateLayout={this.state.updateLayout} />
       </ReactTransitionGroup>
     </svg>;
   }
@@ -207,7 +211,8 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
   }
 
   componentWillReceiveProps(props : GraphNodeProps){
-    console.log('componentWillReceiveProps', this.props.node.id, props.semaphore[this.props.node.id]);
+    console.log('componentWillReceiveProps', this.props.node.id, props.semaphore[this.props.node.id], props);
+    console.log('props.updateLayout', props.updateLayout);
 
     if(props.semaphore[this.props.node.id]) return;
 
@@ -295,14 +300,14 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
       <ReactTransitionGroup component="g">
         { 
           this.props.node.children && this.props.node.children.map(child => (
-            <GraphNode node={child} key={child.id} allEdges={this.props.allEdges} kgraph={this.props.kgraph} isRoot={false} semaphore={this.props.semaphore}/>
+            <GraphNode node={child} key={child.id} allEdges={this.props.allEdges} kgraph={this.props.kgraph} isRoot={false} semaphore={this.props.semaphore} updateLayout={this.props.updateLayout}/>
           ))
         }
       </ReactTransitionGroup>
       <ReactTransitionGroup component="g">
         { 
           myEdges.map((edge) => (
-            <GraphEdge edge={edge} key={`${edge.id}_${edgeKeys[edge.id] === undefined ? edgeKeys[edge.id] = 0 : edgeKeys[edge.id]++}`} semaphore={this.props.semaphore}/>
+            <GraphEdge edge={edge} key={`${edge.id}_${edgeKeys[edge.id] === undefined ? edgeKeys[edge.id] = 0 : edgeKeys[edge.id]++}`} semaphore={this.props.semaphore} updateLayout={this.props.updateLayout}/>
           )) 
         }
       </ReactTransitionGroup>

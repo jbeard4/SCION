@@ -11,6 +11,7 @@ let ReactTransitionGroup = require('react-addons-transition-group');
 interface GraphEdgeProps {
   edge : KGraphEdge;
   semaphore : any;
+  updateLayout : boolean;
 }
 
 interface GraphEdgeAnimation {
@@ -81,19 +82,22 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
         }
         return allSegments;
        })(),
-      begin : (
-        this.props.edge.$hyperlink ? 
-          this.props.edge.$hyperlink + '_last' + '.endEvent' : 
-          beginAnimationId 
-      )
+      begin : this._toBegin(props)
     }
 
     props.semaphore[this.props.edge.id] = true;
   }
 
+  _toBegin(props){
+    return props.edge.$hyperlink && !props.updateLayout && !this.initialRender ? 
+      `${props.edge.$hyperlink}_last.endEvent` : 
+      beginAnimationId; 
+  }
+
   componentWillReceiveProps(props : GraphEdgeProps){
     //compute updated props
-    console.log('componentWillReceiveProps', this.props.edge.id, props.semaphore[this.props.edge.id]);
+    console.log('componentWillReceiveProps', this.props.edge.id, props.semaphore[this.props.edge.id], props);
+    console.log('props.updateLayout', props.updateLayout);
 
     if(props.semaphore[this.props.edge.id]) return;
 
@@ -135,11 +139,8 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
         });
 
         return allSegments;
-       })(),
-       begin : ( this.props.edge.$hyperlink ? 
-          this.props.edge.$hyperlink + '_last' + '.endEvent' : 
-          beginAnimationId 
-      )
+      })(),
+      begin : this._toBegin(props)
     }
   }
 
@@ -242,7 +243,7 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
       <ReactTransitionGroup component="g">
         {
           this.props.edge.labels && this.props.edge.labels.map((label, i) => (
-            <GraphLabel edge={this.props.edge} key={i} label={label}/>
+            <GraphLabel edge={this.props.edge} key={i} label={label} updateLayout={this.props.updateLayout}/>
           ))
         }
       </ReactTransitionGroup>

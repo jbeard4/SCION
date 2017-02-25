@@ -9,6 +9,7 @@ const beginAnimationId = constants.beginAnimationId;
 interface GraphLabelProps {
   edge : KGraphEdge; 
   label : KGraphLabel;
+  updateLayout : boolean;
 }
 
 interface GraphLabelAnimation {
@@ -34,6 +35,8 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
   }
 
   componentWillReceiveProps(props : GraphLabelProps){
+    console.log('componentWillReceiveProps', props);
+    console.log('props.updateLayout', props.updateLayout);
     this._normalizeSelfLoopEdgeCoordinates(props.label, props.edge);
     var point = {
       x : props.label.x,

@@ -3,7 +3,7 @@ import {LayoutOptions} from './renderers/IKGraphRenderBackend';
 export default {
   STATE_TYPES : ['history','initial','parallel','final','virtual'],
   HIGHLIGHT_ANIM_DURATION : 250,
-  ANIM_DURATION : '1500ms',
+  ANIM_DURATION : '500ms',
   LEAF_NODE_PADDING_W : 2.5, 
   LEAF_NODE_PADDING_H : 2.5,
   INITIAL_RADIUS : 4,
