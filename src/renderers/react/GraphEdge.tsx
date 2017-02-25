@@ -6,6 +6,7 @@ import * as React from "react";
 import constants from '../../constants';
 import GraphLabel from './GraphLabel';
 const beginAnimationId = constants.beginAnimationId;
+let ReactTransitionGroup = require('react-addons-transition-group');
 
 interface GraphEdgeProps {
   edge : KGraphEdge;
@@ -231,11 +232,13 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
                    className={ !this.props.edge.$hyperlink ? 'firstPathSegment' : '' }
                    dur={constants.ANIM_DURATION} />
       </path>
-      {
-        this.props.edge.labels && this.props.edge.labels.map((label, i) => (
-          <GraphLabel edge={this.props.edge} key={i} label={label}/>
-        ))
-      }
+      <ReactTransitionGroup component="g">
+        {
+          this.props.edge.labels && this.props.edge.labels.map((label, i) => (
+            <GraphLabel edge={this.props.edge} key={i} label={label}/>
+          ))
+        }
+      </ReactTransitionGroup>
     </g>;
   }
 

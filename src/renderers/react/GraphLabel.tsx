@@ -43,10 +43,23 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
     };
   }
 
+  componentWillAppear (callback) {
+    console.log('componentWillAppear', this.props.edge.id);
+    setTimeout(callback,1);
+    //TODO: start the animation now? No.... Well maybe. We could set up a listener for the end event before we call the callback, in order to make this asynchronous
+    //this might have the effect of buffering animations, which might work well. 
+  }
+
+  componentWillEnter (callback) {
+    console.log('componentWillEnter', this.props.edge.id);
+    setTimeout(callback,1);
+  }
+
   public render(){
     return <text className="edge-label"
         textAnchor={this.props.label.$meta && this.props.label.$meta.textAnchor}
         dominantBaseline={this.props.label.$meta && this.props.label.$meta.dominantBaseline}
+        opacity="0"
       >
         <animate attributeName="x" attributeType="XML" fill="freeze" begin={beginAnimationId}
           from={this.state.from.x}
@@ -58,6 +71,11 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
           to={this.state.to.y}
           dur={constants.ANIM_DURATION}
           />
+        <animate attributeName="opacity" attributeType="XML"
+                 fill="freeze" 
+                 begin={constants.beginAnimationId}
+                 dur={constants.ANIM_DURATION} 
+                 from={0} to={1} />
       {this.props.label.text}
     </text>;
   }

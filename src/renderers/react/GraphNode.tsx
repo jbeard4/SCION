@@ -269,9 +269,11 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
       <text   
         x={this.props.node.width / 2} 
         y={isLeaf ? this.props.node.height / 2 : constants.LEAF_NODE_PADDING_H}  
-        visibility={this.props.isRoot ? 'hidden' : 'visible'}>
+        visibility={this.props.isRoot ? 'hidden' : 'visible'}
+        opacity="0"
+        >
         {this.props.node.$type === 'virtual' ? this.props.node.labels[0].text : this.props.node.id}
-        <animate attributeName="opacity" attributeType="CSS"
+        <animate attributeName="opacity" attributeType="XML"
                  fill="freeze" 
                  begin={constants.beginAnimationId}
                  dur={constants.ANIM_DURATION} 
@@ -294,4 +296,5 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
       </ReactTransitionGroup>
     </g>;
   }
+
 }
