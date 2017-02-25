@@ -137,6 +137,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
   initialRender : boolean;
   svgTextElement : SVGTextElement;
   svgRectElement : SVGRectElement;
+  rectXAnimationElement : SVGAnimationElement;
 
   constructor(props){
     super(props);
@@ -213,7 +214,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
 
     this.forceUpdate();   //it seems to be always necessary to force an update here
 
-    if(callback) setTimeout(callback, constants.ANIM_DUR);
+    if(callback) this.rectXAnimationElement.addEventListener('endEvent', callback);
   }
 
   componentWillLeave (callback) {
@@ -296,9 +297,6 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
 
     var edgeKeys = {};
 
-
-    //if(this.state.to.node.id === 'P') console.log('this.state.to.node', this.state.to.node);
-    //TODO: animate transform. 
     let toReturn = <g id={this.state.to.node.id} 
             className={'node ' + 
                         (isLeaf ? 'leaf' : 'compound') + ' ' + 
@@ -314,6 +312,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
         ref={(e: SVGRectElement) => { this.svgRectElement = e; }}
         >
         <animate attributeName="x" attributeType="XML"
+                 ref={(e: SVGAnimationElement) => { this.rectXAnimationElement = e; }}
                  fill="freeze" 
                  begin={constants.beginAnimationId}
                  dur={constants.ANIM_DURATION} 
