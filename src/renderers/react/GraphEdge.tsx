@@ -28,6 +28,8 @@ interface PathSegment {
 
 export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdgeAnimation> {
 
+  initialRender : boolean;
+
   constructor(props){
     super(props);
     //take everything currently in render, and move into the constructor to compute values for entry animation
@@ -217,7 +219,7 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
 
   public render(){
     var edgeId = this.props.edge.id;
-    return <g>
+    let toReturn = <g>
       <path 
         className={'link ' + (this.props.edge.$type || '')} 
         id={edgeId}
@@ -245,6 +247,10 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
         }
       </ReactTransitionGroup>
     </g>;
+
+    this.initialRender = true;
+
+    return toReturn;
   }
 
   private _computeEdgeLength(edge){

@@ -18,6 +18,8 @@ interface GraphLabelAnimation {
 
 export default class GraphLabel extends React.Component<GraphLabelProps, GraphLabelAnimation>  {
 
+  initialRender : boolean;
+
   constructor(props){
     super(props);
     this._normalizeSelfLoopEdgeCoordinates(props.label, props.edge);
@@ -56,7 +58,7 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
   }
 
   public render(){
-    return <text className="edge-label"
+    let toReturn = <text className="edge-label"
         textAnchor={this.props.label.$meta && this.props.label.$meta.textAnchor}
         dominantBaseline={this.props.label.$meta && this.props.label.$meta.dominantBaseline}
         opacity="0"
@@ -80,9 +82,13 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
                  fill="freeze" 
                  begin={constants.beginAnimationId}
                  dur={constants.ANIM_DURATION} 
-                 from={0} to={1} />
+                 from={this.initialRender ? 0 : 1} to={1} />
       {this.props.label.text}
     </text>;
+
+  this.initialRender = true;
+
+  return toReturn;
   }
 
   private _normalizeSelfLoopEdgeCoordinates(label : KGraphLabel, edge : KGraphEdge){

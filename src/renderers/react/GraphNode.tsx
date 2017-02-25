@@ -126,6 +126,8 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
 
 class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
 
+  initialRender : boolean;
+
   constructor(props){
     super(props);
 
@@ -239,7 +241,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
 
     //if(this.state.to.node.id === 'P') console.log('this.state.to.node', this.state.to.node);
     //TODO: animate transform. 
-    return <g id={this.state.to.node.id} 
+    let toReturn = <g id={this.state.to.node.id} 
             className={'node ' + 
                         (isLeaf ? 'leaf' : 'compound') + ' ' + 
                         (this.state.to.node.$type ? 'type__' + this.state.to.node.$type : '')} >
@@ -287,7 +289,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
                  fill="freeze" 
                  begin={constants.beginAnimationId}
                  dur={constants.ANIM_DURATION} 
-                 from={0} to={1} />
+                 from={this.initialRender ? 1 : 0} to={1} />
       </text>
 
       <ReactTransitionGroup component="g">
@@ -305,6 +307,12 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
         }
       </ReactTransitionGroup>
     </g>;
+
+    this.initialRender = true;
+
+    return toReturn;
+    
   }
+
 
 }
