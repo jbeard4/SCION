@@ -58,11 +58,16 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
 
   public beginAnimation(){
     console.log('beginAnimation');
-    this.viewBoxAnimation.beginElement();    
+    this.viewBoxAnimation.beginElement();
     this.svgRootElement.unpauseAnimations();    
   }
 
   render(){
+    
+    let from = `${[0,0,this.state.fromNode.width,this.state.fromNode.height].join(' ')}`;
+    let to = `${[0,0,this.state.node.width,this.state.node.height].join(' ')}`;
+    let viewBoxValues = `${from};${to}`;
+    console.log('viewBoxValues ', viewBoxValues );
     return <svg width="100%" height="100%" 
       ref={(e: SVGSVGElement) => { this.svgRootElement = e; }}
       >
@@ -70,10 +75,8 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
         ref={(e: SVGAnimationElement) => { this.viewBoxAnimation = e; }}
         id={constants.VIEWBOX_ANIM_ID} attributeName="viewBox" fill="freeze" 
         dur={constants.ANIM_DURATION} 
-        values={
-          [0,0,this.state.fromNode.width,this.state.fromNode.height].join(' ') + ';' + 
-          [0,0,this.state.node.width,this.state.node.height].join(' ')
-        }/>
+        from={from}
+        to={to}/>
       <defs>
         { 
           ['','Highlighted'].map( (s) => (
@@ -202,6 +205,14 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
     console.log('componentWillReceiveProps', this.props.node.id);
 
     if(JSON.stringify(props.node) === JSON.stringify(this.props.node)) return;
+    //populate "from" by querying the state of the DOM...
+
+    //node : KGraphNode;
+    //translate : {
+    //  x : number;
+    //  y : number;
+    //}
+
     this.state = { 
       from : this.state.to,
       to : this._toNode(props.node)

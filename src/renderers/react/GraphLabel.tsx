@@ -61,6 +61,11 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
         dominantBaseline={this.props.label.$meta && this.props.label.$meta.dominantBaseline}
         opacity="0"
       >
+        <animate attributeName="opacity" attributeType="XML"
+                 fill="freeze" 
+                 begin={constants.beginAnimationId}
+                 dur={constants.ANIM_DURATION} 
+                 from={0} to={1} />
         <animate attributeName="x" attributeType="XML" fill="freeze" begin={beginAnimationId}
           from={this.state.from.x}
           to={this.state.to.x}

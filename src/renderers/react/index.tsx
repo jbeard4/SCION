@@ -64,7 +64,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
           kgraph:kgraph,
           isRoot:true
       }, () => {
-        setTimeout(() => {this._root.beginAnimation();},1);
+        this._root.beginAnimation();
       });
     }
     this._kgraphRoot = kgraph.root;
