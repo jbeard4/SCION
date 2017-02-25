@@ -7,6 +7,7 @@ import constants from '../../constants';
 import GraphEdge from './GraphEdge';
 import EventEmitter = require('events');
 import _ = require('underscore');
+import Q = require('q');
 let ReactTransitionGroup = require('react-addons-transition-group');
 
 const beginAnimationId = constants.beginAnimationId;
@@ -18,6 +19,7 @@ interface GraphNodeProps {
   isRoot : boolean;
   semaphore : any;
   updateLayout : boolean;
+  parentIsExiting : boolean;
 }
 
 interface KGraphNodeAnimation {
@@ -25,12 +27,13 @@ interface KGraphNodeAnimation {
   translate : {
     x : number;
     y : number;
-  }
+  },
 }
 
 interface GraphNodeAnimation {
   from : KGraphNodeAnimation;
   to : KGraphNodeAnimation;
+  exiting? : boolean
 }
 
 interface GraphRootAnimation extends GraphNodeProps {
@@ -51,7 +54,8 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
       isRoot : props.isRoot,
       fromNode : props.node,
       semaphore : props.semaphore,
-      updateLayout : props.updateLayout
+      updateLayout : props.updateLayout,
+      parentIsExiting : props.parentIsExiting 
     };
     props.semaphore[props.node.id] = true;
   }
@@ -100,7 +104,7 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
         }
       </defs>
       <ReactTransitionGroup component="g">
-        <GraphNode node={this.state.node} allEdges={this.state.allEdges} kgraph={this.state.kgraph} isRoot={true} semaphore={this.state.semaphore} updateLayout={this.state.updateLayout} />
+        <GraphNode node={this.state.node} allEdges={this.state.allEdges} kgraph={this.state.kgraph} isRoot={true} semaphore={this.state.semaphore} updateLayout={this.state.updateLayout} parentIsExiting={this.props.parentIsExiting}/>
       </ReactTransitionGroup>
     </svg>;
   }
@@ -131,6 +135,8 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
 class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
 
   initialRender : boolean;
+  svgTextElement : SVGTextElement;
+  svgRectElement : SVGRectElement;
 
   constructor(props){
     super(props);
@@ -146,7 +152,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
       height : 0
     });
 
-    this.state = { 
+    this.state = {
       from : {
         node : fromNode,
         translate : {
@@ -177,9 +183,42 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
     setTimeout(callback,1);
   }
 
+  _exit(callback?){
+
+    /* FIXME: I would prefer to use SMIl for exit animation, but this is not possible,
+ *            as render will never be called after componentWillLeave.
+ *            TODO: see if I can force re-render.
+ *  */
+    let toNode = Object.create(new EventEmitter()) as KGraphNode;
+    _.extend(toNode, {
+      id : this.state.to.node.id,
+      $type : this.state.to.node.$type,
+      labels : this.state.to.node.labels,
+      x : this.state.to.node.width / 2,
+      y : this.state.to.node.height / 2,
+      width : 0,
+      height : 0
+    });
+
+    this.state = { 
+      from : this.state.to,
+      to : {
+        node : toNode,
+        translate : this.state.to.translate
+      },
+      exiting : true
+    };
+
+    console.log('exit animation for node', this.state.to.node.id, this.state);
+
+    this.forceUpdate();   //it seems to be always necessary to force an update here
+
+    if(callback) setTimeout(callback, constants.ANIM_DUR);
+  }
+
   componentWillLeave (callback) {
     console.log('componentWillLeave', this.props.node.id);
-    setTimeout(callback,1);
+    this._exit(callback);
   }
 
   componentWillMount(){
@@ -213,6 +252,12 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
   componentWillReceiveProps(props : GraphNodeProps){
     console.log('componentWillReceiveProps', this.props.node.id, props.semaphore[this.props.node.id], props);
     console.log('props.updateLayout', props.updateLayout);
+    console.log('props.parentIsExiting', props.parentIsExiting);
+
+    if(props.parentIsExiting){
+      this._exit();
+      return;   //we probably don't need to force him to update
+    }
 
     if(props.semaphore[this.props.node.id]) return;
 
@@ -226,23 +271,31 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
   }
 
   render(){
+    console.log('render',this.state.to.node.id);
+
     var isLeaf = !(this.props.node.children && this.props.node.children.length);
 
-    let edgesOriginatingFromChildStateAndNotTargetingDescendant = 
-      !this.props.node.children ? [] : 
-      this.props.node.children.map((child) => 
+    let myEdges;
+    if(!this.state.exiting){
+      let edgesOriginatingFromChildStateAndNotTargetingDescendant = 
+        !this.props.node.children ? [] : 
+        this.props.node.children.map((child) => 
+            this.props.allEdges.
+              filter( (edge) => (child.id === edge.source && !this.props.kgraph.isSourceAncestorOfTarget(edge.source, edge.target)))
+          ).reduce( ((a,b) => a.concat(b) ), []);
+
+      let edgesOriginatingFromThisStateAndTargetingDescendant = 
           this.props.allEdges.
-            filter( (edge) => (child.id === edge.source && !this.props.kgraph.isSourceAncestorOfTarget(edge.source, edge.target)))
-        ).reduce( ((a,b) => a.concat(b) ), []);
+            filter( (edge) => (this.props.node.id === edge.source && this.props.kgraph.isSourceAncestorOfTarget(edge.source, edge.target) ) )
 
-    let edgesOriginatingFromThisStateAndTargetingDescendant = 
-        this.props.allEdges.
-          filter( (edge) => (this.props.node.id === edge.source && this.props.kgraph.isSourceAncestorOfTarget(edge.source, edge.target) ) )
-
-    let myEdges = edgesOriginatingFromThisStateAndTargetingDescendant.concat(
-                      edgesOriginatingFromChildStateAndNotTargetingDescendant); 
+      myEdges = edgesOriginatingFromThisStateAndTargetingDescendant.concat(
+                        edgesOriginatingFromChildStateAndNotTargetingDescendant); 
+    } else {
+      myEdges = [];
+    }
 
     var edgeKeys = {};
+
 
     //if(this.state.to.node.id === 'P') console.log('this.state.to.node', this.state.to.node);
     //TODO: animate transform. 
@@ -257,7 +310,9 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
                dur={constants.ANIM_DURATION} 
                from={this.state.from.translate.x + ',' + this.state.from.translate.y} 
                to={this.state.to.translate.x + ',' + this.state.to.translate.y} />
-      <rect visibility={this.props.isRoot ? 'hidden' : 'visible'} rx="2" ry="2">
+      <rect visibility={this.props.isRoot ? 'hidden' : 'visible'} rx="2" ry="2"
+        ref={(e: SVGRectElement) => { this.svgRectElement = e; }}
+        >
         <animate attributeName="x" attributeType="XML"
                  fill="freeze" 
                  begin={constants.beginAnimationId}
@@ -284,6 +339,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
                  to={this.state.to.node.height} />
       </rect>
       <text   
+        ref={(e: SVGTextElement) => { this.svgTextElement = e; }}
         x={this.props.node.width / 2} 
         y={isLeaf ? this.props.node.height / 2 : constants.LEAF_NODE_PADDING_H}  
         visibility={this.props.isRoot ? 'hidden' : 'visible'}
@@ -294,13 +350,13 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
                  fill="freeze" 
                  begin={constants.beginAnimationId}
                  dur={constants.ANIM_DURATION} 
-                 from={this.initialRender ? 1 : 0} to={1} />
+                 from={this.initialRender ? 1 : 0} to={this.state.exiting ? 0 : 1} />
       </text>
 
       <ReactTransitionGroup component="g">
         { 
           this.props.node.children && this.props.node.children.map(child => (
-            <GraphNode node={child} key={child.id} allEdges={this.props.allEdges} kgraph={this.props.kgraph} isRoot={false} semaphore={this.props.semaphore} updateLayout={this.props.updateLayout}/>
+            <GraphNode node={child} key={child.id} allEdges={this.props.allEdges} kgraph={this.props.kgraph} isRoot={false} semaphore={this.props.semaphore} updateLayout={this.props.updateLayout} parentIsExiting={this.props.parentIsExiting || this.state.exiting}/>
           ))
         }
       </ReactTransitionGroup>

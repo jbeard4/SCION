@@ -50,7 +50,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
     var t1 = Date.now();
     let semaphore = {};
     if(!this._root) {
-      var root = <GraphRoot node={kgraph.root} allEdges={allEdges} kgraph={kgraph} isRoot={true} semaphore={semaphore} updateLayout={false}/>;
+      var root = <GraphRoot node={kgraph.root} allEdges={allEdges} kgraph={kgraph} isRoot={true} semaphore={semaphore} updateLayout={false} parentIsExiting={false}/>;
       this._root = ReactDOM.render(root, this._parentNode, () => {
         console.log('Rendered in %sms',Date.now() - t1);
         setTimeout(() => {this._root.beginAnimation();},1);
@@ -65,7 +65,8 @@ export default class SVGRenderer implements IKGraphRenderBackend {
           kgraph:kgraph,
           isRoot:true,
           semaphore : semaphore,
-          updateLayout : updateLayout
+          updateLayout : updateLayout,
+          parentIsExiting : false
       }, () => {
         this._root.beginAnimation();
       });
