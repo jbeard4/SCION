@@ -9,6 +9,7 @@
     "klayjs": "^0.4.1",
     "pathseg": "^1.0.2",
     "q": "^1.4.1",
+    "react": "^15.4.2",
     "react-addons-transition-group": "^15.4.2",
     "scxml": "3.0.3",
     "snapsvg": "^0.4.0",
