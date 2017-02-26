@@ -18,7 +18,13 @@ interface GraphEdgeAnimation {
   keyTimes : string,
   marker : string[],
   path : PathSegment[],
-  begin : string
+  begin : {
+    marker : string,
+    path : string,
+    dashOffset : string
+  },
+  pathLength : number,
+  exiting : boolean
 }
 
 interface PathSegment {
@@ -30,6 +36,9 @@ interface PathSegment {
 export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdgeAnimation> {
 
   initialRender : boolean;
+  svgPathAnimation : SVGAnimationElement;
+  svgDashOffsetAnimation : SVGAnimationElement;
+  svgPathElement : SVGPathElement;
 
   constructor(props){
     super(props);
@@ -38,6 +47,7 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
     var animationSegments = this._toAnimationSegments(this.props.edge);
     var points = this._edgeToPoints(this.props.edge);
 
+    let begin = this._toBegin(props);
     this.state = {
       keyTimes : (() => {
         var arr = [];
@@ -82,7 +92,13 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
         }
         return allSegments;
        })(),
-      begin : this._toBegin(props)
+      begin : {
+        marker : begin,
+        path : begin,
+        dashOffset : 'indefinite'
+      },
+      pathLength : this._computeEdgeLength(this.props.edge),
+      exiting : false
     }
 
     props.semaphore[this.props.edge.id] = true;
@@ -105,6 +121,7 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
 
     var animationSegments = this._toAnimationSegments(props.edge);
     var points = this._edgeToPoints(props.edge);
+    let begin = this._toBegin(props);
     this.state = {
       keyTimes : '0; 1',
       marker : (() => {
@@ -140,7 +157,13 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
 
         return allSegments;
       })(),
-      begin : this._toBegin(props)
+      begin : {
+        marker : begin,
+        path : begin,
+        dashOffset : 'indefinite'
+      },
+      pathLength : this._computeEdgeLength(props.edge),
+      exiting : false
     }
   }
 
@@ -224,20 +247,28 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
       <path 
         className={'link ' + (this.props.edge.$type || '')} 
         id={edgeId}
+        ref={(e: SVGPathElement) => { this.svgPathElement = e; }}
+        strokeDasharray={this.state.pathLength}
         >
           <animate attributeName="marker-end" attributeType="CSS" fill="freeze" 
                   className={this.props.edge.$hyperlink ? '' : 'firstPathSegment'}
                   dur={constants.ANIM_DURATION}
                   keyTimes={ this.state.keyTimes }
                   values={ this.state.marker.join(';') }
-                  begin={ this.state.begin }
+                  begin={ this.state.begin.marker }
                   />
           <animate attributeName="d" attributeType="XML" fill="freeze" 
+                   ref={(e: SVGAnimationElement) => { this.svgPathAnimation = e; }}
                    id={ edgeId + '_last' }
                    keyTimes={ this.state.keyTimes }
                    values={ this.state.path.map(this._edgeToD.bind(this)).join(';') }
-                   begin={ this.state.begin }
+                   begin={ this.state.begin.path }
                    className={ !this.props.edge.$hyperlink ? 'firstPathSegment' : '' }
+                   dur={constants.ANIM_DURATION} />
+          <animate attributeName="stroke-dashoffset" attributeType="XML" fill="freeze" 
+                   ref={(e: SVGAnimationElement) => { this.svgDashOffsetAnimation = e; }}
+                   begin="indefinite"
+                   from="0"
                    dur={constants.ANIM_DURATION} />
       </path>
       <ReactTransitionGroup component="g">
@@ -331,7 +362,32 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
 
   componentWillLeave (callback) {
     console.log('componentWillLeave', this.props.edge.id);
-    setTimeout(callback,1);
+
+    //this is a bit weird, but it seems that using <animate> on the stroke-dashoffset causes a weird behavior on merge test2 -> test3 -> test4. A_a1 is invisible at animation end.
+    //this.svgDashOffsetAnimation.addEventListener('endEvent', nextStep);
+    setTimeout(nextStep.bind(this), constants.ANIM_DUR);
+    this.svgDashOffsetAnimation.setAttributeNS(null,'to', (-1 * this.state.pathLength).toString() );
+    this.svgDashOffsetAnimation.beginElement();
+
+    this.state = {
+      keyTimes : this.state.keyTimes,
+      marker : this.state.marker,
+      path : this.state.path,
+      begin : {
+        marker : 'indefinite',
+        path : 'indefinite',
+        dashOffset : beginAnimationId
+      },
+      pathLength : this.state.pathLength,
+      exiting : true
+    };
+
+    this.forceUpdate();
+
+    function nextStep(){
+      console.log('exitAnimation endEvent', this.props.edge.id);
+      callback();
+    }
   }
 
   componentWillMount(){
