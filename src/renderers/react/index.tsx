@@ -58,6 +58,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
       this._root.pauseAnimation();
     }else {
       this._root.pauseAnimation();
+      //console.time('update');
       this._root.setState({
           node:kgraph.root, 
           fromNode: this._kgraphRoot,    //not yet updated. use as prev kgraph root
@@ -68,6 +69,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
           updateLayout : updateLayout,
           parentIsExiting : false
       }, () => {
+        //console.time('update');
         this._root.beginAnimation();
       });
     }
