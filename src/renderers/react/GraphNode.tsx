@@ -167,7 +167,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
 
   shouldComponentUpdate(nextProps, nextState){
     //TODO: also do shallow compare of current and previous?
-    return nextProps.kgraph.getKgraphNodeById(nextProps.node.id) !== undefined;   //verify that node exists on the given kgraph
+    return nextProps.kgraph.getKgraphNodeById(nextProps.node.id) === nextProps.node;   //verify that node exists on the given kgraph
   }
 
   componentWillUnmount () {
