@@ -65,7 +65,7 @@ g.node.compound > line {
   stroke-width:.1;
 } 
 
-g.compound.type__parallel > g.node > rect {
+g.compound.type__parallel > g > g.node > rect {
   stroke-dasharray : 1 1;
 } 
 
