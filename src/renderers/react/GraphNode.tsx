@@ -67,7 +67,6 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
     console.log('beginAnimation');
 
     let resetAnimationsAndUnpause = () => {
-      this.viewBoxAnimation.beginElement();
       Array.from(this.svgRootElement.querySelectorAll('animateTransform.beginOnStart, animate.beginOnStart')).forEach( (e : SVGAnimationElement) => e.beginElement() );
       this.svgRootElement.unpauseAnimations();
     }
@@ -92,6 +91,7 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
       ref={(e: SVGSVGElement) => { this.svgRootElement = e; }}
       >
       <animate 
+        className={constants.START}
         ref={(e: SVGAnimationElement) => { this.viewBoxAnimation = e; }}
         attributeName="viewBox" fill="freeze" begin="indefinite"
         dur={constants.ANIM_DURATION} 
