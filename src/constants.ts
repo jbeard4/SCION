@@ -3,7 +3,7 @@ import {LayoutOptions} from './renderers/IKGraphRenderBackend';
 export default {
   STATE_TYPES : ['history','initial','parallel','final','virtual'],
   HIGHLIGHT_ANIM_DURATION : 250,
-  ANIM_DUR : 500,
+  ANIM_DUR : 750,
   get ANIM_DURATION() { 
     return `${this.ANIM_DUR}ms`;
   },
