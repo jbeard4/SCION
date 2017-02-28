@@ -5,7 +5,6 @@ import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, Point} from '../../KGraph';
 import * as React from "react";
 import constants from '../../constants';
 import GraphLabel from './GraphLabel';
-const beginAnimationId = constants.beginAnimationId;
 let ReactTransitionGroup = require('react-addons-transition-group');
 
 interface GraphEdgeProps {
@@ -37,6 +36,7 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
 
   initialRender : boolean;
   svgPathAnimation : SVGAnimationElement;
+  svgMarkerAnimation : SVGAnimationElement;
   svgDashOffsetAnimation : SVGAnimationElement;
   svgPathElement : SVGPathElement;
 
@@ -107,7 +107,7 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
   _toBegin(props){
     return props.edge.$hyperlink && !props.updateLayout && !this.initialRender ? 
       `${props.edge.$hyperlink}_last.endEvent` : 
-      beginAnimationId; 
+      'indefinite'; 
   }
 
   componentWillReceiveProps(props : GraphEdgeProps){
@@ -251,7 +251,11 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
         strokeDasharray={this.state.pathLength}
         >
           <animate attributeName="marker-end" attributeType="CSS" fill="freeze" 
-                  className={this.props.edge.$hyperlink ? '' : 'firstPathSegment'}
+                  ref={(e: SVGAnimationElement) => { this.svgMarkerAnimation = e; }}
+                  className={[
+                    this.props.edge.$hyperlink ? '' : 'firstPathSegment',
+                    !this.state.exiting && this.state.begin.marker === 'indefinite' ? constants.START : ''
+                  ].join(' ')}
                   dur={constants.ANIM_DURATION}
                   keyTimes={ this.state.keyTimes }
                   values={ this.state.marker.join(';') }
@@ -263,7 +267,10 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
                    keyTimes={ this.state.keyTimes }
                    values={ this.state.path.map(this._edgeToD.bind(this)).join(';') }
                    begin={ this.state.begin.path }
-                   className={ !this.props.edge.$hyperlink ? 'firstPathSegment' : '' }
+                   className={[
+                     !this.props.edge.$hyperlink ? 'firstPathSegment' : '',
+                     !this.state.exiting && this.state.begin.marker === 'indefinite' ? constants.START : ''
+                   ].join(' ')}
                    dur={constants.ANIM_DURATION} />
           <animate attributeName="stroke-dashoffset" attributeType="XML" fill="freeze" 
                    ref={(e: SVGAnimationElement) => { this.svgDashOffsetAnimation = e; }}
@@ -376,7 +383,7 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
       begin : {
         marker : 'indefinite',
         path : 'indefinite',
-        dashOffset : beginAnimationId
+        dashOffset : 'indefinite'
       },
       pathLength : this.state.pathLength,
       exiting : true
@@ -398,5 +405,21 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
     console.log('componentDidMount', this.props.edge.id);
   }
 
+  componentDidUpdate(prevProps:GraphEdgeProps, prevState: GraphEdgeAnimation) {
+    //This is a workaround for bug where removing element that precedes this element in the timegraph
+    //will cause this element to visually disappear.
+    //Calling setAttributeNS(null, 'begin', 'indefinite') will cause this element to reappear.
+    if(
+      prevState.begin.marker !== this.state.begin.marker &&
+        this.state.begin.marker === 'indefinite' 
+      ){
+      this.svgMarkerAnimation.setAttributeNS(null, 'begin', 'indefinite');
+    }
+
+    if(prevState.begin.path !== this.state.begin.path &&
+        this.state.begin.path === 'indefinite' ){
+    }
+      this.svgPathAnimation.setAttributeNS(null, 'begin', 'indefinite');
+  }
 }
 

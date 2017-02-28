@@ -4,7 +4,6 @@
 import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, Point} from '../../KGraph';
 import * as React from "react";
 import constants from '../../constants';
-const beginAnimationId = constants.beginAnimationId;
 
 interface GraphLabelProps {
   edge : KGraphEdge; 
@@ -68,22 +67,28 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
       >
         <animate attributeName="opacity" attributeType="XML"
                  fill="freeze" 
-                 begin={constants.beginAnimationId}
+                 begin="indefinite"
+                 className={constants.START}
                  dur={constants.ANIM_DURATION} 
                  from={0} to={1} />
-        <animate attributeName="x" attributeType="XML" fill="freeze" begin={beginAnimationId}
-          from={this.state.from.x}
-          to={this.state.to.x}
-          dur={constants.ANIM_DURATION}
-          />
-        <animate attributeName="y" attributeType="XML" fill="freeze" begin={beginAnimationId}
-          from={this.state.from.y}
-          to={this.state.to.y}
-          dur={constants.ANIM_DURATION}
-          />
+        <animate attributeName="x" attributeType="XML" fill="freeze" 
+                 begin="indefinite"
+                 className={constants.START}
+                 from={this.state.from.x}
+                 to={this.state.to.x}
+                 dur={constants.ANIM_DURATION}
+                 />
+        <animate attributeName="y" attributeType="XML" fill="freeze" 
+                 begin="indefinite"
+                 className={constants.START}
+                 from={this.state.from.y}
+                 to={this.state.to.y}
+                 dur={constants.ANIM_DURATION}
+                 />
         <animate attributeName="opacity" attributeType="XML"
                  fill="freeze" 
-                 begin={constants.beginAnimationId}
+                 begin="indefinite"
+                 className={constants.START}
                  dur={constants.ANIM_DURATION} 
                  from={this.initialRender ? 0 : 1} to={1} />
       {this.props.label.text}

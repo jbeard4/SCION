@@ -10,8 +10,6 @@ import _ = require('underscore');
 import Q = require('q');
 let ReactTransitionGroup = require('react-addons-transition-group');
 
-const beginAnimationId = constants.beginAnimationId;
-
 interface GraphNodeProps {
   node : KGraphNode;
   allEdges : KGraphEdge[];
@@ -70,7 +68,7 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
 
     let resetAnimationsAndUnpause = () => {
       this.viewBoxAnimation.beginElement();
-      Array.from(this.svgRootElement.querySelectorAll('animateTransform[begin="viewBoxAnimation.beginEvent"], animate[begin="viewBoxAnimation.beginEvent"]')).forEach( (e : SVGAnimationElement) => e.beginElement() );
+      Array.from(this.svgRootElement.querySelectorAll('animateTransform.beginOnStart, animate.beginOnStart')).forEach( (e : SVGAnimationElement) => e.beginElement() );
       this.svgRootElement.unpauseAnimations();
     }
 
@@ -95,7 +93,7 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
       >
       <animate 
         ref={(e: SVGAnimationElement) => { this.viewBoxAnimation = e; }}
-        attributeName="viewBox" fill="freeze" 
+        attributeName="viewBox" fill="freeze" begin="indefinite"
         dur={constants.ANIM_DURATION} 
         from={from}
         to={to}/>
@@ -315,7 +313,8 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
       <animateTransform attributeName="transform" attributeType="XML"
                type="translate"
                fill="freeze" 
-               begin={constants.beginAnimationId}
+               begin="indefinite"
+               className={constants.START}
                dur={constants.ANIM_DURATION} 
                from={this.state.from.translate.x + ',' + this.state.from.translate.y} 
                to={this.state.to.translate.x + ',' + this.state.to.translate.y} />
@@ -325,25 +324,29 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
         <animate attributeName="x" attributeType="XML"
                  ref={(e: SVGAnimationElement) => { this.rectXAnimationElement = e; }}
                  fill="freeze" 
-                 begin={constants.beginAnimationId}
+                 begin="indefinite"
+                 className={constants.START}
                  dur={constants.ANIM_DURATION} 
                  from={this.state.from.node.x} 
                  to={this.state.to.node.x} />
         <animate attributeName="y" attributeType="XML"
                  fill="freeze" 
-                 begin={constants.beginAnimationId}
+                 begin="indefinite"
+                 className={constants.START}
                  dur={constants.ANIM_DURATION} 
                  from={this.state.from.node.y}
                  to={this.state.to.node.y} />
         <animate attributeName="width" attributeType="XML"
                  fill="freeze" 
-                 begin={constants.beginAnimationId}
+                 begin="indefinite"
+                 className={constants.START}
                  dur={constants.ANIM_DURATION} 
                  from={this.state.from.node.width} 
                  to={this.state.to.node.width} />
         <animate attributeName="height" attributeType="XML"
                  fill="freeze" 
-                 begin={constants.beginAnimationId}
+                 begin="indefinite"
+                 className={constants.START}
                  dur={constants.ANIM_DURATION} 
                  from={this.state.from.node.height} 
                  to={this.state.to.node.height} />
@@ -358,7 +361,8 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
         {this.props.node.$type === 'virtual' ? this.props.node.labels[0].text : this.props.node.id}
         <animate attributeName="opacity" attributeType="XML"
                  fill="freeze" 
-                 begin={constants.beginAnimationId}
+                 begin="indefinite"
+                 className={constants.START}
                  dur={constants.ANIM_DURATION} 
                  from={this.initialRender ? 1 : 0} to={this.state.exiting ? 0 : 1} />
       </text>
