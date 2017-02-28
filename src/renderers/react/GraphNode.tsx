@@ -65,13 +65,21 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
     this.svgRootElement.pauseAnimations();
   }
 
-  public beginAnimation(){
+  public beginAnimation(updateLayout : boolean){
     console.log('beginAnimation');
-    setTimeout(() => {
+
+    let resetAnimationsAndUnpause = () => {
       this.viewBoxAnimation.beginElement();
       Array.from(this.svgRootElement.querySelectorAll('animateTransform[begin="viewBoxAnimation.beginEvent"], animate[begin="viewBoxAnimation.beginEvent"]')).forEach( (e : SVGAnimationElement) => e.beginElement() );
       this.svgRootElement.unpauseAnimations();
-    });
+    }
+
+    if(updateLayout){
+      setTimeout(resetAnimationsAndUnpause);
+    } else {
+      resetAnimationsAndUnpause();
+    }
+
   }
 
   render(){
