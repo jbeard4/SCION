@@ -1,22 +1,20 @@
 {
-  "name": "electron-quick-start",
-  "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "name": "scion-tool",
+  "version": "0.0.1",
+  "description": "A minimal standalone graphical SCXML simulation environment.",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "SCXML"
   ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "author": "Jacob Beard <jake@jacobeanrnd.com>",
+  "license": "CC-BY-NC-SA-4.0",
   "devDependencies": {
     "electron": "^1.4.1"
+  },
+  "dependencies": {
+    "optimist": "^0.6.1"
   }
 }

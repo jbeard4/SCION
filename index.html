@@ -2,18 +2,61 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <link type="text/css" rel="stylesheet" href="node_modules/SCHVIZ2/test-integration/app/css/styles.css"></link>
+    <style type="text/css">
+      html, body, #schviz {
+        margin : 0;
+        padding : 0;
+      }
+
+      body {
+        overflow : hidden;
+      }
+
+      #schviz {
+        width : 100%;
+        height : 100%;
+      }
+    </style>
   </head>
   <body>
-    <h1>Hello World!</h1>
-    <!-- All of the Node.js APIs are available in this renderer process. -->
-    We are using Node.js <script>document.write(process.versions.node)</script>,
-    Chromium <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>.
+    <div id="schviz"></div>
   </body>
 
   <script>
     // You can also require other files to run in this process
-    require('./renderer.js')
+    const SCHVIZ = require('./node_modules/SCHVIZ2/dist/index.js');
+    const scxml = require('scion');
+    const fs = require('fs');
+    const pathToScxml = window.location.search.slice(1)
+
+    window.title = pathToScxml;
+
+    const schvizRoot = document.getElementById('schviz');
+    let schviz;
+    function initialRender(){
+      //read, and perform initial render
+      let scxmlContents = fs.readFileSync(pathToScxml,'utf8');
+      //if he is SCXML, convert him to scjson
+      let scjson = scxml.ext.compilerInternals.scxmlToScjson(scxmlContents);
+      schviz = new SCHVIZ(schvizRoot);
+      schviz.renderSCJSON(scjson, 'right', function(err){
+        if(err) return console.error(err);
+
+        //if everything worked, then watch the file for changes
+        fs.watchFile(pathToScxml, {persistent: true, interval : 100}, (cur, prev) => {
+          scxmlContents = fs.readFileSync(pathToScxml,'utf8');
+          //if he is SCXML, convert him to scjson
+          scjson = scxml.ext.compilerInternals.scxmlToScjson(scxmlContents);
+          schviz.updateSCJSON(scjson, 'right', function(err){
+            if(err) return console.error(err);
+          });
+        });
+      });
+    }
+    initialRender();
+
+
+    //next: updateSCJSON
   </script>
 </html>
