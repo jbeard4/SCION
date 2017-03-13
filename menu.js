@@ -1,9 +1,35 @@
 const electron = require('electron')
 const Menu = electron.Menu
+const dialog = require('electron').dialog
 
-module.exports = (app) => {
+module.exports = (app, createWindow) => {
 
-let template = [{
+let template = [
+{
+  label: 'File',
+  submenu: [{
+    label: 'Open',
+    accelerator: 'CmdOrCtrl+O',
+    click: function (item, focusedWindow) {
+      dialog.showOpenDialog({
+        properties: ['openFile']
+      }, function (files) {
+        if (files) files.forEach(createWindow);
+      })
+      
+    }
+  },
+  {
+    label: 'Print',
+    accelerator: 'CmdOrCtrl+P',
+    click: function (item, focusedWindow) {
+      if (focusedWindow) {
+        focusedWindow.webContents.print()
+      }
+    }
+  }]
+},
+{
   label: 'View',
   submenu: [{
     label: 'Reload',

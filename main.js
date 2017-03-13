@@ -9,13 +9,16 @@ const initMenu = require('./menu')
 const path = require('path')
 const url = require('url')
 
-initMenu(app);
+initMenu(app, createWindow);
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let scxmlWindows = {};
 
 function createWindow (scxmlFile) {
+
+  if(scxmlWindows[scxmlFile]) return;   //prevent duplicate windows
+
   // Create the browser window.
   let window = new BrowserWindow({
     width: 800, 
