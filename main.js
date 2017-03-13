@@ -4,10 +4,12 @@ const electron = require('electron')
 const app = electron.app
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
+const initMenu = require('./menu')
 
 const path = require('path')
 const url = require('url')
 
+initMenu(app);
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -15,13 +17,17 @@ let scxmlWindows = {};
 
 function createWindow (scxmlFile) {
   // Create the browser window.
-  let window = new BrowserWindow({width: 800, height: 600})
+  let window = new BrowserWindow({
+    width: 800, 
+    height: 600,
+    title: 'scxml-tool: ' + scxmlFile
+  })
 
   // and load the index.html of the app.
   window.loadURL(`file://${__dirname}/index.html?${scxmlFile}`)
 
   // Open the DevTools.
-  window.webContents.openDevTools()
+  //window.webContents.openDevTools()
 
   // Emitted when the window is closed.
   window.on('closed', function () {
@@ -62,3 +68,4 @@ app.on('activate', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
