@@ -5,29 +5,32 @@ const app = electron.app
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
 const initMenu = require('./menu')
+const preferences = require('./preferences')
 
 const path = require('path')
 const url = require('url')
 
-initMenu(app, createWindow);
+let menu = initMenu(app, createWindow);
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let scxmlWindows = {};
 
+let selectedLayout = preferences.defaultLayout;
+
 function createWindow (scxmlFile) {
 
   if(scxmlWindows[scxmlFile]) return;   //prevent duplicate windows
 
+  app.addRecentDocument(scxmlFile);
+
   // Create the browser window.
   let window = new BrowserWindow({
-    width: 800, 
-    height: 600,
-    title: 'scxml-tool: ' + scxmlFile
+    title: 'scxml://' + scxmlFile
   })
 
   // and load the index.html of the app.
-  window.loadURL(`file://${__dirname}/index.html?${scxmlFile}`)
+  window.loadURL(`file://${__dirname}/index.html?scxmlFile=${scxmlFile}`)
 
   // Open the DevTools.
   //window.webContents.openDevTools()

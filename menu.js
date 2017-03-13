@@ -1,6 +1,10 @@
 const electron = require('electron')
+const BrowserWindow = electron.BrowserWindow
 const Menu = electron.Menu
+const MenuItem = electron.MenuItem 
 const dialog = require('electron').dialog
+const SCHVIZ = require('SCHVIZ2');
+const preferences = require('./preferences')
 
 module.exports = (app, createWindow) => {
 
@@ -31,7 +35,29 @@ let template = [
 },
 {
   label: 'View',
-  submenu: [{
+  submenu: [
+  {
+    label: 'Layout',
+    submenu: Object.keys(SCHVIZ.layouts).map((layoutName) => {
+      return {
+        label : layoutName,
+        type: 'checkbox', 
+        checked: layoutName === preferences.defaultLayout,
+        click: function (item, focusedWindow) {
+          //untoggle the others
+          item.menu.items.forEach( i => i.checked = i === item );
+          preferences.layout = layoutName;
+
+          //trigger layout
+          app.emit('update-layout',layoutName);
+          BrowserWindow.getAllWindows().forEach((win) => {
+            win.webContents.send('update-layout',layoutName);
+          });
+        }
+      };
+    })
+  },
+  {
     label: 'Reload',
     accelerator: 'CmdOrCtrl+R',
     click: function (item, focusedWindow) {
@@ -211,8 +237,9 @@ if (process.platform === 'win32') {
   addUpdateMenuItems(helpMenu, 0)
 }
 
+let menu
 app.on('ready', function () {
-  const menu = Menu.buildFromTemplate(template)
+  menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
 })
 
