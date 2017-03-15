@@ -3,6 +3,7 @@ import * as React from "react";
 import SCXMLVisualization from './SCXMLVisualization';
 import preferences = require('../../preferences');
 import scxml = require('scxml');
+import RunButton from './RunButton';
 
 import fs = require('fs');
 
@@ -51,6 +52,7 @@ export default class AppComponent extends React.Component<AppComponentProps, App
           <SCXMLVisualization scjson={this.state.scjson} />
         </div>
       </div>
+      <RunButton running={this.state.scxmlInstance}/>
       <div id="console">
         <input type="text" id="event-input"></input>
         <input type="button" id="event-button" value="Send Event"></input>
@@ -58,3 +60,4 @@ export default class AppComponent extends React.Component<AppComponentProps, App
     </div>;
   }
 }
+

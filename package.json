@@ -23,6 +23,7 @@
   "license": "CC-BY-NC-SA-4.0",
   "devDependencies": {
     "electron": "^1.4.1",
+    "font-awesome": "^4.7.0",
     "scxml-test-framework": "^1.0.2",
     "typescript": "^2.1.4",
     "typings": "^2.1.0"
