@@ -45,6 +45,84 @@ export default class AppComponent extends React.Component<AppComponentProps, App
     });
   }
 
+  handleRunButtonClick(event){
+    //create a new scxml instance
+    //bind it to highlight behavior
+    //then call setState
+    if(this.state.scxmlInstance){
+      //TODO: unregister listeners. clean up timers. anything else to destroy an instance?
+      this.setState({
+        scxmlInstance : null,
+        scjson : this.state.scjson
+      });
+    }else {
+      //start him
+      this.startScxml();
+    }
+  }
+
+  startScxml(){
+    var listeners = {
+        onEntry: function(stateId) { console.log('entering state ' + stateId); },
+        onExit: function(stateId) { console.log('exiting state ' + stateId); },
+        onTransition: function(sourceStateId, targetIds) {
+            if (targetIds && targetIds.length) {
+                console.log('transitioning from ' + sourceStateId + ' to ' + targetIds.join(','));
+            } else {
+                console.log('executing target-less transition in ' + sourceStateId);
+            }
+        },
+        onError: function(err) {
+            console.log('ERROR:' + JSON.stringify(err));
+        }
+    };
+
+    function customSend(event, options) {
+        console.log('SEND: ' +
+            JSON.stringify(event) +
+            ', options: ' +
+            JSON.stringify(options));
+    }
+
+    var interpOpts = {
+        customSend: customSend
+    }
+
+    //1 - 2. get the xml file and convert it to jsonml
+    scxml.pathToModel(this.props.scxmlPath, (err,model) => {
+
+        if(err){
+            console.error(err);
+            process.exit(1);
+        }
+
+        model.prepare((err, fnModel) => {
+            if (err) {
+                console.error(err);
+                process.exit(1);
+            }
+
+            //Use the statechart object model to instantiate an instance of the statechart interpreter. Optionally, we can pass to the construct an object to be used as the context object (the 'this' object) in script evaluation. Lots of other parameters are available.
+            var interpreter = new scxml.scion.Statechart(fnModel, interpOpts);
+
+
+            interpreter.registerListener(listeners);
+
+
+            interpreter.start();
+
+            this.setState({
+              scxmlInstance : interpreter,
+              scjson : this.state.scjson
+            });
+        
+            console.log(interpreter.getConfiguration());
+        })
+
+    });
+
+  }
+
   render(){
     return <div id="embed_outer" className={this.state.scxmlInstance ? 'simulation-mode' : 'viz-mode'}>
       <div id="embed_inner">
@@ -52,7 +130,7 @@ export default class AppComponent extends React.Component<AppComponentProps, App
           <SCXMLVisualization scjson={this.state.scjson} />
         </div>
       </div>
-      <RunButton running={this.state.scxmlInstance}/>
+      <RunButton running={this.state.scxmlInstance} handleClick={this.handleRunButtonClick.bind(this)}/>
       <div id="console">
         <input type="text" id="event-input"></input>
         <input type="button" id="event-button" value="Send Event"></input>
