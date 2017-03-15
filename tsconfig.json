@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "declaration": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmitOnError": true,
+    "noImplicitAny": false,
+    "outDir": "./dist",
+    "sourceMap": true,
+    "target": "es5",
+    "typeRoots": [
+    ],
+    "allowJs" : true,
+    "jsx" : "react"
+  }
+}

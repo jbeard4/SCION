@@ -1,0 +1,56 @@
+html, body {
+  margin : 0;
+  padding : 0;
+}
+
+body {
+  overflow : hidden;
+}
+
+.app, #scxml-viz, #scxml-content {
+  width : 100%;
+  height : 100%;
+}
+
+#embed_outer{
+  height:100%;
+  display:flex;
+  /*background-color:red;*/
+  flex-direction: column;
+}
+
+#embed_inner{
+  height:100%;
+  display:flex;
+  /*background-color:red;*/
+  flex-direction: column;
+}
+
+#simulation-panel{
+  /*background-color:orange;*/
+  flex-grow:1;
+  display:flex;
+  flex-direction: column;
+}
+
+#console{
+  /*background-color:lightblue;*/
+  display:flex;
+  overflow:hidden;
+  max-height:2em;
+  transition: max-height 0.5s ease-out;
+}
+
+.editor-mode #console{
+  max-height:0em;
+}
+
+#event-input{
+  /*background-color:aqua;*/
+  flex-grow:1;
+}
+
+#event-button{
+  /*background-color:pink;*/
+}
+

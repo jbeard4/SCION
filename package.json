@@ -4,7 +4,17 @@
   "description": "A minimal standalone graphical SCXML simulation environment.",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "tsc -p .  --sourceMap --allowJs",
+    "watch": "tsc -p .  --sourceMap --allowJs -w",
+    "clean": "rm -rf dist/",
+    "postinstall": "typings install"
+  },
+  "dependencies": {
+    "optimist": "^0.6.1",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "scxml": "^3.0.2"
   },
   "keywords": [
     "SCXML"
@@ -12,9 +22,9 @@
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "CC-BY-NC-SA-4.0",
   "devDependencies": {
-    "electron": "^1.4.1"
-  },
-  "dependencies": {
-    "optimist": "^0.6.1"
+    "electron": "^1.4.1",
+    "scxml-test-framework": "^1.0.2",
+    "typescript": "^2.1.4",
+    "typings": "^2.1.0"
   }
 }

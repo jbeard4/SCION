@@ -1,5 +1,3 @@
-const SCHVIZ = require('SCHVIZ2');
-const scxml = require('scion');
 const fs = require('fs');
 const {remote} = require('electron')
 const {Menu, MenuItem} = remote
