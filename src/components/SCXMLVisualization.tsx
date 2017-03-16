@@ -32,7 +32,7 @@ export default class SCXMLVisualization extends React.Component<SCXMLVisualizati
   }
 
   unhighlightState(stateId){
-    this.schviz.highlightState(stateId);
+    this.schviz.unhighlightState(stateId);
   }
 
   unhighlightAllStates(){

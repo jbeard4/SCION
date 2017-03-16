@@ -39,6 +39,7 @@ body {
   overflow:hidden;
   max-height:2em;
   transition: max-height 0.5s ease-out;
+  margin : 0;
 }
 
 .editor-mode #console{

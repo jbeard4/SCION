@@ -4,6 +4,7 @@ import SCXMLVisualization from './SCXMLVisualization';
 import preferences = require('../../preferences');
 import scxml = require('scxml');
 import RunButton from './RunButton';
+import ConsoleComponent from './Console';
 
 import fs = require('fs');
 
@@ -68,7 +69,10 @@ export default class AppComponent extends React.Component<AppComponentProps, App
           console.log('entering state ' + stateId); 
           this.viz.highlightState(stateId);
         },
-        onExit: (stateId) => { console.log('exiting state ' + stateId); },
+        onExit: (stateId) => { 
+          console.log('exiting state ' + stateId); 
+          this.viz.unhighlightState(stateId);
+        },
         onTransition: (sourceStateId, targetIds) => {
             if (targetIds && targetIds.length) {
                 console.log('transitioning from ' + sourceStateId + ' to ' + targetIds.join(','));
@@ -127,6 +131,10 @@ export default class AppComponent extends React.Component<AppComponentProps, App
 
   }
 
+  sendEvent(eventObject){
+    this.state.scxmlInstance.gen(eventObject);
+  }
+
   render(){
     return <div id="embed_outer" className={this.state.scxmlInstance ? 'simulation-mode' : 'viz-mode'}>
       <div id="embed_inner">
@@ -135,10 +143,7 @@ export default class AppComponent extends React.Component<AppComponentProps, App
         </div>
       </div>
       <RunButton running={this.state.scxmlInstance} handleClick={this.handleRunButtonClick.bind(this)}/>
-      <div id="console">
-        <input type="text" id="event-input"></input>
-        <input type="button" id="event-button" value="Send Event"></input>
-      </div>
+      <ConsoleComponent handleSubmit={this.sendEvent.bind(this)}/>
     </div>;
   }
 }
