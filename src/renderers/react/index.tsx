@@ -26,11 +26,21 @@ export default class SVGRenderer implements IKGraphRenderBackend {
     this._kgraphRoot = null;
     this._parentNode.innerHTML = '';
   }
+
+  private getStateNode(id){
+    return Array.from(document.querySelectorAll(`g.node`)).filter((e) => e.getAttributeNS(null,'id') === id).pop();
+  }
+
   public highlightState(stateId:string){
+    let e = this.getStateNode(stateId);
+    if(e) e.classList.add('highlighted');
   }
   public unhighlightState(stateId:string){
+    let e = this.getStateNode(stateId);
+    if(e) e.classList.remove('highlighted');
   }
   public unhighlightAllStates(){
+    Array.from(document.querySelectorAll(`g.node`)).forEach( (e:Element) => e.classList.remove('highlighted') );
   }
   public highlightTransition(sourceStateId:string, targetStateIds:string[]){
   }

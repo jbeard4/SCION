@@ -60,7 +60,6 @@ function SCHVIZController($element, $scope, $http){
             break;
           default:
             throw new Error('Unrecognized mime type in response');
-            break;
         }
     });
   }
