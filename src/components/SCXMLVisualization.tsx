@@ -27,6 +27,18 @@ export default class SCXMLVisualization extends React.Component<SCXMLVisualizati
     </div>;
   } 
 
+  highlightState(stateId){
+    this.schviz.highlightState(stateId);
+  }
+
+  unhighlightState(stateId){
+    this.schviz.highlightState(stateId);
+  }
+
+  unhighlightAllStates(){
+    this.schviz.unhighlightAllStates();
+  }
+
   componentDidMount(){
     //render
     this.schviz = new SCHVIZ(this.rootElement);

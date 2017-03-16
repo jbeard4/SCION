@@ -22,7 +22,7 @@ interface AppComponentProps {
 
 export default class AppComponent extends React.Component<AppComponentProps, AppComponentState> {
 
-
+  viz : SCXMLVisualization;
   constructor(props){
     super(props);
 
@@ -55,6 +55,7 @@ export default class AppComponent extends React.Component<AppComponentProps, App
         scxmlInstance : null,
         scjson : this.state.scjson
       });
+      this.viz.unhighlightAllStates();
     }else {
       //start him
       this.startScxml();
@@ -63,16 +64,19 @@ export default class AppComponent extends React.Component<AppComponentProps, App
 
   startScxml(){
     var listeners = {
-        onEntry: function(stateId) { console.log('entering state ' + stateId); },
-        onExit: function(stateId) { console.log('exiting state ' + stateId); },
-        onTransition: function(sourceStateId, targetIds) {
+        onEntry: (stateId) => { 
+          console.log('entering state ' + stateId); 
+          this.viz.highlightState(stateId);
+        },
+        onExit: (stateId) => { console.log('exiting state ' + stateId); },
+        onTransition: (sourceStateId, targetIds) => {
             if (targetIds && targetIds.length) {
                 console.log('transitioning from ' + sourceStateId + ' to ' + targetIds.join(','));
             } else {
                 console.log('executing target-less transition in ' + sourceStateId);
             }
         },
-        onError: function(err) {
+        onError: (err) => {
             console.log('ERROR:' + JSON.stringify(err));
         }
     };
@@ -127,7 +131,7 @@ export default class AppComponent extends React.Component<AppComponentProps, App
     return <div id="embed_outer" className={this.state.scxmlInstance ? 'simulation-mode' : 'viz-mode'}>
       <div id="embed_inner">
         <div id="scxml-content">
-          <SCXMLVisualization scjson={this.state.scjson} />
+          <SCXMLVisualization scjson={this.state.scjson} ref={ (viz) => this.viz = viz }/>
         </div>
       </div>
       <RunButton running={this.state.scxmlInstance} handleClick={this.handleRunButtonClick.bind(this)}/>
