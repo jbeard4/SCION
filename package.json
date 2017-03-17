@@ -1,6 +1,6 @@
 {
   "name": "schviz",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "SCJSON to KGraph to SVG rendering library",
   "main": "dist/index.js",
   "dependencies": {
@@ -11,7 +11,7 @@
     "q": "^1.4.1",
     "react": "^15.4.2",
     "react-addons-transition-group": "^15.4.2",
-    "scxml": "3.0.3",
+    "scxml": "3.0.4",
     "snapsvg": "^0.4.0",
     "underscore": "^1.8.3"
   },

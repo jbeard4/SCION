@@ -27,8 +27,12 @@ export default class SVGRenderer implements IKGraphRenderBackend {
     this._parentNode.innerHTML = '';
   }
 
+  private filterById(nodes, id){
+    return nodes.filter((e) => e.getAttributeNS(null,'id') === id)
+  }
+
   private getStateNode(id){
-    return Array.from(document.querySelectorAll(`g.node`)).filter((e) => e.getAttributeNS(null,'id') === id).pop();
+    return this.filterById(Array.from(document.querySelectorAll(`g.node`)), id).pop();
   }
 
   public highlightState(stateId:string){
@@ -42,7 +46,13 @@ export default class SVGRenderer implements IKGraphRenderBackend {
   public unhighlightAllStates(){
     Array.from(document.querySelectorAll(`g.node`)).forEach( (e:Element) => e.classList.remove('highlighted') );
   }
-  public highlightTransition(sourceStateId:string, targetStateIds:string[]){
+  public highlightTransition(sourceStateId:string, transitionIndex:number){
+    let id = `${sourceStateId}:${transitionIndex}`;
+    let transition = this.filterById(Array.from(document.querySelectorAll(`path.link`)), id).pop();
+    if(!transition) return console.warn(`Couldn't find transition at index ${transitionIndex}`);
+
+    transition.classList.add('highlighted');
+    setTimeout(() => { transition.classList.remove('highlighted') }, 100);
   }
   public measureTextDimensions(text:string){
     var svg = document.createElementNS(constants.SVGNS,'svg');

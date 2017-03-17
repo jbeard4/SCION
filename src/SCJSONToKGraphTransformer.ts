@@ -256,10 +256,10 @@ export default class SCJSONToKGraphTransformer extends EventEmitter{
       var newEdges = 
         state.transitions
           .filter(function(transition){return transition.target;})   //TODO: also render targetless transitions 
-          .map(function(transition){
+          .map(function(transition, idx){
             var klayEdge = new KGraphEdge();
             _.extend(klayEdge, {
-              id : state.id + '_' + (Array.isArray(transition.target) ? transition.target.join('_') : transition.target ),
+              id : `${state.id}:${idx}`,
               source : state.id,
               target : transition.target,
               labels : []

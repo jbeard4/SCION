@@ -69,8 +69,8 @@ class SCHVIZ {
     this._svgRenderer.unhighlightAllStates();
   }
 
-  highlightTransition(sourceStateId, targetStateIds){
-    this._svgRenderer.highlightTransition(sourceStateId, targetStateIds);
+  highlightTransition(sourceStateId : string, transitionIndex : number){
+    this._svgRenderer.highlightTransition(sourceStateId, transitionIndex);
   }
 
 }

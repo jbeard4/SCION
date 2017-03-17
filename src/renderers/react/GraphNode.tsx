@@ -367,17 +367,17 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
                  from={this.initialRender ? 1 : 0} to={this.state.exiting ? 0 : 1} />
       </text>
 
-      <ReactTransitionGroup component="g">
+      <ReactTransitionGroup component="g" className="childNodes">
         { 
           this.props.node.children && this.props.node.children.map(child => (
             <GraphNode node={child} key={child.id} allEdges={this.props.allEdges} kgraph={this.props.kgraph} isRoot={false} semaphore={this.props.semaphore} updateLayout={this.props.updateLayout} parentIsExiting={this.props.parentIsExiting || this.state.exiting}/>
           ))
         }
       </ReactTransitionGroup>
-      <ReactTransitionGroup component="g">
+      <ReactTransitionGroup component="g" className="edges">
         { 
-          myEdges.map((edge) => (
-            <GraphEdge edge={edge} key={`${edge.id}_${edgeKeys[edge.id] === undefined ? edgeKeys[edge.id] = 0 : ++edgeKeys[edge.id]}`} semaphore={this.props.semaphore} updateLayout={this.props.updateLayout}/>
+          myEdges.map((edge, i) => (
+            <GraphEdge edge={edge} key={`${this.props.node.id}_${i}`} semaphore={this.props.semaphore} updateLayout={this.props.updateLayout}/>
           )) 
         }
       </ReactTransitionGroup>
