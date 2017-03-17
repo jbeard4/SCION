@@ -1,6 +1,6 @@
 {
   "name": "dialogos",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A minimal standalone graphical SCXML simulation environment.",
   "main": "main.js",
   "scripts": {
