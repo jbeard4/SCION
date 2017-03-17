@@ -73,9 +73,10 @@ export default class AppComponent extends React.Component<AppComponentProps, App
           console.log('exiting state ' + stateId); 
           this.viz.unhighlightState(stateId);
         },
-        onTransition: (sourceStateId, targetIds) => {
+        onTransition: (sourceStateId, targetIds, transitionIdx) => {
             if (targetIds && targetIds.length) {
                 console.log('transitioning from ' + sourceStateId + ' to ' + targetIds.join(','));
+                this.viz.highlightTransition(sourceStateId, transitionIdx);
             } else {
                 console.log('executing target-less transition in ' + sourceStateId);
             }

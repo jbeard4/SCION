@@ -39,6 +39,10 @@ export default class SCXMLVisualization extends React.Component<SCXMLVisualizati
     this.schviz.unhighlightAllStates();
   }
 
+  highlightTransition(sourceStateId:string, transitionIndex:number){
+    this.schviz.highlightTransition(sourceStateId, transitionIndex);
+  }
+
   componentDidMount(){
     //render
     this.schviz = new SCHVIZ(this.rootElement);
