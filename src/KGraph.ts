@@ -4,9 +4,12 @@ import _ = require('underscore');
 import SCJSONToKGraphTransformer from './SCJSONToKGraphTransformer';
 import IdGenerator from './IdGenerator';
 import {IKGraphRenderBackend} from './renderers/IKGraphRenderBackend';
+import Debug = require('debug');
+const debug = Debug('KGraph');
 
 import {SCState} from './SCJSON';
 import constants from './constants';
+
 
 export class KGraph extends SCJSONToKGraphTransformer {
 
@@ -71,7 +74,7 @@ export class KGraph extends SCJSONToKGraphTransformer {
     this._populateChildToParentMap(kgraph);
 
     this._applyInitialCoordinates(kgraph);
-    console.log('kgraph before layout',JSON.stringify(kgraph,null,4));   //TODO: enable debug module
+    debug('kgraph before layout',JSON.stringify(kgraph,null,4));   //TODO: enable debug module
     var t1 = Date.now();
     try {
       $klay.layout({
@@ -80,8 +83,8 @@ export class KGraph extends SCJSONToKGraphTransformer {
         success : function(g){ 
           try {
             this._processKGraphPostLayout(kgraph);
-            console.log('Layout in %sms',Date.now() - t1);
-            console.log('kgraph after layout',JSON.stringify(kgraph,null,4));   //TODO: enable debug module
+            debug('Layout in %sms',Date.now() - t1);
+            debug('kgraph after layout',JSON.stringify(kgraph,null,4));   //TODO: enable debug module
             this._svgRenderer.render(this, updateLayout);   //TODO: move this back out?
             cb(null, kgraph);
           } catch(e){
@@ -241,7 +244,7 @@ export class KGraph extends SCJSONToKGraphTransformer {
 
               //get their common parallel ancestor
               var commonParallelAncestor = this._getLCA(edge.target);
-              console.log('commonParallelAncestor',commonParallelAncestor); 
+              debug('commonParallelAncestor',commonParallelAncestor); 
 
               var lcaPorts = this._addPortsToState(commonParallelAncestor);
 
@@ -263,7 +266,7 @@ export class KGraph extends SCJSONToKGraphTransformer {
                   $hyperlink : edge.id,
                   labels : []
                 };
-                console.log('innerEdge.$hyperlink', innerEdge.$hyperlink);
+                debug('innerEdge.$hyperlink', innerEdge.$hyperlink);
                 grandparentNode.edges.push(innerEdge);
                 return innerEdge;
               }, this);
@@ -413,7 +416,7 @@ export class KGraph extends SCJSONToKGraphTransformer {
 
 
   _createPseudonodeAndSpliceEdge(parentState, edge){
-    console.log('_createPseudonodeAndSpliceEdge', 'parentState', parentState.id);
+    debug('_createPseudonodeAndSpliceEdge', 'parentState', parentState.id);
     if(!parentState.children) parentState.children = [];
 
     var pseudonode = this._createPseudonode(parentState);

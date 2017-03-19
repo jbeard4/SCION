@@ -3,6 +3,8 @@ import SVGRenderer from './renderers/react/index';
 import constants from './constants';
 import IdGenerator from './IdGenerator';
 import {SCState, SCTransition, SCGraph} from './SCJSON';
+import Debug = require('debug');
+const debug = Debug('SCHVIZ');
 
 class SCHVIZ {
 
@@ -51,7 +53,7 @@ class SCHVIZ {
     this._svgRenderer.clear();
     this._kgraph = new KGraph(this._idGenerator, this._svgRenderer, this._scjson, options); 
     this._kgraph.on('update', this.updateSCJSON.bind(this, scjson, options, function(){
-      console.log('Update complete');
+      debug('Update complete');
     }));
     this._kgraph.update(options, cb);
   }

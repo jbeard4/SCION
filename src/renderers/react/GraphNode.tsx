@@ -9,6 +9,8 @@ import EventEmitter = require('events');
 import _ = require('underscore');
 import Q = require('q');
 let ReactTransitionGroup = require('react-addons-transition-group');
+import Debug = require('debug');
+const debug = Debug('GraphNode');
 
 interface GraphNodeProps {
   node : KGraphNode;
@@ -59,12 +61,12 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
   }
 
   public pauseAnimation(){
-    console.log('pauseAnimation');
+    debug('pauseAnimation');
     this.svgRootElement.pauseAnimations();
   }
 
   public beginAnimation(updateLayout : boolean){
-    console.log('beginAnimation');
+    debug('beginAnimation');
 
     let resetAnimationsAndUnpause = () => {
       Array.from(this.svgRootElement.querySelectorAll('animateTransform.beginOnStart, animate.beginOnStart')).forEach( (e : SVGAnimationElement) => e.beginElement() );
@@ -81,12 +83,12 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
 
   render(){
 
-    console.log('render graphroot', this.props.updateLayout);
+    debug('render graphroot', this.props.updateLayout);
     
     let from = `${[0,0,this.state.fromNode.width,this.state.fromNode.height].join(' ')}`;
     let to = `${[0,0,this.state.node.width,this.state.node.height].join(' ')}`;
     let viewBoxValues = `${from};${to}`;
-    console.log('viewBoxValues ', viewBoxValues );
+    debug('viewBoxValues ', viewBoxValues );
     return <svg width="100%" height="100%" 
       ref={(e: SVGSVGElement) => { this.svgRootElement = e; }}
       >
@@ -180,16 +182,16 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
   }
 
   componentWillUnmount () {
-    console.log('componentWillUnmount', this.props.node.id);
+    debug('componentWillUnmount', this.props.node.id);
   }
 
   componentWillAppear (callback) {
-    console.log('componentWillAppear', this.props.node.id);
+    debug('componentWillAppear', this.props.node.id);
     setTimeout(callback,1);
   }
 
   componentWillEnter (callback) {
-    console.log('componentWillEnter', this.props.node.id);
+    debug('componentWillEnter', this.props.node.id);
     setTimeout(callback,1);
   }
 
@@ -219,7 +221,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
       exiting : true
     };
 
-    console.log('exit animation for node', this.state.to.node.id, this.state);
+    debug('exit animation for node', this.state.to.node.id, this.state);
 
     this.forceUpdate();   //it seems to be always necessary to force an update here
 
@@ -227,16 +229,16 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
   }
 
   componentWillLeave (callback) {
-    console.log('componentWillLeave', this.props.node.id);
+    debug('componentWillLeave', this.props.node.id);
     this._exit(callback);
   }
 
   componentWillMount(){
-    console.log('componentWillMount', this.props.node.id);
+    debug('componentWillMount', this.props.node.id);
   }
 
   componentDidMount() {
-    console.log('componentDidMount', this.props.node.id);
+    debug('componentDidMount', this.props.node.id);
   }
 
   _toNode(node){
@@ -260,9 +262,9 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
   }
 
   componentWillReceiveProps(props : GraphNodeProps){
-    console.log('componentWillReceiveProps', this.props.node.id, props.semaphore[this.props.node.id], props);
-    console.log('props.updateLayout', props.updateLayout);
-    console.log('props.parentIsExiting', props.parentIsExiting);
+    debug('componentWillReceiveProps', this.props.node.id, props.semaphore[this.props.node.id], props);
+    debug('props.updateLayout', props.updateLayout);
+    debug('props.parentIsExiting', props.parentIsExiting);
 
     if(props.parentIsExiting){
       this._exit();
@@ -277,11 +279,11 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
       from : this.state.to,
       to : this._toNode(props.node)
     };
-    console.log('this.state', JSON.stringify(this.state));
+    debug('this.state', JSON.stringify(this.state));
   }
 
   render(){
-    console.log('render',this.state.to.node.id);
+    debug('render',this.state.to.node.id);
 
     var isLeaf = !(this.props.node.children && this.props.node.children.length);
 

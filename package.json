@@ -4,6 +4,7 @@
   "description": "SCJSON to KGraph to SVG rendering library",
   "main": "dist/index.js",
   "dependencies": {
+    "debug": "^2.6.3",
     "jquery": "^3.1.1",
     "jsondiffpatch": "^0.2.4",
     "klayjs": "^0.4.1",
@@ -39,8 +40,8 @@
   },
   "scripts": {
     "test": "karma",
-    "build" : "tsc -p .  --sourceMap",
-    "watch" : "tsc -p .  --sourceMap -w",
+    "build": "tsc -p .  --sourceMap",
+    "watch": "tsc -p .  --sourceMap -w",
     "browserify": "browserify -p tsify --project . src/index.ts  --standalone SCHVIZ --debug -o dist/schviz.js",
     "browserify-watch": "watchify -p tsify --project . src/index.ts --standalone SCHVIZ --debug -o dist/schviz.js  --verbose",
     "minfiy": "uglify -s dist/schviz.js -o dist/schviz.min.js",

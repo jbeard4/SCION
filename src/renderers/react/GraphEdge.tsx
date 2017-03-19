@@ -5,6 +5,8 @@ import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, Point} from '../../KGraph';
 import * as React from "react";
 import constants from '../../constants';
 import GraphLabel from './GraphLabel';
+import Debug = require('debug');
+const debug = Debug('GraphEdge');
 let ReactTransitionGroup = require('react-addons-transition-group');
 
 interface GraphEdgeProps {
@@ -112,8 +114,8 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
 
   componentWillReceiveProps(props : GraphEdgeProps){
     //compute updated props
-    console.log('componentWillReceiveProps', this.props.edge.id, props.semaphore[this.props.edge.id], props);
-    console.log('props.updateLayout', props.updateLayout);
+    debug('componentWillReceiveProps', this.props.edge.id, props.semaphore[this.props.edge.id], props);
+    debug('props.updateLayout', props.updateLayout);
 
     if(props.semaphore[this.props.edge.id]) return;
 
@@ -198,7 +200,7 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
       initialFrom = sourcePoint;
     }
     var lastSegmentDirection = this._getBendpointDirection(initialFrom, edge.targetPoint);
-    //console.log('lastSegmentDirection ',lastSegmentDirection);
+    //debug('lastSegmentDirection ',lastSegmentDirection);
     if(lastSegmentDirection === 'right'){
       var markerOffset = this._isHyperlink(edge) ? 0 : constants.ARROW_WIDTH;
       var x = edge.targetPoint.x - markerOffset;
@@ -354,21 +356,21 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
   }
 
   componentWillUnmount () {
-    console.log('componentWillUnmount', this.props.edge.id);
+    debug('componentWillUnmount', this.props.edge.id);
   }
 
   componentWillAppear (callback) {
-    console.log('componentWillAppear', this.props.edge.id);
+    debug('componentWillAppear', this.props.edge.id);
     setTimeout(callback,1);
   }
 
   componentWillEnter (callback) {
-    console.log('componentWillEnter', this.props.edge.id);
+    debug('componentWillEnter', this.props.edge.id);
     setTimeout(callback,1);
   }
 
   componentWillLeave (callback) {
-    console.log('componentWillLeave', this.props.edge.id);
+    debug('componentWillLeave', this.props.edge.id);
 
     //this is a bit weird, but it seems that using <animate> on the stroke-dashoffset causes a weird behavior on merge test2 -> test3 -> test4. A_a1 is invisible at animation end.
     //this.svgDashOffsetAnimation.addEventListener('endEvent', nextStep);
@@ -392,17 +394,17 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
     this.forceUpdate();
 
     function nextStep(){
-      console.log('exitAnimation endEvent', this.props.edge.id);
+      debug('exitAnimation endEvent', this.props.edge.id);
       callback();
     }
   }
 
   componentWillMount(){
-    console.log('componentWillMount', this.props.edge.id);
+    debug('componentWillMount', this.props.edge.id);
   }
 
   componentDidMount() {
-    console.log('componentDidMount', this.props.edge.id);
+    debug('componentDidMount', this.props.edge.id);
   }
 
   componentDidUpdate(prevProps:GraphEdgeProps, prevState: GraphEdgeAnimation) {

@@ -8,6 +8,9 @@ import ReactDOM = require('react-dom');
 import * as React from "react";
 import GraphRoot from './GraphNode';
 
+import Debug = require('debug');
+const debug = Debug('react renderer index');
+
 import {KGraph, KGraphNode, KGraphEdge, KGraphLabel} from '../../KGraph';
 
 import {IKGraphRenderBackend, LayoutOptions} from '../IKGraphRenderBackend';
@@ -65,14 +68,14 @@ export default class SVGRenderer implements IKGraphRenderBackend {
     return bbox; 
   }
   public render(kgraph:KGraph, updateLayout){
-    console.log('render',kgraph);
+    debug('render',kgraph);
     var allEdges = this._getAllEdges(kgraph);
     var t1 = Date.now();
     let semaphore = {};
     if(!this._root) {
       var root = <GraphRoot node={kgraph.root} allEdges={allEdges} kgraph={kgraph} isRoot={true} semaphore={semaphore} updateLayout={false} parentIsExiting={false}/>;
       this._root = ReactDOM.render(root, this._parentNode, () => {
-        console.log('Rendered in %sms',Date.now() - t1);
+        debug('Rendered in %sms',Date.now() - t1);
         setTimeout(() => {this._root.beginAnimation(false);},1);
       }) as GraphRoot;
       this._root.pauseAnimation();

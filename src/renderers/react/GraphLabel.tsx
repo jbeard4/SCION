@@ -4,6 +4,8 @@
 import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, Point} from '../../KGraph';
 import * as React from "react";
 import constants from '../../constants';
+import Debug = require('debug');
+const debug = Debug('GraphLabel');
 
 interface GraphLabelProps {
   edge : KGraphEdge; 
@@ -34,8 +36,8 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
   }
 
   componentWillReceiveProps(props : GraphLabelProps){
-    console.log('componentWillReceiveProps', props);
-    console.log('props.updateLayout', props.updateLayout);
+    debug('componentWillReceiveProps', props);
+    debug('props.updateLayout', props.updateLayout);
     this._normalizeSelfLoopEdgeCoordinates(props.label, props.edge);
     var point = {
       x : props.label.x,
@@ -48,14 +50,14 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
   }
 
   componentWillAppear (callback) {
-    console.log('componentWillAppear', this.props.edge.id);
+    debug('componentWillAppear', this.props.edge.id);
     setTimeout(callback,1);
     //TODO: start the animation now? No.... Well maybe. We could set up a listener for the end event before we call the callback, in order to make this asynchronous
     //this might have the effect of buffering animations, which might work well. 
   }
 
   componentWillEnter (callback) {
-    console.log('componentWillEnter', this.props.edge.id);
+    debug('componentWillEnter', this.props.edge.id);
     setTimeout(callback,1);
   }
 
