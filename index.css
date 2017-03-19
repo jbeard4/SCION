@@ -42,7 +42,7 @@ body {
   margin : 0;
 }
 
-.editor-mode #console{
+.viz-mode #console{
   max-height:0em;
 }
 
