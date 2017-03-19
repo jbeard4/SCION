@@ -1,5 +1,5 @@
 {
-  "name": "dialogos",
+  "name": "scxml-tool",
   "version": "1.0.2",
   "description": "A minimal standalone graphical SCXML simulation environment.",
   "main": "main.js",
