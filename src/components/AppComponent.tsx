@@ -5,6 +5,10 @@ import preferences = require('../../preferences');
 import scxml = require('scxml');
 import RunButton from './RunButton';
 import ConsoleComponent from './Console';
+import electron = require('electron');
+
+const remote = electron.remote;
+const {Menu, MenuItem} = remote;
 
 import fs = require('fs');
 
@@ -27,6 +31,8 @@ export default class AppComponent extends React.Component<AppComponentProps, App
   constructor(props){
     super(props);
 
+    this.initContextMenu();
+
     //read, and perform initial render
     let scxmlContents = fs.readFileSync(props.scxmlPath,'utf8');
     //if he is SCXML, convert him to scjson
@@ -45,6 +51,32 @@ export default class AppComponent extends React.Component<AppComponentProps, App
       });
     });
   }
+
+  private initContextMenu(){
+    const menu = new Menu()
+    let items = Object.keys(SCHVIZ.layouts).map((layoutName) => {
+      let item = new MenuItem({ 
+        label: layoutName, 
+        type: 'checkbox', 
+        checked: layout === layoutName,
+        click : () => {
+          layout = layoutName;
+          items.forEach( i => i.checked = i === item );
+          this.viz.updateLayout(layoutName, (err) => {
+            if(err) return console.error(err);
+          });
+        }
+      });
+
+      menu.append(item);
+      return item;
+    })
+    window.addEventListener('contextmenu', (e) => {
+      e.preventDefault()
+      menu.popup(remote.getCurrentWindow())
+    }, false)
+  }
+
 
   handleRunButtonClick(event){
     //create a new scxml instance
