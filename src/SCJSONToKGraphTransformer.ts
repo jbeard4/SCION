@@ -1,7 +1,6 @@
 import constants from './constants';
 import events from './events';
 import IdGenerator from './IdGenerator';
-import DefaultInteractiveBehavior from './interactivity';
 import EventEmitter = require('events');
 import _ = require('underscore');
 import {SCState} from './SCJSON';
@@ -12,7 +11,6 @@ export default class SCJSONToKGraphTransformer extends EventEmitter{
 
   _idGenerator : IdGenerator; 
   _stateToKlayNodeMap : Map<SCState,KGraphNode>;
-  _behavior : DefaultInteractiveBehavior; 
   _svgRenderer : IKGraphRenderBackend;
 
   constructor(idGenerator: IdGenerator, svgRenderer : IKGraphRenderBackend){
@@ -20,7 +18,6 @@ export default class SCJSONToKGraphTransformer extends EventEmitter{
     this._idGenerator = idGenerator;
     this._svgRenderer = svgRenderer;
     this._stateToKlayNodeMap = new Map<SCState,KGraphNode>();
-    this._behavior = new DefaultInteractiveBehavior();
   }
 
   transform(scjson){
@@ -30,7 +27,6 @@ export default class SCJSONToKGraphTransformer extends EventEmitter{
     var idMap = this._getIdMap(scjson);
     var transformedScjsonCopy = this._transformScjsonVirtualCollapsedStates(scjson, scjson);
     var rootNode = this._scjsonStateToKlayNode(klayNodeToScjsonMap, idMap, transformedScjsonCopy, transformedScjsonCopy, transformedScjsonCopy);
-    this._behavior.attachListeners(rootNode);   //initialize default behavior
     return [klayNodeToScjsonMap, rootNode];
   }
 

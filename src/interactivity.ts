@@ -12,7 +12,7 @@ export default class DefaultInteractiveBehavior {
   }
 
   handleEvent(kgraphRoot, eventName, scjson, kgraphNode, domEvent){
-    //debug('handleEvent',eventName, scjson, klayNode, domEvent);
+    debug('handleEvent',eventName, scjson, kgraphNode, domEvent);
     if(eventName === 'dblclick'){
       scjson.$meta = scjson.$meta || {};
       scjson.$meta.isCollapsed = !scjson.$meta.isCollapsed;   //toggle contracted

@@ -2,11 +2,12 @@ import {KGraph, KGraphNode, KGraphEdge, KGraphLabel} from './KGraph';
 import SVGRenderer from './renderers/react/index';
 import constants from './constants';
 import IdGenerator from './IdGenerator';
-import {SCState, SCTransition, SCGraph} from './SCJSON';
+import {SCState, SCTransition, findStateById} from './SCJSON';
 import Debug = require('debug');
+import EventEmitter = require('events');
 const debug = Debug('SCHVIZ');
 
-class SCHVIZ {
+class SCHVIZ extends EventEmitter {
 
   static layouts = constants.layouts;
   static events = require('./events').node;
@@ -16,16 +17,35 @@ class SCHVIZ {
   _kgraphNodeToSVGElementMap: Map<KGraphNode,SVGElement>;
   _svgRenderer: SVGRenderer;
   _kgraph: KGraph;
-  _scjson: SCGraph;
+  _scjson: SCState;
   _idGenerator: IdGenerator; 
+  _options : any;
 
   constructor(parentNode){
+    super();
     this._scjsonStateToKGraphNodeMap = new Map<SCState,KGraphNode>();
     this._scjsonTransitionToKGraphNodeMap = new Map<SCTransition,KGraphNode>();
     this._kgraphNodeToSVGElementMap = new Map<KGraphNode,SVGElement>();
     this._idGenerator = new IdGenerator();
 
-    this._svgRenderer = new SVGRenderer(parentNode);
+    this._svgRenderer = new SVGRenderer(this, parentNode);
+    this._initializeListeners();
+  }
+
+  _initializeListeners(){
+    this.on('state:dblclick', this.handleStateDblClick.bind(this));
+  }
+
+  private handleStateDblClick(nodeId, event){
+    debug('handled state dblclick', nodeId, event);
+    //look up scjson
+    let state:SCState = findStateById(this._scjson, nodeId);
+    //transform model
+    state.$meta = state.$meta || {};
+    state.$meta.isCollapsed = !state.$meta.isCollapsed;   //toggle contracted
+    this.updateSCJSON(this._scjson, this._options, () => {
+      debug('updateSCJSON complete');
+    });
   }
 
   updateLayout(options, cb){
@@ -37,6 +57,7 @@ class SCHVIZ {
 
 
   updateSCJSON(sourceSCJSON, options, cb){
+    this._options = options;
     //initialize states added: convert scjson to klay node
     //they get appended as _kgraphNode
     
@@ -48,6 +69,7 @@ class SCHVIZ {
 
 
   renderSCJSON(scjson, options, cb){
+    this._options = options;
     var newKlayToScjsonMap, newKgraphRoot;
     this._scjson = scjson;
     this._svgRenderer.clear();

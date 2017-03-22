@@ -7,6 +7,7 @@ import q = require('q');
 import ReactDOM = require('react-dom');
 import * as React from "react";
 import GraphRoot from './GraphNode';
+import EventEmitter = require('events');
 
 import Debug = require('debug');
 const debug = Debug('react renderer index');
@@ -20,8 +21,10 @@ export default class SVGRenderer implements IKGraphRenderBackend {
   _parentNode:SVGElement;
   _root : GraphRoot;
   _kgraphRoot : KGraphNode;
+  _app : EventEmitter;
 
-  public constructor(parentNode:SVGElement){
+  public constructor(app:EventEmitter, parentNode:SVGElement){
+    this._app = app;
     this._parentNode = parentNode;
   }
   public clear(){
@@ -73,7 +76,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
     var t1 = Date.now();
     let semaphore = {};
     if(!this._root) {
-      var root = <GraphRoot node={kgraph.root} allEdges={allEdges} kgraph={kgraph} isRoot={true} semaphore={semaphore} updateLayout={false} parentIsExiting={false}/>;
+      var root = <GraphRoot app={this._app} node={kgraph.root} allEdges={allEdges} kgraph={kgraph} isRoot={true} semaphore={semaphore} updateLayout={false} parentIsExiting={false}/>;
       this._root = ReactDOM.render(root, this._parentNode, () => {
         debug('Rendered in %sms',Date.now() - t1);
         setTimeout(() => {this._root.beginAnimation(false);},1);
@@ -83,6 +86,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
       this._root.pauseAnimation();
       //console.time('update');
       this._root.setState({
+          app:this._app,
           node:kgraph.root, 
           fromNode: this._kgraphRoot,    //not yet updated. use as prev kgraph root
           allEdges:allEdges, 

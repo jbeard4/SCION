@@ -20,6 +20,7 @@ interface GraphNodeProps {
   semaphore : any;
   updateLayout : boolean;
   parentIsExiting : boolean;
+  app : EventEmitter;
 }
 
 interface KGraphNodeAnimation {
@@ -55,7 +56,8 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
       fromNode : props.node,
       semaphore : props.semaphore,
       updateLayout : props.updateLayout,
-      parentIsExiting : props.parentIsExiting 
+      parentIsExiting : props.parentIsExiting ,
+      app : props.app
     };
     props.semaphore[props.node.id] = true;
   }
@@ -115,7 +117,7 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
         }
       </defs>
       <ReactTransitionGroup component="g">
-        <GraphNode node={this.state.node} allEdges={this.state.allEdges} kgraph={this.state.kgraph} isRoot={true} semaphore={this.state.semaphore} updateLayout={this.state.updateLayout} parentIsExiting={this.props.parentIsExiting}/>
+        <GraphNode app={this.props.app} node={this.state.node} allEdges={this.state.allEdges} kgraph={this.state.kgraph} isRoot={true} semaphore={this.state.semaphore} updateLayout={this.state.updateLayout} parentIsExiting={this.props.parentIsExiting}/>
       </ReactTransitionGroup>
     </svg>;
   }
@@ -282,6 +284,14 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
     debug('this.state', JSON.stringify(this.state));
   }
 
+  handleDoubleClick(event){
+    debug('handleDoubleClick', event, this.state.to.node);
+    event.preventDefault();
+    event.stopPropagation();
+    
+    this.props.app.emit('state:dblclick', this.props.node.id, event);
+  }
+
   render(){
     debug('render',this.state.to.node.id);
 
@@ -311,7 +321,9 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
     let toReturn = <g id={this.state.to.node.id} 
             className={'node ' + 
                         (isLeaf ? 'leaf' : 'compound') + ' ' + 
-                        (this.state.to.node.$type ? 'type__' + this.state.to.node.$type : '')} >
+                        (this.state.to.node.$type ? 'type__' + this.state.to.node.$type : '')} 
+            onDoubleClick={this.handleDoubleClick.bind(this)}
+            >
       <animateTransform attributeName="transform" attributeType="XML"
                type="translate"
                fill="freeze" 
@@ -372,7 +384,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
       <ReactTransitionGroup component="g" className="childNodes">
         { 
           this.props.node.children && this.props.node.children.map(child => (
-            <GraphNode node={child} key={child.id} allEdges={this.props.allEdges} kgraph={this.props.kgraph} isRoot={false} semaphore={this.props.semaphore} updateLayout={this.props.updateLayout} parentIsExiting={this.props.parentIsExiting || this.state.exiting}/>
+            <GraphNode app={this.props.app} node={child} key={child.id} allEdges={this.props.allEdges} kgraph={this.props.kgraph} isRoot={false} semaphore={this.props.semaphore} updateLayout={this.props.updateLayout} parentIsExiting={this.props.parentIsExiting || this.state.exiting}/>
           ))
         }
       </ReactTransitionGroup>
