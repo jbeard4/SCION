@@ -14,10 +14,8 @@ export default class RunButton extends React.Component<RunButtonProps, RunButton
   }
 
   render(){
-    return <div style={{position:'absolute', bottom:'2em', right:'1em', opacity: 1 }}>
-      <button  
-        onClick={this.props.handleClick} 
-        style={{borderRadius : '1.25em', fontSize : '2em', outline: 'none', padding : '.5em'}}>
+    return <div className="runButton">
+      <button onClick={this.props.handleClick}>
           <span className={`fa ${this.props.running ? 'fa-stop' : 'fa-play'}`}></span>
       </button>
     </div>;

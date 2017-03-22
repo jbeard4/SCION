@@ -1,6 +1,6 @@
 {
   "name": "scxml-tool",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A minimal standalone graphical SCXML simulation environment.",
   "main": "main.js",
   "scripts": {
@@ -15,7 +15,7 @@
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "scxml": "3.0.4",
-    "schviz2" : "2.1.1"
+    "schviz2" : "2.2.1"
   },
   "keywords": [
     "SCXML"

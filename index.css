@@ -55,3 +55,22 @@ body {
   /*background-color:pink;*/
 }
 
+.runButton {
+  position:absolute; 
+  bottom:2em; 
+  right:1em; 
+  opacity: 1;
+}
+
+.runButton button {
+  border-radius : 1.25em; 
+  font-size : 2em; 
+  outline: none; 
+  padding : .5em;
+}
+
+@media print {
+  .runButton {
+    display : none;
+  }
+}
