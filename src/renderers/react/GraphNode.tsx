@@ -67,17 +67,19 @@ export default class GraphRoot extends React.Component<GraphRootProps, GraphRoot
 
     //this.props.app.on('state:dblclick', this.zoomToState.bind(this));
 
+    /*
     document.addEventListener('keydown', (e) => {
       this.setState({
         fromZoom : this.state.toZoom,
         toZoom : this.defaultRect,
-        fromNode : this.state.fromNode,
+        fromNode : this.state.toNode,
         toNode : this.state.toNode
       }, () => {
         setTimeout(this.beginAnimation(false),1);
       });
       
     });
+    */
   }
 
   public pauseAnimation(){
