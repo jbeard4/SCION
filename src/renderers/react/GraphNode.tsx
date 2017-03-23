@@ -107,6 +107,14 @@ export default class GraphRoot extends React.Component<GraphRootProps, GraphRoot
 
   }
 
+  toViewportCoordinates(event){
+    //convert event client coordinates (which are in screen coordinates) to viewport coordinates
+    var pt = this.svgRootElement.createSVGPoint();
+    pt.x = event.clientX; 
+    pt.y = event.clientY;
+    return pt.matrixTransform(this.svgRootElement.getScreenCTM().inverse());
+  }
+
   handleMouseWheel(event){
     debug('handleMouseWheel', event.clientX, event.clientY, event);
     event.preventDefault();
@@ -119,11 +127,7 @@ export default class GraphRoot extends React.Component<GraphRootProps, GraphRoot
     //aspect ratio
     let aspectRatio = fromZoom.width / fromZoom.height; 
 
-    //convert event client coordinates (which are in screen coordinates) to viewport coordinates
-    var pt = this.svgRootElement.createSVGPoint();
-    pt.x = event.clientX; 
-    pt.y = event.clientY;
-    let pt2 = pt.matrixTransform(this.svgRootElement.getScreenCTM().inverse());
+    let pt2 = this.toViewportCoordinates(event);
 
     //compute toZoom viewBox coordinates
     //first compute height
@@ -169,6 +173,84 @@ export default class GraphRoot extends React.Component<GraphRootProps, GraphRoot
     });
   }
 
+  //later, try handleMouseClick
+  handleClick(event){
+    debug('handleClick', event);
+  }
+
+  eventStamp : SVGPoint;
+  eventBuffer : Array<SVGPoint>;
+  deltaBuffer : Array<SVGPoint>;
+  initialZoom : SVGRect;
+
+  handleMouseDown(event){
+    debug('handleMouseDown', event);
+    if(event.button !== 0) return;
+    this.eventBuffer = [];
+    this.deltaBuffer = [];
+    this.eventStamp = this.svgRootElement.createSVGPoint();
+    this.eventStamp.x = event.clientX;
+    this.eventStamp.y = event.clientY;
+    this.initialZoom = this.state.toZoom;
+  }
+
+  handleMouseUp(event){
+    debug('handleMouseUp', event);
+    console.log('this.eventBuffer',this.eventBuffer);
+    console.log('this.deltaBuffer',this.deltaBuffer);
+    this.eventStamp = null;
+    this.eventBuffer = null;
+    this.deltaBuffer = null;
+    this.initialZoom = null;
+  }
+
+  handleMouseMove(event){
+    if(!this.eventStamp) return;
+
+    debug('handleMouseMove', event.clientX, event.clientY);
+    let pt1 = this.eventStamp;
+    let pt2 = this.svgRootElement.createSVGPoint();
+    pt2.x = event.clientX;
+    pt2.y = event.clientY;
+
+    //if(pt1.x !== pt2.x || pt1.y !== pt2.y) debugger;
+
+    var tdelta = this.svgRootElement.createSVGPoint();
+    tdelta.x = pt2.x - pt1.x ; 
+    tdelta.y = pt2.y - pt1.y;
+
+    let ctm = this.svgRootElement.getScreenCTM()
+    tdelta.x /= ctm.a;
+    tdelta.y /= ctm.d;
+
+    //compute delta
+    debug('tdelta', tdelta.x, tdelta.y);
+
+    //compute toZoom viewBox coordinates
+    //first compute height
+    let x = this.initialZoom.x - tdelta.x;
+    let y = this.initialZoom.y - tdelta.y;
+
+    let toZoom = {
+      x : x,
+      y : y,
+      width : this.initialZoom.width,
+      height : this.initialZoom.height
+    };
+    //toZoom.x = toZoom.x < 0 ? 0 : toZoom.x;
+    //toZoom.y = toZoom.y < 0 ? 0 : toZoom.y;
+    //toZoom.x = toZoom.x + toZoom.width > toZoom.width ? fromZoom.x : toZoom.x;
+    //toZoom.y = toZoom.y + toZoom.height > toZoom.height ? fromZoom.y : toZoom.y;
+    
+    let viewBox = `${toZoom.x} ${toZoom.y} ${toZoom.width} ${toZoom.height}`;
+    this.viewBoxAnimation.setAttributeNS(null, 'from', viewBox);
+    this.viewBoxAnimation.setAttributeNS(null, 'to', viewBox);
+    this.viewBoxAnimation.setAttributeNS(null, 'dur', '0ms');
+    this.state.toZoom = toZoom;
+    this.state.fromZoom = toZoom;
+    this.viewBoxAnimation.beginElement();
+  }
+
   render(){
 
     debug('render graphroot', this.props.updateLayout);
@@ -180,6 +262,10 @@ export default class GraphRoot extends React.Component<GraphRootProps, GraphRoot
     return <svg width="100%" height="100%" 
       ref={(e: SVGSVGElement) => { this.svgRootElement = e; }}
       onWheel={this.handleMouseWheel.bind(this)}
+      onClick={this.handleClick.bind(this)}
+      onMouseDown={this.handleMouseDown.bind(this)}
+      onMouseUp={this.handleMouseUp.bind(this)}
+      onMouseMove={this.handleMouseMove.bind(this)}
       >
       <animate 
         className={constants.START}
@@ -475,7 +561,6 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
             className={'node ' + 
                         (isLeaf ? 'leaf' : 'compound') + ' ' + 
                         (this.state.to.node.$type ? 'type__' + this.state.to.node.$type : '')} 
-            onDoubleClick={this.handleDoubleClick.bind(this)}
             ref={(e: SVGGElement) => { this.svgGElement = e; }}
             >
       <animateTransform attributeName="transform" attributeType="XML"
