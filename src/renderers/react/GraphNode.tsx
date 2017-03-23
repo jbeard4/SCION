@@ -28,6 +28,7 @@ interface GraphRootProps {
 interface GraphNodeProps extends GraphRootProps {
   node : KGraphNode;
   isRoot : boolean;
+  graphRoot : GraphRoot;
 }
 
 interface KGraphNodeAnimation {
@@ -68,8 +69,6 @@ export default class GraphRoot extends React.Component<GraphRootProps, GraphRoot
       fromNode : node
     };
     props.semaphore[node.id] = true;
-
-    //this.props.app.on('state:dblclick', this.zoomToState.bind(this));
 
     /*
     document.addEventListener('keydown', (e) => {
@@ -117,31 +116,6 @@ export default class GraphRoot extends React.Component<GraphRootProps, GraphRoot
     //if(event.deltaY > 0){
     //}else{
     //}
-  }
-
-  zoomToState(id){
-    let e = (document.getElementById(id)) as any as SVGGElement;
-    let bbox:SVGRect = e.getBBox();
-    let m0:SVGMatrix = this.svgRootElement.getCTM();
-    let m1:SVGMatrix = e.getCTM();
-    let m = m0.inverse().multiply(m1);
-    let x = m.e,
-        y = m.f,
-        width = bbox.width,
-        height = bbox.height;
-    this.setState({
-      fromZoom : this.state.toZoom,
-      toZoom : {
-        x : m.e,
-        y : m.f,
-        width : bbox.width,
-        height : bbox.height
-      },
-      fromNode : this.state.fromNode,
-      toNode : this.state.toNode
-    }, () => {
-      setTimeout(this.beginAnimation(false),1);
-    });
   }
 
   componentWillReceiveProps(props : GraphRootProps){
@@ -201,7 +175,8 @@ export default class GraphRoot extends React.Component<GraphRootProps, GraphRoot
           isRoot={true}
           semaphore={this.props.semaphore}
           updateLayout={this.props.updateLayout}
-          parentIsExiting={this.props.parentIsExiting}/>
+          parentIsExiting={this.props.parentIsExiting}
+          graphRoot={this}/>
       </ReactTransitionGroup>
     </svg>;
   }
@@ -224,6 +199,31 @@ export default class GraphRoot extends React.Component<GraphRootProps, GraphRoot
       i++;
     }
     return toReturn;
+  }
+
+  zoomToState(stateId){
+    let e = (document.getElementById(stateId)) as any as SVGGElement;
+    let bbox:SVGRect = e.getBBox();
+    let m0:SVGMatrix = this.svgRootElement.getCTM();
+    let m1:SVGMatrix = e.getCTM();
+    let m = m0.inverse().multiply(m1);
+    let x = m.e,
+        y = m.f,
+        width = bbox.width,
+        height = bbox.height;
+    this.setState({
+      fromZoom : this.state.toZoom,
+      toZoom : {
+        x : m.e,
+        y : m.f,
+        width : bbox.width,
+        height : bbox.height
+      },
+      fromNode : this.state.fromNode,
+      toNode : this.state.toNode
+    }, () => {
+      setTimeout(this.beginAnimation(false),1);
+    });
   }
 
 }
@@ -334,20 +334,21 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
 
   private initContextMenu(){
     const menu = new Menu()
-    let items = [this.props.node.id].map((layoutName) => {
-      let item = new MenuItem({ 
-        label: layoutName, 
-        type: 'checkbox', 
-        checked: false,
+    let items = [
+      new MenuItem({
+        label: 'Zoom to state', 
         click : () => {
-          //layout = layoutName;
-          console.log(layoutName);
+          this.props.graphRoot.zoomToState(this.props.node.id);
         }
-      });
-
-      menu.append(item);
-      return item;
-    })
+      }),
+      new MenuItem({
+        label: 'Expand/contract', 
+        click : () => {
+          console.log('Expand state/contract state');
+        }
+      })
+    ];
+    items.forEach( item => menu.append(item) );
 
     this.contextmenu = menu;
   }
@@ -500,7 +501,17 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
       <ReactTransitionGroup component="g" className="childNodes">
         { 
           this.props.node.children && this.props.node.children.map(child => (
-            <GraphNode app={this.props.app} node={child} key={child.id} allEdges={this.props.allEdges} kgraph={this.props.kgraph} isRoot={false} semaphore={this.props.semaphore} updateLayout={this.props.updateLayout} parentIsExiting={this.props.parentIsExiting || this.state.exiting}/>
+            <GraphNode
+              app={this.props.app}
+              node={child}
+              key={child.id}
+              allEdges={this.props.allEdges}
+              kgraph={this.props.kgraph}
+              isRoot={false}
+              semaphore={this.props.semaphore}
+              updateLayout={this.props.updateLayout}
+              parentIsExiting={this.props.parentIsExiting || this.state.exiting}
+              graphRoot={this.props.graphRoot}/>
           ))
         }
       </ReactTransitionGroup>
