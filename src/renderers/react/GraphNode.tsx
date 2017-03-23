@@ -112,16 +112,31 @@ export default class GraphRoot extends React.Component<GraphRootProps, GraphRoot
     event.preventDefault();
     event.stopPropagation();
 
-    let x = event.deltaY > 0 ? 1 : -1;
-    let delta = 10 * x;
+    let n = event.deltaY > 0 ? 1 : -1;
+    let delta = 10 * n;
     
     let fromZoom = this.svgRootElement.viewBox.animVal;
+    //aspect ratio
+    let aspectRatio = fromZoom.width / fromZoom.height; 
+
+    //convert event client coordinates (which are in screen coordinates) to viewport coordinates
+    var pt = this.svgRootElement.createSVGPoint();
+    pt.x = event.clientX; 
+    pt.y = event.clientY;
+    let pt2 = pt.matrixTransform(this.svgRootElement.getScreenCTM().inverse());
+
+    //compute toZoom viewBox coordinates
+    //first compute height
+    let height = this.state.toZoom.height - delta;
+    let width = aspectRatio * height;
+    let x = pt2.x - (width / 2);
+    let y = pt2.y - (height / 2);
 
     let toZoom = {
-      x : this.state.toZoom.x + delta,
-      y : this.state.toZoom.y + delta,
-      width : this.state.toZoom.width - delta,
-      height : this.state.toZoom.height - delta
+      x : x,
+      y : y,
+      width : width,
+      height : height
     };
     toZoom.x = toZoom.x < 0 ? 0 : toZoom.x;
     toZoom.y = toZoom.y < 0 ? 0 : toZoom.y;
