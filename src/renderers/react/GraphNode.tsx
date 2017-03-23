@@ -50,6 +50,7 @@ interface GraphRootAnimation {
   toNode : KGraphNode;
   fromZoom : SVGRect;
   toZoom : SVGRect;
+  fastZoom? : boolean;
 }
 
 export default class GraphRoot extends React.Component<GraphRootProps, GraphRootAnimation> {
@@ -107,15 +108,36 @@ export default class GraphRoot extends React.Component<GraphRootProps, GraphRoot
   }
 
   handleMouseWheel(event){
-    debug('handleMouseWheel', event);
+    debug('handleMouseWheel', event.clientX, event.clientY, event);
     event.preventDefault();
     event.stopPropagation();
 
-    //event.clientX
-    //event.clientY
-    //if(event.deltaY > 0){
-    //}else{
-    //}
+    let x = event.deltaY > 0 ? 1 : -1;
+    let delta = 10 * x;
+    
+    let fromZoom = this.svgRootElement.viewBox.animVal;
+
+    let toZoom = {
+      x : this.state.toZoom.x + delta,
+      y : this.state.toZoom.y + delta,
+      width : this.state.toZoom.width - delta,
+      height : this.state.toZoom.height - delta
+    };
+    toZoom.x = toZoom.x < 0 ? 0 : toZoom.x;
+    toZoom.y = toZoom.y < 0 ? 0 : toZoom.y;
+    toZoom.width = toZoom.width > this.state.toNode.width ? this.state.toNode.width : toZoom.width;
+    toZoom.height = toZoom.height > this.state.toNode.height ? this.state.toNode.height : toZoom.height;
+
+    this.pauseAnimation();
+    this.setState({
+      fromZoom : fromZoom,
+      toZoom : toZoom,
+      fromNode : this.state.toNode,
+      toNode : this.state.toNode, 
+      fastZoom : true
+    }, () => {
+      setTimeout(this.beginAnimation(false),1);
+    });
   }
 
   componentWillReceiveProps(props : GraphRootProps){
@@ -148,7 +170,7 @@ export default class GraphRoot extends React.Component<GraphRootProps, GraphRoot
         className={constants.START}
         ref={(e: SVGAnimationElement) => { this.viewBoxAnimation = e; }}
         attributeName="viewBox" fill="freeze" begin="indefinite"
-        dur={constants.ANIM_DURATION} 
+        dur={this.state.fastZoom ? '250ms' : constants.ANIM_DURATION} 
         from={from}
         to={to}/>
       <defs>
