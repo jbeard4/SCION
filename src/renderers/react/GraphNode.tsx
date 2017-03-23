@@ -236,6 +236,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
   svgRectElement : SVGRectElement;
   svgGElement : SVGGElement;
   rectXAnimationElement : SVGAnimationElement;
+  contextmenu : any;
 
   constructor(props){
     super(props);
@@ -333,7 +334,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
 
   private initContextMenu(){
     const menu = new Menu()
-    let items = Object.keys(['foo','bar','bat']).map((layoutName) => {
+    let items = [this.props.node.id].map((layoutName) => {
       let item = new MenuItem({ 
         label: layoutName, 
         type: 'checkbox', 
@@ -347,10 +348,14 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
       menu.append(item);
       return item;
     })
+
+    this.contextmenu = menu;
   }
 
   handleContextMenu(e){
-      
+    e.preventDefault()
+    e.stopPropagation();
+    this.contextmenu.popup(remote.getCurrentWindow())
   }
 
   _toNode(node){
