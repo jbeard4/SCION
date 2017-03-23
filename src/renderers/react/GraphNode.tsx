@@ -12,15 +12,18 @@ let ReactTransitionGroup = require('react-addons-transition-group');
 import Debug = require('debug');
 const debug = Debug('GraphNode');
 
-interface GraphNodeProps {
-  node : KGraphNode;
+interface GraphRootProps {
   allEdges : KGraphEdge[];
   kgraph : KGraph;
-  isRoot : boolean;
   semaphore : any;
   updateLayout : boolean;
   parentIsExiting : boolean;
   app : EventEmitter;
+}
+
+interface GraphNodeProps extends GraphRootProps {
+  node : KGraphNode;
+  isRoot : boolean;
 }
 
 interface KGraphNodeAnimation {
@@ -37,29 +40,44 @@ interface GraphNodeAnimation {
   exiting? : boolean
 }
 
-interface GraphRootAnimation extends GraphNodeProps {
+interface GraphRootAnimation {
   fromNode : KGraphNode;
+  toNode : KGraphNode;
+  fromZoom : SVGRect;
+  toZoom : SVGRect;
 }
 
-export default class GraphRoot extends React.Component<GraphNodeProps, GraphRootAnimation> {
+export default class GraphRoot extends React.Component<GraphRootProps, GraphRootAnimation> {
 
   private svgRootElement : SVGSVGElement;
   private viewBoxAnimation : SVGAnimationElement;
+  private defaultRect : SVGRect;
 
-  constructor(props){
+  constructor(props:GraphRootProps){
     super(props);
+    let node = props.kgraph.root;
+    this.defaultRect = {x:0, y:0, width:0,height:0};
     this.state = {
-      node : props.node,
-      allEdges : props.allEdges,
-      kgraph : props.kgraph,
-      isRoot : props.isRoot,
-      fromNode : props.node,
-      semaphore : props.semaphore,
-      updateLayout : props.updateLayout,
-      parentIsExiting : props.parentIsExiting ,
-      app : props.app
+      fromZoom : this.defaultRect,
+      toZoom : this.defaultRect,
+      toNode : node,
+      fromNode : node
     };
-    props.semaphore[props.node.id] = true;
+    props.semaphore[node.id] = true;
+
+    //this.props.app.on('state:dblclick', this.zoomToState.bind(this));
+
+    document.addEventListener('keydown', (e) => {
+      this.setState({
+        fromZoom : this.state.toZoom,
+        toZoom : this.defaultRect,
+        fromNode : this.state.fromNode,
+        toNode : this.state.toNode
+      }, () => {
+        setTimeout(this.beginAnimation(false),1);
+      });
+      
+    });
   }
 
   public pauseAnimation(){
@@ -83,16 +101,68 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
 
   }
 
+  handleMouseWheel(event){
+    debug('handleMouseWheel', event);
+    event.preventDefault();
+    event.stopPropagation();
+
+    //event.clientX
+    //event.clientY
+    //if(event.deltaY > 0){
+    //}else{
+    //}
+  }
+
+  zoomToState(id){
+    let e = (document.getElementById(id)) as any as SVGGElement;
+    let bbox:SVGRect = e.getBBox();
+    let m0:SVGMatrix = this.svgRootElement.getCTM();
+    let m1:SVGMatrix = e.getCTM();
+    let m = m0.inverse().multiply(m1);
+    let x = m.e,
+        y = m.f,
+        width = bbox.width,
+        height = bbox.height;
+    this.setState({
+      fromZoom : this.state.toZoom,
+      toZoom : {
+        x : m.e,
+        y : m.f,
+        width : bbox.width,
+        height : bbox.height
+      },
+      fromNode : this.state.fromNode,
+      toNode : this.state.toNode
+    }, () => {
+      setTimeout(this.beginAnimation(false),1);
+    });
+  }
+
+  componentWillReceiveProps(props : GraphRootProps){
+    let node = props.kgraph.root;
+    if(props.semaphore[node.id]) return;
+
+    props.semaphore[node.id] = true;
+
+    this.setState({ 
+      fromZoom : this.state.fromZoom,
+      toZoom : this.state.toZoom,
+      fromNode : this.state.toNode,
+      toNode : node
+    });
+  }
+
   render(){
 
     debug('render graphroot', this.props.updateLayout);
     
-    let from = `${[0,0,this.state.fromNode.width,this.state.fromNode.height].join(' ')}`;
-    let to = `${[0,0,this.state.node.width,this.state.node.height].join(' ')}`;
+    let from = `${[this.state.fromZoom.x || this.state.fromNode.x || 0, this.state.fromZoom.y || this.state.fromNode.y || 0, this.state.fromZoom.width || this.state.fromNode.width,this.state.fromZoom.height || this.state.fromNode.height].join(' ')}`;
+    let to = `${[this.state.toZoom.x || this.state.toNode.x || 0, this.state.toZoom.y || this.state.toNode.y || 0, this.state.toZoom.width || this.state.toNode.width, this.state.toZoom.height || this.state.toNode.height].join(' ')}`;
     let viewBoxValues = `${from};${to}`;
     debug('viewBoxValues ', viewBoxValues );
     return <svg width="100%" height="100%" 
       ref={(e: SVGSVGElement) => { this.svgRootElement = e; }}
+      onWheel={this.handleMouseWheel.bind(this)}
       >
       <animate 
         className={constants.START}
@@ -117,7 +187,15 @@ export default class GraphRoot extends React.Component<GraphNodeProps, GraphRoot
         }
       </defs>
       <ReactTransitionGroup component="g">
-        <GraphNode app={this.props.app} node={this.state.node} allEdges={this.state.allEdges} kgraph={this.state.kgraph} isRoot={true} semaphore={this.state.semaphore} updateLayout={this.state.updateLayout} parentIsExiting={this.props.parentIsExiting}/>
+        <GraphNode
+          app={this.props.app}
+          node={this.props.kgraph.root}
+          allEdges={this.props.allEdges}
+          kgraph={this.props.kgraph}
+          isRoot={true}
+          semaphore={this.props.semaphore}
+          updateLayout={this.props.updateLayout}
+          parentIsExiting={this.props.parentIsExiting}/>
       </ReactTransitionGroup>
     </svg>;
   }
@@ -291,7 +369,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
     
     this.props.app.emit('state:dblclick', this.props.node.id, event);
   }
-
+  
   render(){
     debug('render',this.state.to.node.id);
 

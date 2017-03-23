@@ -19,7 +19,7 @@ import {IKGraphRenderBackend, LayoutOptions} from '../IKGraphRenderBackend';
 export default class SVGRenderer implements IKGraphRenderBackend {
 
   _parentNode:SVGElement;
-  _root : GraphRoot;
+  _root : SCHVIZVisualization;
   _kgraphRoot : KGraphNode;
   _app : EventEmitter;
 
@@ -76,22 +76,19 @@ export default class SVGRenderer implements IKGraphRenderBackend {
     var t1 = Date.now();
     let semaphore = {};
     if(!this._root) {
-      var root = <GraphRoot app={this._app} node={kgraph.root} allEdges={allEdges} kgraph={kgraph} isRoot={true} semaphore={semaphore} updateLayout={false} parentIsExiting={false}/>;
+      var root = <SCHVIZVisualization app={this._app} allEdges={allEdges} kgraph={kgraph} semaphore={semaphore} updateLayout={false} parentIsExiting={false}/>;
       this._root = ReactDOM.render(root, this._parentNode, () => {
         debug('Rendered in %sms',Date.now() - t1);
         setTimeout(() => {this._root.beginAnimation(false);},1);
-      }) as GraphRoot;
+      }) as SCHVIZVisualization;
       this._root.pauseAnimation();
     }else {
       this._root.pauseAnimation();
       //console.time('update');
       this._root.setState({
           app:this._app,
-          node:kgraph.root, 
-          fromNode: this._kgraphRoot,    //not yet updated. use as prev kgraph root
           allEdges:allEdges, 
           kgraph:kgraph,
-          isRoot:true,
           semaphore : semaphore,
           updateLayout : updateLayout,
           parentIsExiting : false
@@ -115,3 +112,34 @@ export default class SVGRenderer implements IKGraphRenderBackend {
 
 }
 
+interface SCHVIZVisualizationProps  {
+  allEdges : KGraphEdge[];
+  kgraph : KGraph;
+  semaphore : any;
+  updateLayout : boolean;
+  parentIsExiting : boolean;
+  app : EventEmitter;
+}
+
+class SCHVIZVisualization extends React.Component<SCHVIZVisualizationProps, SCHVIZVisualizationProps>{
+  _root : GraphRoot;
+  constructor(props){
+    super(props);
+  }
+  pauseAnimation(){
+    this._root.pauseAnimation();
+  }
+  beginAnimation(updateLayout:boolean){
+    this._root.beginAnimation(updateLayout);
+  }
+  render(){
+    return <GraphRoot 
+      ref={(e: GraphRoot) => { this._root = e; }}
+      app={(this.state && this.state.app) || this.props.app}
+      allEdges={(this.state && this.state.allEdges) || this.props.allEdges}
+      kgraph={(this.state && this.state.kgraph) || this.props.kgraph}
+      semaphore={(this.state && this.state.semaphore) || this.props.semaphore}
+      updateLayout={(this.state && this.state.updateLayout) || this.props.updateLayout}
+      parentIsExiting={(this.state && this.state.parentIsExiting) || this.props.parentIsExiting}/>;
+  }
+}
