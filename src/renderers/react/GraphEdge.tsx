@@ -250,7 +250,7 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
         className={'link ' + (this.props.edge.$type || '')} 
         id={edgeId}
         ref={(e: SVGPathElement) => { this.svgPathElement = e; }}
-        strokeDasharray={this.state.pathLength}
+        strokeDasharray={this.state.pathLength.toString()}
         >
           <animate attributeName="marker-end" attributeType="CSS" fill="freeze" 
                   ref={(e: SVGAnimationElement) => { this.svgMarkerAnimation = e; }}

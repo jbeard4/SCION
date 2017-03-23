@@ -11,6 +11,10 @@ import Q = require('q');
 let ReactTransitionGroup = require('react-addons-transition-group');
 import Debug = require('debug');
 const debug = Debug('GraphNode');
+import electron = require('electron');
+
+const remote = electron.remote;
+const {Menu, MenuItem} = remote;
 
 interface GraphRootProps {
   allEdges : KGraphEdge[];
@@ -230,10 +234,13 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
   initialRender : boolean;
   svgTextElement : SVGTextElement;
   svgRectElement : SVGRectElement;
+  svgGElement : SVGGElement;
   rectXAnimationElement : SVGAnimationElement;
 
   constructor(props){
     super(props);
+
+    this.initContextMenu();
 
     let fromNode = Object.create(new EventEmitter()) as KGraphNode;
     _.extend(fromNode, {
@@ -321,6 +328,29 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
 
   componentDidMount() {
     debug('componentDidMount', this.props.node.id);
+    this.svgGElement.addEventListener('contextmenu', this.handleContextMenu.bind(this))
+  }
+
+  private initContextMenu(){
+    const menu = new Menu()
+    let items = Object.keys(['foo','bar','bat']).map((layoutName) => {
+      let item = new MenuItem({ 
+        label: layoutName, 
+        type: 'checkbox', 
+        checked: false,
+        click : () => {
+          //layout = layoutName;
+          console.log(layoutName);
+        }
+      });
+
+      menu.append(item);
+      return item;
+    })
+  }
+
+  handleContextMenu(e){
+      
   }
 
   _toNode(node){
@@ -403,6 +433,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
                         (isLeaf ? 'leaf' : 'compound') + ' ' + 
                         (this.state.to.node.$type ? 'type__' + this.state.to.node.$type : '')} 
             onDoubleClick={this.handleDoubleClick.bind(this)}
+            ref={(e: SVGGElement) => { this.svgGElement = e; }}
             >
       <animateTransform attributeName="transform" attributeType="XML"
                type="translate"
