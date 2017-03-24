@@ -139,17 +139,12 @@ export default class GraphRoot extends React.Component<GraphRootProps, GraphRoot
     toZoom.width = toZoom.width < 10 ? 10 : toZoom.width;
     toZoom.height = toZoom.height < 10 ? 10 : toZoom.height;
 
-    this.pauseAnimation();
-    this.setState({
-      fromZoom : fromZoom,
-      toZoom : toZoom,
-      fromNode : this.state.toNode,
-      toNode : this.state.toNode, 
-      fastZoom : true,
-      instantZoom : false
-    }, () => {
-      this.beginAnimation(false, true);
-    });
+    this.viewBoxAnimation.setAttributeNS(null, 'from', this.svgRectToViewBox(fromZoom));
+    this.viewBoxAnimation.setAttributeNS(null, 'to', this.svgRectToViewBox(toZoom));
+    this.viewBoxAnimation.setAttributeNS(null, 'dur', '250ms');
+    this.state.toZoom = toZoom;
+    this.state.fromZoom = toZoom;
+    this.viewBoxAnimation.beginElement();
   }
 
   componentWillReceiveProps(props : GraphRootProps){
@@ -231,8 +226,6 @@ export default class GraphRoot extends React.Component<GraphRootProps, GraphRoot
       height : this.initialZoom.height
     };
     
-    /*
-    //FIXME: maybe use this code instead of angular setState, for performance reasons
     let viewBox = `${toZoom.x} ${toZoom.y} ${toZoom.width} ${toZoom.height}`;
     this.viewBoxAnimation.setAttributeNS(null, 'from', viewBox);
     this.viewBoxAnimation.setAttributeNS(null, 'to', viewBox);
@@ -240,8 +233,8 @@ export default class GraphRoot extends React.Component<GraphRootProps, GraphRoot
     this.state.toZoom = toZoom;
     this.state.fromZoom = toZoom;
     this.viewBoxAnimation.beginElement();
-    */
 
+    /*
     this.pauseAnimation();
     this.setState({
       fromZoom : this.state.toZoom,
@@ -253,6 +246,7 @@ export default class GraphRoot extends React.Component<GraphRootProps, GraphRoot
     }, () => {
       this.beginAnimation(false, true);
     });
+    */
   }
 
   render(){
@@ -338,22 +332,32 @@ export default class GraphRoot extends React.Component<GraphRootProps, GraphRoot
         y = m.f,
         width = bbox.width,
         height = bbox.height;
-    this.setState({
-      fromZoom : this.state.toZoom,
-      toZoom : {
-        x : m.e,
-        y : m.f,
-        width : bbox.width,
-        height : bbox.height
-      },
-      fromNode : this.state.fromNode,
-      toNode : this.state.toNode
-    }, () => {
-      setTimeout(this.beginAnimation(false),1);
-    });
+
+    let toZoom = {
+      x : m.e,
+      y : m.f,
+      width : bbox.width,
+      height : bbox.height
+    };
+
+    let fromZoom = this.svgRootElement.viewBox.animVal;
+
+    let fromViewBox = this.svgRectToViewBox(fromZoom);
+    let toViewBox = this.svgRectToViewBox(toZoom);
+
+    this.viewBoxAnimation.setAttributeNS(null, 'from', fromViewBox);
+    this.viewBoxAnimation.setAttributeNS(null, 'to', toViewBox);
+    this.viewBoxAnimation.setAttributeNS(null, 'dur', '250ms');
+    this.state.toZoom = toZoom;
+    this.state.fromZoom = toZoom;
+    this.viewBoxAnimation.beginElement();
   }
 
+  private svgRectToViewBox(rect : SVGRect){
+    return `${rect.x} ${rect.y} ${rect.width} ${rect.height}`;
+  }
 }
+
 
 
 class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
