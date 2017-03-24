@@ -117,7 +117,7 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
     debug('componentWillReceiveProps', this.props.edge.id, props.semaphore[this.props.edge.id], props);
     debug('props.updateLayout', props.updateLayout);
 
-    if(props.semaphore[this.props.edge.id]) return;
+    //if(props.semaphore[this.props.edge.id]) return;   //disable for now. 
 
     props.semaphore[this.props.edge.id] = true;
 
