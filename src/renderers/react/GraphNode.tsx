@@ -472,6 +472,7 @@ class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
         label: 'Expand/contract', 
         click : () => {
           console.log('Expand state/contract state');
+          this.props.app.emit('state:dblclick', this.props.node.id, event);
         }
       })
     ];
