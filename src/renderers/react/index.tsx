@@ -3,10 +3,9 @@
 
 import constants from '../../constants';
 import events from '../../events';
-import q = require('q');
 import ReactDOM = require('react-dom');
 import * as React from "react";
-import GraphRoot from './GraphNode';
+import {GraphRoot} from './GraphRoot';
 import EventEmitter = require('events');
 
 import Debug = require('debug');
