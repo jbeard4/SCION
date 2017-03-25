@@ -87,17 +87,16 @@ export class GraphRoot extends React.Component<GraphRootProps, GraphRootAnimatio
     event.stopPropagation();
 
     let n = event.deltaY > 0 ? 1 : -1;
-    let delta = 10 * n;
+    const offset = .1;
     
     let fromZoom = this.svgRootElement.viewBox.animVal;
     //aspect ratio
     let aspectRatio = fromZoom.width / fromZoom.height; 
-
     let pt2 = this.toViewportCoordinates(event);
 
     //compute toZoom viewBox coordinates
     //first compute height
-    let height = this.state.toZoom.height - delta;
+    let height = this.state.toZoom.height + (this.state.toZoom.height * offset * n);
     let width = aspectRatio * height;
     let x = pt2.x - (width / 2);
     let y = pt2.y - (height / 2);
