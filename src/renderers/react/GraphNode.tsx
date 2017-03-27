@@ -255,7 +255,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
                         (isLeaf ? 'leaf' : 'compound') + ' ' + 
                         (this.state.to.node.$type ? 'type__' + this.state.to.node.$type : '')} 
             ref={(e: SVGGElement) => { this.svgGElement = e; }}
-            onDblClick={ this.handleDoubleClick.bind(this) }
+            onDoubleClick={ this.handleDoubleClick.bind(this) }
             >
       <animateTransform attributeName="transform" attributeType="XML"
                type="translate"
