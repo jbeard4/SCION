@@ -86,33 +86,42 @@ export class GraphRoot extends React.Component<GraphRootProps, GraphRootAnimatio
     event.preventDefault();
     event.stopPropagation();
 
-    let n = event.deltaY > 0 ? 1 : -1;
-    const offset = .1;
+    //let n = event.deltaY > 0 ? 1 : -1;
+    //const offset = .1 * n;
+    let offset = .5;
+    offset = event.deltaY > 0 ? 1-offset : 1+offset;
     
     let fromZoom = this.svgRootElement.viewBox.animVal;
-    //aspect ratio
-    let aspectRatio = fromZoom.width / fromZoom.height; 
     let pt2 = this.toViewportCoordinates(event);
 
-    //compute toZoom viewBox coordinates
-    //first compute height
-    let height = this.state.toZoom.height + (this.state.toZoom.height * offset * n);
-    let width = aspectRatio * height;
-    let x = pt2.x - (width / 2);
-    let y = pt2.y - (height / 2);
+    let eastLength = (fromZoom.x + fromZoom.width) - pt2.x;
+    eastLength *= offset; //compute new length
+    let east = { x : pt2.x + eastLength, y : pt2.y };
+
+    let westLength = pt2.x - fromZoom.x;
+    westLength *= offset; //compute new length
+    let west = { x : pt2.x - westLength, y : pt2.y };
+
+    let southLength = (fromZoom.y + fromZoom.height) - pt2.y;
+    southLength *= offset; //compute new length
+    let south = { x : pt2.x, y : pt2.y + southLength };
+
+    let northLength = pt2.y - fromZoom.y;
+    northLength *= offset; //compute new length
+    let north = { x : pt2.x, y : pt2.y - northLength };
 
     let toZoom = {
-      x : x,
-      y : y,
-      width : width,
-      height : height
+      x : west.x,
+      y : north.y,
+      width : east.x - west.x,
+      height : south.y - north.y
     };
+    if(toZoom.width < 10 || toZoom.height < 10) return;
+
     toZoom.x = toZoom.x < 0 ? 0 : toZoom.x;
     toZoom.y = toZoom.y < 0 ? 0 : toZoom.y;
     toZoom.width = toZoom.width > this.state.toNode.width ? this.state.toNode.width : toZoom.width;
     toZoom.height = toZoom.height > this.state.toNode.height ? this.state.toNode.height : toZoom.height;
-    toZoom.width = toZoom.width < 10 ? 10 : toZoom.width;
-    toZoom.height = toZoom.height < 10 ? 10 : toZoom.height;
 
     this.viewBoxAnimation.setAttributeNS(null, 'from', this.svgRectToViewBox(fromZoom));
     this.viewBoxAnimation.setAttributeNS(null, 'to', this.svgRectToViewBox(toZoom));
