@@ -48,6 +48,7 @@ export class GraphRoot extends React.Component<GraphRootProps, GraphRootAnimatio
     props.semaphore[node.id] = true;
   }
 
+
   public pauseAnimation(){
     debug('pauseAnimation');
     this.svgRootElement.pauseAnimations();
@@ -137,12 +138,12 @@ export class GraphRoot extends React.Component<GraphRootProps, GraphRootAnimatio
 
     props.semaphore[node.id] = true;
 
-    this.setState({ 
-      fromZoom : this.state.fromZoom,
-      toZoom : this.state.toZoom,
+    this.state = { 
+      fromZoom : this.svgRootElement.viewBox.animVal,
+      toZoom : {x : 0, y : 0, width : node.width, height : node.height},
       fromNode : this.state.toNode,
       toNode : node
-    });
+    };
   }
 
   //later, try handleMouseClick
