@@ -15,7 +15,11 @@ import electron = require('electron');
 import {GraphRoot, GraphRootProps} from './GraphRoot';
 
 const remote = electron.remote;
-const {Menu, MenuItem} = remote;
+let Menu, MenuItem;
+if(remote){ 
+  Menu = remote.Menu;
+  MenuItem = remote.MenuItem;
+}
 
 
 interface GraphNodeProps extends GraphRootProps {
@@ -251,6 +255,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
                         (isLeaf ? 'leaf' : 'compound') + ' ' + 
                         (this.state.to.node.$type ? 'type__' + this.state.to.node.$type : '')} 
             ref={(e: SVGGElement) => { this.svgGElement = e; }}
+            onDblClick={ this.handleDoubleClick.bind(this) }
             >
       <animateTransform attributeName="transform" attributeType="XML"
                type="translate"
