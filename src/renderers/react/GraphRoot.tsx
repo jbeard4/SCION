@@ -140,7 +140,7 @@ export class GraphRoot extends React.Component<GraphRootProps, GraphRootAnimatio
 
     this.state = { 
       fromZoom : this.svgRootElement.viewBox.animVal,
-      toZoom : {x : 0, y : 0, width : node.width, height : node.height},
+      toZoom : this.state.toZoom, //{x : 0, y : 0, width : node.width, height : node.height}
       fromNode : this.state.toNode,
       toNode : node
     };

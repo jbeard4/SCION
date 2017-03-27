@@ -378,21 +378,6 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
     this.svgDashOffsetAnimation.setAttributeNS(null,'to', (-1 * this.state.pathLength).toString() );
     this.svgDashOffsetAnimation.beginElement();
 
-    this.state = {
-      keyTimes : this.state.keyTimes,
-      marker : this.state.marker,
-      path : this.state.path,
-      begin : {
-        marker : 'indefinite',
-        path : 'indefinite',
-        dashOffset : 'indefinite'
-      },
-      pathLength : this.state.pathLength,
-      exiting : true
-    };
-
-    this.forceUpdate();
-
     function nextStep(){
       debug('exitAnimation endEvent', this.props.edge.id);
       callback();

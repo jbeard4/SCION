@@ -128,9 +128,11 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
 
     debug('exit animation for node', this.state.to.node.id, this.state);
 
-    this.forceUpdate();   //it seems to be always necessary to force an update here
-
-    if(callback) this.rectXAnimationElement.addEventListener('endEvent', callback);
+    if(callback) setTimeout(nextStep.bind(this), constants.ANIM_DUR);
+    function nextStep(){
+      debug('exitAnimation endEvent', this.props.state.id);
+      callback();
+    }
   }
 
   componentWillLeave (callback) {
