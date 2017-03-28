@@ -369,14 +369,6 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
     setTimeout(callback,1);
   }
 
-  componentWillLeave (callback) {
-    debug('componentWillLeave', this.props.edge.id);
-
-    //return setTimeout(callback,constants.ANIM_DUR);
-    return callback();
-
-  }
-
   componentWillMount(){
     debug('componentWillMount', this.props.edge.id);
   }

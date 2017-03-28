@@ -99,38 +99,6 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
     setTimeout(callback,1);
   }
 
-  _exit(callback?){
-
-    /* FIXME: I would prefer to use SMIl for exit animation, but this is not possible,
- *            as render will never be called after componentWillLeave.
- *            TODO: see if I can force re-render.
- *  */
-    let toNode = Object.create(new EventEmitter()) as KGraphNode;
-    _.extend(toNode, {
-      id : this.state.to.node.id,
-      $type : this.state.to.node.$type,
-      labels : this.state.to.node.labels,
-      x : this.state.to.node.width / 2,
-      y : this.state.to.node.height / 2,
-      width : 0,
-      height : 0
-    });
-
-    debug('exit animation for node', this.state.to.node.id, this.state);
-
-    if(callback) setTimeout(nextStep.bind(this), constants.ANIM_DUR);
-    function nextStep(){
-      debug('exitAnimation endEvent', this.props.node.id);
-      callback();
-    }
-  }
-
-  componentWillLeave (callback) {
-    debug('componentWillLeave', this.props.node.id);
-    //return setTimeout(callback,constants.ANIM_DUR);
-    return callback();
-  }
-
   componentWillMount(){
     debug('componentWillMount', this.props.node.id);
   }
@@ -193,11 +161,6 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
     debug('componentWillReceiveProps', this.props.node.id, props.semaphore[this.props.node.id], props);
     debug('props.updateLayout', props.updateLayout);
     debug('props.parentIsExiting', props.parentIsExiting);
-
-    if(props.parentIsExiting){
-      this._exit();
-      return;   //we probably don't need to force him to update
-    }
 
     if(props.semaphore[this.props.node.id]) return;
 
