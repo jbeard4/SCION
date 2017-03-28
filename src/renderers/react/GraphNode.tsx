@@ -7,7 +7,6 @@ import constants from '../../constants';
 import GraphEdge from './GraphEdge';
 import EventEmitter = require('events');
 import _ = require('underscore');
-let ReactTransitionGroup = require('react-addons-transition-group');
 import Debug = require('debug');
 const debug = Debug('GraphNode');
 import electron = require('electron');
@@ -117,27 +116,19 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
       height : 0
     });
 
-    this.state = { 
-      from : this.state.to,
-      to : {
-        node : toNode,
-        translate : this.state.to.translate
-      },
-      exiting : true
-    };
-
     debug('exit animation for node', this.state.to.node.id, this.state);
 
     if(callback) setTimeout(nextStep.bind(this), constants.ANIM_DUR);
     function nextStep(){
-      debug('exitAnimation endEvent', this.props.state.id);
+      debug('exitAnimation endEvent', this.props.node.id);
       callback();
     }
   }
 
   componentWillLeave (callback) {
     debug('componentWillLeave', this.props.node.id);
-    this._exit(callback);
+    //return setTimeout(callback,constants.ANIM_DUR);
+    return callback();
   }
 
   componentWillMount(){
@@ -198,6 +189,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
   }
 
   componentWillReceiveProps(props : GraphNodeProps){
+    if(props.semaphore[this.props.node.id]) props.semaphore[this.props.node.id]++;
     debug('componentWillReceiveProps', this.props.node.id, props.semaphore[this.props.node.id], props);
     debug('props.updateLayout', props.updateLayout);
     debug('props.parentIsExiting', props.parentIsExiting);
@@ -209,7 +201,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
 
     if(props.semaphore[this.props.node.id]) return;
 
-    props.semaphore[this.props.node.id] = true;
+    props.semaphore[this.props.node.id] = 1;
 
     this.state = { 
       from : this.state.to,
@@ -316,30 +308,35 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
                  from={this.initialRender ? 1 : 0} to={this.state.exiting ? 0 : 1} />
       </text>
 
-      <ReactTransitionGroup component="g" className="childNodes">
+      <g className="childNodes">
         { 
-          this.props.node.children && this.props.node.children.map(child => (
-            <GraphNode
-              app={this.props.app}
-              node={child}
-              key={child.id}
-              allEdges={this.props.allEdges}
-              kgraph={this.props.kgraph}
-              isRoot={false}
-              semaphore={this.props.semaphore}
-              updateLayout={this.props.updateLayout}
-              parentIsExiting={this.props.parentIsExiting || this.state.exiting}
-              graphRoot={this.props.graphRoot}/>
-          ))
+
+          !this.state.exiting ? 
+            (this.props.node.children && this.props.node.children.map(child => (
+              <GraphNode
+                app={this.props.app}
+                node={child}
+                key={child.id}
+                allEdges={this.props.allEdges}
+                kgraph={this.props.kgraph}
+                isRoot={false}
+                semaphore={this.props.semaphore}
+                updateLayout={this.props.updateLayout}
+                parentIsExiting={this.props.parentIsExiting || this.state.exiting}
+                graphRoot={this.props.graphRoot}/>
+          ))) : 
+          []
         }
-      </ReactTransitionGroup>
-      <ReactTransitionGroup component="g" className="edges">
+      </g>
+      <g className="edges">
         { 
-          myEdges.map((edge, i) => (
-            <GraphEdge edge={edge} key={`${this.props.node.id}_${i}`} semaphore={this.props.semaphore} updateLayout={this.props.updateLayout}/>
-          )) 
+          !this.state.exiting ? 
+            myEdges.map((edge, i) => (
+              <GraphEdge edge={edge} key={`${this.props.node.id}_${i}`} semaphore={this.props.semaphore} updateLayout={this.props.updateLayout}/>
+            ))  : 
+            []
         }
-      </ReactTransitionGroup>
+      </g>
     </g>;
 
     this.initialRender = true;

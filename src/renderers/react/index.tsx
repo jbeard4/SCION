@@ -79,6 +79,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
       this._root = ReactDOM.render(root, this._parentNode, () => {
         debug('Rendered in %sms',Date.now() - t1);
         setTimeout(() => {this._root.beginAnimation(false);},1);
+        console.log('semaphore', semaphore);
       }) as SCHVIZVisualization;
       this._root.pauseAnimation();
     }else {
@@ -94,6 +95,7 @@ export default class SVGRenderer implements IKGraphRenderBackend {
       }, () => {
         //console.time('update');
         this._root.beginAnimation(updateLayout);
+        console.log('semaphore', semaphore);
       });
     }
     this._kgraphRoot = kgraph.root;

@@ -6,7 +6,6 @@ import * as React from "react";
 import constants from '../../constants';
 import GraphEdge from './GraphEdge';
 import EventEmitter = require('events');
-let ReactTransitionGroup = require('react-addons-transition-group');
 import Debug = require('debug');
 const debug = Debug('GraphNode');
 import electron = require('electron');
@@ -140,7 +139,7 @@ export class GraphRoot extends React.Component<GraphRootProps, GraphRootAnimatio
 
     this.state = { 
       fromZoom : this.svgRootElement.viewBox.animVal,
-      toZoom : this.state.toZoom, //{x : 0, y : 0, width : node.width, height : node.height}
+      toZoom : {x : 0, y : 0, width : node.width, height : node.height}, //this.state.toZoom
       fromNode : this.state.toNode,
       toNode : node
     };
@@ -272,7 +271,7 @@ export class GraphRoot extends React.Component<GraphRootProps, GraphRootAnimatio
           this._markers()
         }
       </defs>
-      <ReactTransitionGroup component="g">
+      <g>
         <GraphNode
           app={this.props.app}
           node={this.props.kgraph.root}
@@ -283,7 +282,7 @@ export class GraphRoot extends React.Component<GraphRootProps, GraphRootAnimatio
           updateLayout={this.props.updateLayout}
           parentIsExiting={this.props.parentIsExiting}
           graphRoot={this}/>
-      </ReactTransitionGroup>
+      </g>
     </svg>;
   }
 

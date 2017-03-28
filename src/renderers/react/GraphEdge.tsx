@@ -7,7 +7,6 @@ import constants from '../../constants';
 import GraphLabel from './GraphLabel';
 import Debug = require('debug');
 const debug = Debug('GraphEdge');
-let ReactTransitionGroup = require('react-addons-transition-group');
 
 interface GraphEdgeProps {
   edge : KGraphEdge;
@@ -114,12 +113,13 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
 
   componentWillReceiveProps(props : GraphEdgeProps){
     //compute updated props
+    if(props.semaphore[this.props.edge.id]) props.semaphore[this.props.edge.id]++;
     debug('componentWillReceiveProps', this.props.edge.id, props.semaphore[this.props.edge.id], props);
     debug('props.updateLayout', props.updateLayout);
 
-    //if(props.semaphore[this.props.edge.id]) return;   //disable for now. 
+    if(props.semaphore[this.props.edge.id]) return;   //disable for now. 
 
-    props.semaphore[this.props.edge.id] = true;
+    props.semaphore[this.props.edge.id] = 1;
 
     var animationSegments = this._toAnimationSegments(props.edge);
     var points = this._edgeToPoints(props.edge);
@@ -280,13 +280,13 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
                    from="0"
                    dur={constants.ANIM_DURATION} />
       </path>
-      <ReactTransitionGroup component="g">
+      <g>
         {
           this.props.edge.labels && this.props.edge.labels.map((label, i) => (
             <GraphLabel edge={this.props.edge} key={i} label={label} updateLayout={this.props.updateLayout}/>
           ))
         }
-      </ReactTransitionGroup>
+      </g>
     </g>;
 
     this.initialRender = true;
@@ -372,16 +372,9 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
   componentWillLeave (callback) {
     debug('componentWillLeave', this.props.edge.id);
 
-    //this is a bit weird, but it seems that using <animate> on the stroke-dashoffset causes a weird behavior on merge test2 -> test3 -> test4. A_a1 is invisible at animation end.
-    //this.svgDashOffsetAnimation.addEventListener('endEvent', nextStep);
-    setTimeout(nextStep.bind(this), constants.ANIM_DUR);
-    this.svgDashOffsetAnimation.setAttributeNS(null,'to', (-1 * this.state.pathLength).toString() );
-    this.svgDashOffsetAnimation.beginElement();
+    //return setTimeout(callback,constants.ANIM_DUR);
+    return callback();
 
-    function nextStep(){
-      debug('exitAnimation endEvent', this.props.edge.id);
-      callback();
-    }
   }
 
   componentWillMount(){
