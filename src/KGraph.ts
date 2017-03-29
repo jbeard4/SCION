@@ -1,5 +1,4 @@
 import $klay = require('klayjs');
-import EventEmitter = require('events');
 import _ = require('underscore');
 import SCJSONToKGraphTransformer from './SCJSONToKGraphTransformer';
 import IdGenerator from './IdGenerator';
@@ -458,14 +457,13 @@ export class KGraph extends SCJSONToKGraphTransformer {
     var pseudoNodeStateId = this._idGenerator.generateId(parentNode.id, $type);
 
     //create a pseudonode with an edge originating for each hyperedge target
-    var pseudonode = (<KGraphNode> Object.create(new EventEmitter()));
-    _.extend(pseudonode, {
+    var pseudonode = <KGraphNode> {
       id :  pseudoNodeStateId,
       $type: $type,
       width : 0,
       height : 0,
       edges : []
-    });
+    };
 
     parentNode.children.push(pseudonode);
 
@@ -485,7 +483,7 @@ export class KGraph extends SCJSONToKGraphTransformer {
 export interface IKGraphNode {
 }
 
-export class KGraphNode extends EventEmitter implements IKGraphNode {
+export class KGraphNode implements IKGraphNode {
   id : string;
   labels : KGraphLabel[];
   edges? : KGraphEdge[];

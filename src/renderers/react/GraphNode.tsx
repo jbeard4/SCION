@@ -57,8 +57,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
 
     this.initContextMenu();
 
-    let fromNode = Object.create(new EventEmitter()) as KGraphNode;
-    _.extend(fromNode, {
+    let fromNode = {
       id : this.props.node.id,
       $type : this.props.node.$type,
       labels : this.props.node.labels,
@@ -66,7 +65,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
       y : this.props.node.height / 2,
       width : 0,
       height : 0
-    });
+    };
 
     this.state = {
       from : {
@@ -137,8 +136,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
   }
 
   _toNode(node){
-    let toNode = Object.create(new EventEmitter()) as KGraphNode;
-    _.extend(toNode, {
+    let toNode = {
       labels : node.labels,
       id : node.id,
       $type : node.$type,
@@ -146,7 +144,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
       y : 0,
       width : node.width,
       height : node.height
-    });
+    };
     return {
       node : toNode,
       translate : {

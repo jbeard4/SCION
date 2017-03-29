@@ -1,20 +1,18 @@
 import constants from './constants';
 import events from './events';
 import IdGenerator from './IdGenerator';
-import EventEmitter = require('events');
 import _ = require('underscore');
 import {SCState} from './SCJSON';
 import {IKGraphRenderBackend} from './renderers/IKGraphRenderBackend';
 import {KGraphNode, KGraphEdge, KGraphLabel} from './KGraph';
 
-export default class SCJSONToKGraphTransformer extends EventEmitter{
+export default class SCJSONToKGraphTransformer {
 
   _idGenerator : IdGenerator; 
   _stateToKlayNodeMap : Map<SCState,KGraphNode>;
   _svgRenderer : IKGraphRenderBackend;
 
   constructor(idGenerator: IdGenerator, svgRenderer : IKGraphRenderBackend){
-    super();
     this._idGenerator = idGenerator;
     this._svgRenderer = svgRenderer;
     this._stateToKlayNodeMap = new Map<SCState,KGraphNode>();
@@ -211,39 +209,27 @@ export default class SCJSONToKGraphTransformer extends EventEmitter{
   }
 
   _scjsonStateToKlayNode(klayNodeToScjsonMap, idMap, rootState, parentState, state){
-    var stateKlayNode = (<KGraphNode> Object.create(new EventEmitter()));
+    let stateKlayNode : KGraphNode;
     if(state.$type === 'initial' || state.$type === 'final'){
-      _.extend(stateKlayNode, {
+      stateKlayNode = {
         "id" : state.id,
         "labels" : [],
         "edges" : [],
         "width" : constants.INITIAL_RADIUS,
         "height" : constants.INITIAL_RADIUS
-      });
+      };
     }else{
       var label = state.$type === 'virtual' ? '...' : state.id;
       var [width, height] =  this._getStateMinDimensions(label);
-      _.extend(stateKlayNode, {
+      stateKlayNode = {
         "id" : state.id,
         "labels" : [ { text : label || '' } ],
         "edges" : [],
         "width" : width,
         "height" : height
-      });
+      };
     }
 
-    //TODO: add event emitters to edges as well
-    events.node.forEach(function(eventName){
-      stateKlayNode.on('node:' + eventName, function(domEvent){
-        if(rootState === state) return;
-        if(idMap.has(state.id)){
-          var originalState = idMap.get(state.id);      //map back to the original state
-          var scjsonNode = klayNodeToScjsonMap.get(stateKlayNode);
-          var rootKlayNode = this._stateToKlayNodeMap.get(rootState);
-          rootKlayNode.emit('node:' + eventName, originalState, stateKlayNode, domEvent);
-        }
-      }.bind(this));
-    }, this);
     stateKlayNode.$type = state.$type;  //copy in type information
     this._stateToKlayNodeMap.set(state, stateKlayNode);
     klayNodeToScjsonMap.set(stateKlayNode, state);

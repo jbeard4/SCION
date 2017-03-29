@@ -74,10 +74,10 @@ class SCHVIZ extends EventEmitter {
     this._scjson = scjson;
     this._svgRenderer.clear();
     this._kgraph = new KGraph(this._idGenerator, this._svgRenderer, this._scjson, options); 
-    this._kgraph.on('update', this.updateSCJSON.bind(this, scjson, options, function(){
+    this._kgraph.update(options, function(){
       debug('Update complete');
-    }));
-    this._kgraph.update(options, cb);
+      cb();
+    });
   }
 
   highlightState(stateId){
