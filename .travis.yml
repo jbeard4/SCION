@@ -3,7 +3,8 @@ node_js:
   - 4.2.2
 before_script:
   - npm install grunt-cli -g
-env:
-  global:
-    - secure: "G0SLmFpTqNUrBNnvxN4wtFE0T4jvcfB/dqM73IV7aVuu9YuoWqNgrMnnVLOykyroCzZUMP8pYuDXMjUBTF9UJeyqIkXIE2i/lhjhiowWORf4k6YLq/cC1c+oGksZ0ZtlMaVbjKNkpG7dIP7RXm6yWlKHn3ka51zthVP03a0zHy0="
-    - secure: "iGjgxH7NOMSHyyp6V0WrXQNJi4p5BBLBetS6xEaBVJ8udo0RRTDaNNePXgyfLxS+EkF2FO2vgF/EtppnPS+megp17VD62U5/4gdo0GSCsbPgtQIkXxQqxyevZLVC93a2gpzAr5FMsEwn0hmksH37ixjETkqPAGKM8XMC7WvzGik="
+addons:
+  sauce_connect:
+    username: "jbeard4"
+  jwt:
+    secure: PbQLq/uecF7vElS0h9RtvLp9U43dSzg7z4IAkttmyxxMqGCxKTsloRrcfFS7MFmXxjMFe+7rDWeFQoUtd7sNyB159hre8xjH5WF0oAf6M2xnUSZUU9DkjK84HW2DKf+RFQHu2bUKX4qh8lzMkhIAmrtBjYCWJ8kkgzxHqj6G42Q=
