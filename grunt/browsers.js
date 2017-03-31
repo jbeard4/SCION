@@ -35,7 +35,7 @@ defaultFF.forEach(addBrowser.bind(this, 'firefox', 'Windows 7'));
 [
   //11,   //TODO: opera 11 on Windows XP always timing out. probable sauce labs platform bug
   12].forEach(addBrowser.bind(this, 'opera', 'Windows XP'));
-[ 20, 30, 40, 45 ].forEach(addBrowser.bind(this, 'firefox', 'Windows XP'));
+[ 20, 30, 45 ].forEach(addBrowser.bind(this, 'firefox', 'Windows XP'));
 
 _.difference(defaultChrome,[26])  //chrome 26 not supported on OS X 10.11
   .forEach(addBrowser.bind(this, 'chrome', 'OS X 10.11'));
@@ -44,9 +44,6 @@ defaultFF.forEach(addBrowser.bind(this, 'firefox', 'OS X 10.11'));
 
 _.difference(defaultChrome,[26,36]) //chrome 36 and 26 not supported on OS X 10.10
   .forEach(addBrowser.bind(this, 'chrome', 'OS X 10.10'));
-[ //32, 
-  //42,     //FIXME: Firefox 42 times out
-  44].forEach(addBrowser.bind(this, 'firefox', 'OS X 10.10'));
 //addBrowser('safari', 'OS X 10.10', 8); TODO: investigate failing test
 
 _.difference(defaultChrome,[26])
@@ -61,7 +58,7 @@ addBrowser('safari', 'OS X 10.9', 7);
 addBrowser('safari', 'OS X 10.8', 6);
 
 [26, 30, 40, 48].forEach(addBrowser.bind(this, 'chrome', 'Linux'));
-[20, 30, 40, 45].forEach(addBrowser.bind(this, 'firefox', 'Linux'));
+[20, 30, 45].forEach(addBrowser.bind(this, 'firefox', 'Linux'));
 addBrowser('opera', 'Linux', 12);
 
 ['9.4','9.3','9.2','9.1','9.0','8.4','8.3','8.2','8.1','8.0'].forEach(function(version){
