@@ -48,7 +48,7 @@ scxml.urlToModel("drag-and-drop.xml",function(err,model){
 
 ### scxml.urlToModel(url,function(err, model){} [, context])
 ### scxml.pathToModel(path,function(err, model){} [, context])
-### scxml.documentStringToModel(scxmlDocString,function(err, model){} [, context])
+### scxml.documentStringToModel(url,scxmlDocString,function(err, model){} [, context])
 ### scxml.documentToModel(scxmlDocument,function(err, model){} [, context])
 
 Compile SCXML to JavaScript object "model".
