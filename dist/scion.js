@@ -16,7 +16,7 @@
     var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
         return typeof obj;
     } : function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
     };
 
     //   Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
@@ -32,7 +32,6 @@
     //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     //   See the License for the specific language governing permissions and
     //   limitations under the License.
-
 
     var extend = Object.assign || function (to, from) {
         Object.keys(from).forEach(function (k) {
@@ -999,7 +998,7 @@
             //States exited are defined to be active states that are
             //descendants of the scope of each priority-enabled transition.
             //Here, we iterate through the transitions, and collect states
-            //that match this condition. 
+            //that match this condition.
             var transitionList = transitions.iter();
             for (var txIdx = 0, txLen = transitionList.length; txIdx < txLen; txIdx++) {
                 var transition = transitionList[txIdx];
@@ -1249,7 +1248,7 @@
               onSmallStepEnd: function(){}
             }
         */
-        //TODO: refactor this to be event emitter? 
+        //TODO: refactor this to be event emitter?
 
         /** @expose */
         registerListener: function registerListener(listener) {
