@@ -929,7 +929,7 @@
                         return target.id;
                     });
 
-                    this.emit('onTransition', transition.source.id, targetIds);
+                    this.emit('onTransition', transition.source.id, targetIds, stxIdx);
 
                     if (transition.onTransition !== undefined) {
                         for (var txIdx = 0, txLen = transition.onTransition.length; txIdx < txLen; txIdx++) {
