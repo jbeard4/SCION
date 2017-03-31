@@ -22,9 +22,6 @@ export class KGraph extends SCJSONToKGraphTransformer {
     super(idGenerator, svgRenderer);
     var newKlayToScjsonMap, newKgraphRoot; 
     [newKlayToScjsonMap, newKgraphRoot] = this.transform(scjson);
-    newKgraphRoot.on('update', function(){
-      this.emit('update');
-    }.bind(this));
     this._klayToScjsonMap = newKlayToScjsonMap; 
     this._kgraphRoot = newKgraphRoot;
     this._normalize(this._kgraphRoot);
