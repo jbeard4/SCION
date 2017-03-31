@@ -3,7 +3,8 @@ node_js:
   - stable
 before_install:
   - npm install grunt-cli -g
-env:
-  global:
-    - secure: "BMp+9YGgttbAhFS0xfqt8ZuvuoSMWeoHMIWjHA14moBoWVRPUUfdWWQxb2rErrO42K/J56pRZZauDKWo6P1KCSteX3JHyipRuySYQuQp2XnxlqgK/zvSbc+poB/0MjSJzLt1wDpdPkIWdQrf+Tbf97guvufcFX4NrSy7d/G/tHg="
-    - secure: "l2pwENHjiSNw5YGvHgUozk3crzRY6mlqi17rQoUQyOOyZM8iyVsY+GRPND96jvpn6cUPKooWF0gMXlFlA/rHPbxhgo2CwsWfb5CxL34UAaDutLJmYXf8xoaASDTYsNdYDDvVbhb58KE+z/YJS/dtYgCDV7ealwhBxat5khxCUdk="
+addons:
+  sauce_connect:
+    username: "jbeard4"
+  jwt:
+    secure: PbQLq/uecF7vElS0h9RtvLp9U43dSzg7z4IAkttmyxxMqGCxKTsloRrcfFS7MFmXxjMFe+7rDWeFQoUtd7sNyB159hre8xjH5WF0oAf6M2xnUSZUU9DkjK84HW2DKf+RFQHu2bUKX4qh8lzMkhIAmrtBjYCWJ8kkgzxHqj6G42Q=
