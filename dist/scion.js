@@ -877,7 +877,7 @@
         /** @private */
         _performSmallStep: function _performSmallStep(currentEvent, selectedTransitions) {
 
-            if(printTrace) this._log("selecting transitions with currentEvent", JSON.stringify(currentEvent));
+            this._log("selecting transitions with currentEvent", JSON.stringify(currentEvent));
 
             this._log("selected transitions", selectedTransitions);
 
