@@ -848,8 +848,12 @@
                 try {
                     self.emit(eventToEmit);
                     var currentEvent = self._internalEventQueue.shift() || null;
+                    var selectedTransitions = this._selectTransitions(currentEvent, true);
+                    if (selectedTransitions.isEmpty()) {
+                        selectedTransitions = this._selectTransitions(currentEvent, false);
+                    }
                     self.emit('onSmallStepBegin', currentEvent);
-                    selectedTransitions = self._performSmallStep(currentEvent);
+                    this._performSmallStep(currentEvent, selectedTransitions);
                     self.emit('onSmallStepEnd', currentEvent);
                 } catch (err) {
                     cb(err);
