@@ -172,8 +172,7 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['build']);
   grunt.registerTask('test-node', ['nodeunit:platform', 'test-semantics']);
   grunt.registerTask('test', [
-    'test-node',
-    'run-browser-tests-dev' 
+    'test-node'
   ]);
   grunt.registerTask('run-browser-tests-dev', ['express:dev', 'saucelabs-custom', 'express:dev:stop' ]);
   grunt.registerTask('run-browser-tests-prod', ['express:prod', 'saucelabs-custom', 'express:prod:stop' ]);
