@@ -114,7 +114,17 @@
 
         var statesWithInitialAttributes = [];
 
+        function transitionToString(sourceState) {
+            return sourceState + ' -- ' + (this.events ? '(' + this.events.join(',') + ')' : null) + (this.cond ? '[' + this.cond.name + ']' : '') + ' --> ' + (this.targets ? this.targets.join(',') : null);
+        }
+
+        function stateToString() {
+            return this.id;
+        }
+
         function traverse(ancestors, state) {
+
+            if (printTrace) state.toString = stateToString;
 
             //add to global transition and state id caches
             if (state.transitions) transitions.push.apply(transitions, state.transitions);
@@ -141,6 +151,7 @@
                 var transition = state.transitions[j];
                 transition.documentOrder = documentOrder++;
                 transition.source = state;
+                if (printTrace) transition.toString = transitionToString.bind(transition, state);
             };
 
             //recursive step
@@ -553,7 +564,7 @@
         },
 
         toString: function toString() {
-            return "Set(" + Array.from(this.o).toString() + ")";
+            return this.o.size === 0 ? '<empty>' : Array.from(this.o).join(',\n');
         }
     };
 
@@ -583,9 +594,15 @@
         });
     }
 
-    function scxmlPrefixTransitionSelector(state, event, evaluator) {
+    function scxmlPrefixTransitionSelector(state, event, evaluator, selectEventlessTransitions) {
         return state.transitions.filter(function (t) {
-            return (!t.events || event && event.name && isTransitionMatch(t, event.name)) && (!t.cond || evaluator(t.cond));
+            return (selectEventlessTransitions ? !t.events : !t.events || event && event.name && isTransitionMatch(t, event.name)) && (!t.cond || evaluator(t.cond));
+        });
+    }
+
+    function eventlessTransitionSelector(state) {
+        return state.transitions.filter(function (transition) {
+            return !transition.events || transition.events && transition.events.length === 0;
         });
     }
 
@@ -738,7 +755,7 @@
         /** @expose */
         start: function start() {
             //perform big step without events to take all default transitions and reach stable initial state
-            if (printTrace) this.opts.console.log("performing initial big step");
+            this._log("performing initial big step");
 
             //We effectively need to figure out states to enter here to populate initial config. assuming root is compound state makes this simple.
             //but if we want it to be parallel, then this becomes more complex. so when initializing the model, we add a 'fake' root state, which
@@ -759,7 +776,7 @@
                 cb = nop;
             }
 
-            if (printTrace) this.opts.console.log("performing initial big step");
+            this._log("performing initial big step");
 
             this._configuration.add(this._model.initialRef);
 
@@ -804,8 +821,14 @@
             var keepGoing = true;
             while (keepGoing) {
                 var currentEvent = this._internalEventQueue.shift() || null;
+                var selectedTransitions = this._selectTransitions(currentEvent, true);
+                if (selectedTransitions.isEmpty()) {
+                    selectedTransitions = this._selectTransitions(currentEvent, false);
+                }
+
                 this.emit('onSmallStepBegin', currentEvent);
-                var selectedTransitions = this._performSmallStep(currentEvent);
+                this._performSmallStep(currentEvent, selectedTransitions);
+                this.emit('onSmallStepEnd', currentEvent);
                 keepGoing = !selectedTransitions.isEmpty();
             }
             this._isInFinalState = this._configuration.iter().every(function (s) {
@@ -825,8 +848,13 @@
                 try {
                     self.emit(eventToEmit);
                     var currentEvent = self._internalEventQueue.shift() || null;
+                    var selectedTransitions = self._selectTransitions(currentEvent, true);
+                    if (selectedTransitions.isEmpty()) {
+                        selectedTransitions = self._selectTransitions(currentEvent, false);
+                    }
+
                     self.emit('onSmallStepBegin', currentEvent);
-                    selectedTransitions = self._performSmallStep(currentEvent);
+                    self._performSmallStep(currentEvent, selectedTransitions);
                     self.emit('onSmallStepEnd', currentEvent);
                 } catch (err) {
                     cb(err);
@@ -852,17 +880,15 @@
         },
 
         /** @private */
-        _performSmallStep: function _performSmallStep(currentEvent) {
+        _performSmallStep: function _performSmallStep(currentEvent, selectedTransitions) {
 
-            if (printTrace) this.opts.console.log("selecting transitions with currentEvent: ", currentEvent);
+            this._log("selecting transitions with currentEvent", JSON.stringify(currentEvent));
 
-            var selectedTransitions = this._selectTransitions(currentEvent);
-
-            if (printTrace) this.opts.console.log("selected transitions: ", selectedTransitions);
+            this._log("selected transitions", selectedTransitions);
 
             if (!selectedTransitions.isEmpty()) {
 
-                if (printTrace) this.opts.console.log("sorted transitions: ", selectedTransitions);
+                this._log("sorted transitions", selectedTransitions);
 
                 //we only want to enter and exit states from transitions with targets
                 //filter out targetless transitions here - we will only use these to execute transition actions
@@ -876,20 +902,20 @@
                     basicStatesEntered = enteredTuple[0],
                     statesEntered = enteredTuple[1];
 
-                if (printTrace) this.opts.console.log("basicStatesExited ", basicStatesExited);
-                if (printTrace) this.opts.console.log("basicStatesEntered ", basicStatesEntered);
-                if (printTrace) this.opts.console.log("statesExited ", statesExited);
-                if (printTrace) this.opts.console.log("statesEntered ", statesEntered);
+                this._log("basicStatesExited ", basicStatesExited);
+                this._log("basicStatesEntered ", basicStatesEntered);
+                this._log("statesExited ", statesExited);
+                this._log("statesEntered ", statesEntered);
 
                 var eventsToAddToInnerQueue = new this.opts.Set();
 
                 //update history states
-                if (printTrace) this.opts.console.log("executing state exit actions");
+                this._log("executing state exit actions");
 
                 for (var j = 0, len = statesExited.length; j < len; j++) {
                     var stateExited = statesExited[j];
 
-                    if (printTrace || this.opts.logStatesEnteredAndExited) this.opts.console.log("exiting ", stateExited.id);
+                    this._log("exiting ", stateExited.id);
 
                     //invoke listeners
                     this.emit('onExit', stateExited.id);
@@ -920,7 +946,7 @@
                 // -> Concurrency: Order of transitions: Explicitly defined
                 var sortedTransitions = selectedTransitions.iter().sort(transitionComparator);
 
-                if (printTrace) this.opts.console.log("executing transitition actions");
+                this._log("executing transitition actions");
 
                 for (var stxIdx = 0, len = sortedTransitions.length; stxIdx < len; stxIdx++) {
                     var transition = sortedTransitions[stxIdx];
@@ -938,12 +964,12 @@
                     }
                 }
 
-                if (printTrace) this.opts.console.log("executing state enter actions");
+                this._log("executing state enter actions");
 
                 for (var enterIdx = 0, enterLen = statesEntered.length; enterIdx < enterLen; enterIdx++) {
                     var stateEntered = statesEntered[enterIdx];
 
-                    if (printTrace || this.opts.logStatesEnteredAndExited) this.opts.console.log("entering", stateEntered.id);
+                    this._log("entering", stateEntered.id);
 
                     this.emit('onEntry', stateEntered.id);
 
@@ -954,18 +980,18 @@
                     }
                 }
 
-                if (printTrace) this.opts.console.log("updating configuration ");
-                if (printTrace) this.opts.console.log("old configuration ", this._configuration);
+                this._log("updating configuration ");
+                this._log("old configuration ", this._configuration);
 
                 //update configuration by removing basic states exited, and adding basic states entered
                 this._configuration.difference(basicStatesExited);
                 this._configuration.union(basicStatesEntered);
 
-                if (printTrace) this.opts.console.log("new configuration ", this._configuration);
+                this._log("new configuration ", this._configuration);
 
                 //add set of generated events to the innerEventQueue -> Event Lifelines: Next small-step
                 if (!eventsToAddToInnerQueue.isEmpty()) {
-                    if (printTrace) this.opts.console.log("adding triggered events to inner queue ", eventsToAddToInnerQueue);
+                    this._log("adding triggered events to inner queue ", eventsToAddToInnerQueue);
                     this._internalEventQueue.push(eventsToAddToInnerQueue);
                 }
             }
@@ -1114,7 +1140,7 @@
         },
 
         /** @private */
-        _selectTransitions: function _selectTransitions(currentEvent) {
+        _selectTransitions: function _selectTransitions(currentEvent, selectEventlessTransitions) {
             if (this.opts.onlySelectFromBasicStates) {
                 var states = this._configuration.iter();
             } else {
@@ -1141,7 +1167,7 @@
             var e = this._evaluateAction.bind(this, currentEvent);
 
             for (var stateIdx = 0, stateLen = states.length; stateIdx < stateLen; stateIdx++) {
-                var transitions = transitionSelector(states[stateIdx], currentEvent, e);
+                var transitions = transitionSelector(states[stateIdx], currentEvent, e, selectEventlessTransitions);
                 for (var txIdx = 0, len = transitions.length; txIdx < len; txIdx++) {
                     enabledTransitions.add(transitions[txIdx]);
                 }
@@ -1149,7 +1175,7 @@
 
             var priorityEnabledTransitions = this._selectPriorityEnabledTransitions(enabledTransitions);
 
-            if (printTrace) this.opts.console.log("priorityEnabledTransitions", priorityEnabledTransitions);
+            this._log("priorityEnabledTransitions", priorityEnabledTransitions);
 
             return priorityEnabledTransitions;
         },
@@ -1164,10 +1190,10 @@
 
             priorityEnabledTransitions.union(consistentTransitions);
 
-            if (printTrace) this.opts.console.log("enabledTransitions", enabledTransitions);
-            if (printTrace) this.opts.console.log("consistentTransitions", consistentTransitions);
-            if (printTrace) this.opts.console.log("inconsistentTransitionsPairs", inconsistentTransitionsPairs);
-            if (printTrace) this.opts.console.log("priorityEnabledTransitions", priorityEnabledTransitions);
+            this._log("enabledTransitions", enabledTransitions);
+            this._log("consistentTransitions", consistentTransitions);
+            this._log("inconsistentTransitionsPairs", inconsistentTransitionsPairs);
+            this._log("priorityEnabledTransitions", priorityEnabledTransitions);
 
             while (!inconsistentTransitionsPairs.isEmpty()) {
                 enabledTransitions = new this.opts.Set(inconsistentTransitionsPairs.iter().map(function (t) {
@@ -1180,10 +1206,10 @@
 
                 priorityEnabledTransitions.union(consistentTransitions);
 
-                if (printTrace) this.opts.console.log("enabledTransitions", enabledTransitions);
-                if (printTrace) this.opts.console.log("consistentTransitions", consistentTransitions);
-                if (printTrace) this.opts.console.log("inconsistentTransitionsPairs", inconsistentTransitionsPairs);
-                if (printTrace) this.opts.console.log("priorityEnabledTransitions", priorityEnabledTransitions);
+                this._log("enabledTransitions", enabledTransitions);
+                this._log("consistentTransitions", consistentTransitions);
+                this._log("inconsistentTransitionsPairs", inconsistentTransitionsPairs);
+                this._log("priorityEnabledTransitions", priorityEnabledTransitions);
             }
             return priorityEnabledTransitions;
         },
@@ -1194,7 +1220,7 @@
             var inconsistentTransitionsPairs = new this.opts.Set();
             var transitionList = transitions.iter();
 
-            if (printTrace) this.opts.console.log("transitions", transitionList);
+            this._log("transitions", transitions);
 
             for (var i = 0; i < transitionList.length; i++) {
                 for (var j = i + 1; j < transitionList.length; j++) {
@@ -1212,6 +1238,15 @@
             return [consistentTransitions, inconsistentTransitionsPairs];
         },
 
+        _log: function _log() {
+            if (printTrace) {
+                var args = Array.from(arguments);
+                this.opts.console.log(args[0] + ': ' + args.slice(1).map(function (arg) {
+                    return arg === null ? 'null' : arg === undefined ? 'undefined' : arg.toString();
+                }).join(', '));
+            }
+        },
+
         /** @private */
         _conflicts: function _conflicts(t1, t2) {
             return !this._isArenaOrthogonal(t1, t2);
@@ -1220,11 +1255,11 @@
         /** @private */
         _isArenaOrthogonal: function _isArenaOrthogonal(t1, t2) {
 
-            if (printTrace) this.opts.console.log("transition scopes", t1.scope, t2.scope);
+            this._log("transition scopes", t1.scope, t2.scope);
 
             var isOrthogonal = query.isOrthogonalTo(t1.scope, t2.scope);
 
-            if (printTrace) this.opts.console.log("transition scopes are orthogonal?", isOrthogonal);
+            this._log("transition scopes are orthogonal?", isOrthogonal);
 
             return isOrthogonal;
         },
@@ -1492,7 +1527,7 @@
 
             options = options || {};
 
-            if (printTrace) this._interpreter.opts.console.log("sending event", event.name, "with content", event.data, "after delay", options.delay);
+            this._interpreter._log("sending event", event.name, "with content", event.data, "after delay", options.delay);
 
             validateSend.call(this, event, options, sendFn);
         },
@@ -1504,7 +1539,7 @@
             if (typeof clearTimeout === 'undefined') throw new Error('Default implementation of Statechart.prototype.cancel will not work unless setTimeout is defined globally.');
 
             if (sendid in this._timeoutMap) {
-                if (printTrace) this._interpreter.opts.console.log("cancelling ", sendid, " with timeout id ", this._timeoutMap[sendid]);
+                this._interpreter._log("cancelling ", sendid, " with timeout id ", this._timeoutMap[sendid]);
                 clearTimeout(this._timeoutMap[sendid]);
             }
         }
