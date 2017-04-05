@@ -748,7 +748,7 @@
     }
 
     /** @const */
-    var printTrace = true;
+    var printTrace = false;
 
     BaseInterpreter.EVENTS = ['onEntry', 'onExit', 'onTransition', 'onError', 'onBigStepBegin', 'onBigStepSuspend', 'onBigStepResume', 'onSmallStepBegin', 'onSmallStepEnd', 'onBigStepEnd'];
 
