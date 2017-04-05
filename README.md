@@ -579,6 +579,3 @@ You can then perform the following steps to script web content:
 
 [![Build status](https://travis-ci.org/jbeard4/SCION-CORE.svg?branch=master)](https://travis-ci.org/jbeard4/SCION-CORE)
 
-[![Sauce Test Status](https://saucelabs.com/buildstatus/jbeard4?branch=master)](https://saucelabs.com/u/jbeard4)
-
-[![Sauce Test Status](https://saucelabs.com/browser-matrix/jbeard4.svg?branch=master)](https://saucelabs.com/u/jbeard4)
