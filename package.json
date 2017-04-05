@@ -5,8 +5,8 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "tsc -p .  --sourceMap --allowJs",
-    "watch": "tsc -p .  --sourceMap --allowJs -w",
+    "build": "tsc --jsx react --allowJs --outDir dist/ --module commonjs src/index.tsx",
+    "watch": "tsc --jsx react --allowJs --outDir dist/ --module commonjs src/index.tsx -w",
     "clean": "rm -rf dist/",
     "postinstall": "typings install"
   },
@@ -15,7 +15,8 @@
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "scxml": "3.0.4",
-    "schviz2" : "2.2.1"
+    "schviz2": "2.2.1",
+    "font-awesome": "^4.7.0"
   },
   "keywords": [
     "SCXML"
@@ -23,8 +24,12 @@
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "CC-BY-NC-SA-4.0",
   "devDependencies": {
+    "@types/jquery": "^2.0.41",
+    "@types/node": "^7.0.12",
+    "@types/react": "^15.0.21",
+    "@types/react-dom": "^0.14.23",
     "electron": "^1.4.1",
-    "font-awesome": "^4.7.0",
+    "electron-packager": "^8.6.0",
     "scxml-test-framework": "^1.0.2",
     "typescript": "^2.1.4",
     "typings": "^2.1.0"

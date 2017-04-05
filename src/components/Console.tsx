@@ -1,7 +1,7 @@
 import * as React from "react";
 
 interface ConsoleComponentProps{
-  handleSubmit : React.EventHandler<React.MouseEvent>;
+  handleSubmit : any;
 } 
 
 interface ConsoleComponentState{

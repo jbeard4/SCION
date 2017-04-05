@@ -2,7 +2,7 @@ import * as React from "react";
 
 interface RunButtonProps {
   running : boolean;
-  handleClick : React.EventHandler<React.MouseEvent>;
+  handleClick : any;
 }
 
 interface RunButtonState {

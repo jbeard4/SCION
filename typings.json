@@ -1,7 +1,0 @@
-{
-  "name": "scion-tool",
-  "dependencies": {},
-  "globalDependencies": {
-    "node": "registry:dt/node#7.0.0+20170310052549"
-  }
-}
