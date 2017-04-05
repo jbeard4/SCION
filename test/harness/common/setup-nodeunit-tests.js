@@ -7,18 +7,18 @@ var testSerializations = [true, false];
 var testGenAsync = [true, false];
 
 var testOptions = [];
-testSerializations.forEach(function(testSerialization){
-  testGenAsync.forEach(function(testGenAsync){
+//testSerializations.forEach(function(testSerialization){
+  //testGenAsync.forEach(function(testGenAsync){
     tests.forEach(function(test){
       testOptions.push({
-        testSerialization : testSerialization,
-        testGenAsync : testGenAsync,
+        testSerialization : false,
+        testGenAsync : false,
         test : test,
-        name : test.name + (testSerialization ? '(serialization)' : '') + (testGenAsync ? '(async)' : '')
+        name : test.name + (false ? '(serialization)' : '') + (false ? '(async)' : '')
       });
     });
-  });
-})
+  //});
+//})
 
 module.exports = function(scion){
 
