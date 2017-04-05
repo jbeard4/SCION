@@ -703,7 +703,6 @@
 
     function getStateWithHigherSourceChildPriority(s1, s2) {
         //compare states based first on depth, then based on document order
-        console.log('getStateWithHigherSourceChildPriority', s1.id, s1.depth, s1.documentOrder, s2.id, s2.depth, s2.documentOrder);
         if (s1.depth > s2.depth) {
             return -1;
         } else if (s1.depth < s2.depth) {
