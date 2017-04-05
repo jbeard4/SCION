@@ -22,7 +22,6 @@ _.difference(defaultFF,[47]) //these fail on sauce labs due to sauce labs bugs
 [8, 9, 10, 11].forEach(addBrowser.bind(this, 'internet explorer', 'Windows 7'));
 [11, 12].forEach(addBrowser.bind(this, 'opera', 'Windows 7'));
 defaultFF.forEach(addBrowser.bind(this, 'firefox', 'Windows 7'));
-addBrowser('safari', 'Windows 7', 5);
 
 
 addBrowser('internet explorer', 'Windows XP', 8);
