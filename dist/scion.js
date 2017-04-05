@@ -13,6 +13,44 @@
 })(this, function (module) {
     'use strict';
 
+    var _slicedToArray = function () {
+        function sliceIterator(arr, i) {
+            var _arr = [];
+            var _n = true;
+            var _d = false;
+            var _e = undefined;
+
+            try {
+                for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+                    _arr.push(_s.value);
+
+                    if (i && _arr.length === i) break;
+                }
+            } catch (err) {
+                _d = true;
+                _e = err;
+            } finally {
+                try {
+                    if (!_n && _i["return"]) _i["return"]();
+                } finally {
+                    if (_d) throw _e;
+                }
+            }
+
+            return _arr;
+        }
+
+        return function (arr, i) {
+            if (Array.isArray(arr)) {
+                return arr;
+            } else if (Symbol.iterator in Object(arr)) {
+                return sliceIterator(arr, i);
+            } else {
+                throw new TypeError("Invalid attempt to destructure non-iterable instance");
+            }
+        };
+    }();
+
     var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
         return typeof obj;
     } : function (obj) {
@@ -66,14 +104,6 @@
 
     function transitionWithTargets(t) {
         return t.targets;
-    }
-
-    function stateExitComparator(s1, s2) {
-        return s2.depth - s1.depth;
-    }
-
-    function stateEntryComparator(s1, s2) {
-        return s1.depth - s2.depth;
     }
 
     function transitionComparator(t1, t2) {
@@ -144,6 +174,7 @@
             state.ancestors = ancestors;
             state.depth = ancestors.length;
             state.parent = ancestors[0];
+            state.documentOrder = documentOrder++;
 
             //add some information to transitions
             state.transitions = state.transitions || [];
@@ -645,19 +676,46 @@
     };
 
     //priority comparison functions
-    function getTransitionWithHigherSourceChildPriority(_arg) {
-        var t1 = _arg[0],
-            t2 = _arg[1];
-        //compare transitions based first on depth, then based on document order
-        if (t1.source.depth < t2.source.depth) {
-            return t2;
-        } else if (t2.source.depth < t1.source.depth) {
-            return t1;
-        } else {
-            if (t1.documentOrder < t2.documentOrder) {
+    function getTransitionWithHigherSourceChildPriority(_ref) {
+        var _ref2 = _slicedToArray(_ref, 2);
+
+        var t1 = _ref2[0];
+        var t2 = _ref2[1];
+
+
+        var r = getStateWithHigherSourceChildPriority(t1.source, t2.source);
+        switch (r) {
+            case 0:
+                //should only occur when t1 and t2 have same source state
+                if (t1.documentOrder < t2.documentOrder) {
+                    return t1;
+                } else {
+                    return t2;
+                }
+            case -1:
                 return t1;
-            } else {
+            case 1:
                 return t2;
+            default:
+                throw new Error('Unexpected return value');
+        }
+    }
+
+    function getStateWithHigherSourceChildPriority(s1, s2) {
+        //compare states based first on depth, then based on document order
+        console.log('getStateWithHigherSourceChildPriority', s1.id, s1.depth, s1.documentOrder, s2.id, s2.depth, s2.documentOrder);
+        if (s1.depth > s2.depth) {
+            return -1;
+        } else if (s1.depth < s2.depth) {
+            return 1;
+        } else {
+            //Equality
+            if (s1.documentOrder < s2.documentOrder) {
+                return 1;
+            } else if (s1.documentOrder > s2.documentOrder) {
+                return -1;
+            } else {
+                return 0;
             }
         }
     }
@@ -690,7 +748,9 @@
     }
 
     /** @const */
-    var printTrace = false;
+    var printTrace = true;
+
+    BaseInterpreter.EVENTS = ['onEntry', 'onExit', 'onTransition', 'onError', 'onBigStepBegin', 'onBigStepSuspend', 'onBigStepResume', 'onSmallStepBegin', 'onSmallStepEnd', 'onBigStepEnd'];
 
     /** @constructor */
     function BaseInterpreter(modelOrFnGenerator, opts) {
@@ -748,6 +808,11 @@
             _name: model.name || opts.name || null,
             _ioprocessors: opts.ioprocessors || null
         };
+
+        //add debug logging
+        BaseInterpreter.EVENTS.forEach(function (event) {
+            this.on(event, this._log.bind(this, event));
+        }, this);
     }
 
     BaseInterpreter.prototype = extend(beget(EventEmitter.prototype), {
@@ -1048,7 +1113,7 @@
                 }
             }
 
-            var sortedStatesExited = statesExited.iter().sort(stateExitComparator);
+            var sortedStatesExited = statesExited.iter().sort(getStateWithHigherSourceChildPriority);
             return [basicStatesExited, sortedStatesExited];
         },
 
@@ -1080,7 +1145,9 @@
             }
 
             //sort based on depth
-            var sortedStatesEntered = o.statesToEnter.iter().sort(stateEntryComparator);
+            var sortedStatesEntered = o.statesToEnter.iter().sort(function (s1, s2) {
+                return getStateWithHigherSourceChildPriority(s1, s2) * -1;
+            });
 
             return [o.basicStatesToEnter, sortedStatesEntered];
         },
@@ -1242,8 +1309,8 @@
             if (printTrace) {
                 var args = Array.from(arguments);
                 this.opts.console.log(args[0] + ': ' + args.slice(1).map(function (arg) {
-                    return arg === null ? 'null' : arg === undefined ? 'undefined' : arg.toString();
-                }).join(', '));
+                    return arg === null ? 'null' : arg === undefined ? 'undefined' : typeof arg === 'string' ? arg : arg.__proto__ === Object.prototype ? JSON.stringify(arg) : arg.toString();
+                }).join(', ') + '\n');
             }
         },
 
@@ -1287,30 +1354,16 @@
 
         /** @expose */
         registerListener: function registerListener(listener) {
-            if (listener.onEntry) this.on('onEntry', listener.onEntry);
-            if (listener.onExit) this.on('onExit', listener.onExit);
-            if (listener.onTransition) this.on('onTransition', listener.onTransition);
-            if (listener.onError) this.on('onError', listener.onError);
-            if (listener.onBigStepBegin) this.on('onBigStepBegin', listener.onBigStepBegin);
-            if (listener.onBigStepSuspend) this.on('onBigStepSuspend', listener.onBigStepSuspend);
-            if (listener.onBigStepResume) this.on('onBigStepResume', listener.onBigStepResume);
-            if (listener.onSmallStepBegin) this.on('onSmallStepBegin', listener.onSmallStepBegin);
-            if (listener.onSmallStepEnd) this.on('onSmallStepEnd', listener.onSmallStepEnd);
-            if (listener.onBigStepEnd) this.on('onBigStepEnd', listener.onBigStepEnd);
+            BaseInterpreter.EVENTS.forEach(function (event) {
+                if (listener[event]) this.on(event, listener[event]);
+            });
         },
 
         /** @expose */
         unregisterListener: function unregisterListener(listener) {
-            if (listener.onEntry) this.off('onEntry', listener.onEntry);
-            if (listener.onExit) this.off('onExit', listener.onExit);
-            if (listener.onTransition) this.off('onTransition', listener.onTransition);
-            if (listener.onError) this.off('onError', listener.onError);
-            if (listener.onBigStepBegin) this.off('onBigStepBegin', listener.onBigStepBegin);
-            if (listener.onBigStepSuspend) this.off('onBigStepSuspend', listener.onBigStepSuspend);
-            if (listener.onBigStepResume) this.off('onBigStepResume', listener.onBigStepResume);
-            if (listener.onSmallStepBegin) this.off('onSmallStepBegin', listener.onSmallStepBegin);
-            if (listener.onSmallStepEnd) this.off('onSmallStepEnd', listener.onSmallStepEnd);
-            if (listener.onBigStepEnd) this.off('onBigStepEnd', listener.onBigStepEnd);
+            BaseInterpreter.EVENTS.forEach(function (event) {
+                if (listener[event]) this.off(event, listener[event]);
+            });
         },
 
         /** @expose */
