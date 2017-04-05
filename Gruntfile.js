@@ -71,7 +71,7 @@ module.exports = function(grunt) {
             build: process.env.TRAVIS_JOB_ID,
             testname: 'custom tests',
             throttled: 5,
-            statusCheckAttempts : -1,
+            statusCheckAttempts : 180,
             sauceConfig: {
               'video-upload-on-pass': false
             }
@@ -122,6 +122,6 @@ module.exports = function(grunt) {
   grunt.registerTask('run-browser-tests-dev', ['express:dev', 'saucelabs-custom', 'express:dev:stop' ]);
   grunt.registerTask('run-browser-tests-prod', ['express:prod', 'saucelabs-custom', 'express:prod:stop' ]);
   grunt.registerTask('run-browser-tests-prod-require', ['express:prod-require', 'saucelabs-custom','express:prod-require:stop' ]);
-  grunt.registerTask('build', ['babel', 'replace-reserved-words', 'uglify']);
+  grunt.registerTask('build', ['browserify', 'babel', 'replace-reserved-words', 'uglify']);
   grunt.registerTask('default', ['build']);
 };
