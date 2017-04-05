@@ -30,11 +30,11 @@ addBrowser('internet explorer', 'Windows XP', 8);
 [12].forEach(addBrowser.bind(this, 'opera', 'Windows XP'));
 [ 4, 45 ].forEach(addBrowser.bind(this, 'firefox', 'Windows XP'));
 
-defaultChrome.forEach(addBrowser.bind(this, 'chrome', 'OS X 10.11'));
+[51].forEach(addBrowser.bind(this, 'chrome', 'OS X 10.11'));
 defaultFF.forEach(addBrowser.bind(this, 'firefox', 'OS X 10.11'));
 addBrowser('safari', 'OS X 10.11', 9);
 
-defaultChrome.forEach(addBrowser.bind(this, 'chrome', 'OS X 10.10'));
+[51].forEach(addBrowser.bind(this, 'chrome', 'OS X 10.10'));
 [32, 44].forEach(addBrowser.bind(this, 'firefox', 'OS X 10.10'));
 addBrowser('safari', 'OS X 10.10', 8);
 
