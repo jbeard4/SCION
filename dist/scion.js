@@ -451,7 +451,7 @@
         },
 
         remove: function remove(x) {
-            return this.o['delete'](x);
+            return this.o["delete"](x);
         },
 
         union: function union(l) {
@@ -492,7 +492,7 @@
                 for (var _iterator2 = l.o[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                     var v = _step2.value;
 
-                    this.o['delete'](v);
+                    this.o["delete"](v);
                 }
             } catch (err) {
                 _didIteratorError2 = true;
