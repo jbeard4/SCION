@@ -3,8 +3,3 @@ node_js:
 - stable
 before_install:
 - npm install grunt-cli -g
-addons:
-  sauce_connect:
-    username: jbeard43
-  jwt:
-    secure: "jf/KjsDcv2dYnAQgYrdsqe5rZPUJ0PwZUCtXzJpCiws+sfiD4wVy1l+HzecA74VqcT+ss6ClL44oH96CSBBUQA2eHrs3wg+xOTA+AUVKY5N05uuDDjLEwU93vjvoZylR1jhMH3O+Q7iMO0GqssXspzashTstZZRMpkOfZD1UKXM="
