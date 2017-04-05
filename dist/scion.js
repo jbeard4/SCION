@@ -451,7 +451,7 @@
         },
 
         remove: function remove(x) {
-            return this.o.delete(x);
+            return this.o['delete'](x);
         },
 
         union: function union(l) {
@@ -470,8 +470,8 @@
                 _iteratorError = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion && _iterator.return) {
-                        _iterator.return();
+                    if (!_iteratorNormalCompletion && _iterator["return"]) {
+                        _iterator["return"]();
                     }
                 } finally {
                     if (_didIteratorError) {
@@ -492,15 +492,15 @@
                 for (var _iterator2 = l.o[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                     var v = _step2.value;
 
-                    this.o.delete(v);
+                    this.o['delete'](v);
                 }
             } catch (err) {
                 _didIteratorError2 = true;
                 _iteratorError2 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                        _iterator2.return();
+                    if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+                        _iterator2["return"]();
                     }
                 } finally {
                     if (_didIteratorError2) {
@@ -550,8 +550,8 @@
                 _iteratorError3 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                        _iterator3.return();
+                    if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
+                        _iterator3["return"]();
                     }
                 } finally {
                     if (_didIteratorError3) {
