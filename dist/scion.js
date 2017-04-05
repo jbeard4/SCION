@@ -11,14 +11,6 @@
         global.scion = mod.exports;
     }
 })(this, function (module) {
-    'use strict';
-
-    var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-        return typeof obj;
-    } : function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
-    };
-
     //   Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
     //
     //   Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,6 +24,14 @@
     //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     //   See the License for the specific language governing permissions and
     //   limitations under the License.
+
+    "use strict";
+
+    var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+        return typeof obj;
+    } : function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+    };
 
     var extend = Object.assign || function (to, from) {
         Object.keys(from).forEach(function (k) {
@@ -642,20 +642,17 @@
         var t1 = _args[0],
             t2 = _args[1];
         var r = getStateWithHigherSourceChildPriority(t1.source, t2.source);
-        switch (r) {
-            case 0:
-                //should only occur when t1 and t2 have same source state
-                if (t1.documentOrder < t2.documentOrder) {
-                    return t1;
-                } else {
-                    return t2;
-                }
-            case -1:
+        //compare transitions based first on depth, then based on document order
+        if (t1.source.depth < t2.source.depth) {
+            return t2;
+        } else if (t2.source.depth < t1.source.depth) {
+            return t1;
+        } else {
+            if (t1.documentOrder < t2.documentOrder) {
                 return t1;
-            case 1:
+            } else {
                 return t2;
-            default:
-                throw new Error('Unexpected return value');
+            }
         }
     }
 
