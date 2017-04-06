@@ -53,7 +53,7 @@
   "engines": {
     "node": ">=4.2.2"
   },
-  "main": "./lib/scion",
+  "main": "./dist/scion",
   "scripts": {
     "test": "grunt test"
   }
