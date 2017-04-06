@@ -19,8 +19,11 @@
     "angular": "^1.5.8",
     "angular-route": "^1.5.8",
     "angularjs": "0.0.1",
+    "babel": "^6.23.0",
     "bootstrap": "^3.3.7",
+    "browserify": "^14.3.0",
     "electron": "^1.6.2",
+    "exorcist": "^0.4.0",
     "express": "^4.14.0",
     "grunt": "^1.0.1",
     "grunt-browserify": "^5.0.0",
@@ -31,16 +34,17 @@
     "pathseg": "^1.0.2",
     "scxml-test-framework": "^1.0.2",
     "tsify": "^2.0.5",
-    "typescript": "^2.1.4"
+    "typescript": "^2.1.4",
+    "uglify-js": "^2.8.21"
   },
   "scripts": {
     "test": "karma",
-    "build": "tsc -p .  --sourceMap",
-    "watch": "tsc -p .  --sourceMap -w",
-    "browserify": "browserify -p tsify --project . src/index.ts  --standalone SCHVIZ --debug -o dist/schviz.js",
-    "browserify-watch": "watchify -p tsify --project . src/index.ts --standalone SCHVIZ --debug -o dist/schviz.js  --verbose",
-    "minfiy": "uglify -s dist/schviz.js -o dist/schviz.min.js",
-    "clean": "rm -rf dist/"
+    "build": "npm run compile && npm run transpile && npm run bundle && npm run minify",
+    "compile": "tsc -p .  --sourceMap --outDir dist/es6",
+    "transpile": "babel -s --presets es2015 --out-dir dist/es5/ dist/es6/",
+    "bundle": "mkdir -p dist/bundle && browserify --exclude optimist --exclude electron -d --standalone SCHVIZ  dist/es5/index.js | exorcist dist/bundle/index.js.map > dist/bundle/index.js",
+    "minify": "mkdir -p dist/minified && uglifyjs --source-map dist/minified/index.min.js.map -o dist/minified/index.min.js dist/bundle/index.js",
+    "clean": "rm -rf dist/*"
   },
   "repository": {
     "type": "git",

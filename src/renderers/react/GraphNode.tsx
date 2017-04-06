@@ -9,15 +9,21 @@ import EventEmitter = require('events');
 import _ = require('underscore');
 import Debug = require('debug');
 const debug = Debug('GraphNode');
-import electron = require('electron');
 
 import {GraphRoot, GraphRootProps} from './GraphRoot';
 
-const remote = electron.remote;
+let electron;
 let Menu, MenuItem;
-if(remote){ 
-  Menu = remote.Menu;
-  MenuItem = remote.MenuItem;
+let remote;
+try {
+  electron = require('electron');
+  remote = electron.remote;
+  if(remote){ 
+    Menu = remote.Menu;
+    MenuItem = remote.MenuItem;
+  }
+} catch(e){
+  //not in electron
 }
 
 
@@ -55,7 +61,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
   constructor(props){
     super(props);
 
-    this.initContextMenu();
+    if(Menu) this.initContextMenu();
 
     let fromNode = {
       id : this.props.node.id,
