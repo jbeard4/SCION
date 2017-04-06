@@ -9,9 +9,8 @@
     "noImplicitAny": false,
     "outDir": "./dist",
     "sourceMap": true,
-    "typeRoots": [],
     "jsx" : "react",
-    "target": "es6",
+    "target": "es5",
     "removeComments": false
   },
   "exclude": [

@@ -10,6 +10,7 @@ import Debug = require('debug');
 const debug = Debug('GraphNode');
 import electron = require('electron');
 import GraphNode from './GraphNode';
+import _ = require('underscore');
 
 export interface GraphRootProps {
   allEdges : KGraphEdge[];
@@ -126,9 +127,14 @@ export class GraphRoot extends React.Component<GraphRootProps, GraphRootAnimatio
     this.viewBoxAnimation.setAttributeNS(null, 'from', this.svgRectToViewBox(fromZoom));
     this.viewBoxAnimation.setAttributeNS(null, 'to', this.svgRectToViewBox(toZoom));
     this.viewBoxAnimation.setAttributeNS(null, 'dur', '250ms');
-    this.state.toZoom = toZoom;
-    this.state.fromZoom = toZoom;
     this.viewBoxAnimation.beginElement();
+    _.extend(
+      this.state,
+      {
+        toZoom : toZoom,
+        fromZoom : toZoom
+      }
+    );
   }
 
   componentWillReceiveProps(props : GraphRootProps){
@@ -214,9 +220,14 @@ export class GraphRoot extends React.Component<GraphRootProps, GraphRootAnimatio
     this.viewBoxAnimation.setAttributeNS(null, 'from', viewBox);
     this.viewBoxAnimation.setAttributeNS(null, 'to', viewBox);
     this.viewBoxAnimation.setAttributeNS(null, 'dur', '0ms');
-    this.state.toZoom = toZoom;
-    this.state.fromZoom = toZoom;
     this.viewBoxAnimation.beginElement();
+    _.extend(
+      this.state,
+      {
+        toZoom : toZoom,
+        fromZoom : toZoom
+      }
+    );
 
     /*
     this.pauseAnimation();
@@ -332,9 +343,14 @@ export class GraphRoot extends React.Component<GraphRootProps, GraphRootAnimatio
     this.viewBoxAnimation.setAttributeNS(null, 'from', fromViewBox);
     this.viewBoxAnimation.setAttributeNS(null, 'to', toViewBox);
     this.viewBoxAnimation.setAttributeNS(null, 'dur', '250ms');
-    this.state.toZoom = toZoom;
-    this.state.fromZoom = toZoom;
     this.viewBoxAnimation.beginElement();
+    _.extend(
+      this.state,
+      {
+        toZoom : toZoom,
+        fromZoom : toZoom
+      }
+    );
   }
 
   private svgRectToViewBox(rect : SVGRect){

@@ -16,6 +16,11 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
+    "@types/es6-shim": "^0.31.32",
+    "@types/jquery": "^2.0.41",
+    "@types/node": "^7.0.12",
+    "@types/react": "^15.0.21",
+    "@types/react-dom": "^0.14.23",
     "angular": "^1.5.8",
     "angular-route": "^1.5.8",
     "angularjs": "0.0.1",
@@ -33,18 +38,19 @@
     "load-grunt-tasks": "^3.5.2",
     "pathseg": "^1.0.2",
     "scxml-test-framework": "^1.0.2",
-    "tsify": "^2.0.5",
+    "tsify": "^2.0.8",
     "typescript": "^2.1.4",
-    "uglify-js": "^2.8.21"
+    "uglify-js": "^2.8.21",
+    "watchify": "^3.9.0"
   },
   "scripts": {
     "test": "karma",
-    "build": "npm run compile && npm run transpile && npm run bundle && npm run minify",
-    "compile": "tsc -p .  --sourceMap --outDir dist/es6",
-    "transpile": "babel -s --presets es2015 --out-dir dist/es5/ dist/es6/",
-    "bundle": "mkdir -p dist/bundle && browserify --exclude optimist --exclude electron -d --standalone SCHVIZ  dist/es5/index.js | exorcist dist/bundle/index.js.map > dist/bundle/index.js",
-    "minify": "mkdir -p dist/minified && uglifyjs --source-map dist/minified/index.min.js.map -o dist/minified/index.min.js dist/bundle/index.js",
-    "clean": "rm -rf dist/*"
+    "build": "tsc -p .  --sourceMap",
+    "watch": "tsc -p .  --sourceMap -w",
+    "browserify": "browserify -p tsify --project . src/index.ts  --standalone SCHVIZ --debug -o dist/schviz.js",
+    "browserify-watch": "watchify -p tsify --project . src/index.ts --standalone SCHVIZ --debug -o dist/schviz.js  --verbose",
+    "minfiy": "uglify -s dist/schviz.js -o dist/schviz.min.js",
+    "clean": "rm -rf dist/"
   },
   "repository": {
     "type": "git",
