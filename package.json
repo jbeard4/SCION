@@ -71,7 +71,7 @@
     "node": ">=4.2.2",
     "npm": ">=2.0.0"
   },
-  "main": "./lib/runtime/facade",
+  "main": "./dist/runtime/facade",
   "scripts": {
     "test": "grunt build test"
   },
