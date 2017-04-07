@@ -5,10 +5,13 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "tsc --jsx react --allowJs --outDir dist/ --module commonjs src/index.tsx",
     "watch": "tsc --jsx react --allowJs --outDir dist/ --module commonjs src/index.tsx -w",
-    "bundle" : "npm run build && browserify --exclude optimist --exclude electron --bare dist/src/index.js > dist/index.js",
-    "clean": "rm -rf dist/",
+    "build": "npm run transpile & npm run bundle && npm run minify",
+    "transpile": "tsc -p . --outDir dist/",
+    "bundle": "browserify -p tsify --project . --exclude optimist --exclude electron --bare src/index.tsx -r ./node_modules/babel-polyfill --debug | exorcist dist/index.js.map > dist/index.js",
+    "minify": " uglifyjs -o dist/index.min.js dist/index.js",
+    "package": "electron-packager .",
+    "clean": "rm -rf dist/*",
     "postinstall": "typings install"
   },
   "dependencies": {
@@ -29,6 +32,7 @@
     "@types/node": "^7.0.12",
     "@types/react": "^15.0.21",
     "@types/react-dom": "^0.14.23",
+    "babel-polyfill": "^6.23.0",
     "browserify": "^14.3.0",
     "electron": "^1.4.1",
     "electron-packager": "^8.6.0",

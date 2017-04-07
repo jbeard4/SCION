@@ -6,7 +6,8 @@
     "sourceMap": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "allowJs" : true
   },
   "exclude": [
     "node_modules",
@@ -15,6 +16,5 @@
   ],
   "files": [
     "./src/index.tsx"
-  ],
-  "allowJs" : true
+  ]
 }
