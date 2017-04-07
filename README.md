@@ -12,11 +12,29 @@ SCXML provides a declarative markup for Statecharts, a powerful modelling langua
 
 ## browser
 
-`bower install jbeard4/scion`
+### Script tag with cdnjs
 
-Or add:
+Add the following script tags to your HTML:
 
-`<script src="https://cdnjs.cloudflare.com/ajax/libs/scion/3.0.2/scxml.min.js">`
+```
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.23.0/polyfill.min.js">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/scion/3.0.2/scxml.min.js">
+```
+
+Then SCION API available as global singleton object `scxml`.
+
+### npm and browserify
+
+Install babel-polyfill and scxml with npm:
+
+`npm install --save scxml babel-polyfill`
+
+Then add to your application entry point:
+
+```js
+require('babel-polyfill');
+let scxml = require('scxml');
+```
 
 # Quickstart
 
