@@ -18,12 +18,7 @@
     "email": "jbeard4@cs.mcgill.ca",
     "url": "https://github.com/jbeard4/SCION-CORE/issues"
   },
-  "licenses": [
-    {
-      "type": "Apache-2.0",
-      "url": "https://github.com/jbeard4/SCION-CORE/blob/master/LICENSE.txt"
-    }
-  ],
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/jbeard4/SCION-CORE.git"
@@ -53,8 +48,10 @@
   "engines": {
     "node": ">=4.2.2"
   },
-  "main": "./dist/scion",
+  "main": "./lib/scion",
+  "browser": "./dist/scion",
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt test",
+    "build": "grunt build"
   }
 }
