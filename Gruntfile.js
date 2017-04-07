@@ -4,52 +4,10 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
       pkg: grunt.file.readJSON('package.json'),
-      concat: {
-        options: {
-          separator: ';',
-        },
-        dist: {
-          src: ['node_modules/babel-polyfill/dist/polyfill.js', 'dist/scxml.js'],
-          dest: 'dist/scxml.js'
-        },
-      },
-      uglify: {
-        options: {
-          banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
-        },
-        build: {
-          src: 'dist/scxml.js',
-          dest: 'dist/scxml.min.js'
-        }
-      },
-      babel: {
-          options: {
-              sourceMap: true,
-              presets: ['es2015'],
-              plugins : ['transform-es2015-modules-umd']
-          },
-          dist: {
-              files: {
-                  'dist/scxml.js' : 'dist/scxml.js'
-              }
-          }
-      },
       nodeunit: {
         platform : ['test/platform-tests/node/*/runner.js']
       },
       karma: require('./grunt/config/karma/index.js')(grunt),
-      browserify : {
-        dev : {
-          options: {
-            browserifyOptions : {
-              debug : true,
-              standalone: 'scxml'
-            }
-          },
-          src: ['lib/runtime/facade.js'],
-          dest: 'dist/scxml.js'
-        }
-      },
       express: {
         dev: {
           options: {
@@ -127,14 +85,10 @@ module.exports = function(grunt) {
         },
         express: {
           files:  [ 'lib/**/*.js' ],
-          tasks : ['browserify:dev'],
+          tasks : ['build'],
           options: {
             spawn: false
           }
-        },
-        browserify: {
-          files: ["lib/**/*.js"],
-          tasks: ["browserify:dev"]
         },
         public: {
           files: [""]
@@ -168,7 +122,7 @@ module.exports = function(grunt) {
 
   //TODO: copy babel-polyfill and nodeunit-browser into test/harness/browser/lib. I wish these were published via bower. 
   grunt.task.registerTask('test-semantics', ['express:scxml', 'scxml-test-client', 'express:scxml:stop']);
-  grunt.registerTask('build', [ 'browserify:dev', 'babel', 'replace-reserved-words', 'concat', 'uglify']);
+  grunt.registerTask('build', [ 'make:dist/scxml.js:dist/scxml.min.js']);
   grunt.registerTask('default', ['build']);
   grunt.registerTask('test-node', ['nodeunit:platform', 'test-semantics']);
   grunt.registerTask('test', [

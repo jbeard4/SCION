@@ -3,3 +3,4 @@ components
 out*
 *.sublime-*
 log.md
+dist/es5
