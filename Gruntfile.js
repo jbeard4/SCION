@@ -2,39 +2,6 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
 
   grunt.initConfig({
-      concat: {
-        options: {
-          separator: ';',
-        },
-        dist: {
-          src: ['node_modules/babel-polyfill/dist/polyfill.js', 'dist/schviz.js'],
-          dest: 'dist/scxml.js'
-        },
-      },
-      browserify : {
-        dev : {
-          options: {
-            plugin: ['tsify'],
-            browserifyOptions : {
-              debug : true,
-              standalone: 'SCHVIZ',
-              'no-builtins' : true
-            }
-          },
-          src: ['lib/index.js'],
-          dest: 'dist/schviz.js'
-        },
-        prod : {
-          options: {
-            plugin: ['tsify'],
-            browserifyOptions : {
-              standalone: 'SCHVIZ'
-            }
-          },
-          src: ['lib/index.ts'],
-          dest: 'dist/schviz.js'
-        }
-      },
       express: {
         dev: {
           options: {

@@ -4,15 +4,14 @@
   "description": "SCJSON to KGraph to SVG rendering library",
   "main": "dist/index.js",
   "dependencies": {
+    "babel-polyfill": "^6.23.0",
     "debug": "^2.6.3",
     "jquery": "^3.1.1",
-    "jsondiffpatch": "^0.2.4",
     "klayjs": "^0.4.1",
     "pathseg": "^1.0.2",
     "q": "^1.4.1",
     "react": "^15.4.2",
     "scxml": "3.0.4",
-    "snapsvg": "^0.4.0",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
@@ -31,7 +30,6 @@
     "exorcist": "^0.4.0",
     "express": "^4.14.0",
     "grunt": "^1.0.1",
-    "grunt-browserify": "^5.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-express-server": "^0.5.3",
     "grunt-open": "^0.2.3",
@@ -39,18 +37,19 @@
     "pathseg": "^1.0.2",
     "scxml-test-framework": "^1.0.2",
     "tsify": "^2.0.8",
-    "typescript": "^2.1.4",
+    "typescript": "^2.2.2",
     "uglify-js": "^2.8.21",
     "watchify": "^3.9.0"
   },
   "scripts": {
     "test": "karma",
-    "build": "tsc -p .  --sourceMap",
-    "watch": "tsc -p .  --sourceMap -w",
-    "browserify": "browserify -p tsify --project . src/index.ts  --standalone SCHVIZ --debug -o dist/schviz.js",
-    "browserify-watch": "watchify -p tsify --project . src/index.ts --standalone SCHVIZ --debug -o dist/schviz.js  --verbose",
-    "minfiy": "uglify -s dist/schviz.js -o dist/schviz.min.js",
-    "clean": "rm -rf dist/"
+    "transpile-watch": "tsc -p .  --sourceMap -w",
+    "build": "npm run transpile && npm run bundle && npm run minify",
+    "transpile": "tsc -p .  --sourceMap",
+    "bundle": "browserify --exclude optimist --exclude electron -p tsify --project . src/index.ts  --standalone SCHVIZ --debug | exorcist dist/schviz.js.map > dist/schviz.js",
+    "bundle-watch": "watchify --exclude optimist --exclude electron -p tsify --project . src/index.ts  --standalone SCHVIZ --debug -o dist/schviz.js",
+    "minify": "uglifyjs -s dist/schviz.js -o dist/schviz.min.js",
+    "clean": "rm -rf dist/*"
   },
   "repository": {
     "type": "git",
