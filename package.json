@@ -48,7 +48,7 @@
     "transpile": "tsc -p .  --sourceMap",
     "bundle": "browserify --exclude optimist --exclude electron -p tsify --project . src/index.ts  --standalone SCHVIZ --debug | exorcist dist/schviz.js.map > dist/schviz.js",
     "bundle-watch": "watchify --exclude optimist --exclude electron -p tsify --project . src/index.ts  --standalone SCHVIZ --debug -o dist/schviz.js",
-    "minify": "uglifyjs -s dist/schviz.js -o dist/schviz.min.js",
+    "minify": "uglifyjs -o dist/schviz.min.js  dist/schviz.js",
     "clean": "rm -rf dist/*"
   },
   "repository": {
