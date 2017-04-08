@@ -6,8 +6,9 @@ import {SCState, SCTransition, findStateById} from './SCJSON';
 import Debug = require('debug');
 import EventEmitter = require('events');
 const debug = Debug('SCHVIZ');
+require('../test-integration/app/css/styles.css');
 
-class SCHVIZ extends EventEmitter {
+export default class SCHVIZ extends EventEmitter {
 
   static layouts = constants.layouts;
   static events = require('./events').node;
