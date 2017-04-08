@@ -1,4 +1,4 @@
-import SCHVIZ = require('schviz2');
+const SCHVIZ = window['SCHVIZ'];
 import * as React from "react";
 import SCXMLVisualization from './SCXMLVisualization';
 import preferences = require('../../preferences');
