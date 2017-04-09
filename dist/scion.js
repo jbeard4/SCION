@@ -1310,14 +1310,14 @@
         registerListener: function registerListener(listener) {
             BaseInterpreter.EVENTS.forEach(function (event) {
                 if (listener[event]) this.on(event, listener[event]);
-            });
+            }, this);
         },
 
         /** @expose */
         unregisterListener: function unregisterListener(listener) {
             BaseInterpreter.EVENTS.forEach(function (event) {
                 if (listener[event]) this.off(event, listener[event]);
-            });
+            }, this);
         },
 
         /** @expose */
