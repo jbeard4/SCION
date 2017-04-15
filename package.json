@@ -37,16 +37,19 @@
     "optimist": "0.6.1",
     "sax": "1.2.1",
     "scion-core": "1.5.4",
+    "source-map": "^0.5.6",
     "text-to-js-identifier": "0.0.4"
   },
   "devDependencies": {
     "async": "^1.5.2",
     "babel": "^6.23.0",
     "babel-plugin-transform-es2015-modules-umd": "^6.8.0",
-    "babel-polyfill": "^6.9.1",
+    "babel-polyfill": "^6.23.0",
     "babel-preset-es2015": "^6.9.0",
+    "babelify": "^7.3.0",
     "browserify": "^14.3.0",
     "ejs": "^2.4.2",
+    "exorcist": "^0.4.0",
     "express": "^4.14.0",
     "glob": "^7.0.5",
     "grunt": "^1.0.1",
@@ -65,20 +68,23 @@
     "request": "^2.74.0",
     "scxml-test-framework": "^1.0.2",
     "uglify-js": "^2.8.21",
+    "uglifyify": "^3.0.4",
     "underscore": "^1.8.3",
-    "vm-browserify2": "0.0.6"
+    "vm-browserify2": "0.0.6",
+    "watchify": "^3.9.0"
   },
   "engines": {
     "node": ">=4.2.2",
     "npm": ">=2.0.0"
   },
   "browser": {
-    "vm": "vm-browserify2",
-    "./lib/runtime/facade": "./dist/es5/runtime/facade"
+    "vm": "vm-browserify2"
   },
   "main": "./lib/runtime/facade",
   "scripts": {
-    "test": "grunt build test"
+    "test": "grunt build test",
+    "build" : "watchify -t babelify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
+    "watch" : "browserify -t babelify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v"
   },
   "filename": "scxml.min.js",
   "npmName": "scion",
