@@ -1,5 +1,4 @@
 [
-  "node_modules/scxml-test-framework/test/script-src/*.scxml",
   "node_modules/scxml-test-framework/test/scxml-prefix-event-name-matching/*.scxml",
   "node_modules/scxml-test-framework/test/send-data/*.scxml",
   "node_modules/scxml-test-framework/test/send-internal/*.scxml",
@@ -32,7 +31,6 @@
   "node_modules/scxml-test-framework/test/w3c-ecma/test287.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test302.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test304.txml.scxml",
-  "node_modules/scxml-test-framework/test/w3c-ecma/test309.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test310.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test312.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test313.txml.scxml",
