@@ -58,7 +58,6 @@
     "grunt-contrib-watch": "^1.0.0",
     "grunt-express-server": "^0.5.3",
     "grunt-git": "^1.0.0",
-    "grunt-make": "^1.0.0",
     "grunt-release": "^0.14.0",
     "grunt-run": "^0.6.0",
     "grunt-saucelabs": "^8.6.3",
@@ -83,8 +82,8 @@
   "main": "./lib/runtime/facade",
   "scripts": {
     "test": "grunt build test",
-    "build" : "watchify -t babelify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
-    "watch" : "browserify -t babelify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v"
+    "build": "browserify -t babelify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
+    "watch": "watchify -t babelify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v"
   },
   "filename": "scxml.min.js",
   "npmName": "scion",

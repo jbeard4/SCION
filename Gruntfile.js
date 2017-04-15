@@ -79,6 +79,11 @@ module.exports = function(grunt) {
           }
         }
       },
+      run : {
+        build : {
+          exec : 'npm run build'
+        }
+      },
       watch: {
         options: {
           livereload: false
@@ -122,7 +127,7 @@ module.exports = function(grunt) {
 
   //TODO: copy babel-polyfill and nodeunit-browser into test/harness/browser/lib. I wish these were published via bower. 
   grunt.task.registerTask('test-semantics', ['express:scxml', 'scxml-test-client', 'express:scxml:stop']);
-  grunt.registerTask('build', [ 'make:dist/scxml.js:dist/scxml.min.js']);
+  grunt.registerTask('build', [ 'run:build']);
   grunt.registerTask('default', ['build']);
   grunt.registerTask('test-node', ['nodeunit:platform', 'test-semantics']);
   grunt.registerTask('test', [
