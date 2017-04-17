@@ -1,4 +1,5 @@
 [
+  "node_modules/scxml-test-framework/test/script-src/*.scxml",
   "node_modules/scxml-test-framework/test/scxml-prefix-event-name-matching/*.scxml",
   "node_modules/scxml-test-framework/test/send-data/*.scxml",
   "node_modules/scxml-test-framework/test/send-internal/*.scxml",
