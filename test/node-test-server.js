@@ -38,7 +38,7 @@ http.createServer(function (req, res) {
                         try {
                             model.prepare(function(err, fnModel) {
                                 if (err) {
-                                    console.error('model preparation error: ' + err);
+                                    console.error('model preparation error: ' + err, err.stack);
                                     res.writeHead(500, {'Content-Type': 'text/plain'});
                                     res.end(err.message);
                                     return;
@@ -60,7 +60,7 @@ http.createServer(function (req, res) {
 
                                 // TODO: timeout should be kicked off before fetch/compilation/preparation
                                 timeouts[sessionToken] = setTimeout(function(){cleanUp(sessionToken);},timeoutMs);  
-                            });
+                            }, {deferCompilation : true});
                         } catch(e) {
                           console.log(e.stack);
                           console.log(e);
@@ -68,7 +68,7 @@ http.createServer(function (req, res) {
                           res.end(e.message);
                         }
                     }
-                });
+                }, null, {deferCompilation : true});
 
             }else if(reqJson.event && (typeof reqJson.sessionToken === "number")){
                 console.log("sending event to statechart",reqJson.event);
