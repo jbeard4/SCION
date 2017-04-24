@@ -72,11 +72,7 @@ module.exports = function(grunt) {
       release: {
         options: {
           beforeRelease : ['build', 'gitcommit:dist'],
-          additionalFiles: ['bower.json'],
-          github: {
-            repo: 'jbeard4/SCION', //put your user/repo here
-            accessTokenVar: 'GITHUB_ACCESS_TOKEN', //ENVIRONMENT VARIABLE that contains GitHub Access Token
-          }
+          additionalFiles: ['bower.json']
         }
       },
       run : {
