@@ -17,6 +17,8 @@ function cleanUp(sessionToken){
     delete sessions[sessionToken];
 }
 
+var options = {deferCompilation : true};
+
 http.createServer(function (req, res) {
     //TODO: set a timeout to clean up if we don't hear back for a while
     var s = "";
@@ -60,7 +62,7 @@ http.createServer(function (req, res) {
 
                                 // TODO: timeout should be kicked off before fetch/compilation/preparation
                                 timeouts[sessionToken] = setTimeout(function(){cleanUp(sessionToken);},timeoutMs);  
-                            }, {deferCompilation : true});
+                            }, options);
                         } catch(e) {
                           console.log(e.stack);
                           console.log(e);
@@ -68,7 +70,7 @@ http.createServer(function (req, res) {
                           res.end(e.message);
                         }
                     }
-                }, null, {deferCompilation : true});
+                }, null, options);
 
             }else if(reqJson.event && (typeof reqJson.sessionToken === "number")){
                 console.log("sending event to statechart",reqJson.event);
