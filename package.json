@@ -95,5 +95,6 @@
         "scxml.min.js"
       ]
     }
-  ]
+  ],
+  "bin" : "bin/cli.js"
 }
