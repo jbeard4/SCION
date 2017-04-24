@@ -15,7 +15,9 @@ var argv = require('optimist')
     .boolean('b')
     .argv;
 
-var options = {deferCompilation : true, moduleFormat : 'commonjs', writeModuleToDisk : true };
+if(argv.compile){
+  var options = {deferCompilation : true};
+} 
 scxml.pathToModel(argv.input, function(err, model){
   if(err) throw err;
   if(argv.compile){
@@ -26,12 +28,12 @@ scxml.pathToModel(argv.input, function(err, model){
       } else {
         fs.writeFileSync(argv.output, moduleString); 
       }
-    }, options);
+    }, {moduleFormat : 'commonjs'});
   } else if(argv.repl){
     model.prepare(function(err, fnModel){
       if(err) throw err;
       startRepl(fnModel);
-    },{console : console},options);
+    },{console : console});
   }
 }, options); 
 
