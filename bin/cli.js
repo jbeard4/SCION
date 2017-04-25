@@ -19,10 +19,10 @@ if(argv.compile){
   var options = {deferCompilation : true};
 } 
 scxml.pathToModel(argv.input, function(err, model){
-  if(err) throw err;
+  if(err) return console.error(err);
   if(argv.compile){
     model.prepareModuleString(function(err, moduleString){
-      if(err) throw err;
+      if(err) return console.error(err);
       if(argv.output === '-'){
         console.log(moduleString);
       } else {
@@ -31,7 +31,7 @@ scxml.pathToModel(argv.input, function(err, model){
     }, {moduleFormat : 'commonjs'});
   } else if(argv.repl){
     model.prepare(function(err, fnModel){
-      if(err) throw err;
+      if(err) return console.error(err);
       startRepl(fnModel);
     },{console : console});
   }
