@@ -10,7 +10,7 @@
     "outDir": "./dist",
     "sourceMap": true,
     "jsx" : "react",
-    "target": "es6",
+    "target": "es5",
     "removeComments": false
   },
   "exclude": [

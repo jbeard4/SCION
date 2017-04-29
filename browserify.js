@@ -15,10 +15,11 @@ browserify({
       standalone : "SCHVIZ"
      })
     .add('src/index.ts')
+    .exclude('electron') 
     .transform({global: true}, browserifyCss)
     .plugin(tsify)
     .transform(babelify, { extensions: [ '.tsx', '.ts' ], presets: ["es2015"] })
-    .transform({ global: true }, uglifyify)
+    //.transform({ global: true }, uglifyify)
     .bundle()
     .pipe(exorcist(mapfile))
     .on('error', function (error) { console.error(error.toString()); })

@@ -6,7 +6,11 @@ import {SCState, SCTransition, findStateById} from './SCJSON';
 import Debug = require('debug');
 import EventEmitter = require('events');
 const debug = Debug('SCHVIZ');
-require('../test-integration/app/css/styles.css');
+try {
+  //used for browserify
+  require('../test-integration/app/css/styles.css');
+} catch(e){
+}
 
 export default class SCHVIZ extends EventEmitter {
 
