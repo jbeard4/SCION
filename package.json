@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "watch": "tsc --jsx react --allowJs --outDir dist/ --module commonjs src/index.tsx -w",
-    "build": "npm run transpile & npm run bundle",
+    "build": "npm run transpile && npm run bundle",
     "transpile": "tsc -p . --outDir dist/",
     "bundle": "node ./browserify.js",
     "package": "electron-packager .",

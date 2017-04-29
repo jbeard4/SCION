@@ -1,6 +1,5 @@
 import * as React from "react";
 const SCHVIZ = window['SCHVIZ'];
-import scxml = require('scxml');
 
 interface SCXMLVisualizationProps {
   scjson : any;

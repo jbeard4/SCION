@@ -5,15 +5,17 @@ var babelify = require('babelify');
 var exorcist = require('exorcist');
 var fs = require('fs');
 var path = require('path');
+var through = require('through2');
+var browserifyCss = require('browserify-css');
 
 var mapfile = path.join(__dirname, 'dist/index.js.map');
 var jsFile = path.join(__dirname, 'dist/index.js')
 
-browserify({ 
+var options = { 
       noParse: [ undefined ],
       extensions: [],
       ignoreTransform: [],
-      entries: [ 'src/index.tsx' ],
+      //entries: [ 'src/index.tsx' ],
       fullPaths: false,
       builtins: false,
       commondir: false,
@@ -32,13 +34,27 @@ browserify({
       ignoreMissing: false,
       debug: true,
       standalone: undefined 
-    })
+    };
+
+browserify(options)
+    //.add(require.resolve('scxml'))
+    //.add(require.resolve('scion-core'))
+    .add('src/index.tsx')
     .exclude('electron') 
+    .transform({global: true}, browserifyCss)
     .plugin(tsify)
-    //.transform(babelify, {global:true, presets: ["es2015"] })
-    .transform({ global: true }, uglifyify)
+    .transform(function (file) {
+        return through(function (buf, enc, next) {
+            var s = buf.toString('utf8');
+            console.log('file',file);
+            this.push(s);
+            next();
+        })
+    })
+    .transform(babelify, {global: true, presets: ["es2015"], ignore : /react-dom/ })
+    //.transform({ global: true }, uglifyify)
     .bundle()
-    .pipe(exorcist(mapfile))
     .on('error', function (error) { console.error(error); })
     .pipe(fs.createWriteStream(jsFile, 'utf8'));
+
 

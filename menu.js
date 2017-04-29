@@ -3,7 +3,6 @@ const BrowserWindow = electron.BrowserWindow
 const Menu = electron.Menu
 const MenuItem = electron.MenuItem 
 const dialog = require('electron').dialog
-const SCHVIZ = require('SCHVIZ2');
 
 module.exports = (app, createWindow) => {
 
