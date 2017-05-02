@@ -1,5 +1,5 @@
 import * as React from "react";
-const SCHVIZ = window['SCHVIZ'];
+import schviz = require('schviz2');
 
 interface SCXMLVisualizationProps {
   scjson : any;
@@ -48,7 +48,7 @@ export default class SCXMLVisualization extends React.Component<SCXMLVisualizati
 
   componentDidMount(){
     //render
-    this.schviz = new SCHVIZ(this.rootElement);
+    this.schviz = new schviz(this.rootElement);
     if(this.props.scjson){
       //TODO: parameterize layout option
       this.schviz.renderSCJSON(this.props.scjson, 'right', function(err){

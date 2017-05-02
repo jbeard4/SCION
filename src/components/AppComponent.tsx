@@ -1,4 +1,4 @@
-const SCHVIZ = window['SCHVIZ'];
+import schviz = require('schviz2');
 import * as React from "react";
 import SCXMLVisualization from './SCXMLVisualization';
 import preferences = require('../../preferences');
@@ -54,7 +54,7 @@ export default class AppComponent extends React.Component<AppComponentProps, App
 
   private initContextMenu(){
     const menu = new Menu()
-    let items = Object.keys(SCHVIZ.layouts).map((layoutName) => {
+    let items = Object.keys(schviz.layouts).map((layoutName) => {
       let item = new MenuItem({ 
         label: layoutName, 
         type: 'checkbox', 

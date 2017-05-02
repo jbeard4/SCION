@@ -1,20 +1,26 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es5",
-    "jsx": "react",
-    "sourceMap": true,
+    "allowJs" : true,
+    "declaration": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "outDir": "dist",
-    "allowJs" : true
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmitOnError": true,
+    "noImplicitAny": false,
+    "outDir": "./dist",
+    "inlineSourceMap": true,
+    "jsx" : "react",
+    "target": "es5",
+    "removeComments": false
   },
   "exclude": [
     "node_modules",
-    "dist",
-    "typings"
+    "dist"
   ],
+  "compileOnSave": false,
   "files": [
     "./src/index.tsx"
   ]
 }
+
