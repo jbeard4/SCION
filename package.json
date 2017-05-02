@@ -49,7 +49,6 @@
     "babelify": "^7.3.0",
     "browserify": "^14.3.0",
     "ejs": "^2.4.2",
-    "exorcist": "^0.4.0",
     "express": "^4.14.0",
     "glob": "^7.0.5",
     "grunt": "^1.0.1",
@@ -67,7 +66,6 @@
     "request": "^2.74.0",
     "scxml-test-framework": "^1.0.2",
     "uglify-js": "^2.8.21",
-    "uglifyify": "^3.0.4",
     "underscore": "^1.8.3",
     "vm-browserify2": "0.0.6",
     "watchify": "^3.9.0"
@@ -82,8 +80,15 @@
   "main": "./lib/runtime/facade",
   "scripts": {
     "test": "grunt build test",
-    "build": "browserify -t babelify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
-    "watch": "watchify -t babelify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v"
+    "bundle" : "browserify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
+    "uglify" : "uglifyjs dist/scxml.js -o dist/scxml.min.js",
+    "build": "npm run bundle && npm run uglify",
+    "watch": "watchify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v"
+  },
+  "browserify" : {
+    "transform" : [
+      [ "babelify", { "presets": ["es2015"] } ]
+    ]
   },
   "filename": "scxml.min.js",
   "npmName": "scion",
