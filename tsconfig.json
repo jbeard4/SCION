@@ -8,7 +8,7 @@
     "noEmitOnError": true,
     "noImplicitAny": false,
     "outDir": "./dist",
-    "sourceMap": true,
+    "inlineSourceMap": true,
     "jsx" : "react",
     "target": "es5",
     "removeComments": false
