@@ -49,7 +49,11 @@
     "node": ">=4.2.2"
   },
   "main": "./lib/scion",
-  "browser": "./dist/scion",
+  "browserify" : {
+    "transform" : [
+      [ "babelify", { "presets": ["es2015"] } ]
+    ]
+  },
   "scripts": {
     "test": "grunt test",
     "build": "grunt build"
