@@ -5,11 +5,13 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "watch": "tsc --jsx react --allowJs --outDir dist/ --module commonjs src/index.tsx -w",
-    "build": "npm run transpile && npm run bundle",
+    "preversion" : "npm run build",
+    "postversion": "git push --follow-tags && npm publish",
+    "watch" : "tsc -p . --outDir dist/ -w & ( cd dist/src/; watchify --exclude electron --bare index.js -d -v -o 'cat > scxml-tool.js; sorcery -i scxml-tool.js; npm run minify' -v )",
+    "build": "npm run transpile && npm run bundle && npm run minify",
     "transpile": "tsc -p . --outDir dist/",
     "bundle": "cd dist/src/; browserify --exclude electron --bare  index.js  -d -v -o scxml-tool.js; sorcery -i scxml-tool.js",
-    "minify": "uglifyjs dist/index.js -o dist/index.min.js",
+    "minify": "cd dist/src/; uglifyjs scxml-tool.js --in-source-map scxml-tool.js.map  --source-map scxml-tool.min.js.map  -o scxml-tool.min.js",
     "package": "electron-packager .",
     "clean": "rm -rf dist/*"
   },
