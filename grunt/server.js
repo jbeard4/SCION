@@ -4,7 +4,7 @@ var env     = process.env.NODE_ENV || 'development';
 
 express.static.mime.define({'application/scxml+xml': ['scxml']});
 
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 3001);
 
 var testPairs = require('scxml/grunt/test-pairs.js'); 
 

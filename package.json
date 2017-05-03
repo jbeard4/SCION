@@ -45,12 +45,13 @@
     "watchify": "^3.9.0"
   },
   "scripts": {
-    "test": "karma",
-    "transpile-watch": "tsc -p .  --sourceMap -w",
+    "watch" : "tsc -p . --outDir dist/ -w & ( cd dist; watchify --exclude electron index.js -d  -s SCHVIZ -o 'cat > schviz.js; sorcery -i schviz.js' -v )",
     "build": "npm run transpile && npm run bundle",
     "transpile": "tsc -p . --outDir dist/",
-    "bundle": "cd dist; browserify --exclude electron index.js -d  -s SCHVIZ -o schviz.js; sorcery -i schviz.js",
-    "clean": "rm -rf dist/*"
+    "bundle": "cd dist; browserify --exclude electron index.js -d  -s SCHVIZ -o schviz.js -v; sorcery -i schviz.js",
+    "clean": "rm -rf dist/*",
+    "server" : "node grunt/server.js",
+    "harness" : "opn http://localhost:3001/test-integration/index.html"
   },
   "browserify" : {
     "transform" : [
