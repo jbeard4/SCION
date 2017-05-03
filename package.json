@@ -46,7 +46,7 @@
     "build": "npm run transpile && npm run bundle && npm run minify",
     "transpile": "tsc -p . --outDir dist/",
     "bundle": "cd dist; browserify --exclude electron index.js -d  -s SCHVIZ -o schviz.js -v; sorcery -i schviz.js",
-    "minify": "cd dist; uglifyjs schviz.js --in-source-map schviz.js.map  --source-map schviz.min.js.map  -o schviz.min.js"
+    "minify": "cd dist; uglifyjs schviz.js --in-source-map schviz.js.map  --source-map schviz.min.js.map  -o schviz.min.js",
     "clean": "rm -rf dist/*",
     "server" : "node grunt/server.js",
     "harness" : "opn http://localhost:3001/test-integration/index.html"
