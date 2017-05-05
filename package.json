@@ -11,10 +11,11 @@
     "pathseg": "^1.0.2",
     "q": "^1.4.1",
     "react": "^15.4.2",
-    "scxml": "3.0.4",
+    "scxml": "git+ssh://git@nas/jbeard4/SCION#a2650f3b3488f77abcb39ce43d7c9616811b913e",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
+    "@types/es6-shim": "^0.31.33",
     "@types/jquery": "^2.0.41",
     "@types/node": "^7.0.12",
     "@types/react": "^15.0.21",
@@ -23,14 +24,16 @@
     "angular-route": "^1.5.8",
     "angularjs": "0.0.1",
     "babel": "^6.23.0",
-    "babelfy": "^7.3.0",
+    "babelify": "^7.3.0",
     "bootstrap": "^3.3.7",
     "browserify": "^14.3.0",
     "browserify-css": "^0.10.0",
     "electron": "^1.6.2",
     "exorcist": "^0.4.0",
     "express": "^4.14.0",
+    "opn-cli": "^3.1.0",
     "pathseg": "^1.0.2",
+    "react-dom": "^15.5.4",
     "scxml-test-framework": "^1.0.2",
     "sorcery": "^0.10.0",
     "tsify": "^2.0.8",
@@ -40,20 +43,22 @@
     "watchify": "^3.9.0"
   },
   "scripts": {
-    "watch" : "tsc -p . --outDir dist/ -w & ( cd dist; watchify --exclude electron index.js -d  -s SCHVIZ -o 'cat > schviz.js; sorcery -i schviz.js' -v )",
-    "preversion" : "npm run build",
+    "watch": "tsc -p . --outDir dist/ -w & ( cd dist; watchify --exclude electron index.js -d  -s SCHVIZ -o 'cat > schviz.js; sorcery -i schviz.js' -v )",
+    "preversion": "npm run build",
     "postversion": "git push --follow-tags && npm publish",
     "build": "npm run transpile && npm run bundle && npm run minify",
     "transpile": "tsc -p . --outDir dist/",
     "bundle": "cd dist; browserify --exclude electron index.js -d  -s SCHVIZ -o schviz.js -v; sorcery -i schviz.js",
     "minify": "cd dist; uglifyjs schviz.js --in-source-map schviz.js.map  --source-map schviz.min.js.map  -o schviz.min.js",
     "clean": "rm -rf dist/*",
-    "server" : "node grunt/server.js",
-    "harness" : "opn http://localhost:3001/test-integration/index.html"
+    "server": "node grunt/server.js",
+    "harness": "opn http://localhost:3001/test-integration/index.html"
   },
-  "browserify" : {
-    "transform" : [
-      [ "browserify-css" ]
+  "browserify": {
+    "transform": [
+      [
+        "browserify-css"
+      ]
     ]
   },
   "repository": {
