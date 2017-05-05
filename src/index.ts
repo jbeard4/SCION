@@ -79,9 +79,9 @@ export default class SCHVIZ extends EventEmitter {
     this._scjson = scjson;
     this._svgRenderer.clear();
     this._kgraph = new KGraph(this._idGenerator, this._svgRenderer, this._scjson, options); 
-    this._kgraph.update(options, function(){
+    this._kgraph.update(options, function(err){
       debug('Update complete');
-      cb();
+      cb(err);
     });
   }
 
