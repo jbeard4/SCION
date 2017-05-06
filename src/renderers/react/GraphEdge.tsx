@@ -392,6 +392,14 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
         this.state.begin.path === 'indefinite' ){
     }
       this.svgPathAnimation.setAttributeNS(null, 'begin', 'indefinite');
+
+
+    [
+      this.svgPathAnimation,
+      this.svgMarkerAnimation
+    ].forEach(e => e.beginElement());
+
+
   }
 }
 

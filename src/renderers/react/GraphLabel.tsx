@@ -21,6 +21,9 @@ interface GraphLabelAnimation {
 export default class GraphLabel extends React.Component<GraphLabelProps, GraphLabelAnimation>  {
 
   initialRender : boolean;
+  animateOpacityElement : SVGAnimationElement;
+  animateXElement : SVGAnimationElement;
+  animateYElement : SVGAnimationElement;
 
   constructor(props){
     super(props);
@@ -67,18 +70,13 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
         dominantBaseline={this.props.label.$meta && this.props.label.$meta.dominantBaseline}
         opacity="0"
       >
-        <animate attributeName="opacity" attributeType="XML"
-                 fill="freeze" 
-                 begin="indefinite"
-                 className={constants.START}
-                 dur={constants.ANIM_DURATION} 
-                 from={0} to={1} />
         <animate attributeName="x" attributeType="XML" fill="freeze" 
                  begin="indefinite"
                  className={constants.START}
                  from={this.state.from.x}
                  to={this.state.to.x}
                  dur={constants.ANIM_DURATION}
+                 ref={(e: SVGAnimationElement) => { this.animateXElement = e; }}
                  />
         <animate attributeName="y" attributeType="XML" fill="freeze" 
                  begin="indefinite"
@@ -86,19 +84,32 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
                  from={this.state.from.y}
                  to={this.state.to.y}
                  dur={constants.ANIM_DURATION}
+                 ref={(e: SVGAnimationElement) => { this.animateYElement = e; }}
                  />
         <animate attributeName="opacity" attributeType="XML"
                  fill="freeze" 
                  begin="indefinite"
                  className={constants.START}
                  dur={constants.ANIM_DURATION} 
-                 from={this.initialRender ? 0 : 1} to={1} />
+                 from={this.initialRender ? 0 : 1}  
+                 to={1} 
+                 ref={(e: SVGAnimationElement) => { this.animateOpacityElement = e; }}
+                 />
       {this.props.label.text}
     </text>;
 
   this.initialRender = true;
 
   return toReturn;
+  }
+
+  componentDidUpdate(){
+    //reset the timeline on all smil animations
+    [
+      this.animateXElement,
+      this.animateYElement,
+      this.animateOpacityElement 
+    ].forEach( animation => animation.beginElement() );
   }
 
   private _normalizeSelfLoopEdgeCoordinates(label : KGraphLabel, edge : KGraphEdge){

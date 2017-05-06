@@ -55,7 +55,12 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
   svgTextElement : SVGTextElement;
   svgRectElement : SVGRectElement;
   svgGElement : SVGGElement;
-  rectXAnimationElement : SVGAnimationElement;
+  animateTransformElement : SVGAnimationElement;
+  animateXElement : SVGAnimationElement;
+  animateYElement : SVGAnimationElement;
+  animateWidthElement : SVGAnimationElement;
+  animateHeightElement : SVGAnimationElement;
+  animateOpacityElement : SVGAnimationElement;
   contextmenu : any;
 
   constructor(props){
@@ -184,6 +189,18 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
     
     this.props.app.emit('state:dblclick', this.props.node.id, event);
   }
+
+  componentDidUpdate(){
+    //reset the timeline on all smil animations
+    [
+      this.animateTransformElement,
+      this.animateXElement,
+      this.animateYElement,
+      this.animateWidthElement,
+      this.animateHeightElement,
+      this.animateOpacityElement 
+    ].forEach( animation => animation.beginElement() );
+  }
   
   render(){
     debug('render',this.state.to.node.id);
@@ -219,6 +236,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
             onDoubleClick={ this.handleDoubleClick.bind(this) }
             >
       <animateTransform attributeName="transform" attributeType="XML"
+               ref={(e: SVGAnimationElement) => { this.animateTransformElement = e; }}
                type="translate"
                fill="freeze" 
                begin="indefinite"
@@ -230,7 +248,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
         ref={(e: SVGRectElement) => { this.svgRectElement = e; }}
         >
         <animate attributeName="x" attributeType="XML"
-                 ref={(e: SVGAnimationElement) => { this.rectXAnimationElement = e; }}
+                 ref={(e: SVGAnimationElement) => { this.animateXElement = e; }}
                  fill="freeze" 
                  begin="indefinite"
                  className={constants.START}
@@ -238,6 +256,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
                  from={this.state.from.node.x} 
                  to={this.state.to.node.x} />
         <animate attributeName="y" attributeType="XML"
+                 ref={(e: SVGAnimationElement) => { this.animateYElement = e; }}
                  fill="freeze" 
                  begin="indefinite"
                  className={constants.START}
@@ -245,6 +264,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
                  from={this.state.from.node.y}
                  to={this.state.to.node.y} />
         <animate attributeName="width" attributeType="XML"
+                 ref={(e: SVGAnimationElement) => { this.animateWidthElement = e; }}
                  fill="freeze" 
                  begin="indefinite"
                  className={constants.START}
@@ -252,6 +272,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
                  from={this.state.from.node.width} 
                  to={this.state.to.node.width} />
         <animate attributeName="height" attributeType="XML"
+                 ref={(e: SVGAnimationElement) => { this.animateHeightElement = e; }}
                  fill="freeze" 
                  begin="indefinite"
                  className={constants.START}
@@ -268,6 +289,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
         >
         {this.props.node.$type === 'virtual' ? this.props.node.labels[0].text : this.props.node.id}
         <animate attributeName="opacity" attributeType="XML"
+                 ref={(e: SVGAnimationElement) => { this.animateOpacityElement = e; }}
                  fill="freeze" 
                  begin="indefinite"
                  className={constants.START}

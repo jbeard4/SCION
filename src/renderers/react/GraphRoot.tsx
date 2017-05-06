@@ -48,6 +48,9 @@ export class GraphRoot extends React.Component<GraphRootProps, GraphRootAnimatio
     props.semaphore[node.id] = true;
   }
 
+  componentDidUpdate(){
+    this.viewBoxAnimation.beginElement();  //reset animation
+  }
 
   public pauseAnimation(){
     debug('pauseAnimation');
