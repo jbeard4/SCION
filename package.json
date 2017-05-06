@@ -20,7 +20,7 @@
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "scxml": "git+ssh://git@nas/jbeard4/SCION#a2650f3b3488f77abcb39ce43d7c9616811b913e",
-    "schviz2": "git+ssh://git@nas/JacobeanRnD/SCHVIZ2#ca958b778b9fec7e4948765cbc58d04edd3f7cfd",
+    "schviz2": "git+ssh://git@nas/JacobeanRnD/SCHVIZ2#9c87faeadd81484b866f9ca8b0a240799408c794",
     "font-awesome": "^4.7.0"
   },
   "keywords": [
@@ -45,6 +45,7 @@
     "sorcery": "^0.10.0",
     "tsify": "^3.0.1",
     "typescript": "^2.1.4",
-    "uglifyify": "^3.0.4"
+    "uglifyify": "^3.0.4",
+    "watchify": "^3.9.0"
   }
 }
