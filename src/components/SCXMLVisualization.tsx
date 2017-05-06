@@ -1,5 +1,6 @@
 import * as React from "react";
 import schviz = require('schviz2');
+import {handleError, clear} from '../handle-errors';
 
 interface SCXMLVisualizationProps {
   scjson : any;
@@ -52,7 +53,7 @@ export default class SCXMLVisualization extends React.Component<SCXMLVisualizati
     if(this.props.scjson){
       //TODO: parameterize layout option
       this.schviz.renderSCJSON(this.props.scjson, 'right', function(err){
-        if(err) console.error(err);
+        if(err) handleError(err);
       });
       this.setState({initialRender : true});
     }
@@ -62,7 +63,7 @@ export default class SCXMLVisualization extends React.Component<SCXMLVisualizati
     if(props.scjson){
       //TODO: parameterize whether to update or redraw
       this.schviz[this.state.initialRender ? 'updateSCJSON' : 'renderSCJSON'](props.scjson, 'right', function(err){
-        if(err) console.error(err);
+        if(err) handleError(err);
       });
       this.setState({initialRender : true});
     }

@@ -16,12 +16,14 @@
     "clean": "rm -rf dist/*"
   },
   "dependencies": {
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.2.1",
     "optimist": "^0.6.1",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "scxml": "git+ssh://git@nas/jbeard4/SCION#a2650f3b3488f77abcb39ce43d7c9616811b913e",
     "schviz2": "git+ssh://git@nas/JacobeanRnD/SCHVIZ2#9c87faeadd81484b866f9ca8b0a240799408c794",
-    "font-awesome": "^4.7.0"
+    "toastr": "^2.1.2"
   },
   "keywords": [
     "SCXML"

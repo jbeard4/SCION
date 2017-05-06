@@ -6,6 +6,7 @@ import scxml = require('scxml');
 import RunButton from './RunButton';
 import ConsoleComponent from './Console';
 import electron = require('electron');
+import {handleError, clear} from '../handle-errors';
 
 const remote = electron.remote;
 const {Menu, MenuItem} = remote;
@@ -34,7 +35,14 @@ export default class AppComponent extends React.Component<AppComponentProps, App
     this.initContextMenu();
 
     //read, and perform initial render
-    let scxmlContents = fs.readFileSync(props.scxmlPath,'utf8');
+    let scxmlContents;
+    try {
+      scxmlContents = fs.readFileSync(props.scxmlPath,'utf8');
+    } catch (err){
+      handleError(err);
+      return;
+    }
+
     //if he is SCXML, convert him to scjson
     this.state ={ 
       scxmlInstance : null,
@@ -43,6 +51,7 @@ export default class AppComponent extends React.Component<AppComponentProps, App
 
     //if everything worked, then watch the file for changes
     fs.watchFile(props.scxmlPath, {persistent: true, interval : 100}, (cur, prev) => {
+      clear();
       let scxmlContents = fs.readFileSync(props.scxmlPath,'utf8');
       //if he is SCXML, convert him to scjson
       this.setState({ 
@@ -63,7 +72,7 @@ export default class AppComponent extends React.Component<AppComponentProps, App
           layout = layoutName;
           items.forEach( i => i.checked = i === item );
           this.viz.updateLayout(layoutName, (err) => {
-            if(err) return console.error(err);
+            if(err) handleError(err);
           });
         }
       });
@@ -169,6 +178,7 @@ export default class AppComponent extends React.Component<AppComponentProps, App
   }
 
   render(){
+    if(!this.state) return <div>There was an error.</div>;
     return <div id="embed_outer" className={this.state.scxmlInstance ? 'simulation-mode' : 'viz-mode'}>
       <div id="embed_inner">
         <div id="scxml-content">
