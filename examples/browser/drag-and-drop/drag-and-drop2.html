@@ -1,0 +1,131 @@
+<html>
+    <!--
+    This demo is like drag-and-drop.xhtml demo, except that it illustrates how one
+    may create state machines and DOM elements dynamically and procedurally, as
+    opposed to declaratively, as was done in the previous example. In this example,
+    each dynamically-created element will have its own state machine, hence its
+    own state.
+    -->
+    <head>
+        <style type="text/css">
+            html, body {
+                height:100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            div.rect {
+                width:100px;
+                height:100px;
+                border:2px solid black;
+                position:absolute;
+                left:0px;
+                top:0px;
+            }
+
+            div#viz{
+                width:400px;
+                height:200px;
+                border:1px solid black;
+                position:absolute;
+                right:0px;
+                top:0px;
+            }
+
+            button#elementButton {
+              position:absolute;
+              top:0px;
+              left:0px;
+            }
+        </style>
+        <script type="text/javascript" src="../../../node_modules/babel-polyfill/dist/polyfill.js"></script>
+        <script type="text/javascript" src="../../../dist/scxml.js"></script>
+        <script type="text/javascript" src="../../../node_modules/schviz2/dist/schviz.js"></script>
+    </head>
+    <body>
+        <button id="elementButton">Make draggable SVG Element</button>
+        <div id="viz"></div>
+        <script>
+            // just for fun, random color generator, courtesy of 
+            // http://stackoverflow.com/questions/1484506/random-color-generator-in-javascript
+            function get_random_color() {
+                var letters = '0123456789ABCDEF'.split('');
+                var color = '#';
+                for (var i = 0; i < 6; i++ ) {
+                    color += letters[Math.round(Math.random() * 15)];
+                }
+                return color;
+            }
+
+            function createNewRect(){
+                //do DOM stuff - create new div
+                var div = document.createElement("div");
+                div.style.backgroundColor = get_random_color();
+                div.classList.add('rect');
+                document.body.appendChild(div);
+                
+                return div;
+            }
+
+
+            var elementButton = document.getElementById('elementButton');
+            var viz = document.getElementById("viz");
+
+            var schviz = new SCHVIZ(viz);
+
+            scxml.urlToModel("drag-and-drop2.xml",function(err,model){
+
+                if(err) throw err;
+
+                model.prepare(function(err, fnModel){
+                    if(err) throw err;
+
+                    var scjson = fnModel();
+
+                    schviz.renderSCJSON(scjson, null, function(){
+
+                        //instantiate the interpreter
+                        var interpreter = new scxml.scion.Statechart(scjson);
+
+                        interpreter.registerListener({
+                            onEntry: (stateId) => { 
+                              schviz.highlightState(stateId);
+                            },
+                            onExit: (stateId) => { 
+                              schviz.unhighlightState(stateId);
+                            },
+                            onTransition: (sourceStateId, targetIds, transitionIdx) => {
+                                if (targetIds && targetIds.length) {
+                                    schviz.highlightTransition(sourceStateId, transitionIdx);
+                                } 
+                            },
+                            onError: (err) => {
+                                console.error('ERROR:' + JSON.stringify(err));
+                            }
+                        });
+
+                        //start the interpreter
+                        interpreter.start();
+
+
+                        function handleEvent(e){
+                            e.preventDefault();
+                            interpreter.gen({name : e.type,data: e});
+                        }
+
+                        elementButton.addEventListener('click',function(){
+                            var rect = createNewRect();
+                            //connect all relevant event listeners
+                            rect.addEventListener('mousedown',handleEvent);
+                            ['mouseup','mousemove'].forEach(function(event){
+                              document.documentElement.addEventListener(event, handleEvent);
+                            });
+                        });
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>
+
+
