@@ -22,7 +22,7 @@ export default {
       algorithm: "de.cau.cs.kieler.klay.layered",
       spacing: 10,
       borderSpacing : 10,
-      labelSpacing : 1,
+      labelSpacing : 0,
       layoutHierarchy: true,
       intCoordinates: true,
       edgeRouting: "ORTHOGONAL"
