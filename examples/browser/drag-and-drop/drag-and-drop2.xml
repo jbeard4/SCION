@@ -14,7 +14,7 @@
 
     <script>
       function parseStyle(str){
-        return parseInt(str.match(/(\d+)px/)[1]);
+        return str ? parseInt(str.match(/(\d+)px/)[1]) : 0;
       }
     </script>
 
@@ -27,8 +27,8 @@
 
         <transition event="mousedown" target="dragging">
             <assign location="rectNode" expr="_event.data.target"/>
-            <assign location="rectX" expr="parseInt(parseStyle(rectNode.style.left)"/>
-            <assign location="rectY" expr="parseInt(parseStyle(rectNode.style.left)"/>
+            <assign location="rectX" expr="parseStyle(rectNode.style.left)"/>
+            <assign location="rectY" expr="parseStyle(rectNode.style.top)"/>
             <assign location="firstEvent" expr="_event.data"/>
             <assign location="eventStamp" expr="_event.data"/>
         </transition>
