@@ -66,8 +66,8 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
 
   public render(){
     let toReturn = <text className="edge-label"
-        textAnchor={this.props.label.$meta && this.props.label.$meta.textAnchor}
-        dominantBaseline={this.props.label.$meta && this.props.label.$meta.dominantBaseline}
+        textAnchor={(this.props.label.$meta && this.props.label.$meta.textAnchor) || 'start'}
+        dominantBaseline={(this.props.label.$meta && this.props.label.$meta.dominantBaseline) || 'text-before-edge'}
         opacity="0"
       >
         <animate attributeName="x" attributeType="XML" fill="freeze" 

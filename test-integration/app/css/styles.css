@@ -55,11 +55,6 @@ text {
                                   supported by Chrome and Opera */
 }
 
-text.edge-label {
-  dominant-baseline: text-before-edge;
-  text-anchor: start;
-}
-
 g.leaf > rect {
   fill: rgba(220,220,220,1);
 }
