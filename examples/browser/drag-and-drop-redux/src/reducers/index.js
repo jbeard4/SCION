@@ -6,7 +6,7 @@ import fnModel from '../../dist/drag-and-drop'
 
 const scjson = fnModel();
 
-schviz.renderSCJSON(scjson, null, function(){});
+schviz.renderSCJSON(scjson, 'right', function(){});
 
 let listener = {
     onEntry: (stateId) => { 
