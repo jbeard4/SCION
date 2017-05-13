@@ -1,0 +1,26 @@
+{
+  "name": "drag-and-drop-redux",
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "enzyme": "^2.4.1",
+    "react-addons-test-utils": "^15.3.0",
+    "react-scripts": "^0.9.3"
+  },
+  "dependencies": {
+    "babel-preset-react": "^6.24.1",
+    "prop-types": "^15.5.8",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "react-redux": "^4.4.8",
+    "redux": "^3.6.0"
+  },
+  "browser": {
+    "vm": "vm-browserify2"
+  },
+  "main": "src/index.jsx",
+  "scripts": {
+    "build" : "node ../../../bin/cli.js  -i ./src/reducers/drag-and-drop.scxml --compile -o dist/drag-and-drop.js && (cd src; browserify -d -t babelify index.js -o ../dist/index.js)"
+  }
+}
