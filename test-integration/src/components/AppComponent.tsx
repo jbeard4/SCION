@@ -6,6 +6,7 @@ import SCHVIZ from '../../..';
 interface AppComponentState {
   allTests : string[]; 
   scjson : any; 
+  layoutOptions? : any;
 }
 
 export default class AppComponent extends React.Component<{}, AppComponentState> {
@@ -26,11 +27,11 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
       this.setState({
         allTests : testPairs 
       });
-      this.handleChange({target : testPairs[0]});
+      this.handleTestChange({target : testPairs[0]});
     });
   }
 
-  private handleChange(event){
+  private handleTestChange(event){
     let jqXHR = jQuery.ajax({
       url : event.target.value,
       method : 'GET',
@@ -61,6 +62,12 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
     });
   }
 
+  private handleLayoutChange(event){
+    this.setState({
+      layoutOptions : SCHVIZ.layouts[event.target.value]
+    });
+  }
+
   render(){
     return <div className="flex grow">
       <div>
@@ -68,7 +75,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
           <div className="control-group">
             <label className="control-label">Example</label>
             <div className="controls">
-              <select onChange={this.handleChange.bind(this)}>
+              <select onChange={this.handleTestChange.bind(this)}>
                 {
                   this.state.allTests.map( (test, i) => <option key={i}>{test}</option> )
                 }
@@ -78,7 +85,11 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
           <div className="control-group">
             <label className="control-label">Layout</label>
             <div className="controls">
-              <select></select>
+              <select onChange={this.handleLayoutChange.bind(this)}>
+                {
+                  Object.keys(SCHVIZ.layouts).map((layout, i) => <option key={i}>{layout}</option>) 
+                }
+              </select>
             </div>
           </div>
           <div className="control-group">
@@ -90,9 +101,11 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
         </form>
       </div>
       <div className="grow">
+        <div style={{width:'100%', height:'100%',position:'absolute'}}>
         {this.state && this.state.scjson && 
-          <SCHVIZ scjson={this.state.scjson}/>
+          <SCHVIZ scjson={this.state.scjson} layoutOptions={this.state.layoutOptions}/>
         }
+        </div>
       </div>
     </div>;
   }

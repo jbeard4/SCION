@@ -66,7 +66,7 @@ export class KGraph extends SCJSONToKGraphTransformer {
     try {
       $klay.layout({
         graph : kgraph,
-        options : constants.layouts[options],
+        options : options,
         success : function(g){ 
           try {
             this._processKGraphPostLayout(kgraph);

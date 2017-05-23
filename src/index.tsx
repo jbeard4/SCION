@@ -9,9 +9,13 @@ import Debug = require('debug');
 const debug = Debug('GraphNode');
 import GraphNode from './GraphNode';
 import _ = require('underscore');
+import {LayoutOptions} from './IKGraphRenderBackend';
 
 export interface GraphRootProps {
-  scjson : any
+  scjson : any,    //TODO: add types to SCION, and refactor this ot use the type
+  layoutOptions? : LayoutOptions,
+  redraw? : true,
+  configuration? : string[]
 }
 
 export interface GraphRootAnimation {
@@ -30,6 +34,8 @@ export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAni
   private viewBoxAnimation : SVGAnimationElement;
   private defaultRect : SVGRect;
 
+  public static layouts = constants.layouts;   //expose layouts
+
   constructor(props:GraphRootProps){
     super(props);
     this.state = { 
@@ -39,6 +45,10 @@ export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAni
       fromNode : null,
       toNode : null
     };
+  }
+
+  private getDefaultLayoutOptions(layoutOptions){
+    return _.extend({}, constants.layouts.right, layoutOptions);
   }
 
   toViewportCoordinates(event){
@@ -114,7 +124,7 @@ export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAni
   }
 
   componentWillReceiveProps(props : GraphRootProps){
-    this.initKGraph(props.scjson, false);
+    this.initKGraph(props, false);
   }
 
   //later, try handleMouseClick
@@ -210,12 +220,13 @@ export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAni
     */
   }
 
-  private initKGraph(scjson, initialRender){
+  private initKGraph({scjson, layoutOptions} : GraphRootProps , initialRender : boolean){
     //if scjson is not the same, create a new kgraph
     //TODO: memoize
     if(scjson){
       let kgraph = new KGraph(new IdGenerator(), this, scjson);
-      kgraph.updateLayout({}, (err, rootNode) => {
+      const options = this.getDefaultLayoutOptions(layoutOptions)
+      kgraph.updateLayout(options, (err, rootNode) => {
         console.log('kgraph rootNode',rootNode);
         if(err) throw err;
         let toZoom = {x : 0, y : 0, width : rootNode.width, height : rootNode.height};
@@ -235,7 +246,7 @@ export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAni
   }
 
   componentDidMount(){
-    this.initKGraph(this.props.scjson, true);
+    this.initKGraph(this.props, true);
     this.animate();
   }
 
