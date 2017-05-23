@@ -7,6 +7,7 @@ interface AppComponentState {
   allTests : string[]; 
   scjson : any; 
   layoutOptions? : any;
+  redraw? : boolean;
 }
 
 export default class AppComponent extends React.Component<{}, AppComponentState> {
@@ -68,6 +69,12 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
     });
   }
 
+  private handleMergeChange(event){
+    this.setState({
+     redraw : !event.target.checked
+    });
+  }
+
   render(){
     return <div className="flex grow">
       <div>
@@ -94,7 +101,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
           </div>
           <div className="control-group">
             <label className="checkbox">
-              <input type="checkbox"></input>
+              <input type="checkbox" onChange={this.handleMergeChange.bind(this)}></input>
               Merge
             </label>
           </div>
@@ -103,7 +110,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
       <div className="grow">
         <div style={{width:'100%', height:'100%',position:'absolute'}}>
         {this.state && this.state.scjson && 
-          <SCHVIZ scjson={this.state.scjson} layoutOptions={this.state.layoutOptions}/>
+          <SCHVIZ scjson={this.state.scjson} layoutOptions={this.state.layoutOptions} redraw={this.state.redraw}/>
         }
         </div>
       </div>

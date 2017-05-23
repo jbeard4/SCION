@@ -11,6 +11,7 @@ const debug = Debug('GraphEdge');
 export interface GraphEdgeProps {
   edge : KGraphEdge;
   updateLayout : boolean;
+  redraw? : boolean;
 }
 
 export interface GraphEdgeAnimation {
@@ -42,13 +43,15 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
 
   constructor(props){
     super(props);
-    //take everything currently in render, and move into the constructor to compute values for entry animation
-    //subsequent updates will be simpler
-    var animationSegments = this._toAnimationSegments(this.props.edge);
-    var points = this._edgeToPoints(this.props.edge);
+    this.state = this.getInitialState(props);
+  }
+
+  getInitialState(props){
+    var animationSegments = this._toAnimationSegments(props.edge);
+    var points = this._edgeToPoints(props.edge);
 
     let begin = this._toBegin(props);
-    this.state = {
+    return {
       keyTimes : (() => {
         var arr = [];
         for(var i = 0; i < points.length-1; i++){
@@ -90,7 +93,7 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
         path : begin,
         dashOffset : 'indefinite'
       },
-      pathLength : this._computeEdgeLength(this.props.edge),
+      pathLength : this._computeEdgeLength(props.edge),
       exiting : false
     }
   }
@@ -102,6 +105,10 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
   }
 
   componentWillReceiveProps(props : GraphEdgeProps){
+    if(props.redraw){
+      this.state = this.getInitialState(props);
+      return;
+    }
     var animationSegments = this._toAnimationSegments(props.edge);
     var points = this._edgeToPoints(props.edge);
     let begin = this._toBegin(props);
@@ -264,7 +271,13 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
       <g>
         {
           this.props.edge.labels && this.props.edge.labels.map((label, i) => (
-            <GraphLabel edge={this.props.edge} key={i} label={label} updateLayout={this.props.updateLayout}/>
+            <GraphLabel
+              edge={this.props.edge}
+              key={i}
+              label={label}
+              updateLayout={this.props.updateLayout}
+              redraw={this.props.redraw}
+              />
           ))
         }
       </g>

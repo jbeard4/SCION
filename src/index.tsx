@@ -14,7 +14,7 @@ import {LayoutOptions} from './IKGraphRenderBackend';
 export interface GraphRootProps {
   scjson : any,    //TODO: add types to SCION, and refactor this ot use the type
   layoutOptions? : LayoutOptions,
-  redraw? : true,
+  redraw? : boolean,
   configuration? : string[]
 }
 
@@ -220,7 +220,7 @@ export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAni
     */
   }
 
-  private initKGraph({scjson, layoutOptions} : GraphRootProps , initialRender : boolean){
+  private initKGraph({scjson, layoutOptions, redraw} : GraphRootProps , initialRender : boolean){
     //if scjson is not the same, create a new kgraph
     //TODO: memoize
     if(scjson){
@@ -232,7 +232,7 @@ export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAni
         let toZoom = {x : 0, y : 0, width : rootNode.width, height : rootNode.height};
         this.setState({ 
           kgraph : kgraph,
-          fromZoom : initialRender ? toZoom : this.svgRootElement.viewBox.animVal,
+          fromZoom : initialRender || redraw ? toZoom : this.svgRootElement.viewBox.animVal,
           toZoom : toZoom,
           fromNode : this.state.toNode,
           toNode : rootNode
@@ -302,7 +302,9 @@ export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAni
               isRoot={true}
               updateLayout={false}    //TODO: refactor out updateLayout, parentIsExiting, app
               parentIsExiting={false}
-              graphRoot={this}/>
+              graphRoot={this}
+              redraw={this.props.redraw}
+              />
         }
       </g>
     </svg>;

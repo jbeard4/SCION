@@ -11,6 +11,7 @@ export interface GraphLabelProps {
   edge : KGraphEdge; 
   label : KGraphLabel;
   updateLayout : boolean;
+  redraw? : boolean;
 }
 
 export interface GraphLabelAnimation {
@@ -47,7 +48,7 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
       y : props.label.y,
     };
     this.state = {
-      from : this.state.to,
+      from : props.redraw ? point : this.state.to,
       to : point
     };
   }

@@ -36,6 +36,7 @@ export interface GraphNodeProps {
   updateLayout : boolean;
   parentIsExiting : boolean;
   app : EventEmitter;
+  redraw? : boolean;
 }
 
 export interface KGraphNodeAnimation {
@@ -68,29 +69,31 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
   animateOpacityElement : SVGAnimationElement;
   contextmenu : any;
 
+  private getInitialFrom(props){
+    return {
+      node : {
+        id : props.node.id,
+        $type : props.node.$type,
+        labels : props.node.labels,
+        x : props.node.width / 2,
+        y : props.node.height / 2,
+        width : 0,
+        height : 0
+      },
+      translate : {
+        x : props.node.x,
+        y : props.node.y
+      }
+    };
+  }
+
   constructor(props){
     super(props);
 
     if(Menu) this.initContextMenu();
 
-    let fromNode = {
-      id : this.props.node.id,
-      $type : this.props.node.$type,
-      labels : this.props.node.labels,
-      x : this.props.node.width / 2,
-      y : this.props.node.height / 2,
-      width : 0,
-      height : 0
-    };
-
     this.state = {
-      from : {
-        node : fromNode,
-        translate : {
-          x : this.props.node.x,
-          y : this.props.node.y
-        }
-      },
+      from : this.getInitialFrom(props),
       to : this._toNode(this.props.node)
     };
   }
@@ -167,7 +170,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
 
   componentWillReceiveProps(props : GraphNodeProps){
     this.state = { 
-      from : this.state.to,
+      from : props.redraw ? this.getInitialFrom(props) : this.state.to,
       to : this._toNode(props.node)
     };
     debug('this.state', JSON.stringify(this.state));
@@ -312,7 +315,9 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
                 isRoot={false}
                 updateLayout={this.props.updateLayout}
                 parentIsExiting={this.props.parentIsExiting || this.state.exiting}
-                graphRoot={this.props.graphRoot}/>
+                graphRoot={this.props.graphRoot}
+                redraw={this.props.redraw}
+                />
           ))) : 
           []
         }
@@ -321,7 +326,9 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
         { 
           !this.state.exiting ? 
             myEdges.map((edge, i) => (
-              <GraphEdge edge={edge} key={`${this.props.node.id}_${i}`} updateLayout={this.props.updateLayout}/>
+              <GraphEdge edge={edge} key={`${this.props.node.id}_${i}`} updateLayout={this.props.updateLayout}
+                redraw={this.props.redraw}
+                />
             ))  : 
             []
         }
