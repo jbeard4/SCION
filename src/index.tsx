@@ -1,27 +1,21 @@
 /// <reference path="./intrinsics.d.ts" />…
-/// <reference path="../../smil.d.ts" />…
+/// <reference path="./smil.d.ts" />…
 
-import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, Point} from '../../KGraph';
+import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, Point} from './KGraph';
 import * as React from "react";
-import constants from '../../constants';
-import GraphEdge from './GraphEdge';
-import EventEmitter = require('events');
+import constants from './constants';
+import IdGenerator from './IdGenerator';
 import Debug = require('debug');
 const debug = Debug('GraphNode');
-import electron = require('electron');
 import GraphNode from './GraphNode';
 import _ = require('underscore');
 
 export interface GraphRootProps {
-  allEdges : KGraphEdge[];
-  kgraph : KGraph;
-  semaphore : any;
-  updateLayout : boolean;
-  parentIsExiting : boolean;
-  app : EventEmitter;
+  scjson : any
 }
 
-interface GraphRootAnimation {
+export interface GraphRootAnimation {
+  kgraph : KGraph;
   fromNode : KGraphNode;
   toNode : KGraphNode;
   fromZoom : SVGRect;
@@ -30,7 +24,7 @@ interface GraphRootAnimation {
   instantZoom? : boolean;
 }
 
-export class GraphRoot extends React.Component<GraphRootProps, GraphRootAnimation> {
+export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAnimation> {
 
   private svgRootElement : SVGSVGElement;
   private viewBoxAnimation : SVGAnimationElement;
@@ -38,43 +32,13 @@ export class GraphRoot extends React.Component<GraphRootProps, GraphRootAnimatio
 
   constructor(props:GraphRootProps){
     super(props);
-    let node = props.kgraph.root;
-    this.state = {
-      fromZoom : {x : 0, y : 0, width : node.width, height : node.height},
-      toZoom : {x : 0, y : 0, width : node.width, height : node.height},
-      toNode : node,
-      fromNode : node
+    this.state = { 
+      kgraph : null,
+      fromZoom : {x : 0, y : 0, width : 0, height : 0},
+      toZoom : {x : 0, y : 0, width : 0, height : 0},
+      fromNode : null,
+      toNode : null
     };
-    props.semaphore[node.id] = true;
-  }
-
-  componentDidUpdate(){
-    this.viewBoxAnimation.beginElement();  //reset animation
-  }
-
-  public pauseAnimation(){
-    debug('pauseAnimation');
-    this.svgRootElement.pauseAnimations();
-  }
-
-  public beginAnimation(updateLayout : boolean, animateViewboxOnly? : boolean){
-    debug('beginAnimation');
-
-    let resetAnimationsAndUnpause = () => {
-      if(animateViewboxOnly){
-        this.viewBoxAnimation.beginElement();
-      } else {
-        Array.from(this.svgRootElement.querySelectorAll('animateTransform.beginOnStart, animate.beginOnStart')).forEach( (e : SVGAnimationElement) => e.beginElement() );
-      }
-      this.svgRootElement.unpauseAnimations();
-    }
-
-    if(updateLayout){
-      setTimeout(resetAnimationsAndUnpause);
-    } else {
-      resetAnimationsAndUnpause();
-    }
-
   }
 
   toViewportCoordinates(event){
@@ -140,18 +104,17 @@ export class GraphRoot extends React.Component<GraphRootProps, GraphRootAnimatio
     );
   }
 
+  public measureTextDimensions(text:string){
+    var txt:SVGTextElement = document.createElementNS(constants.SVGNS,'text') as SVGTextElement;
+    txt.textContent = text; 
+    this.svgRootElement.appendChild(txt);
+    var bbox = txt.getBBox();
+    this.svgRootElement.removeChild(txt);
+    return bbox; 
+  }
+
   componentWillReceiveProps(props : GraphRootProps){
-    let node = props.kgraph.root;
-    if(props.semaphore[node.id]) return;
-
-    props.semaphore[node.id] = true;
-
-    this.state = { 
-      fromZoom : this.svgRootElement.viewBox.animVal,
-      toZoom : {x : 0, y : 0, width : node.width, height : node.height}, //this.state.toZoom
-      fromNode : this.state.toNode,
-      toNode : node
-    };
+    this.initKGraph(props.scjson, false);
   }
 
   //later, try handleMouseClick
@@ -247,10 +210,42 @@ export class GraphRoot extends React.Component<GraphRootProps, GraphRootAnimatio
     */
   }
 
-  render(){
+  private initKGraph(scjson, initialRender){
+    //if scjson is not the same, create a new kgraph
+    //TODO: memoize
+    if(scjson){
+      let kgraph = new KGraph(new IdGenerator(), this, scjson);
+      kgraph.updateLayout({}, (err, rootNode) => {
+        console.log('kgraph rootNode',rootNode);
+        if(err) throw err;
+        let toZoom = {x : 0, y : 0, width : rootNode.width, height : rootNode.height};
+        this.setState({ 
+          kgraph : kgraph,
+          fromZoom : initialRender ? toZoom : this.svgRootElement.viewBox.animVal,
+          toZoom : toZoom,
+          fromNode : this.state.toNode,
+          toNode : rootNode
+        });
+      })  
+    }
+  }
 
-    debug('render graphroot', this.props.updateLayout);
-    
+  componentDidUpdate(){
+    this.animate();
+  }
+
+  componentDidMount(){
+    this.initKGraph(this.props.scjson, true);
+    this.animate();
+  }
+
+  private animate(){
+    this.viewBoxAnimation.beginElement();  //reset animation
+  }
+
+  render(){
+    let allEdges = this.state.kgraph ? this._getAllEdges(this.state.kgraph) : null;   //TODO: this is likely to be a hotspot. we probably want to move this search logic inside of the kgraph data structure
+
     let from = `${[this.state.fromZoom.x, this.state.fromZoom.y, this.state.fromZoom.width,this.state.fromZoom.height].join(' ')}`;
     let to = `${[this.state.toZoom.x, this.state.toZoom.y, this.state.toZoom.width, this.state.toZoom.height].join(' ')}`;
     let viewBoxValues = `${from};${to}`;
@@ -286,18 +281,30 @@ export class GraphRoot extends React.Component<GraphRootProps, GraphRootAnimatio
         }
       </defs>
       <g>
-        <GraphNode
-          app={this.props.app}
-          node={this.props.kgraph.root}
-          allEdges={this.props.allEdges}
-          kgraph={this.props.kgraph}
-          isRoot={true}
-          semaphore={this.props.semaphore}
-          updateLayout={this.props.updateLayout}
-          parentIsExiting={this.props.parentIsExiting}
-          graphRoot={this}/>
+        { 
+          this.state.kgraph &&
+            <GraphNode
+              app={null}
+              node={this.state.kgraph.root}
+              allEdges={allEdges}
+              kgraph={this.state.kgraph}
+              isRoot={true}
+              updateLayout={false}    //TODO: refactor out updateLayout, parentIsExiting, app
+              parentIsExiting={false}
+              graphRoot={this}/>
+        }
       </g>
     </svg>;
+  }
+
+  private _getAllEdges(kgraph:KGraph){
+    let allEdges = [];
+    function walk(s:KGraphNode){
+      if(s.edges) s.edges.forEach((edge) => allEdges.push(edge));
+      if(s.children) s.children.forEach(walk);
+    }
+    walk(kgraph.root);
+    return allEdges;
   }
 
   private _markers(){

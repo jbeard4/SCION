@@ -1,55 +1,41 @@
 {
-  "name": "schviz2",
+  "name": "schviz2-test-framework",
   "version": "2.2.1",
   "description": "SCJSON to KGraph to SVG rendering library",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "dependencies": {
     "babel-polyfill": "^6.23.0",
     "debug": "^2.6.3",
     "jquery": "^3.1.1",
-    "klayjs": "^0.4.1",
-    "pathseg": "^1.0.2",
-    "q": "^1.4.1",
     "react": "^15.4.2",
-    "underscore": "^1.8.3"
+    "@types/jquery": "^2.0.41",
+    "@types/react": "^15.0.21",
+    "@types/react-dom": "^0.14.23"
   },
   "devDependencies": {
-    "@types/es6-shim": "^0.31.33",
-    "@types/jquery": "^2.0.41",
-    "@types/node": "^7.0.12",
-    "@types/react": "^15.0.21",
-    "@types/react-dom": "^0.14.23",
-    "angular": "^1.5.8",
-    "angular-route": "^1.5.8",
-    "angularjs": "0.0.1",
     "babel": "^6.23.0",
     "babelify": "^7.3.0",
     "bootstrap": "^3.3.7",
     "browserify": "^14.3.0",
     "browserify-css": "^0.10.0",
-    "electron": "^1.6.2",
     "exorcist": "^0.4.0",
     "express": "^4.14.0",
     "opn-cli": "^3.1.0",
-    "pathseg": "^1.0.2",
     "react-dom": "^15.5.4",
+    "scion-core": "^1.5.4",
     "scxml-test-framework": "^1.0.2",
     "sorcery": "^0.10.0",
-    "tsify": "^2.0.8",
     "typescript": "^2.2.2",
     "uglify-js": "^2.8.21",
-    "uglifyify": "^3.0.4",
     "watchify": "^3.9.0"
   },
   "scripts": {
-    "watch": "tsc -p . --outDir dist/ -w & ( cd dist; watchify --exclude electron index.js -d  -s SCHVIZ -o 'cat > schviz.js; sorcery -i schviz.js' -v )",
+    "watch": "tsc -p . --outDir dist/ -w & ( cd dist; watchify index.js -d  -o 'cat > main.js; sorcery -i main.js' -v )",
     "preversion": "npm run build",
     "postversion": "git push --follow-tags && npm publish",
-    "build": "npm run transpile && npm run bundle && npm run minify",
+    "build": "npm run transpile && npm run bundle",
     "transpile": "tsc -p . --outDir dist/",
-    "bundle": "cd dist; browserify --exclude electron index.js -d  -s SCHVIZ -o schviz.js -v; sorcery -i schviz.js",
-    "minify": "cd dist; uglifyjs schviz.js --in-source-map schviz.js.map  --source-map schviz.min.js.map  -o schviz.min.js",
+    "bundle": "cd dist; browserify index.js -d  -o main.js -v; sorcery -i main.js",
     "clean": "rm -rf dist/*",
     "server": "node grunt/server.js",
     "harness": "opn http://localhost:3001/test-integration/index.html"
@@ -60,10 +46,6 @@
         "browserify-css"
       ]
     ]
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/JacobeanRnD/SCHVIZ2.git"
   },
   "keywords": [
     "scxml"

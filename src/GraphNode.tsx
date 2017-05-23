@@ -1,16 +1,16 @@
 /// <reference path="./intrinsics.d.ts" />…
-/// <reference path="../../smil.d.ts" />…
+/// <reference path="./smil.d.ts" />…
 
-import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, Point} from '../../KGraph';
+import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, Point} from './KGraph';
 import * as React from "react";
-import constants from '../../constants';
+import constants from './constants';
 import GraphEdge from './GraphEdge';
 import EventEmitter = require('events');
 import _ = require('underscore');
 import Debug = require('debug');
 const debug = Debug('GraphNode');
 
-import {GraphRoot, GraphRootProps} from './GraphRoot';
+import GraphRoot from './index';
 
 let electron;
 let Menu, MenuItem;
@@ -27,13 +27,18 @@ try {
 }
 
 
-interface GraphNodeProps extends GraphRootProps {
+export interface GraphNodeProps {
   node : KGraphNode;
   isRoot : boolean;
   graphRoot : GraphRoot;
+  allEdges : KGraphEdge[];
+  kgraph : KGraph;
+  updateLayout : boolean;
+  parentIsExiting : boolean;
+  app : EventEmitter;
 }
 
-interface KGraphNodeAnimation {
+export interface KGraphNodeAnimation {
   node : KGraphNode;
   translate : {
     x : number;
@@ -41,7 +46,7 @@ interface KGraphNodeAnimation {
   },
 }
 
-interface GraphNodeAnimation {
+export interface GraphNodeAnimation {
   from : KGraphNodeAnimation;
   to : KGraphNodeAnimation;
   exiting? : boolean
@@ -113,11 +118,6 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
     debug('componentWillMount', this.props.node.id);
   }
 
-  componentDidMount() {
-    debug('componentDidMount', this.props.node.id);
-    this.svgGElement.addEventListener('contextmenu', this.handleContextMenu.bind(this))
-  }
-
   private initContextMenu(){
     const menu = new Menu()
     let items = [
@@ -166,15 +166,6 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
   }
 
   componentWillReceiveProps(props : GraphNodeProps){
-    if(props.semaphore[this.props.node.id]) props.semaphore[this.props.node.id]++;
-    debug('componentWillReceiveProps', this.props.node.id, props.semaphore[this.props.node.id], props);
-    debug('props.updateLayout', props.updateLayout);
-    debug('props.parentIsExiting', props.parentIsExiting);
-
-    if(props.semaphore[this.props.node.id]) return;
-
-    props.semaphore[this.props.node.id] = 1;
-
     this.state = { 
       from : this.state.to,
       to : this._toNode(props.node)
@@ -191,7 +182,17 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
   }
 
   componentDidUpdate(){
+    console.log('componentDidUpdate',this.props.node.id);
     //reset the timeline on all smil animations
+    this.animate();
+  }
+
+  componentDidMount(){
+    this.animate();
+    this.svgGElement.addEventListener('contextmenu', this.handleContextMenu.bind(this))
+  }
+
+  private animate(){
     [
       this.animateTransformElement,
       this.animateXElement,
@@ -309,7 +310,6 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
                 allEdges={this.props.allEdges}
                 kgraph={this.props.kgraph}
                 isRoot={false}
-                semaphore={this.props.semaphore}
                 updateLayout={this.props.updateLayout}
                 parentIsExiting={this.props.parentIsExiting || this.state.exiting}
                 graphRoot={this.props.graphRoot}/>
@@ -321,7 +321,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
         { 
           !this.state.exiting ? 
             myEdges.map((edge, i) => (
-              <GraphEdge edge={edge} key={`${this.props.node.id}_${i}`} semaphore={this.props.semaphore} updateLayout={this.props.updateLayout}/>
+              <GraphEdge edge={edge} key={`${this.props.node.id}_${i}`} updateLayout={this.props.updateLayout}/>
             ))  : 
             []
         }

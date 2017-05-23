@@ -64,6 +64,7 @@ function SCHVIZController($element, $scope, $http){
     });
   }
 
+
   var rendered = false;
 
   function doLayout(scjson){

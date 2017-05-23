@@ -1,19 +1,19 @@
 /// <reference path="./intrinsics.d.ts" />…
-/// <reference path="../../smil.d.ts" />…
+/// <reference path="./smil.d.ts" />…
 
-import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, Point} from '../../KGraph';
+import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, Point} from './KGraph';
 import * as React from "react";
-import constants from '../../constants';
+import constants from './constants';
 import Debug = require('debug');
 const debug = Debug('GraphLabel');
 
-interface GraphLabelProps {
+export interface GraphLabelProps {
   edge : KGraphEdge; 
   label : KGraphLabel;
   updateLayout : boolean;
 }
 
-interface GraphLabelAnimation {
+export interface GraphLabelAnimation {
   from : Point;
   to : Point;
 }
@@ -104,6 +104,14 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
   }
 
   componentDidUpdate(){
+    this.animate();
+  }
+
+  componentDidMount(){
+    this.animate();
+  }
+
+  private animate(){
     //reset the timeline on all smil animations
     [
       this.animateXElement,

@@ -1,4 +1,4 @@
-import {KGraph, KGraphNode, KGraphEdge, KGraphLabel} from '../KGraph';
+import {KGraph, KGraphNode, KGraphEdge, KGraphLabel} from './KGraph';
 
 export interface IKGraphRenderBackend {
   clear();

@@ -2,8 +2,8 @@ import $klay = require('klayjs');
 import _ = require('underscore');
 import SCJSONToKGraphTransformer from './SCJSONToKGraphTransformer';
 import IdGenerator from './IdGenerator';
-import {IKGraphRenderBackend} from './renderers/IKGraphRenderBackend';
 import Debug = require('debug');
+import GraphRoot from './index'
 const debug = Debug('KGraph');
 
 import {SCState} from './SCJSON';
@@ -16,27 +16,19 @@ export class KGraph extends SCJSONToKGraphTransformer {
   _kgraphRoot : KGraphNode;
   _idMap : Map<string, KGraphNode>;
   _childToParentMap : Map<string, KGraphNode>;
-  _options : any;   //TODO: enumerate these options
 
-  constructor(idGenerator: IdGenerator, svgRenderer : IKGraphRenderBackend, scjson: any, options : any){
+  constructor(idGenerator: IdGenerator, svgRenderer : GraphRoot, scjson: any){
     super(idGenerator, svgRenderer);
     var newKlayToScjsonMap, newKgraphRoot; 
     [newKlayToScjsonMap, newKgraphRoot] = this.transform(scjson);
     this._klayToScjsonMap = newKlayToScjsonMap; 
     this._kgraphRoot = newKgraphRoot;
     this._normalize(this._kgraphRoot);
-    this._options = options;
   }
 
   get root (){
     return this._kgraphRoot;
   } 
-
-  patch(newKgraph, options, cb, updateLayout){
-    this._kgraphRoot = newKgraph;
-    this._options = options;
-    return this._updateKgraph(this._kgraphRoot, this._options, cb, updateLayout);
-  }
 
   _normalize(kgraph){
     this._populateIdMap(kgraph);
@@ -45,8 +37,7 @@ export class KGraph extends SCJSONToKGraphTransformer {
     this._normalizeKgraphTransitionTargets(kgraph);
   }
 
-  update(options, cb){
-    this._options = options;
+  updateLayout(options, cb){
     return this._updateKgraph(this._kgraphRoot, options, cb, false);
   }
 
@@ -81,7 +72,6 @@ export class KGraph extends SCJSONToKGraphTransformer {
             this._processKGraphPostLayout(kgraph);
             debug('Layout in %sms',Date.now() - t1);
             debug('kgraph after layout',JSON.stringify(kgraph,null,4));   //TODO: enable debug module
-            this._svgRenderer.render(this, updateLayout);   //TODO: move this back out?
             cb(null, kgraph);
           } catch(e){
             cb(e); 
@@ -500,6 +490,8 @@ export class KGraphEdge implements IKGraphNode {
   target: string;
   $hyperlink? : string;
   bendPoints? : Point[];
+  sourcePoint? : Point;
+  targetPoint? : Point;
 }
 
 export class KGraphLabel implements IKGraphNode {
@@ -511,7 +503,7 @@ export class KGraphLabel implements IKGraphNode {
   $meta? : KGraphLabelMeta;
 }
 
-interface KGraphLabelMeta {
+export interface KGraphLabelMeta {
   textAnchor?: string;
   dominantBaseline?: string;
 }

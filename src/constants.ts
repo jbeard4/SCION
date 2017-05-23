@@ -1,4 +1,4 @@
-import {LayoutOptions} from './renderers/IKGraphRenderBackend';
+import {LayoutOptions} from './IKGraphRenderBackend';
 
 export default {
   STATE_TYPES : ['history','initial','parallel','final','virtual'],

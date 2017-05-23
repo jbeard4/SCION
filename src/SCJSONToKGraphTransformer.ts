@@ -3,16 +3,16 @@ import events from './events';
 import IdGenerator from './IdGenerator';
 import _ = require('underscore');
 import {SCState} from './SCJSON';
-import {IKGraphRenderBackend} from './renderers/IKGraphRenderBackend';
+import GraphRoot from './index'
 import {KGraphNode, KGraphEdge, KGraphLabel} from './KGraph';
 
 export default class SCJSONToKGraphTransformer {
 
   _idGenerator : IdGenerator; 
   _stateToKlayNodeMap : Map<SCState,KGraphNode>;
-  _svgRenderer : IKGraphRenderBackend;
+  _svgRenderer : GraphRoot;
 
-  constructor(idGenerator: IdGenerator, svgRenderer : IKGraphRenderBackend){
+  constructor(idGenerator: IdGenerator, svgRenderer : GraphRoot){
     this._idGenerator = idGenerator;
     this._svgRenderer = svgRenderer;
     this._stateToKlayNodeMap = new Map<SCState,KGraphNode>();

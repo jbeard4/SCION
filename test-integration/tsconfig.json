@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "declaration": true,
+    "declaration": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "module": "commonjs",
@@ -13,9 +13,6 @@
     "target": "es5",
     "removeComments": false
   },
-  "include": [
-    "src/*"
-  ],
   "exclude": [
     "node_modules",
     "dist"

@@ -1,20 +1,19 @@
 /// <reference path="./intrinsics.d.ts" />…
-/// <reference path="../../smil.d.ts" />…
+/// <reference path="./smil.d.ts" />…
 
-import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, Point} from '../../KGraph';
+import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, Point} from './KGraph';
 import * as React from "react";
-import constants from '../../constants';
+import constants from './constants';
 import GraphLabel from './GraphLabel';
 import Debug = require('debug');
 const debug = Debug('GraphEdge');
 
-interface GraphEdgeProps {
+export interface GraphEdgeProps {
   edge : KGraphEdge;
-  semaphore : any;
   updateLayout : boolean;
 }
 
-interface GraphEdgeAnimation {
+export interface GraphEdgeAnimation {
   keyTimes : string,
   marker : string[],
   path : PathSegment[],
@@ -27,7 +26,7 @@ interface GraphEdgeAnimation {
   exiting : boolean
 }
 
-interface PathSegment {
+export interface PathSegment {
   sourcePoint: Point;
   targetPoints: Point[];
   fillLength: number;
@@ -38,7 +37,6 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
   initialRender : boolean;
   svgPathAnimation : SVGAnimationElement;
   svgMarkerAnimation : SVGAnimationElement;
-  svgDashOffsetAnimation : SVGAnimationElement;
   svgPathElement : SVGPathElement;
 
   constructor(props){
@@ -101,8 +99,6 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
       pathLength : this._computeEdgeLength(this.props.edge),
       exiting : false
     }
-
-    props.semaphore[this.props.edge.id] = true;
   }
 
   _toBegin(props){
@@ -112,15 +108,6 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
   }
 
   componentWillReceiveProps(props : GraphEdgeProps){
-    //compute updated props
-    if(props.semaphore[this.props.edge.id]) props.semaphore[this.props.edge.id]++;
-    debug('componentWillReceiveProps', this.props.edge.id, props.semaphore[this.props.edge.id], props);
-    debug('props.updateLayout', props.updateLayout);
-
-    if(props.semaphore[this.props.edge.id]) return;   //disable for now. 
-
-    props.semaphore[this.props.edge.id] = 1;
-
     var animationSegments = this._toAnimationSegments(props.edge);
     var points = this._edgeToPoints(props.edge);
     let begin = this._toBegin(props);
@@ -274,11 +261,6 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
                      !this.state.exiting && this.state.begin.marker === 'indefinite' ? constants.START : ''
                    ].join(' ')}
                    dur={constants.ANIM_DURATION} />
-          <animate attributeName="stroke-dashoffset" attributeType="XML" fill="freeze" 
-                   ref={(e: SVGAnimationElement) => { this.svgDashOffsetAnimation = e; }}
-                   begin="indefinite"
-                   from="0"
-                   dur={constants.ANIM_DURATION} />
       </path>
       <g>
         {
@@ -373,8 +355,8 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
     debug('componentWillMount', this.props.edge.id);
   }
 
-  componentDidMount() {
-    debug('componentDidMount', this.props.edge.id);
+  componentWillUpdate(){
+    debug('componentWillUpdate', this.props.edge.id);
   }
 
   componentDidUpdate(prevProps:GraphEdgeProps, prevState: GraphEdgeAnimation) {
@@ -394,12 +376,20 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
       this.svgPathAnimation.setAttributeNS(null, 'begin', 'indefinite');
 
 
+    this.animate();
+  }
+
+  componentDidMount() {
+    debug('componentDidMount', this.props.edge.id);
+    this.animate();
+  }
+
+
+  private animate(){
     [
       this.svgPathAnimation,
       this.svgMarkerAnimation
     ].forEach(e => e.beginElement());
-
-
   }
 }
 

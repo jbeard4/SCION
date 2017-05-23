@@ -1,54 +1,19 @@
 <!doctype html>
-<html ng-app="schviz2">
+<html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <link rel="stylesheet" type="text/css" href="/node_modules/bootstrap/dist/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="/node_modules/bootstrap/dist/css/bootstrap-theme.css">
+    <link rel="stylesheet" type="text/css" href="app/css/styles.css">
+    <style>
+      body {
+        margin : 0;
+      }
+    </style>
   </head>
   <body class="flex">
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#">SCHVIZ2</a>
-          <button aria-controls="bs-navbar" aria-expanded="true" class="navbar-toggle" data-target="#bs-navbar" data-toggle="collapse" type="button"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
-        </div>
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <nav class="collapse navbar-collapse" id="bs-navbar"> 
-          <ul class="nav navbar-nav  navbar-right">
-            <li ng-cloak ng-repeat="link in links" ng-class="{active : $location.path() == link[0].slice(2)}">
-              <a href="{{link[0]}}">{{link[1]}}</a>
-            </li>
-          </ul>
-        </nav>
-      </div><!-- /.container-fluid -->
-    </nav>
-
-    <div ng-view class="flex grow"></div>
-
-    <script src="/node_modules/babel-polyfill/dist/polyfill.js"></script>
+    <div class="app flex grow"></div>
     <script src="/node_modules/jquery/dist/jquery.js"></script>
-    <script src="/node_modules/scxml/dist/scxml.js"></script>
-    <script src="/node_modules/angular/angular.js"></script>
-    <script src="/node_modules/bootstrap/dist/js/bootstrap.js"></script>
-    <script src="/node_modules/angular-route/angular-route.js"></script>
-    <script src="/node_modules/pathseg/pathseg.js"></script>
-
-    <script src="/dist/schviz.js"></script>
-
-    <script src="app/views/viz/viz.js"></script>
-    <script src="app/services/constants.js"></script>
-    <script src="app/services/scxml-tests.js"></script>
-    <script src="app/views/merge/merge.js"></script>
-    <script src="app/views/sim/sim.js"></script>
-    <script src="app/components/schviz.js"></script>
-    <script src="app/components/select-viz/select-viz.js"></script>
-    <script src="app/components/select-sim/select-sim.js"></script>
-    <script src="app/components/merge-viz/merge-viz.js"></script>
-    <script src="app/app.js"></script>
-
-    
+    <script src="/node_modules/babel-polyfill/dist/polyfill.js"></script>
+    <script src="/dist/main.js"></script>
     <script src="//localhost:35729/livereload.js"></script>
   </body>
 </html>
