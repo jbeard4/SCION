@@ -263,7 +263,7 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
                    begin={ this.state.begin.path }
                    dur={constants.ANIM_DURATION} />
           {
-            this.props.edge.$hyperlink &&
+            this.state.begin.path !== 'indefinite' &&
               [
                 <animate attributeName="visibility"  attributeType="XML" fill="freeze" 
                          to="hidden"
