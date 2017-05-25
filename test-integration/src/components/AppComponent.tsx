@@ -16,7 +16,8 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
     super(props);
     this.state = {
       allTests : [],
-      scjson : null
+      scjson : null,
+      redraw : true
     };
     this.loadData();
   }

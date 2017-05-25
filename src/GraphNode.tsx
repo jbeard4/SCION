@@ -33,7 +33,6 @@ export interface GraphNodeProps {
   graphRoot : GraphRoot;
   allEdges : KGraphEdge[];
   kgraph : KGraph;
-  updateLayout : boolean;
   parentIsExiting : boolean;
   app : EventEmitter;
   redraw? : boolean;
@@ -313,7 +312,6 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
                 allEdges={this.props.allEdges}
                 kgraph={this.props.kgraph}
                 isRoot={false}
-                updateLayout={this.props.updateLayout}
                 parentIsExiting={this.props.parentIsExiting || this.state.exiting}
                 graphRoot={this.props.graphRoot}
                 redraw={this.props.redraw}
@@ -326,7 +324,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
         { 
           !this.state.exiting ? 
             myEdges.map((edge, i) => (
-              <GraphEdge edge={edge} key={`${this.props.node.id}_${i}`} updateLayout={this.props.updateLayout}
+              <GraphEdge edge={edge} key={`${this.props.node.id}_${i}`} 
                 redraw={this.props.redraw}
                 />
             ))  : 

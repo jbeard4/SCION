@@ -10,7 +10,6 @@ const debug = Debug('GraphLabel');
 export interface GraphLabelProps {
   edge : KGraphEdge; 
   label : KGraphLabel;
-  updateLayout : boolean;
   redraw? : boolean;
 }
 
@@ -41,7 +40,6 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
 
   componentWillReceiveProps(props : GraphLabelProps){
     debug('componentWillReceiveProps', props);
-    debug('props.updateLayout', props.updateLayout);
     this._normalizeSelfLoopEdgeCoordinates(props.label, props.edge);
     var point = {
       x : props.label.x,

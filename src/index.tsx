@@ -204,20 +204,6 @@ export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAni
         fromZoom : toZoom
       }
     );
-
-    /*
-    this.pauseAnimation();
-    this.setState({
-      fromZoom : this.state.toZoom,
-      toZoom : toZoom,
-      fromNode : this.state.toNode,
-      toNode : this.state.toNode, 
-      fastZoom : false,
-      instantZoom : true
-    }, () => {
-      this.beginAnimation(false, true);
-    });
-    */
   }
 
   private initKGraph({scjson, layoutOptions, redraw} : GraphRootProps , initialRender : boolean){
@@ -226,6 +212,7 @@ export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAni
     if(scjson){
       let kgraph = new KGraph(new IdGenerator(), this, scjson);
       const options = this.getDefaultLayoutOptions(layoutOptions)
+      this.svgRootElement.pauseAnimations();
       kgraph.updateLayout(options, (err, rootNode) => {
         console.log('kgraph rootNode',rootNode);
         if(err) throw err;
@@ -236,6 +223,8 @@ export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAni
           toZoom : toZoom,
           fromNode : this.state.toNode,
           toNode : rootNode
+        }, () => {
+          this.svgRootElement.unpauseAnimations();
         });
       })  
     }
@@ -300,7 +289,6 @@ export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAni
               allEdges={allEdges}
               kgraph={this.state.kgraph}
               isRoot={true}
-              updateLayout={false}    //TODO: refactor out updateLayout, parentIsExiting, app
               parentIsExiting={false}
               graphRoot={this}
               redraw={this.props.redraw}

@@ -10,7 +10,6 @@ const debug = Debug('GraphEdge');
 
 export interface GraphEdgeProps {
   edge : KGraphEdge;
-  updateLayout : boolean;
   redraw? : boolean;
 }
 
@@ -35,7 +34,7 @@ export interface PathSegment {
 
 export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdgeAnimation> {
 
-  initialRender : boolean;
+  componentHasRendered : boolean;
   svgPathAnimation : SVGAnimationElement;
   svgMarkerAnimation : SVGAnimationElement;
   svgPathElement : SVGPathElement;
@@ -99,7 +98,7 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
   }
 
   _toBegin(props){
-    return props.edge.$hyperlink && !props.updateLayout && !this.initialRender ? 
+    return props.edge.$hyperlink && (!this.componentHasRendered || props.redraw) ? 
       `${props.edge.$hyperlink}_last.endEvent` : 
       'indefinite'; 
   }
@@ -262,11 +261,19 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
                    keyTimes={ this.state.keyTimes }
                    values={ this.state.path.map(this._edgeToD.bind(this)).join(';') }
                    begin={ this.state.begin.path }
-                   className={[
-                     !this.props.edge.$hyperlink ? 'firstPathSegment' : '',
-                     !this.state.exiting && this.state.begin.marker === 'indefinite' ? constants.START : ''
-                   ].join(' ')}
                    dur={constants.ANIM_DURATION} />
+          {
+            this.props.edge.$hyperlink &&
+              [
+                <animate attributeName="visibility"  attributeType="XML" fill="freeze" 
+                         to="hidden"
+                         begin={ `${this.props.edge.$hyperlink}_last.begin` }/>,
+                <animate attributeName="visibility"  attributeType="XML" fill="freeze" 
+                         to="visible"
+                         begin={ this.state.begin.path }/>
+              ]
+          }
+
       </path>
       <g>
         {
@@ -275,7 +282,6 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
               edge={this.props.edge}
               key={i}
               label={label}
-              updateLayout={this.props.updateLayout}
               redraw={this.props.redraw}
               />
           ))
@@ -283,7 +289,7 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
       </g>
     </g>;
 
-    this.initialRender = true;
+    this.componentHasRendered = true;
 
     return toReturn;
   }
@@ -400,10 +406,12 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
 
 
   private animate(){
-    [
-      this.svgPathAnimation,
-      this.svgMarkerAnimation
-    ].forEach(e => e.beginElement());
+    if(this.state.begin.path === 'indefinite'){
+      [
+        this.svgPathAnimation,
+        this.svgMarkerAnimation
+      ].forEach(e => e.beginElement());
+    }
   }
 }
 
