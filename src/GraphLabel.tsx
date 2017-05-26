@@ -71,7 +71,6 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
       >
         <animate attributeName="x" attributeType="XML" fill="freeze" 
                  begin="indefinite"
-                 className={constants.START}
                  from={this.state.from.x}
                  to={this.state.to.x}
                  dur={constants.ANIM_DURATION}
@@ -79,7 +78,6 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
                  />
         <animate attributeName="y" attributeType="XML" fill="freeze" 
                  begin="indefinite"
-                 className={constants.START}
                  from={this.state.from.y}
                  to={this.state.to.y}
                  dur={constants.ANIM_DURATION}
@@ -88,18 +86,17 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
         <animate attributeName="opacity" attributeType="XML"
                  fill="freeze" 
                  begin="indefinite"
-                 className={constants.START}
                  dur={constants.ANIM_DURATION} 
-                 from={this.initialRender ? 0 : 1}  
+                 from={this.initialRender && !this.props.redraw ? 1 : 0}  
                  to={1} 
                  ref={(e: SVGAnimationElement) => { this.animateOpacityElement = e; }}
                  />
       {this.props.label.text}
     </text>;
 
-  this.initialRender = true;
+    this.initialRender = true;
 
-  return toReturn;
+    return toReturn;
   }
 
   componentDidUpdate(){
