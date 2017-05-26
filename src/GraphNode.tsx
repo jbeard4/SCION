@@ -8,6 +8,7 @@ import GraphEdge from './GraphEdge';
 import EventEmitter = require('events');
 import _ = require('underscore');
 import Debug = require('debug');
+import classNames = require('classnames');
 const debug = Debug('GraphNode');
 
 import GraphRoot from './index';
@@ -36,6 +37,7 @@ export interface GraphNodeProps {
   parentIsExiting : boolean;
   app : EventEmitter;
   redraw? : boolean;
+  configuration? : string[]
 }
 
 export interface KGraphNodeAnimation {
@@ -230,11 +232,16 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
     }
 
     var edgeKeys = {};
-
     let toReturn = <g id={this.state.to.node.id} 
-            className={'node ' + 
-                        (isLeaf ? 'leaf' : 'compound') + ' ' + 
-                        (this.state.to.node.$type ? 'type__' + this.state.to.node.$type : '')} 
+            className={
+              classNames({
+                "node" : true,
+                "leaf" : isLeaf,
+                "compound" : !isLeaf,
+                [`type__${this.state.to.node.$type}`] : this.state.to.node.$type,
+                "highlighted" : this.props.configuration && this.props.configuration.indexOf(this.state.to.node.id) > -1
+              })
+            }
             ref={(e: SVGGElement) => { this.svgGElement = e; }}
             onDoubleClick={ this.handleDoubleClick.bind(this) }
             >
@@ -315,6 +322,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
                 parentIsExiting={this.props.parentIsExiting || this.state.exiting}
                 graphRoot={this.props.graphRoot}
                 redraw={this.props.redraw}
+                configuration={this.props.configuration}
                 />
           ))) : 
           []

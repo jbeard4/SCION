@@ -292,6 +292,7 @@ export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAni
               parentIsExiting={false}
               graphRoot={this}
               redraw={this.props.redraw}
+              configuration={this.props.configuration}
               />
         }
       </g>

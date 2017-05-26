@@ -111,7 +111,12 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
       <div className="grow">
         <div style={{width:'100%', height:'100%',position:'absolute'}}>
         {this.state && this.state.scjson && 
-          <SCHVIZ scjson={this.state.scjson} layoutOptions={this.state.layoutOptions} redraw={this.state.redraw}/>
+          <SCHVIZ
+            scjson={this.state.scjson}
+            layoutOptions={this.state.layoutOptions}
+            redraw={this.state.redraw}
+            configuration={['c']}
+            />
         }
         </div>
       </div>

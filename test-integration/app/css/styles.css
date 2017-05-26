@@ -120,12 +120,12 @@ g.compound.type__parallel > g > g.node > rect {
   stroke : rgba(0,0,0,.6);
 }
 
-.leaf.highlighted > rect {
+.node.highlighted > rect {
   fill : #f9f2f4;
   stroke : #c7254e;
 }
 
-.leaf.highlighted > text {
+.node.highlighted > text {
   fill : #c7254e;
 }
 

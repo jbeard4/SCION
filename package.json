@@ -6,6 +6,7 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "babel-polyfill": "^6.23.0",
+    "classnames": "^2.2.5",
     "debug": "^2.6.3",
     "jquery": "^3.1.1",
     "klayjs": "^0.4.1",
