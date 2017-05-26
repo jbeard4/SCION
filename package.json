@@ -8,6 +8,7 @@
     "w3c",
     "javascript"
   ],
+  "types": "tsd/index.d.ts",
   "maintainers": [
     {
       "name": "Jacob Beard",
