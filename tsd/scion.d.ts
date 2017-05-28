@@ -3,7 +3,7 @@ type Configuration = string[];
 type FullConfiguration = string[];
 
 export class BaseInterpreter {
-  constructor(model : FnModel | SCState, opts : any);
+  constructor(model : FnModel | SCState, opts? : any);
   start : () => void;
   startAsync : (cb: (Configuration) => void) => void;
   getConfiguration : () => Configuration;
@@ -26,7 +26,7 @@ interface Event {
   data : any;
 }
 
-interface SCState {
+export interface SCState {
   states? : SCState[];
   transitions? : SCTransition[];
   id? : string;
