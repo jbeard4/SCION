@@ -1,4 +1,4 @@
-type FnModel = () => SCState;
+export type FnModel = () => SCState;
 type Configuration = string[];
 type FullConfiguration = string[];
 
@@ -17,11 +17,11 @@ export class BaseInterpreter {
 }
 
 export class Statechart extends BaseInterpreter {
-  gen(evtObjOrName : string | Event, optionalData : any);
+  gen(evtObjOrName : string | Event, optionalData? : any);
   genAsync(currentEvent : Event, cb : (Configuration) => void);
 }
 
-interface Event {
+export interface Event {
   name : string;
   data : any;
 }
