@@ -4,13 +4,16 @@
   "description": "SCJSON to KGraph to SVG rendering library",
   "main": "dist/index.js",
   "dependencies": {
+    "@types/jquery": "^2.0.41",
+    "@types/react": "^15.0.21",
+    "@types/react-dom": "^0.14.23",
     "babel-polyfill": "^6.23.0",
+    "console-component": "1.0.0",
     "debug": "^2.6.3",
     "jquery": "^3.1.1",
     "react": "^15.4.2",
-    "@types/jquery": "^2.0.41",
-    "@types/react": "^15.0.21",
-    "@types/react-dom": "^0.14.23"
+    "scxml": "3.3.0",
+    "scion-core": "1.6.0"
   },
   "devDependencies": {
     "babel": "^6.23.0",
@@ -22,7 +25,6 @@
     "express": "^4.14.0",
     "opn-cli": "^3.1.0",
     "react-dom": "^15.5.4",
-    "scion-core": "^1.5.4",
     "scxml-test-framework": "^1.0.2",
     "sorcery": "^0.10.0",
     "typescript": "^2.2.2",

@@ -2,22 +2,31 @@ import * as React from "react";
 import scxml = require('scxml');    //TODO: make scxml an es6 module
                                     //TODO: expose SCJSON object type, so we do not need to use "any" type
 import SCHVIZ from '../../..';
+import Console from 'console-component';
 
 interface AppComponentState {
   allTests : string[]; 
-  scjson : any; 
+  scjson : scxml.scion.SCState;
+  fnModel : scxml.scion.FnModel;
   layoutOptions? : any;
   redraw? : boolean;
+  interpreter : scxml.scion.Statechart;
+  configuration? : string[];
 }
 
 export default class AppComponent extends React.Component<{}, AppComponentState> {
+
+  mergeCheckbox : HTMLInputElement;
 
   constructor(props){
     super(props);
     this.state = {
       allTests : [],
       scjson : null,
-      redraw : true
+      fnModel : null,
+      redraw : false,
+      interpreter : null,
+      configuration : null
     };
     this.loadData();
   }
@@ -29,97 +38,142 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
       this.setState({
         allTests : testPairs 
       });
-      this.handleTestChange({target : testPairs[0]});
     });
+  }
+
+  componentDidMount(){
+    this.mergeCheckbox.checked = !this.state.redraw;
   }
 
   private handleTestChange(event){
-    let jqXHR = jQuery.ajax({
-      url : event.target.value,
-      method : 'GET',
-      dataType : 'text'
-    });
-    jqXHR.then((responseData) => {
-      let contentType = jqXHR.getResponseHeader('content-type'); 
+    const url = event.target.value;
+    this.stopInterpreter(() => {
+      const jqXHR = jQuery.ajax({
+        url : url,
+        method : 'GET',
+        dataType : 'text'
+      });
+      jqXHR.then((responseData) => {
+        let contentType = jqXHR.getResponseHeader('content-type'); 
 
-      let scjson;
-      switch(contentType){
-        case 'application/scxml+xml':
-        case 'text/xml':
-        case 'application/xml':
-          scjson = scxml.ext.compilerInternals.scxmlToScjson(responseData);
-          break;
-        case 'application/json':
-          scjson = JSON.parse(responseData);
-          break;
-        case 'application/javascript':
-          scjson = eval(responseData.replace(/module.exports *= */,''))();
-          break;
-        default:
-          throw new Error('Unrecognized mime type in response');
-      }
-
-      this.setState({scjson : scjson}); 
-
-    });
-  }
-
-  private handleLayoutChange(event){
-    this.setState({
-      layoutOptions : SCHVIZ.layouts[event.target.value]
-    });
-  }
-
-  private handleMergeChange(event){
-    this.setState({
-     redraw : !event.target.checked
-    });
-  }
-
-  render(){
-    return <div className="flex grow">
-      <div>
-        <form className="form-horizontal">
-          <div className="control-group">
-            <label className="control-label">Example</label>
-            <div className="controls">
-              <select onChange={this.handleTestChange.bind(this)}>
-                {
-                  this.state.allTests.map( (test, i) => <option key={i}>{test}</option> )
-                }
-              </select>
-            </div>
-          </div>
-          <div className="control-group">
-            <label className="control-label">Layout</label>
-            <div className="controls">
-              <select onChange={this.handleLayoutChange.bind(this)}>
-                {
-                  Object.keys(SCHVIZ.layouts).map((layout, i) => <option key={i}>{layout}</option>) 
-                }
-              </select>
-            </div>
-          </div>
-          <div className="control-group">
-            <label className="checkbox">
-              <input type="checkbox" onChange={this.handleMergeChange.bind(this)}></input>
-              Merge
-            </label>
-          </div>
-        </form>
-      </div>
-      <div className="grow">
-        <div style={{width:'100%', height:'100%',position:'absolute'}}>
-        {this.state && this.state.scjson && 
-          <SCHVIZ
-            scjson={this.state.scjson}
-            layoutOptions={this.state.layoutOptions}
-            redraw={this.state.redraw}
-            configuration={['c']}
-            />
+        switch(contentType){
+          case 'application/scxml+xml':
+          case 'text/xml':
+          case 'application/xml':
+            scxml.documentStringToModel(url, responseData, (err, model : scxml.SCModel) => {
+              if(err) throw err;
+              model.prepare((err, fnModel : scxml.scion.FnModel) => {
+                if(err) throw err;
+                this.setState({
+                  scjson : null,
+                  fnModel : fnModel
+                }); 
+              });
+            });
+            break;
+          case 'application/json':
+            this.setState({
+              scjson : JSON.parse(responseData),
+              fnModel : null
+            }); 
+            break;
+          case 'application/javascript':
+            this.setState({
+              scjson : null,
+              fnModel : eval(responseData.replace(/module.exports *= */,''))
+            }); 
+            break;
+          default:
+            throw new Error('Unrecognized mime type in response');
         }
+      });
+    });
+    }
+
+    private handleLayoutChange(event){
+      this.setState({
+        layoutOptions : SCHVIZ.layouts[event.target.value]
+      });
+    }
+
+    private handleMergeChange(event){
+      this.setState({
+       redraw : !event.target.checked
+      });
+    }
+
+    private stopInterpreter(cb? : () => any){
+        this.setState({
+          interpreter : null,
+          configuration : null
+        }, cb || (() => (null))); 
+    }
+
+    handleSimulatorClick(event){
+      if(this.state.interpreter){
+        this.stopInterpreter();
+      }else{
+        let interpreter = new scxml.scion.Statechart(this.state.fnModel ? this.state.fnModel : this.state.scjson); 
+        interpreter.start();
+        let configuration = interpreter.getConfiguration();
+        this.setState({
+          interpreter : interpreter,
+          configuration : configuration
+        });
+      }
+    }
+
+    render(){
+      return <div className="flex grow">
+        <div>
+          <form className="form-horizontal">
+            <div className="control-group">
+              <label className="control-label">Example</label>
+              <div className="controls">
+                <select onChange={this.handleTestChange.bind(this)}>
+                  {
+                    this.state.allTests.map( (test, i) => <option key={i}>{test}</option> )
+                  }
+                </select>
+              </div>
+            </div>
+            <div className="control-group">
+              <label className="control-label">Layout</label>
+              <div className="controls">
+                <select onChange={this.handleLayoutChange.bind(this)}>
+                  {
+                    Object.keys(SCHVIZ.layouts).map((layout, i) => <option key={i}>{layout}</option>) 
+                  }
+                </select>
+              </div>
+            </div>
+            <div className="control-group">
+              <label className="checkbox">
+                <input type="checkbox"  ref={(e) => this.mergeCheckbox = e} onChange={this.handleMergeChange.bind(this)}></input>
+                Merge
+              </label>
+            </div>
+            <div className="control-group">
+              <button onClick={this.handleSimulatorClick.bind(this)}>{this.state.interpreter ? 'Stop' : 'Start' } Simulator</button>
+            </div>
+          </form>
         </div>
-      </div>
-    </div>;
-  }
+        <div className="flex grow">
+          <div className="grow">
+            {this.state && (this.state.fnModel || this.state.scjson) && 
+              <SCHVIZ
+                scjson={this.state.fnModel ? this.state.fnModel() : this.state.scjson}
+
+                layoutOptions={this.state.layoutOptions}
+                redraw={this.state.redraw}
+                configuration={this.state.configuration}
+                />
+            }
+          </div>
+          <Console  
+            handleSubmit={(e : scxml.scion.Event) => this.setState({configuration : this.state.interpreter.gen(e)})} 
+            isActive={!!this.state.interpreter}/>
+        </div>
+      </div>;
+    }
 }

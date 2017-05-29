@@ -250,53 +250,55 @@ export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAni
     let to = `${[this.state.toZoom.x, this.state.toZoom.y, this.state.toZoom.width, this.state.toZoom.height].join(' ')}`;
     let viewBoxValues = `${from};${to}`;
     debug('viewBoxValues ', viewBoxValues );
-    return <svg width="100%" height="100%" 
-      ref={(e: SVGSVGElement) => { this.svgRootElement = e; }}
-      onWheel={this.handleMouseWheel.bind(this)}
-      onClick={this.handleClick.bind(this)}
-      onMouseDown={this.handleMouseDown.bind(this)}
-      onMouseUp={this.handleMouseUp.bind(this)}
-      onMouseMove={this.handleMouseMove.bind(this)}
-      >
-      <animate 
-        className={constants.START}
-        ref={(e: SVGAnimationElement) => { this.viewBoxAnimation = e; }}
-        attributeName="viewBox" fill="freeze" begin="indefinite"
-        dur={this.state.instantZoom ? '0ms' : ( this.state.fastZoom ? '250ms' : constants.ANIM_DURATION ) } 
-        from={from}
-        to={to}/>
-      <defs>
-        { 
-          ['','Highlighted'].map( (s) => (
-            <radialGradient id={'finalStateGradient' + s} cx="2" cy="2" fx="2" fy="2" r="1" gradientUnits="userSpaceOnUse" key={s}>
-              <stop offset="0"></stop>
-              <stop offset="0.85576922"></stop>
-              <stop offset="0.85576922"></stop>
-              <stop offset="1"></stop>
-            </radialGradient>
-          ))
-        }
-        {
-          this._markers()
-        }
-      </defs>
-      <g>
-        { 
-          this.state.kgraph &&
-            <GraphNode
-              app={null}
-              node={this.state.kgraph.root}
-              allEdges={allEdges}
-              kgraph={this.state.kgraph}
-              isRoot={true}
-              parentIsExiting={false}
-              graphRoot={this}
-              redraw={this.props.redraw}
-              configuration={this.props.configuration}
-              />
-        }
-      </g>
-    </svg>;
+    return <div style={{width:'100%', height:'100%',position:'absolute'}}>
+        <svg width="100%" height="100%" 
+          ref={(e: SVGSVGElement) => { this.svgRootElement = e; }}
+          onWheel={this.handleMouseWheel.bind(this)}
+          onClick={this.handleClick.bind(this)}
+          onMouseDown={this.handleMouseDown.bind(this)}
+          onMouseUp={this.handleMouseUp.bind(this)}
+          onMouseMove={this.handleMouseMove.bind(this)}
+        >
+        <animate 
+          className={constants.START}
+          ref={(e: SVGAnimationElement) => { this.viewBoxAnimation = e; }}
+          attributeName="viewBox" fill="freeze" begin="indefinite"
+          dur={this.state.instantZoom ? '0ms' : ( this.state.fastZoom ? '250ms' : constants.ANIM_DURATION ) } 
+          from={from}
+          to={to}/>
+        <defs>
+          { 
+            ['','Highlighted'].map( (s) => (
+              <radialGradient id={'finalStateGradient' + s} cx="2" cy="2" fx="2" fy="2" r="1" gradientUnits="userSpaceOnUse" key={s}>
+                <stop offset="0"></stop>
+                <stop offset="0.85576922"></stop>
+                <stop offset="0.85576922"></stop>
+                <stop offset="1"></stop>
+              </radialGradient>
+            ))
+          }
+          {
+            this._markers()
+          }
+        </defs>
+        <g>
+          { 
+            this.state.kgraph &&
+              <GraphNode
+                app={null}
+                node={this.state.kgraph.root}
+                allEdges={allEdges}
+                kgraph={this.state.kgraph}
+                isRoot={true}
+                parentIsExiting={false}
+                graphRoot={this}
+                redraw={this.props.redraw}
+                configuration={this.props.configuration}
+                />
+          }
+        </g>
+      </svg>
+    </div>;
   }
 
   private _getAllEdges(kgraph:KGraph){
