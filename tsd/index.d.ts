@@ -8,6 +8,7 @@ export interface SCModel {
 
 export function urlToModel(url : string, cb : (err : Error, model : SCModel) => any, context? : any);
 export function pathToModel(url : string, cb : (err : Error, model : SCModel) => any, context? : any);
+export function documentStringToModel(url : string, scxmlDocString : string, cb : (err : Error, model : SCModel) => any, context? : any);
 export namespace ext {
   export namespace compilerInternals {
     export const scxmlToScjson : (scxmlContents : string) => scion.SCState;
