@@ -1,0 +1,22 @@
+{
+  "name": "console-component",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "dependencies": {
+    "react": "^15.4.2"
+  },
+  "devDependencies": {
+    "@types/react": "^15.0.21",
+    "typescript": "^2.2.2"
+  },
+  "scripts": {
+    "watch": "tsc -p . --outDir dist/ -w",
+    "build": "npm run transpile",
+    "transpile": "tsc -p . --outDir dist/",
+    "clean": "rm -rf dist/*"
+  },
+  "author": "Jacob Beard <jake@jacobeanrnd.com>",
+  "license": "AGPL-3.0"
+}
