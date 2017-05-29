@@ -1,6 +1,6 @@
 {
   "name": "scxml",
-  "version": "3.2.2",
+  "version": "3.3.0",
   "description": "An implementation of SCXML in JavaScript.",
   "keywords": [
     "scxml",
@@ -81,14 +81,21 @@
   "main": "./lib/runtime/facade",
   "scripts": {
     "test": "grunt build test",
-    "bundle" : "browserify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
-    "uglify" : "uglifyjs dist/scxml.js -o dist/scxml.min.js",
+    "bundle": "browserify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
+    "uglify": "uglifyjs dist/scxml.js -o dist/scxml.min.js",
     "build": "npm run bundle && npm run uglify",
     "watch": "watchify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v"
   },
-  "browserify" : {
-    "transform" : [
-      [ "babelify", { "presets": ["es2015"] } ]
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ]
+        }
+      ]
     ]
   },
   "filename": "scxml.min.js",
