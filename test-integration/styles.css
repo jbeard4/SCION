@@ -1,0 +1,182 @@
+text {
+  font-size:4px;
+}
+
+.node > rect {
+  transition : stroke .1s ease-out;
+}
+
+
+.node.type__virtual > rect {
+  stroke-dasharray : .5 .5;
+  stroke-width : .2;
+}
+
+.node.type__history > rect {
+  fill : lightblue;
+}
+
+
+.node.type__pseudonode {
+  display : none;
+}
+
+.node.type__initial > text, .node.type__final > text  {
+  visibility : hidden;
+}
+
+.node.type__initial > rect {
+  fill: black;
+  stroke: none;
+}
+
+.node.type__final > rect {
+  fill:url(#finalStateGradient); 
+  stroke:black;
+}
+
+.node.type__final.highlighted > rect {
+  fill:url(#finalStateGradientHighlighted); 
+}
+
+.node > text {
+  transition : fill .5s ease-out;
+  dominant-baseline: central; 
+  text-anchor: middle;
+}
+
+text {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+g.leaf > rect {
+  fill: rgba(220,220,220,1);
+}
+
+g.leaf > text {
+  fill: #333;
+  text-anchor:middle
+}
+
+g.node.compound > line {
+  stroke: black;
+  stroke-opacity: .6;
+  stroke-width:.1;
+} 
+
+g.compound.type__parallel > g > g.node > rect {
+  stroke-dasharray : 1 1;
+} 
+
+#finalStateGradient stop {
+  stop-opacity:1;
+}
+
+#finalStateGradient stop:nth-child(1) {
+  stop-color:#000000;
+}
+
+#finalStateGradient stop:nth-child(2){
+  stop-color:#000000;
+}
+
+#finalStateGradient stop:nth-child(3){
+  stop-color:#ffffff;
+}
+
+#finalStateGradient stop:nth-child(4){
+  stop-color:#ffffff;
+}
+
+#finalStateGradientHighlighted stop:nth-child(1) {
+  stop-color:red;
+}
+
+#finalStateGradientHighlighted stop:nth-child(2){
+  stop-color:red;
+}
+
+#finalStateGradientHighlighted stop:nth-child(3){
+  stop-color:#ffffff;
+}
+
+#finalStateGradientHighlighted stop:nth-child(4){
+  stop-color:#ffffff;
+}
+
+.node > rect {
+  fill: rgba(0,0,0,.025);
+  stroke: #AAA;
+  transition : stroke .25s ease-out;
+}
+
+.node rect:hover {
+  stroke : rgba(0,0,0,.6);
+}
+
+.node.highlighted > rect {
+  fill : #f9f2f4;
+  stroke : #c7254e;
+}
+
+.node.highlighted > text {
+  fill : #c7254e;
+}
+
+
+.node.selected > rect {
+  stroke : blue;
+}
+
+.link {
+  stroke: black;
+  stroke-opacity: .6;
+  fill: none;
+  transition : stroke .25s ease-out;
+}
+
+.link.hyperlink {
+  marker-end : none;
+}
+
+.link.highlighted {
+  stroke : #c7254e;
+}
+
+.port {
+  stroke: #000;
+  width: 1px;
+  opacity: .6;
+}
+
+#end path {
+  stroke: black;
+  stroke-opacity: .6;
+}
+
+html, body {
+  width : 100%;
+  height: 100%;
+}
+
+.flex {
+  display : flex;
+  flex-direction: column;
+}
+
+.grow {
+  flex-grow: 1;
+  position:relative;
+}
+
+schviz {
+  position:absolute;
+  width:100%;
+  height:100%;
+}
