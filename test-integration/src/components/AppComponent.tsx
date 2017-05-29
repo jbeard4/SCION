@@ -110,6 +110,8 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
     }
 
     handleSimulatorClick(event){
+      event.stopPropagation();
+      event.preventDefault();
       if(this.state.interpreter){
         this.stopInterpreter();
       }else{
