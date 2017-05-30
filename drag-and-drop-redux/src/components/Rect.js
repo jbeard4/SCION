@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 const Rect = ({ x, y, onMouseDown, onMouseUp, onMouseMove }) => {
   return (
     <rect x={x} y={y} 
+      fill="red" stroke="black"
       onMouseDown={onMouseDown} onMouseUp={onMouseUp} onMouseMove={onMouseMove}
       width="100" height="100"/>
   )
