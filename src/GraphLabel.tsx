@@ -18,7 +18,7 @@ export interface GraphLabelAnimation {
   to : Point;
 }
 
-export default class GraphLabel extends React.Component<GraphLabelProps, GraphLabelAnimation>  {
+export default class GraphLabel extends React.PureComponent<GraphLabelProps, GraphLabelAnimation>  {
 
   initialRender : boolean;
   animateOpacityElement : SVGAnimationElement;
@@ -100,6 +100,7 @@ export default class GraphLabel extends React.Component<GraphLabelProps, GraphLa
   }
 
   componentDidUpdate(){
+    //console.log('GraphLabel: componentDidUpdate',this.props.label);
     this.animate();
   }
 

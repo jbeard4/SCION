@@ -19,6 +19,7 @@ export interface GraphRootProps {
 }
 
 export interface GraphRootAnimation {
+  allEdges : KGraphEdge[];
   kgraph : KGraph;
   fromNode : KGraphNode;
   toNode : KGraphNode;
@@ -28,7 +29,7 @@ export interface GraphRootAnimation {
   instantZoom? : boolean;
 }
 
-export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAnimation> {
+export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRootAnimation> {
 
   private svgRootElement : SVGSVGElement;
   private viewBoxAnimation : SVGAnimationElement;
@@ -39,6 +40,7 @@ export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAni
   constructor(props:GraphRootProps){
     super(props);
     this.state = { 
+      allEdges : [],
       kgraph : null,
       fromZoom : {x : 0, y : 0, width : 0, height : 0},
       toZoom : {x : 0, y : 0, width : 0, height : 0},
@@ -124,7 +126,7 @@ export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAni
   }
 
   componentWillReceiveProps(props : GraphRootProps){
-    this.initKGraph(props, false);
+    if(props.scjson !== this.props.scjson) this.initKGraph(props, false);
   }
 
   //later, try handleMouseClick
@@ -218,6 +220,7 @@ export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAni
         if(err) throw err;
         let toZoom = {x : 0, y : 0, width : rootNode.width, height : rootNode.height};
         this.setState({ 
+          allEdges : kgraph ? this._getAllEdges(kgraph) : null,   //TODO: this is likely to be a hotspot. we probably want to move this search logic inside of the kgraph data structure
           kgraph : kgraph,
           fromZoom : initialRender || redraw ? toZoom : this.svgRootElement.viewBox.animVal,
           toZoom : toZoom,
@@ -244,8 +247,6 @@ export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAni
   }
 
   render(){
-    let allEdges = this.state.kgraph ? this._getAllEdges(this.state.kgraph) : null;   //TODO: this is likely to be a hotspot. we probably want to move this search logic inside of the kgraph data structure
-
     let from = `${[this.state.fromZoom.x, this.state.fromZoom.y, this.state.fromZoom.width,this.state.fromZoom.height].join(' ')}`;
     let to = `${[this.state.toZoom.x, this.state.toZoom.y, this.state.toZoom.width, this.state.toZoom.height].join(' ')}`;
     let viewBoxValues = `${from};${to}`;
@@ -285,12 +286,10 @@ export default class SCHVIZ extends React.Component<GraphRootProps, GraphRootAni
           { 
             this.state.kgraph &&
               <GraphNode
-                app={null}
                 node={this.state.kgraph.root}
-                allEdges={allEdges}
+                allEdges={this.state.allEdges}
                 kgraph={this.state.kgraph}
                 isRoot={true}
-                parentIsExiting={false}
                 graphRoot={this}
                 redraw={this.props.redraw}
                 configuration={this.props.configuration}

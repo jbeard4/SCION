@@ -32,7 +32,7 @@ export interface PathSegment {
   fillLength: number;
 }
 
-export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdgeAnimation> {
+export default class GraphEdge extends React.PureComponent<GraphEdgeProps, GraphEdgeAnimation> {
 
   componentHasRendered : boolean;
   svgPathAnimation : SVGAnimationElement;
@@ -378,6 +378,7 @@ export default class GraphEdge extends React.Component<GraphEdgeProps, GraphEdge
   }
 
   componentDidUpdate(prevProps:GraphEdgeProps, prevState: GraphEdgeAnimation) {
+    //console.log('GraphEdge: componentDidUpdate',this.props.edge.id);
     //This is a workaround for bug where removing element that precedes this element in the timegraph
     //will cause this element to visually disappear.
     //Calling setAttributeNS(null, 'begin', 'indefinite') will cause this element to reappear.

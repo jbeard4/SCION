@@ -34,8 +34,6 @@ export interface GraphNodeProps {
   graphRoot : GraphRoot;
   allEdges : KGraphEdge[];
   kgraph : KGraph;
-  parentIsExiting : boolean;
-  app : EventEmitter;
   redraw? : boolean;
   configuration? : string[]
 }
@@ -51,12 +49,12 @@ export interface KGraphNodeAnimation {
 export interface GraphNodeAnimation {
   from : KGraphNodeAnimation;
   to : KGraphNodeAnimation;
-  exiting? : boolean
+  isHighlighted : boolean;
 }
 
 
 
-export default class GraphNode extends React.Component<GraphNodeProps, GraphNodeAnimation> {
+export default class GraphNode extends React.PureComponent<GraphNodeProps, GraphNodeAnimation> {
 
   initialRender : boolean;
   svgTextElement : SVGTextElement;
@@ -79,7 +77,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
         x : props.node.width / 2,
         y : props.node.height / 2,
         width : 0,
-        height : 0
+        height : 0,
       },
       translate : {
         x : props.node.x,
@@ -95,13 +93,9 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
 
     this.state = {
       from : this.getInitialFrom(props),
-      to : this._toNode(this.props.node)
+      to : this._toNode(this.props.node),
+      isHighlighted : false
     };
-  }
-
-  shouldComponentUpdate(nextProps, nextState){
-    //TODO: also do shallow compare of current and previous?
-    return nextProps.kgraph.getKgraphNodeById(nextProps.node.id) === nextProps.node;   //verify that node exists on the given kgraph
   }
 
   componentWillUnmount () {
@@ -135,7 +129,7 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
         label: 'Expand/contract', 
         click : () => {
           console.log('Expand state/contract state');
-          this.props.app.emit('state:dblclick', this.props.node.id, event);
+          //this.props.app.emit('state:dblclick', this.props.node.id, event);
         }
       })
     ];
@@ -172,7 +166,8 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
   componentWillReceiveProps(props : GraphNodeProps){
     this.state = { 
       from : props.redraw ? this.getInitialFrom(props) : this.state.to,
-      to : this._toNode(props.node)
+      to : this._toNode(props.node),
+      isHighlighted : props.configuration.indexOf(props.node.id) > -1
     };
     debug('this.state', JSON.stringify(this.state));
   }
@@ -182,11 +177,44 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
     event.preventDefault();
     event.stopPropagation();
     
-    this.props.app.emit('state:dblclick', this.props.node.id, event);
+    //TODO: restore this behavior
+    //this.props.app.emit('state:dblclick', this.props.node.id, event);
+  }
+
+  shouldComponentUpdate(nextProps: GraphNodeProps, nextState: GraphNodeAnimation){
+    let x = 
+        nextProps.node !== this.props.node || 
+        nextProps.isRoot  !== this.props.isRoot || 
+        nextProps.graphRoot  !== this.props.graphRoot || 
+        //nextProps.allEdges  !== this.props.allEdges || 
+        nextProps.kgraph  !== this.props.kgraph || 
+        //nextProps.redraw !== this.props.redraw || 
+        (function(s1, s2){
+          if (s1.length !== s2.length) {
+            return true;
+          }
+
+          for (var v of s1) {
+            if (s2.indexOf(v) === -1) {
+                return true;
+            }
+          }
+          for (var v of s1) {
+            if (s1.indexOf(v) === -1) {
+                return true;
+            }
+          }
+          return false;
+        })(nextProps.configuration, this.props.configuration)
+        
+
+    //console.log('shouldComponentUpdate', this.props.node.id, x);
+
+    return x;
   }
 
   componentDidUpdate(){
-    console.log('componentDidUpdate',this.props.node.id);
+    //console.log('GraphNode: componentDidUpdate',this.props.node.id);
     //reset the timeline on all smil animations
     this.animate();
   }
@@ -213,23 +241,19 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
     var isLeaf = !(this.props.node.children && this.props.node.children.length);
 
     let myEdges;
-    if(!this.state.exiting){
-      let edgesOriginatingFromChildStateAndNotTargetingDescendant = 
-        !this.props.node.children ? [] : 
-        this.props.node.children.map((child) => 
-            this.props.allEdges.
-              filter( (edge) => (child.id === edge.source && !this.props.kgraph.isSourceAncestorOfTarget(edge.source, edge.target)))
-          ).reduce( ((a,b) => a.concat(b) ), []);
-
-      let edgesOriginatingFromThisStateAndTargetingDescendant = 
+    let edgesOriginatingFromChildStateAndNotTargetingDescendant = 
+      !this.props.node.children ? [] : 
+      this.props.node.children.map((child) => 
           this.props.allEdges.
-            filter( (edge) => (this.props.node.id === edge.source && this.props.kgraph.isSourceAncestorOfTarget(edge.source, edge.target) ) )
+            filter( (edge) => (child.id === edge.source && !this.props.kgraph.isSourceAncestorOfTarget(edge.source, edge.target)))
+        ).reduce( ((a,b) => a.concat(b) ), []);
 
-      myEdges = edgesOriginatingFromThisStateAndTargetingDescendant.concat(
-                        edgesOriginatingFromChildStateAndNotTargetingDescendant); 
-    } else {
-      myEdges = [];
-    }
+    let edgesOriginatingFromThisStateAndTargetingDescendant = 
+        this.props.allEdges.
+          filter( (edge) => (this.props.node.id === edge.source && this.props.kgraph.isSourceAncestorOfTarget(edge.source, edge.target) ) )
+
+    myEdges = edgesOriginatingFromThisStateAndTargetingDescendant.concat(
+                      edgesOriginatingFromChildStateAndNotTargetingDescendant); 
 
     var edgeKeys = {};
     let toReturn = <g id={this.state.to.node.id} 
@@ -304,39 +328,33 @@ export default class GraphNode extends React.Component<GraphNodeProps, GraphNode
                  begin="indefinite"
                  className={constants.START}
                  dur={constants.ANIM_DURATION} 
-                 from={this.initialRender ? 1 : 0} to={this.state.exiting ? 0 : 1} />
+                 from={this.initialRender ? 1 : 0} to={1} />
       </text>
 
       <g className="childNodes">
         { 
 
-          !this.state.exiting ? 
             (this.props.node.children && this.props.node.children.map(child => (
               <GraphNode
-                app={this.props.app}
                 node={child}
                 key={child.id}
                 allEdges={this.props.allEdges}
                 kgraph={this.props.kgraph}
                 isRoot={false}
-                parentIsExiting={this.props.parentIsExiting || this.state.exiting}
                 graphRoot={this.props.graphRoot}
                 redraw={this.props.redraw}
                 configuration={this.props.configuration}
                 />
-          ))) : 
-          []
+          )))
         }
       </g>
       <g className="edges">
         { 
-          !this.state.exiting ? 
             myEdges.map((edge, i) => (
               <GraphEdge edge={edge} key={`${this.props.node.id}_${i}`} 
                 redraw={this.props.redraw}
                 />
-            ))  : 
-            []
+            )) 
         }
       </g>
     </g>;
