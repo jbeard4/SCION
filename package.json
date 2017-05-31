@@ -80,6 +80,7 @@
   },
   "main": "./lib/runtime/facade",
   "scripts": {
+    "postversion": "git push --follow-tags && npm publish",
     "test": "grunt build test",
     "bundle": "browserify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
     "uglify": "uglifyjs dist/scxml.js -o dist/scxml.min.js",
