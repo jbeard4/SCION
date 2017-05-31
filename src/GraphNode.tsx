@@ -49,7 +49,6 @@ export interface KGraphNodeAnimation {
 export interface GraphNodeAnimation {
   from : KGraphNodeAnimation;
   to : KGraphNodeAnimation;
-  isHighlighted : boolean;
 }
 
 
@@ -93,8 +92,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
 
     this.state = {
       from : this.getInitialFrom(props),
-      to : this._toNode(this.props.node),
-      isHighlighted : false
+      to : this._toNode(this.props.node)
     };
   }
 
@@ -166,8 +164,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
   componentWillReceiveProps(props : GraphNodeProps){
     this.state = { 
       from : props.redraw ? this.getInitialFrom(props) : this.state.to,
-      to : this._toNode(props.node),
-      isHighlighted : props.configuration.indexOf(props.node.id) > -1
+      to : this._toNode(props.node)
     };
     debug('this.state', JSON.stringify(this.state));
   }
