@@ -126,7 +126,8 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   }
 
   componentWillReceiveProps(props : GraphRootProps){
-    if(props.scjson !== this.props.scjson) this.initKGraph(props, false);
+    if(props.scjson !== this.props.scjson ||
+        props.layoutOptions !== this.props.layoutOptions) this.initKGraph(props, false);
   }
 
   //later, try handleMouseClick

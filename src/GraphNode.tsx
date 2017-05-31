@@ -187,6 +187,14 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
         nextProps.kgraph  !== this.props.kgraph || 
         //nextProps.redraw !== this.props.redraw || 
         (function(s1, s2){
+          if(!s1 && !s2){
+            return false;
+          }
+
+          if(typeof s1 !== typeof s2){
+            return true;
+          }
+
           if (s1.length !== s2.length) {
             return true;
           }
