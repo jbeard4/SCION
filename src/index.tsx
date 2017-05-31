@@ -19,6 +19,7 @@ export default class Console extends React.Component<ConsoleProps, ConsoleState>
   handleSubmit(event){
     console.log('handle submit', event);
     event.preventDefault();
+    event.stopPropagation();
     let scxmlEventString = this.eventInputElement.value;
     let eventObj = this.parseEventString(scxmlEventString);
     this.eventInputElement.value = '';  //clear him
