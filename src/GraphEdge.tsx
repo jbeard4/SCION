@@ -267,8 +267,10 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
               [
                 <animate attributeName="visibility"  attributeType="XML" fill="freeze" 
                          to="hidden"
+                         key={0}
                          begin={ `${this.props.edge.$hyperlink}_last.begin` }/>,
                 <animate attributeName="visibility"  attributeType="XML" fill="freeze" 
+                         key={1}
                          to="visible"
                          begin={ this.state.begin.path }/>
               ]
