@@ -38,7 +38,7 @@ export default class Console extends React.Component<ConsoleProps, ConsoleState>
   }
 
   componentDidUpdate(){
-    this.eventInputElement.focus();
+    if(this.props.isActive) this.eventInputElement.focus();
   }
 
   render(){
