@@ -1,6 +1,6 @@
 {
   "name": "console-component",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,7 +16,7 @@
     "build": "npm run transpile",
     "transpile": "tsc -p . --outDir dist/",
     "clean": "rm -rf dist/*",
-    "postversion" : "git push && npm publish"
+    "postversion": "git push && npm publish"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "AGPL-3.0"
