@@ -1,10 +1,8 @@
-import schviz = require('schviz2');
 import * as React from "react";
-import SCXMLVisualization from './SCXMLVisualization';
-import preferences = require('../../preferences');
+import SCHVIZ from 'schviz2';
+import Console from 'console-component';
 import scxml = require('scxml');
 import RunButton from './RunButton';
-import ConsoleComponent from './Console';
 import electron = require('electron');
 import {handleError, clear} from '../handle-errors';
 
@@ -13,11 +11,12 @@ const {Menu, MenuItem} = remote;
 
 import fs = require('fs');
 
-let layout = preferences.defaultLayout;
-
 interface AppComponentState {
-  scxmlInstance? : any;     //TODO: scion needs a .d.ts. for scxml instance, and for scjson
+  interpreter? : any;     //TODO: scion needs a .d.ts. for scxml instance, and for scjson
   scjson? : any;            //scjson needs a typescript definition
+  layoutOptions? : any;
+  layoutName : string;
+  configuration? : string[];
 }
 
 interface AppComponentProps {
@@ -28,11 +27,8 @@ interface AppComponentProps {
 
 export default class AppComponent extends React.Component<AppComponentProps, AppComponentState> {
 
-  viz : SCXMLVisualization;
   constructor(props){
     super(props);
-
-    this.initContextMenu();
 
     //read, and perform initial render
     let scxmlContents;
@@ -44,10 +40,15 @@ export default class AppComponent extends React.Component<AppComponentProps, App
     }
 
     //if he is SCXML, convert him to scjson
+    const initialLayout = 'right';
     this.state ={ 
-      scxmlInstance : null,
-      scjson : scxml.ext.compilerInternals.scxmlToScjson(scxmlContents)
+      interpreter : null,
+      scjson : scxml.ext.compilerInternals.scxmlToScjson(scxmlContents),
+      layoutName : initialLayout,
+      layoutOptions : SCHVIZ.layouts[initialLayout] 
     };
+
+    this.initContextMenu();
 
     //if everything worked, then watch the file for changes
     fs.watchFile(props.scxmlPath, {persistent: true, interval : 100}, (cur, prev) => {
@@ -55,7 +56,7 @@ export default class AppComponent extends React.Component<AppComponentProps, App
       let scxmlContents = fs.readFileSync(props.scxmlPath,'utf8');
       //if he is SCXML, convert him to scjson
       this.setState({ 
-        scxmlInstance : this.state.scxmlInstance,
+        interpreter : null,
         scjson : scxml.ext.compilerInternals.scxmlToScjson(scxmlContents)
       });
     });
@@ -63,16 +64,16 @@ export default class AppComponent extends React.Component<AppComponentProps, App
 
   private initContextMenu(){
     const menu = new Menu()
-    let items = Object.keys(schviz.layouts).map((layoutName) => {
+    let items = Object.keys(SCHVIZ.layouts).map((layoutName) => {
       let item = new MenuItem({ 
         label: layoutName, 
         type: 'checkbox', 
-        checked: layout === layoutName,
+        checked: this.state.layoutName === layoutName,
         click : () => {
-          layout = layoutName;
           items.forEach( i => i.checked = i === item );
-          this.viz.updateLayout(layoutName, (err) => {
-            if(err) handleError(err);
+          this.setState({
+            layoutName : layoutName,
+            layoutOptions : SCHVIZ.layouts[layoutName]
           });
         }
       });
@@ -91,13 +92,10 @@ export default class AppComponent extends React.Component<AppComponentProps, App
     //create a new scxml instance
     //bind it to highlight behavior
     //then call setState
-    if(this.state.scxmlInstance){
-      //TODO: unregister listeners. clean up timers. anything else to destroy an instance?
+    if(this.state.interpreter){
       this.setState({
-        scxmlInstance : null,
-        scjson : this.state.scjson
+        interpreter : null
       });
-      this.viz.unhighlightAllStates();
     }else {
       //start him
       this.startScxml();
@@ -105,38 +103,6 @@ export default class AppComponent extends React.Component<AppComponentProps, App
   }
 
   startScxml(){
-    var listeners = {
-        onEntry: (stateId) => { 
-          console.log('entering state ' + stateId); 
-          this.viz.highlightState(stateId);
-        },
-        onExit: (stateId) => { 
-          console.log('exiting state ' + stateId); 
-          this.viz.unhighlightState(stateId);
-        },
-        onTransition: (sourceStateId, targetIds, transitionIdx) => {
-            if (targetIds && targetIds.length) {
-                console.log('transitioning from ' + sourceStateId + ' to ' + targetIds.join(','));
-                this.viz.highlightTransition(sourceStateId, transitionIdx);
-            } else {
-                console.log('executing target-less transition in ' + sourceStateId);
-            }
-        },
-        onError: (err) => {
-            console.log('ERROR:' + JSON.stringify(err));
-        }
-    };
-
-    function customSend(event, options) {
-        console.log('SEND: ' +
-            JSON.stringify(event) +
-            ', options: ' +
-            JSON.stringify(options));
-    }
-
-    var interpOpts = {
-        customSend: customSend
-    }
 
     //1 - 2. get the xml file and convert it to jsonml
     scxml.pathToModel(this.props.scxmlPath, (err,model) => {
@@ -153,20 +119,15 @@ export default class AppComponent extends React.Component<AppComponentProps, App
             }
 
             //Use the statechart object model to instantiate an instance of the statechart interpreter. Optionally, we can pass to the construct an object to be used as the context object (the 'this' object) in script evaluation. Lots of other parameters are available.
-            var interpreter = new scxml.scion.Statechart(fnModel, interpOpts);
-
-
-            interpreter.registerListener(listeners);
-
+            var interpreter = new scxml.scion.Statechart(fnModel);
 
             interpreter.start();
 
             this.setState({
-              scxmlInstance : interpreter,
-              scjson : this.state.scjson
+              interpreter : interpreter,
+              configuration : interpreter.getConfiguration() 
             });
         
-            console.log(interpreter.getConfiguration());
         })
 
     });
@@ -174,19 +135,24 @@ export default class AppComponent extends React.Component<AppComponentProps, App
   }
 
   sendEvent(eventObject){
-    this.state.scxmlInstance.gen(eventObject);
+    this.setState({
+      configuration : this.state.interpreter.gen(eventObject)
+    });
   }
 
   render(){
     if(!this.state) return <div>There was an error.</div>;
-    return <div id="embed_outer" className={this.state.scxmlInstance ? 'simulation-mode' : 'viz-mode'}>
+    return <div id="embed_outer" className={this.state.interpreter ? 'simulation-mode' : 'viz-mode'}>
       <div id="embed_inner">
         <div id="scxml-content">
-          <SCXMLVisualization scjson={this.state.scjson} ref={ (viz) => this.viz = viz }/>
+          <SCHVIZ scjson={this.state.scjson} layoutOptions={this.state.layoutOptions} configuration={this.state.configuration}/>
         </div>
       </div>
-      <RunButton running={this.state.scxmlInstance} handleClick={this.handleRunButtonClick.bind(this)}/>
-      <ConsoleComponent handleSubmit={this.sendEvent.bind(this)}/>
+      <RunButton running={this.state.interpreter} handleClick={this.handleRunButtonClick.bind(this)}/>
+      <Console 
+        handleSubmit={this.sendEvent.bind(this)}
+        isActive={!!this.state.interpreter}
+        />
     </div>;
   }
 }
