@@ -191,7 +191,10 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
             return false;
           }
 
-          if(typeof s1 !== typeof s2){
+          const s1IsArray = Array.isArray(s1),
+                s2IsArray = Array.isArray(s2);
+          if((s1IsArray && !s2IsArray) || 
+                (!s1IsArray && s2IsArray)){
             return true;
           }
 
