@@ -228,7 +228,11 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
           fromNode : this.state.toNode,
           toNode : rootNode
         }, () => {
-          this.svgRootElement.unpauseAnimations();
+          //add a timeout to let the thread settle before starting animations
+          //without this, on large models, we lose the first few animation frames
+          setTimeout( () => {
+            this.svgRootElement.unpauseAnimations();
+          })
         });
       })  
     }
