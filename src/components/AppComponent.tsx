@@ -94,7 +94,8 @@ export default class AppComponent extends React.Component<AppComponentProps, App
     //then call setState
     if(this.state.interpreter){
       this.setState({
-        interpreter : null
+        interpreter : null,
+        configuration : null
       });
     }else {
       //start him
@@ -104,7 +105,7 @@ export default class AppComponent extends React.Component<AppComponentProps, App
 
   startScxml(){
 
-    //1 - 2. get the xml file and convert it to jsonml
+    //1 - 2. get the xml file and convert it to json
     scxml.pathToModel(this.props.scxmlPath, (err,model) => {
 
         if(err){
