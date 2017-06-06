@@ -4,7 +4,7 @@ type FullConfiguration = string[];
 
 export class BaseInterpreter {
   constructor(model : FnModel | SCState, opts? : any);
-  start : () => void;
+  start : () => Configuration;
   startAsync : (cb: (Configuration) => void) => void;
   getConfiguration : () => Configuration;
   getFullConfiguration : () => FullConfiguration;
