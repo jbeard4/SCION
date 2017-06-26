@@ -6,47 +6,66 @@ const repl = require('repl');
 
 var argv = require('optimist')
     .alias('c', 'compile')
-    .boolean('c')
+    .string('c')
     .demand('i')
     .alias('i', 'input')
     .alias('o', 'output')
     .default('o', '-')
     .alias('r', 'repl')
     .boolean('b')
+    .alias('e', 'execute')
+    .boolean('e')
     .argv;
 
 if(argv.compile){
   var options = {deferCompilation : true};
 } 
-scxml.pathToModel(argv.input, function(err, model){
-  if(err) return console.error(err);
-  if(argv.compile){
-    model.prepareModuleString(function(err, moduleString){
-      if(err) return console.error(err);
-      if(argv.output === '-'){
-        console.log(moduleString);
-      } else {
-        fs.writeFileSync(argv.output, moduleString); 
-      }
-    }, {moduleFormat : 'commonjs'});
-  } else if(argv.repl){
-    model.prepare(function(err, fnModel){
-      if(err) return console.error(err);
-      startRepl(fnModel);
-    },{console : console});
-  }
-}, options); 
+if(argv.compile === 'scjson'){
+  var scxmlToScjson = require('../lib/compiler/scxml-to-scjson');
+  var util = require('util');
+  var scjson = scxmlToScjson(fs.readFileSync(argv.input,'utf8'));
+  console.log(util.inspect(scjson,{showHidden: false, depth: null}));
+} else {
+  scxml.pathToModel(argv.input, function(err, model){
+    if(err) return console.error(err);
+    if(argv.compile){
+      model.prepareModuleString(function(err, moduleString){
+        if(err) return console.error(err);
+        if(argv.output === '-'){
+          console.log(moduleString);
+        } else {
+          fs.writeFileSync(argv.output, moduleString); 
+        }
+      }, {moduleFormat : 'commonjs'});
+    } else if(argv.repl){
+      model.prepare(function(err, fnModel){
+        if(err) return console.error(err);
+        startRepl(fnModel);
+      },{console : console});
+    } else if(argv.execute){
+      model.prepare(function(err, fnModel){
+        if(err) return console.error(err);
+        //just instantiate and start him
+        var interpreter = new scxml.scion.Statechart(fnModel, interpOpts);
+        interpreter.registerListener(listeners);
+        interpreter.start();
+      },{console : console});
+    }
+  }, options); 
+}
 
 
+/*
 function customSend(event, options) {
     console.log('SEND: ' +
         JSON.stringify(event) +
         ', options: ' +
         JSON.stringify(options));
 }
+*/
 
 var interpOpts = {
-    customSend: customSend
+    //customSend: customSend
 }
 
 var listeners = {
