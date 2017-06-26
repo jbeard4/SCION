@@ -73,12 +73,14 @@ Compile SCXML to JavaScript object "model".
 
 ### model.prepare(function(err, fnModel) {}, executionContext, hostContext)
 
-Prepare the model by downloading source scripts and constructing a host execution context for the SCXML datamodel.
+Prepare the model by recursively downloading external scripts referenced by
+script/@src, and SCXML documents references by invoke/@src, then constructing a
+host execution context for the SCXML datamodel.
 
 ### new scxml.scion.Statechart(fnModel, options)
 
 
-The Statechart constructor creates an interpreter instance from a model object.
+The Statechart constructor creates an interpreter instance from a fnModel object.
 
 ```javascript
     //same model can be used to create multiple interpreter instances
