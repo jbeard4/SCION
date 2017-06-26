@@ -60,7 +60,7 @@ http.createServer(function (req, res) {
 
                                 // TODO: timeout should be kicked off before fetch/compilation/preparation
                                 timeouts[sessionToken] = setTimeout(function(){cleanUp(sessionToken);},timeoutMs);  
-                            }, null, {writeModuleToDisk : true});
+                            }, {console : console}, {writeModuleToDisk : true});
                         } catch(e) {
                           console.log(e.stack);
                           console.log(e);
@@ -68,7 +68,7 @@ http.createServer(function (req, res) {
                           res.end(e.message);
                         }
                     }
-                }, {deferCompilation : true});
+                }, {deferCompilation : false});
 
             }else if(reqJson.event && (typeof reqJson.sessionToken === "number")){
                 console.log("sending event to statechart",reqJson.event);
