@@ -65,6 +65,7 @@ scxml.urlToModel("drag-and-drop.xml",function(err,model){
 ## Instantiation
 
 ### scxml.invoke(url,function(err, session){} [, options])
+### scxml.invokeContent(url, scxmlContentString, function(err, session){} [, options])
 
 ### scxml.urlToModel(url,function(err, model){} [, context])
 ### scxml.pathToModel(path,function(err, model){} [, context])
