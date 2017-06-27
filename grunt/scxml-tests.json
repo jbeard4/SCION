@@ -1,4 +1,5 @@
 [
   "node_modules/scxml-test-framework/test/w3c-ecma/test187.txml.scxml",
+  "node_modules/scxml-test-framework/test/w3c-ecma/test207.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test226.txml.scxml"
 ]
