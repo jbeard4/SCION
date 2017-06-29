@@ -5,5 +5,6 @@
   "node_modules/scxml-test-framework/test/w3c-ecma/test216.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test220.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test223.txml.scxml",
+  "node_modules/scxml-test-framework/test/w3c-ecma/test224.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test226.txml.scxml"
 ]
