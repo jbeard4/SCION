@@ -20,7 +20,7 @@ var argv = require('optimist')
 if(argv.compile){
   var options = {deferCompilation : true};
 } 
-if(argv.compile === 'scjson'){
+if(argv.compile === 'scjson' || argv.compile === 'json'){
   var scxmlToScjson = require('../lib/compiler/scxml-to-scjson');
   var util = require('util');
   var scjson = scxmlToScjson(fs.readFileSync(argv.input,'utf8'));
