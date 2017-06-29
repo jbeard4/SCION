@@ -37,7 +37,7 @@
     "esprima": "2.7.2",
     "optimist": "0.6.1",
     "sax": "jbeard4/sax-js#e0722d285de448ad66e076f4ee2cef420b55f4de",
-    "scion-core": "git+ssh://git@nas:jbeard4/scion-core#1b7d76b77b40dcc2e4cc410ef1d7d323fab7f6d1",
+    "scion-core": "git+ssh://git@nas:jbeard4/scion-core#4052cd193ac91a7592867138da70561809fcee62",
     "source-map": "^0.5.6",
     "text-to-js-identifier": "0.0.4"
   },
@@ -65,7 +65,7 @@
     "minimist": "^1.2.0",
     "nodeunit": "^0.9.1",
     "request": "^2.74.0",
-    "scxml-test-framework": "git+ssh://git@nas:jbeard4/scxml-test-framework#d756544aafa8baa3ebaae29a67f0ef14dfe4445c",
+    "scxml-test-framework": "git+ssh://git@nas:jbeard4/scxml-test-framework#8fcdca30c6ba1edf7b1b29b1eb6c3c4589522185",
     "uglify-js": "^2.8.21",
     "underscore": "^1.8.3",
     "vm-browserify2": "0.0.6",
