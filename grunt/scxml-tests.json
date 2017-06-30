@@ -20,5 +20,6 @@
   "node_modules/scxml-test-framework/test/w3c-ecma/test252.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test253.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test276.txml.scxml",
+  "node_modules/scxml-test-framework/test/w3c-ecma/test330.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test339.txml.scxml"
 ]
