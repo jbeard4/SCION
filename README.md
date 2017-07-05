@@ -71,6 +71,10 @@ An SCXML interpreter takes SCXML events as input, where an SCXML event is an obj
     var configuration = sc.gen({name:"eventName",data:{foo:1}}); 
 ```
 
+## sc.cancel() : null
+
+Cancels the session. This clears all timers; puts the interpreter in a final state; and runs all exit actions on current states.
+
 ## Event Emitter
 
 SCION-CORE includes the [tiny-events](https://github.com/ZauberNerd/tiny-events) library, and implements the following EventEmitter methods:
