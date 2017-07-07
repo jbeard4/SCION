@@ -9,5 +9,16 @@
   "node_modules/scxml-test-framework/test/w3c-ecma/test148.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test149.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test150.txml.scxml",
+  "node_modules/scxml-test-framework/test/w3c-ecma/test151.txml.scxml",
+  "node_modules/scxml-test-framework/test/w3c-ecma/test153.txml.scxml",
+  "node_modules/scxml-test-framework/test/w3c-ecma/test155.txml.scxml",
+  "node_modules/scxml-test-framework/test/w3c-ecma/test158.txml.scxml",
+  "node_modules/scxml-test-framework/test/w3c-ecma/test159.txml.scxml",
+  "node_modules/scxml-test-framework/test/w3c-ecma/test172.txml.scxml",
+  "node_modules/scxml-test-framework/test/w3c-ecma/test173.txml.scxml",
+  "node_modules/scxml-test-framework/test/w3c-ecma/test174.txml.scxml",
+  "node_modules/scxml-test-framework/test/w3c-ecma/test175.txml.scxml",
+  "node_modules/scxml-test-framework/test/w3c-ecma/test176.txml.scxml",
+  "node_modules/scxml-test-framework/test/w3c-ecma/test183.txml.scxml",
   "node_modules/scxml-test-framework/test/misc/*.scxml"
 ]
