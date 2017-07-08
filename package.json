@@ -37,7 +37,7 @@
     "esprima": "2.7.2",
     "optimist": "0.6.1",
     "sax": "jbeard4/sax-js#e0722d285de448ad66e076f4ee2cef420b55f4de",
-    "scion-core": "git+ssh://git@nas:jbeard4/scion-core#bacc5595350c691d9f87967af2a2d815229b63a1",
+    "scion-core": "git+ssh://git@nas:jbeard4/scion-core#400d7ebc0d7f7b6f8d612e3899555a5d7e68c69e",
     "source-map": "^0.5.6",
     "text-to-js-identifier": "0.0.4"
   },
