@@ -35,11 +35,13 @@
   ],
   "dependencies": {
     "esprima": "2.7.2",
+    "jsdom": "^11.1.0",
     "optimist": "0.6.1",
     "sax": "jbeard4/sax-js#e0722d285de448ad66e076f4ee2cef420b55f4de",
-    "scion-core": "git+ssh://git@nas:jbeard4/scion-core#400d7ebc0d7f7b6f8d612e3899555a5d7e68c69e",
+    "scion-core": "git+ssh://git@nas:jbeard4/scion-core#fe0c072015f01d02975716f3cb34729598410667",
     "source-map": "^0.5.6",
-    "text-to-js-identifier": "0.0.4"
+    "text-to-js-identifier": "0.0.4",
+    "xmlserializer": "^0.6.0"
   },
   "devDependencies": {
     "async": "^1.5.2",
