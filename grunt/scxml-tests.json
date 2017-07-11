@@ -96,6 +96,7 @@
   "node_modules/scxml-test-framework/test/w3c-ecma/test406.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test407.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test419.txml.scxml",
+  "node_modules/scxml-test-framework/test/w3c-ecma/test421.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test422.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test423.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test436.txml.scxml",
