@@ -38,7 +38,7 @@
     "jsdom": "^11.1.0",
     "optimist": "0.6.1",
     "sax": "jbeard4/sax-js#e0722d285de448ad66e076f4ee2cef420b55f4de",
-    "scion-core": "git+ssh://git@nas:jbeard4/scion-core#f93e36cfa2ea91ec19eef19296ecb7dfe07abd0e", 
+    "scion-core": "git+ssh://git@nas:jbeard4/scion-core#3253058ef721c00139187614fe3fbc3003b00298",
     "source-map": "^0.5.6",
     "text-to-js-identifier": "0.0.4",
     "xmlserializer": "^0.6.0"
