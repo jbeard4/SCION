@@ -6,7 +6,7 @@
 var scxml = require('..'),
     http = require('http');
 
-var sessionCounter = 0, sessions = {}, timeouts = {}, timeoutMs = 5000;
+var sessionCounter = 1, sessions = {}, timeouts = {}, timeoutMs = 5000, sessionRegistry = new Map();
 
 var PORT = process.env.PORT || 42000;
 
@@ -44,7 +44,10 @@ http.createServer(function (req, res) {
                                     return;
                                 }
 
-                                var interpreter = new scxml.scion.Statechart(fnModel, { sessionid: sessionCounter });
+                                var interpreter = new scxml.scion.Statechart(fnModel, { 
+                                  sessionid: sessionCounter,
+                                  sessionRegistry : sessionRegistry 
+                                });
 
                                 var sessionToken = sessionCounter;
                                 sessionCounter++;
