@@ -38,7 +38,7 @@
     "jsdom": "^11.1.0",
     "optimist": "0.6.1",
     "sax": "jbeard4/sax-js#e0722d285de448ad66e076f4ee2cef420b55f4de",
-    "scion-core": "git+ssh://git@nas:jbeard4/scion-core#834a023f3e53d257bb1acbaf2b26a765287dec04",
+    "scion-core": "git+ssh://git@nas:jbeard4/scion-core#9208608c2e13f89e6579ec45497ee5503c218d48",
     "source-map": "^0.5.6",
     "text-to-js-identifier": "0.0.4",
     "xmlserializer": "^0.6.0"
@@ -67,7 +67,7 @@
     "minimist": "^1.2.0",
     "nodeunit": "^0.9.1",
     "request": "^2.74.0",
-    "scxml-test-framework": "git+ssh://git@nas:jbeard4/scxml-test-framework#3f1ff2dc92316c91fdca195b0b5f33e70f035699",
+    "scxml-test-framework": "git+ssh://git@nas:jbeard4/scxml-test-framework#9a1eae49f0d818335785eca399b435f8ef76036f",
     "uglify-js": "^2.8.21",
     "underscore": "^1.8.3",
     "vm-browserify2": "0.0.6",
