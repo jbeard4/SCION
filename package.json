@@ -34,6 +34,7 @@
     "http://www.w3.org/TR/scxml/"
   ],
   "dependencies": {
+    "escodegen": "^1.8.1",
     "esprima": "2.7.2",
     "jsdom": "^11.1.0",
     "optimist": "0.6.1",
@@ -67,7 +68,7 @@
     "minimist": "^1.2.0",
     "nodeunit": "^0.9.1",
     "request": "^2.74.0",
-    "scxml-test-framework": "git+ssh://git@nas:jbeard4/scxml-test-framework#9a1eae49f0d818335785eca399b435f8ef76036f",
+    "scxml-test-framework": "git+ssh://git@nas:jbeard4/scxml-test-framework#febaa0bff437d7553ead184d74969d8445c5375e",
     "uglify-js": "^2.8.21",
     "underscore": "^1.8.3",
     "vm-browserify2": "0.0.6",
