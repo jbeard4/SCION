@@ -68,7 +68,7 @@
     "minimist": "^1.2.0",
     "nodeunit": "^0.9.1",
     "request": "^2.74.0",
-    "scxml-test-framework": "git+ssh://git@nas:jbeard4/scxml-test-framework#febaa0bff437d7553ead184d74969d8445c5375e",
+    "scxml-test-framework": "git+ssh://git@nas:jbeard4/scxml-test-framework#ff0eb9c3e9b3ddcdc2bf0c522b6f14b29f24b3d8",
     "uglify-js": "^2.8.21",
     "underscore": "^1.8.3",
     "vm-browserify2": "0.0.6",
