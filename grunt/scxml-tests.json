@@ -153,6 +153,7 @@
   "node_modules/scxml-test-framework/test/w3c-ecma/test453.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test456.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test457.txml.scxml",
+  "node_modules/scxml-test-framework/test/w3c-ecma/test459.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test460.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test487.txml.scxml",
   "node_modules/scxml-test-framework/test/w3c-ecma/test488.txml.scxml",
