@@ -3,15 +3,13 @@
 //send event to statechart with tokenid
 //clean up statechart
 
-var scxml = require('..'),
-    http = require('http');
+const scxml = require('..'),
+      http = require('http');
 
 var sessionCounter = 1, sessions = {}, timeouts = {}, timeoutMs = 5000, sessionRegistry = new Map();
 
-var PORT = process.env.PORT || 42000;
-
-function loadScxml(scxmlStr){
-}
+const PORT = process.env.PORT || 42000;
+const TEST_ASYNC = typeof process.env.TEST_ASYNC !== 'undefined';
 
 function cleanUp(sessionToken){
     delete sessions[sessionToken];
@@ -46,23 +44,37 @@ http.createServer(function (req, res) {
 
                                 var interpreter = new scxml.scion.Statechart(fnModel, { 
                                   sessionid: sessionCounter,
-                                  sessionRegistry : sessionRegistry 
+                                  sessionRegistry : sessionRegistry,
+                                  sendAsync : TEST_ASYNC 
                                 });
 
                                 var sessionToken = sessionCounter;
                                 sessionCounter++;
                                 sessions[sessionToken] = interpreter; 
 
-                                var conf = interpreter.start(); 
+                                if(TEST_ASYNC){
+                                  interpreter.startAsync(startCb); 
+                                }else{
+                                  try { 
+                                    let conf = interpreter.start(); 
+                                    startCb(null, conf);
+                                  } catch (err){
+                                    startCb(err);
+                                  }
+                                }
+                                function startCb(err, conf){
+                                    console.log('err, conf', err, conf);
+                                    res.writeHead(200, {'Content-Type': 'application/json'});
+                                    res.end(JSON.stringify({
+                                        sessionToken : sessionToken,
+                                        nextConfiguration : conf
+                                    }));
 
-                                res.writeHead(200, {'Content-Type': 'application/json'});
-                                res.end(JSON.stringify({
-                                    sessionToken : sessionToken,
-                                    nextConfiguration : conf
-                                }));
-
-                                // TODO: timeout should be kicked off before fetch/compilation/preparation
-                                timeouts[sessionToken] = setTimeout(function(){cleanUp(sessionToken);},timeoutMs);  
+                                    // TODO: timeout should be kicked off before fetch/compilation/preparation
+                                    timeouts[sessionToken] = setTimeout(function(){
+                                      cleanUp(sessionToken);
+                                    },timeoutMs);  
+                                }
                             }, {console : console}, {writeModuleToDisk : true});
                         } catch(e) {
                           console.log(e.stack);
@@ -76,15 +88,28 @@ http.createServer(function (req, res) {
             }else if(reqJson.event && (typeof reqJson.sessionToken === "number")){
                 console.log("sending event to statechart",reqJson.event);
                 sessionToken = reqJson.sessionToken;
-                var nextConfiguration = sessions[sessionToken].gen(reqJson.event);
-                console.log('nextConfiguration',nextConfiguration);
-                res.writeHead(200, {'Content-Type': 'application/json'});
-                res.end(JSON.stringify({
-                    nextConfiguration : nextConfiguration
-                }));
+                let interpreter = sessions[sessionToken];
+                let event = reqJson.event;
+                if(TEST_ASYNC){
+                  interpreter.genAsync(event, genCb); 
+                }else{
+                  try { 
+                    let conf = interpreter.gen(event); 
+                    genCb(null, conf);
+                  } catch (err){
+                    genCb(err);
+                  }
+                }
+                function genCb(err, nextConfiguration){
+                    console.log('err, nextConfiguration',err, nextConfiguration);
+                    res.writeHead(200, {'Content-Type': 'application/json'});
+                    res.end(JSON.stringify({
+                        nextConfiguration : nextConfiguration
+                    }));
 
-                clearTimeout(timeouts[sessionToken]);
-                timeouts[sessionToken] = setTimeout(function(){cleanUp(sessionToken);},timeoutMs);  
+                    clearTimeout(timeouts[sessionToken]);
+                    timeouts[sessionToken] = setTimeout(function(){cleanUp(sessionToken);},timeoutMs);  
+                }
             }else{
                 //unrecognized. send back an error
                 res.writeHead(400, {'Content-Type': 'text/plain'});
