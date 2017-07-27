@@ -27,7 +27,6 @@ http.createServer(function (req, res) {
             var reqJson = JSON.parse(s);
             if(reqJson.load){
                 scxml.urlToModel(reqJson.load,function(err,model){
-                    //console.log('model',model);
                     if(err){
                         console.error(err.stack);
                         res.writeHead(500, {'Content-Type': 'text/plain'});
@@ -63,7 +62,6 @@ http.createServer(function (req, res) {
                                   }
                                 }
                                 function startCb(err, conf){
-                                    console.log('err, conf', err, conf);
                                     res.writeHead(200, {'Content-Type': 'application/json'});
                                     res.end(JSON.stringify({
                                         sessionToken : sessionToken,
@@ -86,7 +84,6 @@ http.createServer(function (req, res) {
                 }, {deferCompilation : false});
 
             }else if(reqJson.event && (typeof reqJson.sessionToken === "number")){
-                console.log("sending event to statechart",reqJson.event);
                 sessionToken = reqJson.sessionToken;
                 let interpreter = sessions[sessionToken];
                 let event = reqJson.event;
@@ -101,7 +98,6 @@ http.createServer(function (req, res) {
                   }
                 }
                 function genCb(err, nextConfiguration){
-                    console.log('err, nextConfiguration',err, nextConfiguration);
                     res.writeHead(200, {'Content-Type': 'application/json'});
                     res.end(JSON.stringify({
                         nextConfiguration : nextConfiguration

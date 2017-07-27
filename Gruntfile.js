@@ -115,7 +115,7 @@ module.exports = function(grunt) {
     //TODO: convert to submodule. 
     var startTests = require('scxml-test-framework');
     startTests({
-      verbose : true,
+      verbose : false,
       report : 'console',
       scxmlTestFiles : grunt.file.expand(require('./grunt/scxml-tests.json'))
     }, done);
