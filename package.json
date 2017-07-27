@@ -79,6 +79,8 @@
     "npm": ">=2.0.0"
   },
   "browser": {
+    "fs" : "./lib/runtime/platform-bootstrap/browser/fs",
+    "jsdom" : "./lib/runtime/platform-bootstrap/browser/jsdom",
     "vm": "vm-browserify2"
   },
   "main": "./lib/runtime/facade",
