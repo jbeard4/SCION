@@ -1,24 +1,3 @@
 module.exports = [
-    { name : './history/history4.test.json', test : require('./history/history4.test.json'), sc : require('./history/history4.sc.json') },
-    { name : './more-parallel/test2.test.json', test : require('./more-parallel/test2.test.json'), sc : require('./more-parallel/test2.sc.js') },
-    { name : './more-parallel/test3.test.json', test : require('./more-parallel/test3.test.json'), sc : require('./more-parallel/test3.sc.js') },
-    { name : './more-parallel/test6.test.json', test : require('./more-parallel/test6.test.json'), sc : require('./more-parallel/test6.sc.js') },
-    { name : './parallel+interrupt/test1.test.json', test : require('./parallel+interrupt/test1.test.json'), sc : require('./parallel+interrupt/test1.sc.json') },
-    { name : './parallel+interrupt/test13.test.json', test : require('./parallel+interrupt/test13.test.json'), sc : require('./parallel+interrupt/test13.sc.json') },
-    { name : './parallel+interrupt/test14.test.json', test : require('./parallel+interrupt/test14.test.json'), sc : require('./parallel+interrupt/test14.sc.json') },
-    { name : './parallel+interrupt/test15.test.json', test : require('./parallel+interrupt/test15.test.json'), sc : require('./parallel+interrupt/test15.sc.json') },
-    { name : './parallel+interrupt/test18.test.json', test : require('./parallel+interrupt/test18.test.json'), sc : require('./parallel+interrupt/test18.sc.json') },
-    { name : './parallel+interrupt/test2.test.json', test : require('./parallel+interrupt/test2.test.json'), sc : require('./parallel+interrupt/test2.sc.json') },
-    { name : './parallel+interrupt/test20.test.json', test : require('./parallel+interrupt/test20.test.json'), sc : require('./parallel+interrupt/test20.sc.json') },
-    { name : './parallel+interrupt/test21.test.json', test : require('./parallel+interrupt/test21.test.json'), sc : require('./parallel+interrupt/test21.sc.json') },
-    { name : './parallel+interrupt/test23.test.json', test : require('./parallel+interrupt/test23.test.json'), sc : require('./parallel+interrupt/test23.sc.json') },
-    { name : './parallel+interrupt/test25.test.json', test : require('./parallel+interrupt/test25.test.json'), sc : require('./parallel+interrupt/test25.sc.json') },
-    { name : './parallel+interrupt/test26.test.json', test : require('./parallel+interrupt/test26.test.json'), sc : require('./parallel+interrupt/test26.sc.json') },
-    { name : './parallel+interrupt/test28.test.json', test : require('./parallel+interrupt/test28.test.json'), sc : require('./parallel+interrupt/test28.sc.json') },
-    { name : './parallel+interrupt/test29.test.json', test : require('./parallel+interrupt/test29.test.json'), sc : require('./parallel+interrupt/test29.sc.json') },
-    { name : './parallel+interrupt/test30.test.json', test : require('./parallel+interrupt/test30.test.json'), sc : require('./parallel+interrupt/test30.sc.json') },
-    { name : './parallel+interrupt/test31.test.json', test : require('./parallel+interrupt/test31.test.json'), sc : require('./parallel+interrupt/test31.sc.json') },
-    { name : './parallel+interrupt/test4.test.json', test : require('./parallel+interrupt/test4.test.json'), sc : require('./parallel+interrupt/test4.sc.json') },
-    { name : './parallel+interrupt/test5.test.json', test : require('./parallel+interrupt/test5.test.json'), sc : require('./parallel+interrupt/test5.sc.json') },
-    { name : './parallel+interrupt/test7.test.json', test : require('./parallel+interrupt/test7.test.json'), sc : require('./parallel+interrupt/test7.sc.json') }
+    { name : './more-parallel/test2.test.json', test : require('./more-parallel/test2.test.json'), sc : require('./more-parallel/test2.sc.js') }
 ];
