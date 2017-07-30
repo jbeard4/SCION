@@ -116,7 +116,7 @@ module.exports = function(grunt) {
   //TODO: copy babel-polyfill and nodeunit-browser into test/harness/browser/lib. I wish these were published via bower. 
 
   grunt.registerTask('build-tests', ['browserify:dev']);
-  grunt.registerTask('test', ['build', 'build-tests', 'run-tests']);
+  grunt.registerTask('test', ['run-tests']);
   grunt.registerTask('run-tests', ['nodeunit']);
   grunt.registerTask('run-browser-tests', [ 'run-browser-tests-dev', 'run-browser-tests-prod', 'run-browser-tests-prod-require']);
   grunt.registerTask('run-browser-tests-dev', ['express:dev', 'saucelabs-custom', 'express:dev:stop' ]);
