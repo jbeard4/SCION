@@ -5,11 +5,11 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
-    "react": "^15.4.2"
+    "react": "15.6.1"
   },
   "devDependencies": {
-    "@types/react": "^15.0.21",
-    "typescript": "^2.2.2"
+    "@types/react": "15.6.1",
+    "typescript": "2.3.3"
   },
   "scripts": {
     "watch": "tsc -p . --outDir dist/ -w",
