@@ -3,6 +3,9 @@
   "version": "1.0.3",
   "description": "A minimal standalone graphical SCXML simulation environment.",
   "main": "main.js",
+  "bin" : {
+    "schviz" : "bin/cli.js"
+  },
   "scripts": {
     "start": "electron .",
     "preversion": "npm run build",
