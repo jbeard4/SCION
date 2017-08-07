@@ -10,21 +10,23 @@
     "start": "electron .",
     "preversion": "npm run build",
     "postversion": "git push --follow-tags && npm publish",
-    "watch": "tsc -p . --outDir dist/ -w & ( cd dist/src/; watchify --exclude electron --bare index.js -d -v -o 'cat > scxml-tool.js; sorcery -i scxml-tool.js; npm run minify' -v )",
+    "watch": "tsc -p . --outDir dist/ -w & ( cd dist/; watchify --exclude electron --bare index.js -d -v -o 'cat > scxml-tool.js; sorcery -i scxml-tool.js; npm run minify' -v )",
     "build": "npm run transpile && npm run bundle && npm run minify",
     "transpile": "tsc -p . --outDir dist/",
-    "bundle": "cd dist/src/; browserify --exclude electron --bare  index.js  -d -v -o scxml-tool.js; sorcery -i scxml-tool.js",
-    "minify": "cd dist/src/; uglifyjs scxml-tool.js --in-source-map scxml-tool.js.map  --source-map scxml-tool.min.js.map  -o scxml-tool.min.js",
+    "bundle": "cd dist/; browserify --exclude electron --bare  index.js  -d -v -o scxml-tool.js; sorcery -i scxml-tool.js",
+    "minify": "cd dist/; uglifyjs scxml-tool.js --in-source-map scxml-tool.js.map  --source-map scxml-tool.min.js.map  -o scxml-tool.min.js",
     "package": "electron-packager .",
     "clean": "rm -rf dist/*"
   },
   "dependencies": {
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.2.1",
     "optimist": "^0.6.1",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
-    "scxml": "git+ssh://git@nas/jbeard4/SCION#a2650f3b3488f77abcb39ce43d7c9616811b913e",
-    "schviz2": "git+ssh://git@nas/JacobeanRnD/SCHVIZ2#9c87faeadd81484b866f9ca8b0a240799408c794",
-    "font-awesome": "^4.7.0"
+    "toastr": "^2.1.2",
+    "scxml":"3.3.1",
+    "schviz2":"3.0.2"
   },
   "keywords": [
     "SCXML"

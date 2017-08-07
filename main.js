@@ -5,7 +5,6 @@ const app = electron.app
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
 const initMenu = require('./menu')
-const preferences = require('./preferences')
 
 const path = require('path')
 const url = require('url')
@@ -15,8 +14,6 @@ let menu = initMenu(app, createWindow);
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let scxmlWindows = {};
-
-let selectedLayout = preferences.defaultLayout;
 
 function createWindow (scxmlFile) {
 
