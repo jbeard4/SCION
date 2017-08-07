@@ -31,6 +31,12 @@ module.exports = (function(_x,_sessionid,_name,_ioprocessors,In){
                 "states": [
                     {
                         "id": "a",
+                        "transitions": [
+                            {
+                                "event": "t",
+                                "target": "a"
+                            }
+                        ],
                         "states": [
                             {
                                 "id": "a1"
@@ -42,12 +48,6 @@ module.exports = (function(_x,_sessionid,_name,_ioprocessors,In){
                     },
                     {
                         "id": "b",
-                        "transitions": [
-                            {
-                                "event": "t",
-                                "target": "a"
-                            }
-                        ],
                         "states": [
                             {
                                 "id": "b1",
