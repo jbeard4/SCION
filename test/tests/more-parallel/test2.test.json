@@ -3,7 +3,7 @@
     "events" : [ 
         {
             "event" : { "name" : "t" },
-            "nextConfiguration" : ["a1","b2"]
+            "nextConfiguration" : ["a1","b1"]
         }
 
     ]
