@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scxml xmlns="http://www.w3.org/2005/07/scxml" xmlns:conf="http://www.w3.org/2005/scxml-conformance" initial="initial-default" version="1.0" datamodel="ecmascript">
+<scxml xmlns="http://www.w3.org/2005/07/scxml" initial="initial-default" version="1.0" datamodel="ecmascript">
   <datamodel>
     <data id="userData" expr="{
       name : null
@@ -17,9 +17,6 @@
       });
     }
   </script>
-  <transition event="error">
-    <log label="error" expr="_event"/>
-  </transition>
   <state id="initial-default">
     <transition cond="!userData.name" target="home" event="message"/>
     <transition cond="userData.name" target="name-received" event="message"/>

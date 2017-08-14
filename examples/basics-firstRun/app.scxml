@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scxml xmlns="http://www.w3.org/2005/07/scxml" xmlns:conf="http://www.w3.org/2005/scxml-conformance" initial="initial-default" version="1.0" datamodel="ecmascript">
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" datamodel="ecmascript">
   <datamodel>
-    <data id="userData" expr="{
-      name : null
-    }"/>
+    <data id="messages" expr="[]"/>
+    <data id="userData" expr="{ name : null }"/>
   </datamodel>
   <script>
     function send(){
@@ -18,64 +17,78 @@
         "address": event.address,
         "text": util.format.apply(util,textArgs)
       };
-      connector.send([message], function(err, addresses){
-        if(err) this.send(err);
-        //TODO: do something with the addresses, maybe?
-      }.bind(this));
+      messages.push(message);
     }
   </script>
-  <transition event="error">
-    <log label="error" expr="_event"/>
-  </transition>
-  <state>
-    <state id="initial-default">
-      <transition cond="!userData.name" target="home" event="message"/>
-      <transition cond="userData.name" target="echo" event="message"/>
-    </state>
-    <state id="home">
-      <onentry>
+  <parallel>
+    <transition event="error">
+      <log label="error" expr="_event"/>
+    </transition>
+    <state id="main">
+      <state id="initial-default">
+        <transition cond="!userData.name" target="home" event="message"/>
+        <transition cond="userData.name" target="echo" event="message"/>
+      </state>
+      <state id="home">
+        <onentry>
+          <script>
+            send.call(this, _event.data, "Hello... What's your name?");
+          </script>
+        </onentry>
+        <state id="prompt">
+          <state id="prompt1">
+            <transition target="prompt2" event="message" cond="!_event.data.text"/>
+          </state>
+          <state id="prompt2">
+            <onentry>
+              <script>
+                send.call(this, _event.data, "Sorry... We need some information from you first.");
+              </script>
+            </onentry>
+            <transition target="prompt2" event="message"/>
+          </state>
+          <transition target="name-received" event="message" cond="_event.data.text"/>
+        </state>
+      </state>
+      <state id="name-received">
+        <onentry>
+          <assign location="userData.name" expr="_event.data.text"/>
+          <script>
+            send.call(this, _event.data, "Hi %s, say something to me and I'll echo it back.", userData.name);
+          </script>
+        </onentry>
+        <transition target="echo" event="message" cond="_event.data.text"/>
+      </state>
+      <state id="echo">
+        <onentry>
+          <script>
+            send.call(this, _event.data, "%s, I heard: %s", userData.name, _event.data.text);
+            send.call(this, _event.data, "Say 'help' or something else...");
+          </script>
+        </onentry>
+        <transition target="echo" event="message" cond="_event.data.text &amp;&amp; _event.data.text !== 'help'"/>
+      </state>
+      <transition target="initial-default" cond="_event.data.text === 'help'" event="message">
         <script>
-          send.call(this, _event.data, "Hello... What's your name?");
+          send.call(this, _event.data, "I'm a simple echo bot.");
         </script>
-      </onentry>
-      <state id="prompt">
-        <state id="prompt1">
-          <transition target="prompt2" event="message" cond="!_event.data.text"/>
-        </state>
-        <state id="prompt2">
-          <onentry>
-            <script>
-              send.call(this, _event.data, "Sorry... We need some information from you first.");
-            </script>
-          </onentry>
-          <transition target="prompt2" event="message"/>
-        </state>
-        <transition target="name-received" event="message" cond="_event.data.text"/>
+      </transition>
+    </state>
+    <state id="post-send">
+      <state id="flush-message-queue">
+        <onentry>
+          <script>
+            if(messages.length)
+            connector.send(messages.slice(), function(err, addresses){
+              if(err) this.send(err);
+              //TODO: do something with the addresses, maybe?
+            }.bind(this));
+            messages.length = 0;    //clear the array
+          </script>
+        </onentry>
+        <transition event="*" target="flush-message-queue"/>
       </state>
     </state>
-    <state id="name-received">
-      <onentry>
-        <assign location="userData.name" expr="_event.data.text"/>
-        <script>
-          send.call(this, _event.data, "Hi %s, say something to me and I'll echo it back.", userData.name);
-        </script>
-      </onentry>
-      <transition target="echo" event="message" cond="_event.data.text"/>
-    </state>
-    <state id="echo">
-      <onentry>
-        <script>
-          send.call(this, _event.data, "%s, I heard: %s", userData.name, _event.data.text);
-          send.call(this, _event.data, "Say 'help' or something else...");
-        </script>
-      </onentry>
-      <transition target="echo" event="message" cond="_event.data.text &amp;&amp; _event.data.text !== 'help'"/>
-    </state>
-    <transition target="initial-default" cond="_event.data.text === 'help'" event="message">
-      <script>
-        send.call(this, _event.data, "I'm a simple echo bot.");
-      </script>
-    </transition>
-  </state>
+  </parallel>
 </scxml>
 
