@@ -33,20 +33,38 @@ scxml.pathToModel('./app.scxml', function(err, model){
 function processEvent(event){
   //console.log(util.inspect(event, { depth: null }));
   let interpreter = lazyInitSession(event)
-  let messageBuffer = [];
-  let scxmlEvent = { name : event.type, data : { event, messageBuffer}};
+  let scxmlEvent = { name : event.type, data: event};
   let configuration = interpreter.gen(scxmlEvent);
-  console.log('next configuration', configuration, 'messageBuffer.length', messageBuffer.length );
-  connector.send(messageBuffer,function(err, addresses){
-    if(err) this.send(err);
-  }.bind(this));
 }
 
 function lazyInitSession(event){
   const id = event.address.conversation.id;
   if(!sessionStore[id]){
-    let interpreter = sessionStore[id] = new scxml.scion.Statechart(fnModel, {_sessionid : id});
+    let messageBuffer = [];
+    let interpreter = sessionStore[id] = new scxml.scion.Statechart(fnModel, {_sessionid : id, params : { messageBuffer } });
+    initSession(messageBuffer, interpreter);
+    interpreter.on('onInvokedSessionStart', function(invokedInterpreter){
+      initSession(messageBuffer, invokedInterpreter);
+    });
+
     interpreter.start();
   }
   return sessionStore[id];
+}
+
+function initSession(messageBuffer, interpreter){
+  interpreter.on('onSmallStepBegin',function(){
+    console.log('onSmallStepBegin', messageBuffer);
+    //reset the buffer
+    messageBuffer.length = 0;
+  });
+  interpreter.on('onSmallStepEnd',function(){
+    //flush the buffer
+    console.log('onSmallStepEnd', messageBuffer);
+    if(messageBuffer.length) {
+      connector.send(messageBuffer.slice(),function(err, addresses){
+        if(err) this.send(err);
+      }.bind(this));
+    }
+  });
 }
