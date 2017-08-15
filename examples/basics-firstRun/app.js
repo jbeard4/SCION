@@ -27,15 +27,19 @@ scxml.pathToModel('./app.scxml', function(err, model){
   model.prepare(function(err, fn){
     if(err) throw err;
     fnModel = fn;
-  },{console : console, connector : connector, util : require('util')});
+  },{console : console, util : require('util')});
 });
 
 function processEvent(event){
   //console.log(util.inspect(event, { depth: null }));
   let interpreter = lazyInitSession(event)
-  let scxmlEvent = { name : event.type, data : event };
+  let messageBuffer = [];
+  let scxmlEvent = { name : event.type, data : { event, messageBuffer}};
   let configuration = interpreter.gen(scxmlEvent);
-  console.log('next configuration', configuration );
+  console.log('next configuration', configuration, 'messageBuffer.length', messageBuffer.length );
+  connector.send(messageBuffer,function(err, addresses){
+    if(err) this.send(err);
+  }.bind(this));
 }
 
 function lazyInitSession(event){
