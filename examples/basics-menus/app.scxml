@@ -7,22 +7,7 @@
     <data id="lastMessage"/>
     <data id="firstMessage"/>
   </datamodel>
-  <script>
-    function send(){
-      var args = Array.from(arguments);
-      var event = args[0];
-      var textArgs = args.slice(1);
-      var message = {
-        "type": event.type,
-        "agent": "botbuilder",
-        "source": event.source,
-        "textLocale": event.textLocale,
-        "address": event.address,
-        "text": textArgs.join('')
-      };
-      messageBuffer.push(message);
-    }
-  </script>
+  <script src="./send-common.js"></script>
   <state id="initial-default">
     <transition target="prompt" event="message"/>
   </state>
@@ -47,6 +32,7 @@
     <transition target="flip-coin-prompt" event="done.invoke.prompt" cond="_event.data === 0"/>
     <transition target="roll-dice-prompt" event="done.invoke.prompt" cond="_event.data === 1"/>
     <transition target="magic-ball-prompt" event="done.invoke.prompt" cond="_event.data === 2"/>
+    <transition target="end-conversation" event="done.invoke.prompt" cond="_event.data === 3"/>
   </state>
   <state>
     <state id="flip-coin-prompt">
@@ -74,5 +60,12 @@
       </send>
     </transition>
   </state>
+  <final id="end-conversation">
+    <onentry>
+      <script>
+        send.call(this, lastMessage.data, "Goodbye until next time...");
+      </script>
+    </onentry>
+  </final>
 </scxml>
 
