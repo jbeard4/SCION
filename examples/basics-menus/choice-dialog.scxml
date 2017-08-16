@@ -7,7 +7,7 @@
     <data id="choices"/>
     <data id="initialEvent"/>
 
-    <data id="last_message_event"/>
+    <data id="lastMessage"/>
     <data id="max_retries" expr="3"/>
     <data id="cur_retries" expr="0"/>
   </datamodel>
@@ -48,7 +48,7 @@
       <!-- validate message --> 
       <!-- for choice - match him against the choice. either substring of choice, or number option -->  
       <onentry>
-        <assign location="last_message_event" expr="_event"/>
+        <assign location="lastMessage" expr="_event"/>
         <script>
           let text = _event.data.text;
           let numberRegex = /\b\d+\b/;
@@ -84,7 +84,7 @@
       <onentry>
         <assign location="cur_retries" expr="cur_retries+1"/>
         <script>
-          send.call(this, last_message_event.data, "I didn't understand. Please choose an option from the list");
+          send.call(this, lastMessage.data, "I didn't understand. Please choose an option from the list");
         </script>
       </onentry>
       <transition target="message-received" event="message"/>

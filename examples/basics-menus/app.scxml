@@ -4,7 +4,8 @@
     <!-- via param --> 
     <data id="messageBuffer"/>
 
-    <data id="lastEvent"/>
+    <data id="lastMessage"/>
+    <data id="firstMessage"/>
   </datamodel>
   <script>
     function send(){
@@ -27,8 +28,12 @@
   </state>
   <state id="prompt">
     <onentry>
-      <assign location="lastEvent" expr="_event"/>
+      <assign location="firstMessage" expr="_event"/>
+      <assign location="lastMessage" expr="_event"/>
     </onentry>
+    <transition event="message">
+      <assign location="lastMessage" expr="_event"/>
+    </transition>
     <datamodel>
       <data id="choices" expr="['Flip A Coin','Roll Dice','Magic 8-Ball','Quit']"/>
     </datamodel>
@@ -41,14 +46,34 @@
       <param name="choices" expr="choices"/>
       <param name="initialEvent" expr="_event"/>
     </invoke>
-    <transition target="done" event="done.invoke.prompt"/>
+    <transition target="flip-coin-prompt" event="done.invoke.prompt" cond="_event.data === 0"/>
+    <transition target="flip-coin-prompt" event="done.invoke.prompt" cond="_event.data === 1"/>
+    <transition target="flip-coin-prompt" event="done.invoke.prompt" cond="_event.data === 2"/>
   </state>
-  <state id="done">
-    <onentry>
-      <script>
-        send.call(this, lastEvent.data, choices[_event.data]);
-      </script>
-    </onentry>
+  <state id="flip-coin-prompt">
+    <invoke type="http://www.w3.org/TR/scxml/" src="file:flipCoinDialog.scxml" autoforward="true">
+      <param name="messageBuffer" expr="messageBuffer"/>
+      <param name="initialEvent" expr="lastMessage"/>
+    </invoke>
+    <transition event="done.invoke"> <!-- send the cached event --> 
+      <send event="message.cached">
+        <content expr="firstMessage.data"/>
+      </send>
+    </transition>
+    <!-- send event --> 
+    <transition target="prompt" event="message.cached"/> <!-- transition using the cached/proxied event --> 
+  </state>
+  <state id="roll-dice-prompt">
+    <invoke type="http://www.w3.org/TR/scxml/" src="file:rollDiceDialog.scxml" autoforward="true">
+      <param name="messageBuffer" expr="messageBuffer"/>
+      <param name="initialEvent" expr="_event"/>
+    </invoke>
+  </state>
+  <state id="magic-ball-prompt">
+    <invoke type="http://www.w3.org/TR/scxml/" src="file:magicBallDialog.scxml" autoforward="true">
+      <param name="messageBuffer" expr="messageBuffer"/>
+      <param name="initialEvent" expr="_event"/>
+    </invoke>
   </state>
 </scxml>
 

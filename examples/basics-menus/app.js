@@ -2,6 +2,7 @@ const util = require('util');
 const builder = require('botbuilder');
 const restify = require('restify');
 const scxml = require('scxml');
+const path = require('path');
 let fnModel;
 
 const sessionStore = {};
@@ -43,28 +44,36 @@ function lazyInitSession(event){
     let messageBuffer = [];
     let interpreter = sessionStore[id] = new scxml.scion.Statechart(fnModel, {_sessionid : id, params : { messageBuffer } });
     initSession(messageBuffer, interpreter);
-    interpreter.on('onInvokedSessionInitialized', function(invokedInterpreter){
-      initSession(messageBuffer, invokedInterpreter);
-    });
-
     interpreter.start();
   }
   return sessionStore[id];
 }
 
 function initSession(messageBuffer, interpreter){
+  interpreter.on('onEntry',function(stateid){
+    console.log(path.parse(interpreter._model.docUrl).name, interpreter.opts.sessionid, 'onEntry', stateid);
+  })
+  interpreter.on('onExit',function(stateid){
+    console.log(path.parse(interpreter._model.docUrl).name, interpreter.opts.sessionid, 'onExit', stateid);
+  })
+  interpreter.on('onBigStepEnd',function(){
+    console.log(path.parse(interpreter._model.docUrl).name, interpreter.opts.sessionid, 'onBigStepEnd', interpreter.getConfiguration());
+  })
   interpreter.on('onSmallStepBegin',function(){
-    console.log('onSmallStepBegin', messageBuffer);
     //reset the buffer
     messageBuffer.length = 0;     //this is the ugliest part of this - manipulating the SCXML datamodel from outside the state machine
   });
   interpreter.on('onSmallStepEnd',function(){
     //flush the buffer
-    console.log('onSmallStepEnd', messageBuffer);
+    //console.log('onSmallStepEnd', messageBuffer);
     if(messageBuffer.length) {
       connector.send(messageBuffer.slice(),function(err, addresses){
-        if(err) this.send(err);
+        if(err) console.log('botbuilder error on send', err);
       }.bind(this));
     }
   });
+  interpreter.on('onInvokedSessionInitialized', function(invokedInterpreter){
+    initSession(messageBuffer, invokedInterpreter);
+  });
+  //TODO: on done, remove event listeners, to avoid memory leaks
 }
