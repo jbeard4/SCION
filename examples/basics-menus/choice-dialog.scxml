@@ -9,6 +9,7 @@
     <data id="type"/>
 
     <data id="parsers" expr="{
+      text : parseTextEventData,
       choice : parseChoiceEventData,
       number : parseNumberEventData
     }"/>
@@ -34,6 +35,10 @@
     }
   </script>
   <script>
+    function parseTextEventData(text){
+      return text;
+    }
+
     function parseChoiceEventData(text){
       let textRegex = new RegExp('\\b' + text + '\\b');
       let idx = parseNumberEventData(text)  - 1;

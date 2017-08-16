@@ -67,7 +67,7 @@
     <state id="magic-ball-prompt">
       <invoke type="http://www.w3.org/TR/scxml/" src="file:magicBallDialog.scxml" autoforward="true">
         <param name="messageBuffer" expr="messageBuffer"/>
-        <param name="initialEvent" expr="_event"/>
+        <param name="initialEvent" expr="lastMessage"/>
       </invoke>
     </state>
     <transition target="prompt" event="message.cached"/> <!-- transition using the cached/proxied event --> 
