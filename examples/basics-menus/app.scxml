@@ -37,9 +37,6 @@
     <datamodel>
       <data id="choices" expr="['Flip A Coin','Roll Dice','Magic 8-Ball','Quit']"/>
     </datamodel>
-    <transition event="error">
-      <log label="error" expr="[_sessionid,_event]"/>
-    </transition>
     <invoke type="http://www.w3.org/TR/scxml/" src="file:choice-dialog.scxml" autoforward="true">
       <param name="messageBuffer" expr="messageBuffer"/>
       <param name="prompt" expr="'Choose an option:'"/>

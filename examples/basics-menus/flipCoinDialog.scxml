@@ -7,41 +7,21 @@
 
     <data id="lastMessage"/>
   </datamodel>
-  <script>
-    function send(){
-      var args = Array.from(arguments);
-      var event = args[0];
-      var textArgs = args.slice(1);
-      var message = {
-        "type": event.type,
-        "agent": "botbuilder",
-        "source": event.source,
-        "textLocale": event.textLocale,
-        "address": event.address,
-        "text": textArgs.join('')
-      };
-      messageBuffer.push(message);
-    }
-  </script>
-  <state>
-    <transition event="error">
-      <log label="error" expr="[_sessionid,_event]"/>
+  <script src="./send-common.js"></script>
+  <state id="initial-default">
+    <datamodel>
+      <data id="choices" expr="['heads','tails']"/>
+    </datamodel>
+    <transition event="message">
+      <assign location="lastMessage" expr="_event"/>
     </transition>
-    <state id="initial-default">
-      <datamodel>
-        <data id="choices" expr="['heads','tails']"/>
-      </datamodel>
-      <transition event="message">
-        <assign location="lastMessage" expr="_event"/>
-      </transition>
-      <invoke type="http://www.w3.org/TR/scxml/" src="file:choice-dialog.scxml" autoforward="true">
-        <param name="messageBuffer" expr="messageBuffer"/>
-        <param name="prompt" expr="'Choose heads or tails.'"/>
-        <param name="choices" expr="choices"/>
-        <param name="initialEvent" expr="initialEvent"/>
-        <param name="type" expr="'choice'"/>
-      </invoke>
-    </state>
+    <invoke type="http://www.w3.org/TR/scxml/" src="file:choice-dialog.scxml" autoforward="true">
+      <param name="messageBuffer" expr="messageBuffer"/>
+      <param name="prompt" expr="'Choose heads or tails.'"/>
+      <param name="choices" expr="choices"/>
+      <param name="initialEvent" expr="initialEvent"/>
+      <param name="type" expr="'choice'"/>
+    </invoke>
     <transition target="done" event="done.invoke"/>
   </state>
   <final id="done">
