@@ -6,7 +6,13 @@
     <data id="prompt"/>
     <data id="choices"/>
     <data id="initialEvent"/>
+    <data id="type"/>
 
+    <data id="parsers" expr="{
+      choice : parseChoiceEventData,
+      number : parseNumberEventData
+    }"/>
+    <data id="parseMessageText" expr="parsers[type]"/>
     <data id="lastMessage"/>
     <data id="max_retries" expr="3"/>
     <data id="cur_retries" expr="0"/>
@@ -28,6 +34,36 @@
     }
   </script>
   <script>
+    function parseChoiceEventData(text){
+      let textRegex = new RegExp('\\b' + text + '\\b');
+      let idx = parseNumberEventData(text)  - 1;
+      let choice = null;
+      if(idx &lt; choices.length){
+        choice = idx; 
+      } else {
+        let textMatches = choices.filter(function(choice){
+          return choice.match(textRegex);
+        });
+        if (textMatches.length) {
+          let firstTextMatch = textMatches[0];
+          choice = choices.indexOf(firstTextMatch);
+        }
+        return null;
+      }
+      return choice;
+    }
+
+    function parseNumberEventData(text){
+      let numberRegex = /\b\d+\b/;
+      let numberMatch = text.match(numberRegex);
+      if(numberMatch){
+        let idx = parseInt(numberMatch[0]);
+        return idx;
+      }
+      return null;
+    }
+  </script>
+  <script>
     function formatPrompt(prompt, choices){
       return prompt + '\n\n' + choices.map( function(choice, i){ return '  ' + (i+1) + '. ' + choice;}).join('\n');
     }
@@ -39,7 +75,7 @@
     <state id="initial-default">
       <onentry>
         <script>
-          send.call(this, initialEvent.data, formatPrompt(prompt, choices));
+          send.call(this, initialEvent.data, type === 'choice' ? formatPrompt(prompt, choices) : prompt );
         </script>
       </onentry>
       <transition target="message-received" event="message"/>
@@ -50,27 +86,9 @@
       <onentry>
         <assign location="lastMessage" expr="_event"/>
         <script>
-          let text = _event.data.text;
-          let numberRegex = /\b\d+\b/;
-          let textRegex = new RegExp('\\b' + text + '\\b');
-          let numberMatch = text.match(numberRegex);
-          let choice;
-          if(numberMatch){
-            let idx = parseInt(numberMatch[0]) - 1;
-            if(idx &lt; choices.length){
-              choice = idx; 
-            } 
-          } else {
-            let textMatches = choices.filter(function(choice){
-              return choice.match(textRegex);
-            });
-            if (textMatches.length) {
-              let firstTextMatch = textMatches[0];
-              choice = choices.indexOf(firstTextMatch);
-            }
-          }
-          if(typeof choice !== 'undefined'){
-            this.raise({name : 'valid', data : choice});
+          let entity = parseMessageText(_event.data.text);
+          if(typeof entity !== 'undefined' &amp;&amp; entity !== null){
+            this.raise({name : 'valid', data : entity});
           }else{
             this.raise({name : 'not.valid'});
           }
@@ -84,7 +102,7 @@
       <onentry>
         <assign location="cur_retries" expr="cur_retries+1"/>
         <script>
-          send.call(this, lastMessage.data, "I didn't understand. Please choose an option from the list");
+          send.call(this, lastMessage.data, "I didn't understand." + ( type === 'choice' ? " Please choose an option from the list" : ''));
         </script>
       </onentry>
       <transition target="message-received" event="message"/>

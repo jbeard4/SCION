@@ -39,6 +39,7 @@
         <param name="prompt" expr="'Choose heads or tails.'"/>
         <param name="choices" expr="choices"/>
         <param name="initialEvent" expr="initialEvent"/>
+        <param name="type" expr="'choice'"/>
       </invoke>
     </state>
     <transition target="done" event="done.invoke"/>
@@ -48,7 +49,7 @@
       <script>
         var tmp;
         var flip = Math.random() > 0.5 ? 'heads' : 'tails';
-        if (flip === _event.data) {
+        if (flip === choices[_event.data]) {
             tmp = "It's " + flip + ". YOU WIN!";
         } else {
             tmp = "Sorry... It was " + flip + ". you lost :(";

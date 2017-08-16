@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" initial="initial-default" version="1.0" datamodel="ecmascript">
+  <datamodel>
+    <!-- these passed in as params --> 
+    <data id="messageBuffer"/>
+    <data id="initialEvent"/>
+
+    <data id="lastMessage"/>
+  </datamodel>
+  <script>
+    function send(){
+      var args = Array.from(arguments);
+      var event = args[0];
+      var textArgs = args.slice(1);
+      var message = {
+        "type": event.type,
+        "agent": "botbuilder",
+        "source": event.source,
+        "textLocale": event.textLocale,
+        "address": event.address,
+        "text": textArgs.join('')
+      };
+      messageBuffer.push(message);
+    }
+  </script>
+  <state>
+    <transition event="error">
+      <log label="error" expr="[_sessionid,_event]"/>
+    </transition>
+    <state id="initial-default">
+      <transition event="message">
+        <assign location="lastMessage" expr="_event"/>
+      </transition>
+      <invoke type="http://www.w3.org/TR/scxml/" src="file:choice-dialog.scxml" autoforward="true">
+        <param name="messageBuffer" expr="messageBuffer"/>
+        <param name="prompt" expr="'How many dice should I roll?'"/>
+        <param name="initialEvent" expr="initialEvent"/>
+        <param name="type" expr="'number'"/>
+      </invoke>
+    </state>
+    <transition target="done" event="done.invoke"/>
+  </state>
+  <final id="done">
+    <onentry>
+      <script>
+        if (_event.data > 0) {
+            var msg = "I rolled:";
+            for (var i = 0; i &lt; _event.data; i++) {
+                var roll = Math.floor(Math.random() * 6) + 1;
+                msg += ' ' + roll.toString(); 
+            }
+            send.call(this, lastMessage.data, msg);
+        } else {
+            send.call(this, lastMessage.data, "Ummm... Ok... I rolled air.");
+        }
+      </script>
+    </onentry>
+  </final>
+</scxml>
+
+
+
