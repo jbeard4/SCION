@@ -19,6 +19,42 @@ let connector = new builder.ChatConnector({
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
 server.post('/api/messages', connector.listen());
+
+let responses = new Set();
+let messageCount = 0;
+
+//serve static files
+server.get(/\/dashboard.*/, restify.serveStatic({
+	'directory': 'static',
+	'default': 'index.html'
+}));
+
+server.get('/api/update-stream', function(req, res){
+   res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive'
+  });
+  res.write('\n');
+  responses.add(res);
+  req.on("close", function() {
+    responses.delete(res);
+  });
+});
+
+function broadcast(interpreter, eventName, event){
+  for(let res of responses){
+    res.write('id: ' + (messageCount++) + '\n');
+    res.write('event: ' + eventName + '\n');
+    res.write("data: " + JSON.stringify({
+      name : path.parse(interpreter._model.docUrl).name, 
+      sessionid : interpreter.opts.sessionid,
+      interpreter : interpreter.getSnapshot(), 
+      event : event
+    }) + '\n\n'); // Note the extra newline
+  }
+}
+
 connector.onEvent(function(events){
   events.forEach(processEvent)
 })
@@ -60,6 +96,7 @@ function log(interpreter, eventName, value){
 
 function initSession(messageBuffer, interpreter){
   interpreter.on('onExitInterpreter',function(lastEvent){
+    broadcast(interpreter, 'onExitInterpreter',lastEvent);
     log(interpreter, 'onExitInterpreter', lastEvent.name);
     let sessionId = interpreter.opts.sessionid;
     if(sessionStore[sessionId]){
@@ -71,14 +108,21 @@ function initSession(messageBuffer, interpreter){
   })
   interpreter.on('onEntry',log.bind(this, interpreter, 'onEntry'));
   interpreter.on('onExit',log.bind(this, interpreter, 'onExit'));
+  interpreter.on('onBigStepBegin',function(event){
+    broadcast(interpreter, 'onBigStepBegin',event);
+  });
   interpreter.on('onBigStepEnd',function(){
+    broadcast(interpreter, 'onBigStepEnd');
     log(interpreter, 'onBigStepEnd', interpreter.getConfiguration());
   })
-  interpreter.on('onSmallStepBegin',function(){
+  interpreter.on('onSmallStepBegin',function(event){
+    broadcast(interpreter, 'onSmallStepBegin',event);
+
     //reset the buffer
     messageBuffer.length = 0;     //this is the ugliest part of this - manipulating the SCXML datamodel from outside the state machine
   });
   interpreter.on('onSmallStepEnd',function(){
+    broadcast(interpreter, 'onSmallStepEnd');
     //flush the buffer
     //console.log('onSmallStepEnd', messageBuffer);
     if(messageBuffer.length) {

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link rel="shortcut icon" type="image/ico" href="favicon.ico" />
+  <title>SlickGrid example 12: Fill browser</title>
+  <link rel="stylesheet" href="./node_modules/slickgrid/slick.grid.css" type="text/css"/>
+  <link rel="stylesheet" href="examples.css" type="text/css"/>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: White;
+      overflow: auto;
+    }
+    body {
+      font: 11px Helvetica, Arial, sans-serif;
+    }
+    #container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+    #description {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      width: 25em;
+      background: beige;
+      border: solid 1px gray;
+      z-index: 1000;
+    }
+    #description h2 {
+      padding-left: 0.5em;
+    }
+  </style>
+</head>
+<body>
+<div id="container"></div>
+<div id="description">
+  <h2>Demonstrates:</h2>
+  <ul>
+    <li>Grid filling browser window completely (using absolute positioning)</li>
+    <li>Grid resizing when browser window changes size</li>
+    <li>Overall performance of the grid when displaying large tabular data (17 columns x 10,000 rows)</li>
+  </ul>
+    <h2>View Source:</h2>
+    <ul>
+        <li><A href="https://github.com/6pac/SlickGrid/blob/master/examples/example12-fillbrowser.html" target="_sourcewindow"> View the source for this example on Github</a></li>
+    </ul>
+</div>
+
+<script src="./node_modules/slickgrid/lib/jquery-1.11.2.min.js"></script>
+<script src="./node_modules/slickgrid/lib/jquery.event.drag-2.3.0.js"></script>
+
+<script src="./node_modules/slickgrid/slick.core.js"></script>
+<script src="./node_modules/slickgrid/slick.grid.js"></script>
+<script src="./node_modules/slickgrid/slick.dataview.js"></script>
+<script src="./index.js"></script>
+</body>
+</html>
