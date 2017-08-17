@@ -33,7 +33,7 @@ var grid,
         { id: "eventName", name: "Event Name", field: "eventName", width: 120 },
     ],
     options = {
-      enableCellNavigation: false,
+      enableCellNavigation: true,
       enableColumnReorder: false
     };
 
@@ -52,5 +52,7 @@ dataView.onRowsChanged.subscribe(function (e, args) {
 });
 
 grid = new Slick.Grid("#container", dataView, columns, options);
+
+grid.setSelectionModel(new Slick.RowSelectionModel());
 
 dataView.setItems(data);
