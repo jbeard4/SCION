@@ -1,6 +1,6 @@
 {
-  "name": "schviz2",
-  "version": "3.0.2",
+  "name": "@jbeard/schviz2",
+  "version": "3.0.3",
   "description": "SCJSON to KGraph to SVG rendering library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -35,7 +35,6 @@
     "opn-cli": "^3.1.0",
     "pathseg": "^1.0.2",
     "react-dom": "^15.5.4",
-    "scxml-test-framework": "^1.0.2",
     "sorcery": "^0.10.0",
     "tsify": "^2.0.8",
     "typescript": "2.3.3",
