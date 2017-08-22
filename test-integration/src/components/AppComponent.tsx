@@ -32,7 +32,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
   }
 
   private loadData(){
-    const scionCoreBaseUrl= '/node_modules/scion-core/test/tests';
+    const scionCoreBaseUrl= '/test-integration/node_modules/scion-core/test/tests';
     jQuery.getJSON(`${scionCoreBaseUrl}/tests.json`).then((responseData) => {
       let testPairs = responseData.map((testUrl) =>`${scionCoreBaseUrl}/${testUrl}`);
       this.setState({
@@ -169,6 +169,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
                 layoutOptions={this.state.layoutOptions}
                 redraw={this.state.redraw}
                 configuration={this.state.configuration}
+                disableAnimation={true}
                 />
             }
           </div>

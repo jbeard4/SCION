@@ -10,6 +10,8 @@ const debug = Debug('GraphEdge');
 export interface GraphEdgeProps {
   edge : KGraphEdge;
   redraw? : boolean;
+  disableAnimation? : boolean;
+
 }
 
 export interface GraphEdgeAnimation {
@@ -236,16 +238,20 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
       <marker viewBox="0 -5 10 10" refX="0" refY="0" markerWidth="3" markerHeight="5"
           id={markerId} 
           ref={(e: SVGMarkerElement) => { this.svgMarkerElement = e; }}
+          orient={this.props.disableAnimation ? this.state.marker[this.state.marker.length - 1] : undefined}
           >
         <path d="M0,-5L10,0L0,5"/>
-        <animate 
-          attributeName="orient" attributeType="XML" fill="freeze" calcMode="discrete"
-          ref={(e: SVGAnimationElement) => { this.svgMarkerAnimation = e; }}
-          dur={constants.ANIM_DURATION}
-          keyTimes={ this.state.keyTimes }
-          begin={ this.state.begin.marker }
-          values={this.state.marker.join(';')}
-          />
+        {
+          !this.props.disableAnimation && 
+            <animate 
+              attributeName="orient" attributeType="XML" fill="freeze" calcMode="discrete"
+              ref={(e: SVGAnimationElement) => { this.svgMarkerAnimation = e; }}
+              dur={constants.ANIM_DURATION}
+              keyTimes={ this.state.keyTimes }
+              begin={ this.state.begin.marker }
+              values={this.state.marker.join(';')}
+              />
+        }
       </marker>
       <path 
         className={'link ' + (this.props.edge.$type || '')} 
@@ -253,16 +259,20 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
         ref={(e: SVGPathElement) => { this.svgPathElement = e; }}
         strokeDasharray={this.state.pathLength.toString()}
         markerEnd={`url(#${markerId})`}
+        d={this.props.disableAnimation ? this._edgeToD(this.state.path[this.state.path.length - 1]) : undefined}
         >
-          <animate attributeName="d" attributeType="XML" fill="freeze" 
-                   ref={(e: SVGAnimationElement) => { this.svgPathAnimation = e; }}
-                   id={ edgeId + '_last' }
-                   keyTimes={ this.state.keyTimes }
-                   values={ this.state.path.map(this._edgeToD.bind(this)).join(';') }
-                   begin={ this.state.begin.path }
-                   dur={constants.ANIM_DURATION} />
           {
-            this.state.begin.path !== 'indefinite' &&
+            !this.props.disableAnimation && 
+              <animate attributeName="d" attributeType="XML" fill="freeze" 
+                       ref={(e: SVGAnimationElement) => { this.svgPathAnimation = e; }}
+                       id={ edgeId + '_last' }
+                       keyTimes={ this.state.keyTimes }
+                       values={ this.state.path.map(this._edgeToD.bind(this)).join(';') }
+                       begin={ this.state.begin.path }
+                       dur={constants.ANIM_DURATION} />
+          }
+          {
+            (!this.props.disableAnimation && this.state.begin.path !== 'indefinite') &&
               [
                 <animate attributeName="visibility"  attributeType="XML" fill="freeze" 
                          to="hidden"
@@ -284,6 +294,7 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
               key={i}
               label={label}
               redraw={this.props.redraw}
+              disableAnimation={this.props.disableAnimation}
               />
           ))
         }
@@ -409,7 +420,7 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
 
   private animate(){
     if(this.state.begin.path === 'indefinite'){
-      [
+      if(!this.props.disableAnimation) [
         this.svgPathAnimation,
         this.svgMarkerAnimation
       ].forEach(e => e.beginElement());

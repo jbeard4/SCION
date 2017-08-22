@@ -14,7 +14,8 @@ export interface GraphRootProps {
   scjson : any,    //TODO: add types to SCION, and refactor this ot use the type
   layoutOptions? : LayoutOptions,
   redraw? : boolean,
-  configuration? : string[]
+  configuration? : string[],
+  disableAnimation? : boolean
 }
 
 export interface GraphRootAnimation {
@@ -214,7 +215,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     if(scjson){
       let kgraph = new KGraph(new IdGenerator(), this, scjson);
       const options = this.getDefaultLayoutOptions(layoutOptions)
-      this.svgRootElement.pauseAnimations();
+      if(!this.props.disableAnimation) this.svgRootElement.pauseAnimations();
       kgraph.updateLayout(options, (err, rootNode) => {
         console.log('kgraph rootNode',rootNode);
         if(err) throw err;
@@ -229,7 +230,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
         }, () => {
           //add a timeout to let the thread settle before starting animations
           //without this, on large models, we lose the first few animation frames
-          setTimeout( () => {
+          if(!this.props.disableAnimation) setTimeout( () => {
             this.svgRootElement.unpauseAnimations();
           })
         });
@@ -247,7 +248,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   }
 
   private animate(){
-    this.viewBoxAnimation.beginElement();  //reset animation
+    if(!this.props.disableAnimation) this.viewBoxAnimation.beginElement();  //reset animation
   }
 
   render(){
@@ -263,14 +264,18 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
           onMouseDown={this.handleMouseDown.bind(this)}
           onMouseUp={this.handleMouseUp.bind(this)}
           onMouseMove={this.handleMouseMove.bind(this)}
+          viewBox={this.props.disableAnimation ? to : undefined}
         >
-        <animate 
-          className={constants.START}
-          ref={(e: SVGAnimationElement) => { this.viewBoxAnimation = e; }}
-          attributeName="viewBox" fill="freeze" begin="indefinite"
-          dur={this.state.instantZoom ? '0ms' : ( this.state.fastZoom ? '250ms' : constants.ANIM_DURATION ) } 
-          from={from}
-          to={to}/>
+        {
+          !this.props.disableAnimation && 
+            <animate 
+              className={constants.START}
+              ref={(e: SVGAnimationElement) => { this.viewBoxAnimation = e; }}
+              attributeName="viewBox" fill="freeze" begin="indefinite"
+              dur={this.state.instantZoom ? '0ms' : ( this.state.fastZoom ? '250ms' : constants.ANIM_DURATION ) } 
+              from={from}
+              to={to}/>
+        }
         <defs>
           { 
             ['','Highlighted'].map( (s) => (
@@ -297,6 +302,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
                 graphRoot={this}
                 redraw={this.props.redraw}
                 configuration={this.props.configuration}
+                disableAnimation={this.props.disableAnimation}
                 />
           }
         </g>

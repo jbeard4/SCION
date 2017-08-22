@@ -10,6 +10,7 @@ export interface GraphLabelProps {
   edge : KGraphEdge; 
   label : KGraphLabel;
   redraw? : boolean;
+  disableAnimation? : boolean;
 }
 
 export interface GraphLabelAnimation {
@@ -66,30 +67,39 @@ export default class GraphLabel extends React.PureComponent<GraphLabelProps, Gra
     let toReturn = <text className="edge-label"
         textAnchor={(this.props.label.$meta && this.props.label.$meta.textAnchor) || 'start'}
         dominantBaseline={(this.props.label.$meta && this.props.label.$meta.dominantBaseline) || 'text-before-edge'}
-        opacity="0"
+        x={this.props.disableAnimation ? this.state.to.x : undefined}
+        y={this.props.disableAnimation ? this.state.to.y : undefined}
+        opacity={this.props.disableAnimation ? 1 : 0}
       >
-        <animate attributeName="x" attributeType="XML" fill="freeze" 
-                 begin="indefinite"
-                 from={this.state.from.x}
-                 to={this.state.to.x}
-                 dur={constants.ANIM_DURATION}
-                 ref={(e: SVGAnimationElement) => { this.animateXElement = e; }}
-                 />
-        <animate attributeName="y" attributeType="XML" fill="freeze" 
-                 begin="indefinite"
-                 from={this.state.from.y}
-                 to={this.state.to.y}
-                 dur={constants.ANIM_DURATION}
-                 ref={(e: SVGAnimationElement) => { this.animateYElement = e; }}
-                 />
-        <animate attributeName="opacity" attributeType="XML"
-                 fill="freeze" 
-                 begin="indefinite"
-                 dur={constants.ANIM_DURATION} 
-                 from={this.initialRender && !this.props.redraw ? 1 : 0}  
-                 to={1} 
-                 ref={(e: SVGAnimationElement) => { this.animateOpacityElement = e; }}
-                 />
+        {
+          !this.props.disableAnimation && [
+            <animate attributeName="x" attributeType="XML" fill="freeze" 
+                     begin="indefinite"
+                     key="0"
+                     from={this.state.from.x}
+                     to={this.state.to.x}
+                     dur={constants.ANIM_DURATION}
+                     ref={(e: SVGAnimationElement) => { this.animateXElement = e; }}
+                     />,
+            <animate attributeName="y" attributeType="XML" fill="freeze" 
+                     begin="indefinite"
+                     key="1"
+                     from={this.state.from.y}
+                     to={this.state.to.y}
+                     dur={constants.ANIM_DURATION}
+                     ref={(e: SVGAnimationElement) => { this.animateYElement = e; }}
+                     />,
+            <animate attributeName="opacity" attributeType="XML"
+                     key="2"
+                     fill="freeze" 
+                     begin="indefinite"
+                     dur={constants.ANIM_DURATION} 
+                     from={this.initialRender && !this.props.redraw ? 1 : 0}  
+                     to={1} 
+                     ref={(e: SVGAnimationElement) => { this.animateOpacityElement = e; }}
+                     />
+          ]
+        }
       {this.props.label.text}
     </text>;
 
@@ -109,7 +119,7 @@ export default class GraphLabel extends React.PureComponent<GraphLabelProps, Gra
 
   private animate(){
     //reset the timeline on all smil animations
-    [
+    if(!this.props.disableAnimation) [
       this.animateXElement,
       this.animateYElement,
       this.animateOpacityElement 

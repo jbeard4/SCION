@@ -34,7 +34,8 @@ export interface GraphNodeProps {
   allEdges : KGraphEdge[];
   kgraph : KGraph;
   redraw? : boolean;
-  configuration? : string[]
+  configuration? : string[],
+  disableAnimation? : boolean
 }
 
 export interface KGraphNodeAnimation {
@@ -232,7 +233,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
   }
 
   private animate(){
-    [
+    if(!this.props.disableAnimation) [
       this.animateTransformElement,
       this.animateXElement,
       this.animateYElement,
@@ -275,67 +276,86 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
             }
             ref={(e: SVGGElement) => { this.svgGElement = e; }}
             onDoubleClick={ this.handleDoubleClick.bind(this) }
+            transform={this.props.disableAnimation ? ('translate(' + this.state.to.translate.x + ',' + this.state.to.translate.y + ')') : undefined}
             >
-      <animateTransform attributeName="transform" attributeType="XML"
-               ref={(e: SVGAnimationElement) => { this.animateTransformElement = e; }}
-               type="translate"
-               fill="freeze" 
-               begin="indefinite"
-               className={constants.START}
-               dur={constants.ANIM_DURATION} 
-               from={this.state.from.translate.x + ',' + this.state.from.translate.y} 
-               to={this.state.to.translate.x + ',' + this.state.to.translate.y} />
+        {
+          !this.props.disableAnimation && 
+            <animateTransform attributeName="transform" attributeType="XML"
+                     ref={(e: SVGAnimationElement) => { this.animateTransformElement = e; }}
+                     type="translate"
+                     fill="freeze" 
+                     begin="indefinite"
+                     className={constants.START}
+                     dur={constants.ANIM_DURATION} 
+                     from={this.state.from.translate.x + ',' + this.state.from.translate.y} 
+                     to={this.state.to.translate.x + ',' + this.state.to.translate.y} />
+        }
       <rect visibility={this.props.isRoot ? 'hidden' : 'visible'} rx="2" ry="2"
         ref={(e: SVGRectElement) => { this.svgRectElement = e; }}
+        x={this.props.disableAnimation ? this.state.to.node.x : undefined}
+        y={this.props.disableAnimation ? this.state.to.node.y : undefined}
+        width={this.props.disableAnimation ? this.state.to.node.width : undefined}
+        height={this.props.disableAnimation ? this.state.to.node.height : undefined}
         >
-        <animate attributeName="x" attributeType="XML"
-                 ref={(e: SVGAnimationElement) => { this.animateXElement = e; }}
-                 fill="freeze" 
-                 begin="indefinite"
-                 className={constants.START}
-                 dur={constants.ANIM_DURATION} 
-                 from={this.state.from.node.x} 
-                 to={this.state.to.node.x} />
-        <animate attributeName="y" attributeType="XML"
-                 ref={(e: SVGAnimationElement) => { this.animateYElement = e; }}
-                 fill="freeze" 
-                 begin="indefinite"
-                 className={constants.START}
-                 dur={constants.ANIM_DURATION} 
-                 from={this.state.from.node.y}
-                 to={this.state.to.node.y} />
-        <animate attributeName="width" attributeType="XML"
-                 ref={(e: SVGAnimationElement) => { this.animateWidthElement = e; }}
-                 fill="freeze" 
-                 begin="indefinite"
-                 className={constants.START}
-                 dur={constants.ANIM_DURATION} 
-                 from={this.state.from.node.width} 
-                 to={this.state.to.node.width} />
-        <animate attributeName="height" attributeType="XML"
-                 ref={(e: SVGAnimationElement) => { this.animateHeightElement = e; }}
-                 fill="freeze" 
-                 begin="indefinite"
-                 className={constants.START}
-                 dur={constants.ANIM_DURATION} 
-                 from={this.state.from.node.height} 
-                 to={this.state.to.node.height} />
+        {
+          !this.props.disableAnimation && [
+            <animate attributeName="x" attributeType="XML"
+                     key="0"
+                     ref={(e: SVGAnimationElement) => { this.animateXElement = e; }}
+                     fill="freeze" 
+                     begin="indefinite"
+                     className={constants.START}
+                     dur={constants.ANIM_DURATION} 
+                     from={this.state.from.node.x} 
+                     to={this.state.to.node.x} />,
+            <animate attributeName="y" attributeType="XML"
+                     key="1"
+                     ref={(e: SVGAnimationElement) => { this.animateYElement = e; }}
+                     fill="freeze" 
+                     begin="indefinite"
+                     className={constants.START}
+                     dur={constants.ANIM_DURATION} 
+                     from={this.state.from.node.y}
+                     to={this.state.to.node.y} />,
+            <animate attributeName="width" attributeType="XML"
+                     key="2"
+                     ref={(e: SVGAnimationElement) => { this.animateWidthElement = e; }}
+                     fill="freeze" 
+                     begin="indefinite"
+                     className={constants.START}
+                     dur={constants.ANIM_DURATION} 
+                     from={this.state.from.node.width} 
+                     to={this.state.to.node.width} />,
+            <animate attributeName="height" attributeType="XML"
+                     key="3"
+                     ref={(e: SVGAnimationElement) => { this.animateHeightElement = e; }}
+                     fill="freeze" 
+                     begin="indefinite"
+                     className={constants.START}
+                     dur={constants.ANIM_DURATION} 
+                     from={this.state.from.node.height} 
+                     to={this.state.to.node.height} />
+            ]
+        }
       </rect>
       <text   
         ref={(e: SVGTextElement) => { this.svgTextElement = e; }}
         x={this.props.node.width / 2} 
         y={isLeaf ? this.props.node.height / 2 : constants.LEAF_NODE_PADDING_H}  
         visibility={this.props.isRoot ? 'hidden' : 'visible'}
-        opacity="0"
+        opacity={this.props.disableAnimation ? 1 : 0}
         >
         {this.props.node.$type === 'virtual' ? this.props.node.labels[0].text : this.props.node.id}
-        <animate attributeName="opacity" attributeType="XML"
-                 ref={(e: SVGAnimationElement) => { this.animateOpacityElement = e; }}
-                 fill="freeze" 
-                 begin="indefinite"
-                 className={constants.START}
-                 dur={constants.ANIM_DURATION} 
-                 from={this.initialRender ? 1 : 0} to={1} />
+        {
+          !this.props.disableAnimation && 
+            <animate attributeName="opacity" attributeType="XML"
+                     ref={(e: SVGAnimationElement) => { this.animateOpacityElement = e; }}
+                     fill="freeze" 
+                     begin="indefinite"
+                     className={constants.START}
+                     dur={constants.ANIM_DURATION} 
+                     from={this.initialRender ? 1 : 0} to={1} />
+        }
       </text>
 
       <g className="childNodes">
@@ -351,6 +371,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                 graphRoot={this.props.graphRoot}
                 redraw={this.props.redraw}
                 configuration={this.props.configuration}
+                disableAnimation={this.props.disableAnimation}
                 />
           )))
         }
@@ -360,6 +381,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
             myEdges.map((edge, i) => (
               <GraphEdge edge={edge} key={`${this.props.node.id}_${i}`} 
                 redraw={this.props.redraw}
+                disableAnimation={this.props.disableAnimation}
                 />
             )) 
         }
