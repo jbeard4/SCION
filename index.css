@@ -60,6 +60,7 @@ body {
   bottom:2em; 
   right:1em; 
   opacity: 1;
+  display: none;
 }
 
 .runButton button {
