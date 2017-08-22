@@ -10,6 +10,7 @@ interface AppComponentState {
   fnModel : scxml.scion.FnModel;
   layoutOptions? : any;
   redraw? : boolean;
+  disableAnimation? : boolean;
   interpreter : scxml.scion.Statechart;
   configuration? : string[];
 }
@@ -17,6 +18,7 @@ interface AppComponentState {
 export default class AppComponent extends React.Component<{}, AppComponentState> {
 
   mergeCheckbox : HTMLInputElement;
+  animateCheckbox : HTMLInputElement;
 
   constructor(props){
     super(props);
@@ -25,6 +27,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
       scjson : null,
       fnModel : null,
       redraw : false,
+      disableAnimation : true,
       interpreter : null,
       configuration : null
     };
@@ -43,6 +46,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
 
   componentDidMount(){
     this.mergeCheckbox.checked = !this.state.redraw;
+    this.animateCheckbox.checked = !this.state.disableAnimation;
   }
 
   private handleTestChange(event){
@@ -84,7 +88,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
             }); 
             break;
           default:
-            throw new Error('Unrecognized mime type in response');
+      ;     throw new Error('Unrecognized mime type in response');
         }
       });
     });
@@ -99,6 +103,12 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
     private handleMergeChange(event){
       this.setState({
        redraw : !event.target.checked
+      });
+    }
+
+    private handleAnimateChange(event){
+      this.setState({
+       disableAnimation : !event.target.checked
       });
     }
 
@@ -156,6 +166,12 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
               </label>
             </div>
             <div className="control-group">
+              <label className="checkbox">
+                <input type="checkbox"  ref={(e) => this.animateCheckbox = e} onChange={this.handleAnimateChange.bind(this)}></input>
+                Animate
+              </label>
+            </div>
+            <div className="control-group">
               <button onClick={this.handleSimulatorClick.bind(this)}>{this.state.interpreter ? 'Stop' : 'Start' } Simulator</button>
             </div>
           </form>
@@ -169,7 +185,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
                 layoutOptions={this.state.layoutOptions}
                 redraw={this.state.redraw}
                 configuration={this.state.configuration}
-                disableAnimation={true}
+                disableAnimation={this.state.disableAnimation}
                 />
             }
           </div>
