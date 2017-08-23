@@ -1,6 +1,6 @@
 {
   "name": "@jbeard/scxml-tool",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A minimal standalone graphical SCXML simulation environment.",
   "main": "main.js",
   "bin": {
