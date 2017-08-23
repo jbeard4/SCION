@@ -1,6 +1,6 @@
-/// <reference types="scion-core" />
+/// <reference types="@jbeard/scion-core" />
 
-import * as scion from 'scion-core';
+import * as scion from '@jbeard/scion-core';
 
 export interface SCModel {
   prepare : (cb : (err : Error, fnModel : scion.FnModel) => any, executionContext? : any, hostContext? : any) => void;
