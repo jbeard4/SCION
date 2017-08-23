@@ -1,7 +1,7 @@
 import * as React from "react";
-import SCHVIZ from 'schviz2';
+import SCHVIZ from '@jbeard/schviz2';
 import Console from 'console-component';
-import scxml = require('scxml');
+import scxml = require('@jbeard/scxml');
 import RunButton from './RunButton';
 import electron = require('electron');
 import {handleError, clear} from '../handle-errors';
