@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "babel-polyfill": "^6.23.0",
+    "electron": "^1.4.1",
     "jquery": "^3.2.1",
     "optimist": "^0.6.1",
     "react": "^15.4.2",
@@ -43,7 +44,6 @@
     "babelify": "^7.3.0",
     "browserify": "^14.3.0",
     "browserify-css": "^0.10.1",
-    "electron": "^1.4.1",
     "electron-packager": "^8.6.0",
     "exorcist": "^0.4.0",
     "react": "^15.6.1",
