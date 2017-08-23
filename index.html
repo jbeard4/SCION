@@ -1,16 +1,32 @@
 <html>
   <head>
     <link href="index.css" rel="stylesheet">
-    <link rel="stylesheet" href="node_modules/font-awesome/css/font-awesome.min.css">
-    <script src="node_modules/babel-polyfill/dist/polyfill.js"></script>
-    <link href="node_modules/toastr/build/toastr.css" rel="stylesheet"/>
-    <link href="node_modules/schviz2/test-integration/styles.css" rel="stylesheet"/>
   </head>
   <body>
     <div class="app">
     </div>
     <script>
-      require('./dist/scxml-tool.js')
+      const path = require('path');
+      Promise.all(
+        [
+          path.join(path.dirname(require.resolve('toastr')), 'build/toastr.css'),
+          path.join(path.dirname(path.dirname(require.resolve('schviz2'))), 'test-integration/styles.css')
+        ].map(function(pathToStyle){
+          let link = document.createElement('link');
+          link.setAttribute('rel','stylesheet');
+          link.setAttribute('href',pathToStyle);
+          document.head.appendChild(link);
+          let promise = new Promise(function(resolve, reject){
+            link.addEventListener('load',function(e){
+              resolve();
+            });
+          });
+          return promise;
+        })
+      ).then(function(){
+        require('babel-polyfill');
+        require('./dist/scxml-tool.js');
+      });
     </script>
   </body>
 </html>
