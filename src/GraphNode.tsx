@@ -8,6 +8,7 @@ import EventEmitter = require('events');
 import _ = require('underscore');
 import Debug = require('debug');
 import classNames = require('classnames');
+import SCHVIZ from './index';
 const debug = Debug('GraphNode');
 
 import GraphRoot from './index';
@@ -28,6 +29,7 @@ try {
 
 
 export interface GraphNodeProps {
+  schviz : SCHVIZ;
   node : KGraphNode;
   isRoot : boolean;
   graphRoot : GraphRoot;
@@ -127,7 +129,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
         label: 'Expand/contract', 
         click : () => {
           console.log('Expand state/contract state');
-          //this.props.app.emit('state:dblclick', this.props.node.id, event);
+          this.props.schviz.toggleExpandContractState(this.props.node.id);
         }
       })
     ];
@@ -363,6 +365,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
 
             (this.props.node.children && this.props.node.children.map(child => (
               <GraphNode
+                schviz={this.props.schviz}
                 node={child}
                 key={child.id}
                 allEdges={this.props.allEdges}

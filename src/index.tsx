@@ -9,6 +9,7 @@ const debug = Debug('GraphNode');
 import GraphNode from './GraphNode';
 import _ = require('underscore');
 import {LayoutOptions} from './IKGraphRenderBackend';
+import {SCState, SCTransition, findStateById} from './SCJSON';
 
 export interface GraphRootProps {
   scjson : any,    //TODO: add types to SCION, and refactor this ot use the type
@@ -247,6 +248,14 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     this.animate();
   }
 
+  public toggleExpandContractState(nodeId : string){
+    //transform model
+    let state:SCState = findStateById(this.props.scjson, nodeId);
+    state.$meta = state.$meta || {};
+    state.$meta.isCollapsed = !state.$meta.isCollapsed;   //toggle contracted
+    this.initKGraph(this.props, true);
+  }
+
   private animate(){
     if(!this.props.disableAnimation) this.viewBoxAnimation.beginElement();  //reset animation
   }
@@ -295,6 +304,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
           { 
             this.state.kgraph &&
               <GraphNode
+                schviz={this}
                 node={this.state.kgraph.root}
                 allEdges={this.state.allEdges}
                 kgraph={this.state.kgraph}
