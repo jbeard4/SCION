@@ -253,7 +253,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     let state:SCState = findStateById(this.props.scjson, nodeId);
     state.$meta = state.$meta || {};
     state.$meta.isCollapsed = !state.$meta.isCollapsed;   //toggle contracted
-    this.initKGraph(this.props, true);
+    this.initKGraph(this.props, false);
   }
 
   private animate(){
