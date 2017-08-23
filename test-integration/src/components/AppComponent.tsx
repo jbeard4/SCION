@@ -1,5 +1,5 @@
 import * as React from "react";
-import scxml = require('scxml');    //TODO: make scxml an es6 module
+import scxml = require('@jbeard/scxml');    //TODO: make scxml an es6 module
                                     //TODO: expose SCJSON object type, so we do not need to use "any" type
 import SCHVIZ from '../../..';
 import Console from 'console-component';
@@ -35,7 +35,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
   }
 
   private loadData(){
-    const scionCoreBaseUrl= '/test-integration/node_modules/scion-core/test/tests';
+    const scionCoreBaseUrl= '/test-integration/node_modules/@jbeard/scion-core/test/tests';
     jQuery.getJSON(`${scionCoreBaseUrl}/tests.json`).then((responseData) => {
       let testPairs = responseData.map((testUrl) =>`${scionCoreBaseUrl}/${testUrl}`);
       this.setState({

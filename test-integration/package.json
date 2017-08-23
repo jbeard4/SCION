@@ -12,7 +12,7 @@
     "debug": "^2.6.3",
     "jquery": "^3.1.1",
     "react": "^15.4.2",
-    "@jbeard/scxml": "4.0.0",
+    "@jbeard/scxml": "4.0.1",
     "@jbeard/scion-core": "2.0.0"
   },
   "devDependencies": {
