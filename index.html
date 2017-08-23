@@ -10,7 +10,7 @@
       Promise.all(
         [
           path.join(path.dirname(require.resolve('toastr')), 'build/toastr.css'),
-          path.join(path.dirname(path.dirname(require.resolve('schviz2'))), 'test-integration/styles.css')
+          path.join(path.dirname(path.dirname(require.resolve('@jbeard/schviz2'))), 'test-integration/styles.css')
         ].map(function(pathToStyle){
           let link = document.createElement('link');
           link.setAttribute('rel','stylesheet');
