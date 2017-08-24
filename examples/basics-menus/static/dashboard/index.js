@@ -22,6 +22,8 @@ var source = new EventSource('/api/update-stream');
         event : message.event
     });
 
+    grid.setSelectedRows([0]);
+
 
   }, false);
 });
