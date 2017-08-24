@@ -1,6 +1,6 @@
 import * as React from "react";
 import SCHVIZ from '@jbeard/schviz2';
-import Console from 'console-component';
+import Console from '@jbeard/console-component';
 import scxml = require('@jbeard/scxml');
 import RunButton from './RunButton';
 import electron = require('electron');
