@@ -1,11 +1,11 @@
 var source = new EventSource('/api/update-stream');
 
 [
-  'onExitInterpreter',
-  'onBigStepEnd',
-  'onSmallStepBegin',
-  'onSmallStepEnd',
-  'onInvokedSessionInitialized'
+  //'onExitInterpreter'
+  //,'onBigStepEnd'
+  //,'onSmallStepBegin'
+  'onSmallStepEnd'
+  //,'onInvokedSessionInitialized'
 ].forEach(function(updateName){
   source.addEventListener(updateName, function(e) {
     let message = JSON.parse(e.data);
@@ -87,7 +87,8 @@ function renderSchviz(scjson,snapshot){
       {
         scjson:scjson, 
         layoutOptions:SCHVIZ.default.layouts.right,
-        configuration:snapshot[0]
+        configuration:snapshot[0],
+        disableAnimation:true
       }
     );
 
