@@ -115,6 +115,11 @@ function initSession(messageBuffer, interpreter){
   interpreter.on('onBigStepBegin',function(event){
     broadcast(interpreter, 'onBigStepBegin',event);
   });
+  interpreter.on('onTransition',function(transitionSourceId, transitionTargetIds, transitionIndex){
+    broadcast(interpreter, 'onTransition', 
+      [transitionSourceId, transitionTargetIds, transitionIndex]
+    );
+  });
   interpreter.on('onBigStepEnd',function(){
     broadcast(interpreter, 'onBigStepEnd');
     log(interpreter, 'onBigStepEnd', interpreter.getConfiguration());

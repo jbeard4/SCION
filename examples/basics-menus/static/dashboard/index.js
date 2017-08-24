@@ -1,32 +1,49 @@
 var source = new EventSource('/api/update-stream');
 
-[
-  //'onExitInterpreter'
-  //,'onBigStepEnd'
-  //,'onSmallStepBegin'
-  'onSmallStepEnd'
-  //,'onInvokedSessionInitialized'
-].forEach(function(updateName){
-  source.addEventListener(updateName, function(e) {
-    let message = JSON.parse(e.data);
-    console.log(updateName, message);
+let previousConfiguration = [],
+    transitionsEnabled  = new Map();
 
-    dataView.insertItem(0, {
-        id : e.lastEventId, 
-        name : message.name,
-        docUrl : message.docUrl,
-        sessionid : message.sessionid,
-        updateName : updateName,
-        eventName : message.event && message.event.name,  
-        snapshot : message.snapshot,
-        event : message.event
-    });
+source.addEventListener('onSmallStepBegin', function(e) {
+  let message = JSON.parse(e.data);
+  previousConfiguration = message.snapshot[0];
+  transitionsEnabled  = new Map();
+}, false);
 
-    grid.setSelectedRows([0]);
+source.addEventListener('onTransition', function(e) {
+  let message = JSON.parse(e.data);
+  let transitionSourceId, transitionTargetIds, transitionIndex;
+  [transitionSourceId, transitionTargetIds, transitionIndex] = message.event;
+  console.log('transitionSourceId, transitionTargetIds, transitionIndex', transitionSourceId, transitionTargetIds, transitionIndex);
+  let enabledTransitionIndexes;
+  if(transitionsEnabled.has(transitionSourceId)){
+    enabledTransitionIndexes = transitionsEnabled.get(transitionSourceId)
+  } else {
+    enabledTransitionIndexes = new Set();
+    transitionsEnabled.set(transitionSourceId, enabledTransitionIndexes);
+  }
+  enabledTransitionIndexes.add(transitionIndex);
+}, false);
+
+source.addEventListener('onSmallStepEnd', function(e) {
+  let message = JSON.parse(e.data);
+
+  dataView.insertItem(0, {
+      id : e.lastEventId, 
+      name : message.name,
+      docUrl : message.docUrl,
+      sessionid : message.sessionid,
+      //updateName : updateName,
+      eventName : message.event && message.event.name,  
+      snapshot : message.snapshot,
+      event : message.event,
+      transitionsEnabled : transitionsEnabled,
+      previousConfiguration : previousConfiguration  
+  });
+
+  grid.setSelectedRows([0]);
 
 
-  }, false);
-});
+}, false);
 
 
 var grid,
@@ -35,7 +52,7 @@ var grid,
         { id: "scxmlName", name: "SCXML Name", field: "name", width: 120 },
         //{ id: "docUrl", name: "URL", field: "docUrl", width: 120 },
         { id: "sessionid", name: "Sesssionid", field: "sessionid", width: 120 },
-        { id: "updateName", name: "Update", field: "updateName", width: 120 },
+        //{ id: "updateName", name: "Update", field: "updateName", width: 120 },
         { id: "eventName", name: "Event Name", field: "eventName", width: 120 },
     ],
     options = {
@@ -67,22 +84,28 @@ grid.onSelectedRowsChanged.subscribe(function(){
   console.log(arguments);
   let rows = grid.getSelectedRows();
   let row = dataView.getItem(rows[0]);
+
   console.log(row);
   //render the docUrl on the selectedRow
-  lazyRenderSchviz(row.docUrl,row.snapshot);
+  lazyRenderSchviz(
+      row.docUrl,
+      row.snapshot,
+      row.transitionsEnabled,
+      row.previousConfiguration);
 })
 
 let schviz;
 
-function lazyRenderSchviz(docUrl,snapshot){
+function lazyRenderSchviz(docUrl,snapshot,transitionsEnabled,previousConfiguration){
   $.get('/' + docUrl).then(function(scxmlContents){
     let scjson = scxml.ext.compilerInternals.scxmlToScjson(scxmlContents);
-    schviz = renderSchviz(scjson,snapshot);
+    schviz = renderSchviz(scjson,snapshot,transitionsEnabled,previousConfiguration);
   });
   
 }
 
-function renderSchviz(scjson,snapshot){
+function renderSchviz(scjson,snapshot,transitionsEnabled,previousConfiguration){
+  //TODO: cache rendering
   var rootElement = 
     React.createElement(
       SCHVIZ.default,
@@ -90,7 +113,9 @@ function renderSchviz(scjson,snapshot){
         scjson:scjson, 
         layoutOptions:SCHVIZ.default.layouts.right,
         configuration:snapshot[0],
-        disableAnimation:true
+        disableAnimation:true,
+        transitionsEnabled : transitionsEnabled,
+        previousConfiguration : previousConfiguration
       }
     );
 
