@@ -1,6 +1,6 @@
 {
   "name": "@jbeard/scxml",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "An implementation of SCXML in JavaScript.",
   "keywords": [
     "scxml",
