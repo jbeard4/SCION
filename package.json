@@ -27,7 +27,7 @@
     "react-dom": "^15.4.2",
     "toastr": "^2.1.2",
     "@jbeard/scxml": "4.0.1",
-    "@jbeard/schviz2": "3.1.1",
+    "@jbeard/schviz2": "3.1.2",
     "@jbeard/console-component": "1.0.3"
   },
   "keywords": [
