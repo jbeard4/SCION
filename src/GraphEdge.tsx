@@ -5,13 +5,14 @@ import * as React from "react";
 import constants from './constants';
 import GraphLabel from './GraphLabel';
 import Debug = require('debug');
+import classNames = require('classnames');
 const debug = Debug('GraphEdge');
 
 export interface GraphEdgeProps {
   edge : KGraphEdge;
   redraw? : boolean;
   disableAnimation? : boolean;
-
+  highlighted : boolean;
 }
 
 export interface GraphEdgeAnimation {
@@ -254,7 +255,12 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
         }
       </marker>
       <path 
-        className={'link ' + (this.props.edge.$type || '')} 
+        className={
+          classNames({
+            "link" : true,
+            "highlighted" : this.props.highlighted
+          })
+        }
         id={edgeId}
         ref={(e: SVGPathElement) => { this.svgPathElement = e; }}
         strokeDasharray={this.state.pathLength.toString()}
@@ -290,6 +296,7 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
         {
           this.props.edge.labels && this.props.edge.labels.map((label, i) => (
             <GraphLabel
+              highlighted={this.props.highlighted}
               edge={this.props.edge}
               key={i}
               label={label}

@@ -129,6 +129,23 @@ g.compound.type__parallel > g > g.node > rect {
   fill : #c7254e;
 }
 
+.node.exited > rect {
+  stroke : blue;
+}
+
+.node.exited > text {
+  fill : blue;
+}
+
+
+.node.exited.highlighted > rect {
+  stroke : purple;
+}
+
+.node.exited.highlighted > text {
+  fill : purple;
+}
+
 
 .node.selected > rect {
   stroke : blue;
@@ -147,6 +164,10 @@ g.compound.type__parallel > g > g.node > rect {
 
 .link.highlighted {
   stroke : #c7254e;
+}
+
+.edge-label.highlighted {
+  fill : #c7254e;
 }
 
 .port {

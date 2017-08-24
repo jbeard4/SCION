@@ -237,8 +237,8 @@ export default class SCJSONToKGraphTransformer {
     if(state.transitions){
       var newEdges = 
         state.transitions
-          .filter(function(transition){return transition.target;})   //TODO: also render targetless transitions 
           .map(function(transition, idx){
+            if(!transition.target) return null;   //TODO: also render targetless transitions 
             var klayEdge = new KGraphEdge();
             _.extend(klayEdge, {
               id : `${state.id}:${idx}`,
@@ -265,7 +265,8 @@ export default class SCJSONToKGraphTransformer {
             }
             transition._klayEdge = klayEdge;
             return klayEdge;
-          }.bind(this));
+          }.bind(this))
+          .filter(function(klayEdge){return klayEdge}); //filter out the null edges
 
       var parentKlayNode = this._stateToKlayNodeMap.get(parentState);
       parentKlayNode.edges.push.apply(parentKlayNode.edges, newEdges);

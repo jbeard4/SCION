@@ -4,6 +4,7 @@ import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, Point} from './KGraph';
 import * as React from "react";
 import constants from './constants';
 import Debug = require('debug');
+import classNames = require('classnames');
 const debug = Debug('GraphLabel');
 
 export interface GraphLabelProps {
@@ -11,6 +12,7 @@ export interface GraphLabelProps {
   label : KGraphLabel;
   redraw? : boolean;
   disableAnimation? : boolean;
+  highlighted? : boolean;
 }
 
 export interface GraphLabelAnimation {
@@ -64,7 +66,12 @@ export default class GraphLabel extends React.PureComponent<GraphLabelProps, Gra
   }
 
   public render(){
-    let toReturn = <text className="edge-label"
+    let toReturn = <text className={
+          classNames({
+            "edge-label" : true,
+            "highlighted" : this.props.highlighted
+          })
+        }
         textAnchor={(this.props.label.$meta && this.props.label.$meta.textAnchor) || 'start'}
         dominantBaseline={(this.props.label.$meta && this.props.label.$meta.dominantBaseline) || 'text-before-edge'}
         x={this.props.disableAnimation ? this.state.to.x : undefined}

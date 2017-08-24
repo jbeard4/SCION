@@ -36,8 +36,10 @@ export interface GraphNodeProps {
   allEdges : KGraphEdge[];
   kgraph : KGraph;
   redraw? : boolean;
-  configuration? : string[],
-  disableAnimation? : boolean
+  configuration? : string[];
+  disableAnimation? : boolean;
+  transitionsEnabled? : Map<string, Set<number>>;
+  previousConfiguration? : string[];
 }
 
 export interface KGraphNodeAnimation {
@@ -273,7 +275,8 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                 "leaf" : isLeaf,
                 "compound" : !isLeaf,
                 [`type__${this.state.to.node.$type}`] : this.state.to.node.$type,
-                "highlighted" : this.props.configuration && this.props.configuration.indexOf(this.state.to.node.id) > -1
+                "highlighted" : this.props.configuration && this.props.configuration.indexOf(this.state.to.node.id) > -1,
+                "exited" : this.props.previousConfiguration && this.props.previousConfiguration.indexOf(this.state.to.node.id) > -1
               })
             }
             ref={(e: SVGGElement) => { this.svgGElement = e; }}
@@ -375,16 +378,21 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                 redraw={this.props.redraw}
                 configuration={this.props.configuration}
                 disableAnimation={this.props.disableAnimation}
+                transitionsEnabled={this.props.transitionsEnabled}
+                previousConfiguration={this.props.previousConfiguration}
                 />
           )))
         }
       </g>
       <g className="edges">
         { 
-            myEdges.map((edge, i) => (
-              <GraphEdge edge={edge} key={`${this.props.node.id}_${i}`} 
+            myEdges.map((edge, idx) => (
+              <GraphEdge edge={edge} key={`${this.props.node.id}_${idx}`} 
                 redraw={this.props.redraw}
                 disableAnimation={this.props.disableAnimation}
+                highlighted={ 
+                  this.props.transitionsEnabled.has(edge.source) && this.props.transitionsEnabled.get(edge.source).has(parseInt(edge.id.split(':')[1])) 
+                }
                 />
             )) 
         }
@@ -394,7 +402,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
     this.initialRender = true;
 
     return toReturn;
-    
+
   }
 
 

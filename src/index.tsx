@@ -17,6 +17,8 @@ export interface GraphRootProps {
   redraw? : boolean,
   configuration? : string[],
   disableAnimation? : boolean
+  transitionsEnabled? : Map<string, Set<number>>;
+  previousConfiguration? : string[]
 }
 
 export interface GraphRootAnimation {
@@ -261,6 +263,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   }
 
   render(){
+    console.log('this.props.transitionsEnabled', this.props.transitionsEnabled);
     let from = `${[this.state.fromZoom.x, this.state.fromZoom.y, this.state.fromZoom.width,this.state.fromZoom.height].join(' ')}`;
     let to = `${[this.state.toZoom.x, this.state.toZoom.y, this.state.toZoom.width, this.state.toZoom.height].join(' ')}`;
     let viewBoxValues = `${from};${to}`;
@@ -313,6 +316,8 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
                 redraw={this.props.redraw}
                 configuration={this.props.configuration}
                 disableAnimation={this.props.disableAnimation}
+                transitionsEnabled={this.props.transitionsEnabled}
+                previousConfiguration={this.props.previousConfiguration}
                 />
           }
         </g>
