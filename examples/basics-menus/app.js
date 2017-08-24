@@ -24,6 +24,9 @@ let responses = new Set();
 let messageCount = 0;
 
 //serve static files
+server.get(/.*\.scxml/, restify.serveStatic({
+	'directory': 'src'
+}));
 server.get(/\/dashboard.*/, restify.serveStatic({
 	'directory': 'static',
 	'default': 'index.html'
@@ -48,8 +51,9 @@ function broadcast(interpreter, eventName, event){
     res.write('event: ' + eventName + '\n');
     res.write("data: " + JSON.stringify({
       name : path.parse(interpreter._model.docUrl).name, 
+      docUrl : path.relative(path.join(__dirname, 'src'), interpreter._model.docUrl),
       sessionid : interpreter.opts.sessionid,
-      interpreter : interpreter.getSnapshot(), 
+      snapshot : interpreter.getSnapshot(), 
       event : event
     }) + '\n\n'); // Note the extra newline
   }
@@ -59,7 +63,7 @@ connector.onEvent(function(events){
   events.forEach(processEvent)
 })
 
-scxml.pathToModel('./app.scxml', function(err, model){
+scxml.pathToModel('./src/app.scxml', function(err, model){
   if(err) throw err;
   model.prepare(function(err, fn){
     if(err) throw err;

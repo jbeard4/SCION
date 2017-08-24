@@ -7,6 +7,8 @@
   <title>SlickGrid example 12: Fill browser</title>
   <link rel="stylesheet" href="./node_modules/slickgrid/slick.grid.css" type="text/css"/>
   <link rel="stylesheet" href="examples.css" type="text/css"/>
+  <link rel="stylesheet" href="examples.css" type="text/css"/>
+  <link href="node_modules/schviz2/test-integration/styles.css" rel="stylesheet"/>
   <style>
     html, body {
       margin: 0;
@@ -17,9 +19,16 @@
     body {
       font: 11px Helvetica, Arial, sans-serif;
     }
+    #schvizContainer {
+      position: absolute;
+      top: 0%;
+      left: 0;
+      right: 0;
+      bottom: 50%;
+    }
     #container {
       position: absolute;
-      top: 0;
+      top: 50%;
       left: 0;
       right: 0;
       bottom: 0;
@@ -39,23 +48,17 @@
   </style>
 </head>
 <body>
+<div id="schvizContainer"></div>
 <div id="container"></div>
-<div id="description">
-  <h2>Demonstrates:</h2>
-  <ul>
-    <li>Grid filling browser window completely (using absolute positioning)</li>
-    <li>Grid resizing when browser window changes size</li>
-    <li>Overall performance of the grid when displaying large tabular data (17 columns x 10,000 rows)</li>
-  </ul>
-    <h2>View Source:</h2>
-    <ul>
-        <li><A href="https://github.com/6pac/SlickGrid/blob/master/examples/example12-fillbrowser.html" target="_sourcewindow"> View the source for this example on Github</a></li>
-    </ul>
-</div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react-dom.min.js"></script>
 <script src="./node_modules/slickgrid/lib/jquery-1.11.2.min.js"></script>
 <script src="./node_modules/slickgrid/lib/jquery.event.drag-2.3.0.js"></script>
 
+<script src="node_modules/babel-polyfill/dist/polyfill.js"></script>
+<script src="./node_modules/scxml/dist/scxml.js"></script>
+<script src="./node_modules/schviz2/dist/schviz.js"></script>
 <script src="./node_modules/slickgrid/slick.core.js"></script>
 <script src="./node_modules/slickgrid/slick.grid.js"></script>
 <script src="./node_modules/slickgrid/slick.dataview.js"></script>
