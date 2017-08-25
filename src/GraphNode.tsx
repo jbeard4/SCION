@@ -348,7 +348,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
         x={this.props.node.width / 2} 
         y={isLeaf ? this.props.node.height / 2 : constants.LEAF_NODE_PADDING_H}  
         visibility={this.props.isRoot ? 'hidden' : 'visible'}
-        opacity={this.props.disableAnimation ? 1 : 0}
+        opacity={this.props.disableAnimation && !this.props.node.id.match(/^\$generated-/) ? 1 : 0}
         >
         {this.props.node.$type === 'virtual' ? this.props.node.labels[0].text : this.props.node.id}
         {
