@@ -8,6 +8,8 @@ import Debug = require('debug');
 import classNames = require('classnames');
 const debug = Debug('GraphEdge');
 
+const PRECISION = 6;
+
 export interface GraphEdgeProps {
   edge : KGraphEdge;
   redraw? : boolean;
@@ -218,13 +220,13 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
 
   private _getBendpointDirection(from, to){
     var toReturn;
-    if(from.x <= to.x && from.y == to.y){
+    if(from.x <= to.x && from.y.toPrecision(PRECISION) == to.y.toPrecision(PRECISION)){
       toReturn = 0;
-    } else if(from.x >= to.x && from.y == to.y){
+    } else if(from.x >= to.x && from.y.toPrecision(PRECISION) == to.y.toPrecision(PRECISION)){
       toReturn = -180;
-    } else if(from.x == to.x && from.y <= to.y){
+    } else if(from.x.toPrecision(PRECISION) == to.x.toPrecision(PRECISION) && from.y <= to.y){
       toReturn = -270;
-    } else if(from.x == to.x && from.y >= to.y){
+    } else if(from.x.toPrecision(PRECISION) == to.x.toPrecision(PRECISION) && from.y >= to.y){
       toReturn = -90;
     } else {
       toReturn = 0;
