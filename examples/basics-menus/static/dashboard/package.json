@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "@jbeard/schviz2": "^3.1.2",
-    "@jbeard/scxml": "^4.0.2",
+    "@jbeard/schviz2": "git+ssh://git@nas:JacobeanRnD/SCHVIZ2.git#98ae0afda8878605281d299630252c98ffc8b77d",
+    "@jbeard/scxml": "git+ssh://git@nas:jbeard4/scion#4e217e6530ed76c1e50d04927453cf88032a199c"
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "slickgrid": "^2.3.3"
