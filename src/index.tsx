@@ -18,7 +18,8 @@ export interface GraphRootProps {
   configuration? : string[],
   disableAnimation? : boolean
   transitionsEnabled? : Map<string, Set<number>>;
-  previousConfiguration? : string[]
+  previousConfiguration? : string[];
+  statesForDefaultEntry? : string[];
 }
 
 export interface GraphRootAnimation {
@@ -318,6 +319,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
                 disableAnimation={this.props.disableAnimation}
                 transitionsEnabled={this.props.transitionsEnabled}
                 previousConfiguration={this.props.previousConfiguration}
+                statesForDefaultEntry={this.props.statesForDefaultEntry}
                 />
           }
         </g>

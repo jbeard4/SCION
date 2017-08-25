@@ -40,6 +40,7 @@ export interface GraphNodeProps {
   disableAnimation? : boolean;
   transitionsEnabled? : Map<string, Set<number>>;
   previousConfiguration? : string[];
+  statesForDefaultEntry : string[];
 }
 
 export interface KGraphNodeAnimation {
@@ -246,7 +247,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
       this.animateOpacityElement 
     ].forEach( animation => animation.beginElement() );
   }
-  
+
   render(){
     debug('render',this.state.to.node.id);
 
@@ -268,6 +269,16 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                       edgesOriginatingFromChildStateAndNotTargetingDescendant); 
 
     var edgeKeys = {};
+
+    let exitInitialState;
+    if(this.props.node.$type === 'initial'){
+      //is transition originating from this state targeting stateForDefaultEntry?
+      exitInitialState = 
+        this.props.allEdges.
+          filter( edge => this.state.to.node.id === edge.source && 
+                          this.props.statesForDefaultEntry.indexOf(edge.target) > -1 ).length;
+    }
+
     let toReturn = <g id={this.state.to.node.id} 
             className={
               classNames({
@@ -276,7 +287,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                 "compound" : !isLeaf,
                 [`type__${this.state.to.node.$type}`] : this.state.to.node.$type,
                 "highlighted" : this.props.configuration && this.props.configuration.indexOf(this.state.to.node.id) > -1,
-                "exited" : this.props.previousConfiguration && this.props.previousConfiguration.indexOf(this.state.to.node.id) > -1
+                "exited" : exitInitialState || (this.props.previousConfiguration && this.props.previousConfiguration.indexOf(this.state.to.node.id) > -1)
               })
             }
             ref={(e: SVGGElement) => { this.svgGElement = e; }}
@@ -380,6 +391,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                 disableAnimation={this.props.disableAnimation}
                 transitionsEnabled={this.props.transitionsEnabled}
                 previousConfiguration={this.props.previousConfiguration}
+                statesForDefaultEntry={this.props.statesForDefaultEntry}
                 />
           )))
         }
@@ -391,7 +403,18 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                 redraw={this.props.redraw}
                 disableAnimation={this.props.disableAnimation}
                 highlighted={ 
-                  this.props.transitionsEnabled.has(edge.source) && this.props.transitionsEnabled.get(edge.source).has(parseInt(edge.id.split(':')[1])) 
+                  (
+                    //handle transitions originating from initial states:
+                    //the edge targets a state set for default entry
+                    this.props.statesForDefaultEntry.indexOf(edge.target) > -1 &&
+                    //the edge originates from an initial state
+                    this.props.kgraph.getKgraphNodeById(edge.source).$type === 'initial' 
+                  ) ||
+                  (
+                    //the transition has been explicitly enabled
+                    this.props.transitionsEnabled.has(edge.source) && 
+                    this.props.transitionsEnabled.get(edge.source).has(parseInt(edge.id.split(':')[1])) 
+                  )
                 }
                 />
             )) 
