@@ -157,8 +157,6 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
 
   handleMouseUp(event){
     debug('handleMouseUp', event);
-    console.log('this.eventBuffer',this.eventBuffer);
-    console.log('this.deltaBuffer',this.deltaBuffer);
     this.eventStamp = null;
     this.eventBuffer = null;
     this.deltaBuffer = null;
@@ -221,7 +219,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       const options = this.getDefaultLayoutOptions(layoutOptions)
       if(!this.props.disableAnimation) this.svgRootElement.pauseAnimations();
       kgraph.updateLayout(options, (err, rootNode) => {
-        console.log('kgraph rootNode',rootNode);
+        //console.log('kgraph rootNode',rootNode);
         if(err) throw err;
         let toZoom = {x : 0, y : 0, width : rootNode.width, height : rootNode.height};
         this.setState({ 
@@ -264,7 +262,6 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   }
 
   render(){
-    console.log('this.props.transitionsEnabled', this.props.transitionsEnabled);
     let from = `${[this.state.fromZoom.x, this.state.fromZoom.y, this.state.fromZoom.width,this.state.fromZoom.height].join(' ')}`;
     let to = `${[this.state.toZoom.x, this.state.toZoom.y, this.state.toZoom.width, this.state.toZoom.height].join(' ')}`;
     let viewBoxValues = `${from};${to}`;
