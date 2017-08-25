@@ -17,7 +17,6 @@ source.addEventListener('onTransition', function(e) {
   let message = JSON.parse(e.data);
   let transitionSourceId, transitionTargetIds, transitionIndex;
   [transitionSourceId, transitionTargetIds, transitionIndex] = message.event;
-  console.log('transitionSourceId, transitionTargetIds, transitionIndex', transitionSourceId, transitionTargetIds, transitionIndex);
   let enabledTransitionIndexes;
   if(transitionsEnabled.has(transitionSourceId)){
     enabledTransitionIndexes = transitionsEnabled.get(transitionSourceId)
@@ -43,7 +42,7 @@ source.addEventListener('onSmallStepEnd', function(e) {
       docUrl : message.docUrl,
       sessionid : message.sessionid,
       //updateName : updateName,
-      eventName : currentEvent.name,  
+      eventName : currentEvent ? currentEvent.name : '<null>',
       snapshot : message.snapshot,
       event : currentEvent,
       transitionsEnabled : transitionsEnabled,
@@ -92,11 +91,9 @@ grid.setSelectionModel(new Slick.RowSelectionModel());
 dataView.setItems(data);
 
 grid.onSelectedRowsChanged.subscribe(function(){
-  console.log(arguments);
   let rows = grid.getSelectedRows();
   let row = dataView.getItem(rows[0]);
 
-  console.log(row);
   //render the docUrl on the selectedRow
   lazyRenderSchviz(
       row.docUrl,
