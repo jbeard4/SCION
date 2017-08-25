@@ -120,6 +120,10 @@ function initSession(messageBuffer, interpreter){
       [transitionSourceId, transitionTargetIds, transitionIndex]
     );
   });
+  interpreter.on('onDefaultEntry',function(initialStateId){
+    broadcast(interpreter, 'onDefaultEntry',initialStateId);
+  });
+
   interpreter.on('onBigStepEnd',function(){
     broadcast(interpreter, 'onBigStepEnd');
     log(interpreter, 'onBigStepEnd', interpreter.getConfiguration());

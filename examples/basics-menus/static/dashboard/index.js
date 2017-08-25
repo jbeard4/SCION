@@ -1,12 +1,14 @@
 var source = new EventSource('/api/update-stream');
 
 let previousConfiguration = [],
+    statesForDefaultEntry = [],
     transitionsEnabled  = new Map();
 
 source.addEventListener('onSmallStepBegin', function(e) {
   let message = JSON.parse(e.data);
   previousConfiguration = message.snapshot[0];
   transitionsEnabled  = new Map();
+  statesForDefaultEntry = [];
 }, false);
 
 source.addEventListener('onTransition', function(e) {
@@ -24,6 +26,12 @@ source.addEventListener('onTransition', function(e) {
   enabledTransitionIndexes.add(transitionIndex);
 }, false);
 
+
+source.addEventListener('onDefaultEntry', function(e) {
+  let message = JSON.parse(e.data);
+  statesForDefaultEntry.push(message.event);
+});
+
 source.addEventListener('onSmallStepEnd', function(e) {
   let message = JSON.parse(e.data);
 
@@ -37,7 +45,8 @@ source.addEventListener('onSmallStepEnd', function(e) {
       snapshot : message.snapshot,
       event : message.event,
       transitionsEnabled : transitionsEnabled,
-      previousConfiguration : previousConfiguration  
+      previousConfiguration : previousConfiguration,
+      statesForDefaultEntry : statesForDefaultEntry
   });
 
   grid.setSelectedRows([0]);
@@ -91,20 +100,21 @@ grid.onSelectedRowsChanged.subscribe(function(){
       row.docUrl,
       row.snapshot,
       row.transitionsEnabled,
-      row.previousConfiguration);
+      row.previousConfiguration,
+      row.statesForDefaultEntry);
 })
 
 let schviz;
 
-function lazyRenderSchviz(docUrl,snapshot,transitionsEnabled,previousConfiguration){
+function lazyRenderSchviz(docUrl,snapshot,transitionsEnabled,previousConfiguration,statesForDefaultEntry){
   $.get('/' + docUrl).then(function(scxmlContents){
     let scjson = scxml.ext.compilerInternals.scxmlToScjson(scxmlContents);
-    schviz = renderSchviz(scjson,snapshot,transitionsEnabled,previousConfiguration);
+    schviz = renderSchviz(scjson,snapshot,transitionsEnabled,previousConfiguration,statesForDefaultEntry);
   });
   
 }
 
-function renderSchviz(scjson,snapshot,transitionsEnabled,previousConfiguration){
+function renderSchviz(scjson,snapshot,transitionsEnabled,previousConfiguration,statesForDefaultEntry){
   //TODO: cache rendering
   var rootElement = 
     React.createElement(
@@ -115,7 +125,8 @@ function renderSchviz(scjson,snapshot,transitionsEnabled,previousConfiguration){
         configuration:snapshot[0],
         disableAnimation:true,
         transitionsEnabled : transitionsEnabled,
-        previousConfiguration : previousConfiguration
+        previousConfiguration : previousConfiguration,
+        statesForDefaultEntry : statesForDefaultEntry 
       }
     );
 

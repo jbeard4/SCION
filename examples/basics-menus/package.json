@@ -16,6 +16,6 @@
   "dependencies": {
     "botbuilder": "^3.7.0",
     "restify": "^4.3.0",
-    "@jbeard/scxml": "git+ssh://git@nas:jbeard4/scion#4e217e6530ed76c1e50d04927453cf88032a199c"
+    "@jbeard/scxml": "git+ssh://git@nas:jbeard4/scion#de92de2e4f2e7f993d9731fec14972244ad24c85"
   }
 }
