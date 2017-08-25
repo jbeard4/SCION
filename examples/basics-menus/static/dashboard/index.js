@@ -2,6 +2,7 @@ var source = new EventSource('/api/update-stream');
 
 let previousConfiguration = [],
     statesForDefaultEntry = [],
+    currentEvent,
     transitionsEnabled  = new Map();
 
 source.addEventListener('onSmallStepBegin', function(e) {
@@ -9,6 +10,7 @@ source.addEventListener('onSmallStepBegin', function(e) {
   previousConfiguration = message.snapshot[0];
   transitionsEnabled  = new Map();
   statesForDefaultEntry = [];
+  currentEvent = message.event;
 }, false);
 
 source.addEventListener('onTransition', function(e) {
@@ -41,9 +43,9 @@ source.addEventListener('onSmallStepEnd', function(e) {
       docUrl : message.docUrl,
       sessionid : message.sessionid,
       //updateName : updateName,
-      eventName : message.event && message.event.name,  
+      eventName : currentEvent.name,  
       snapshot : message.snapshot,
-      event : message.event,
+      event : currentEvent,
       transitionsEnabled : transitionsEnabled,
       previousConfiguration : previousConfiguration,
       statesForDefaultEntry : statesForDefaultEntry
