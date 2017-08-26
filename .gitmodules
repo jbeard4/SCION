@@ -6,7 +6,7 @@
 	url = git@github.com:jbeard4/universal-morse-input-output.git
 [submodule "examples/svg-graphical-modelling-environment-framework"]
 	path = examples/svg-graphical-modelling-environment-framework
-	url = git@github.com:jbeard4/svg-graphical-modelling-environment-framework.git
+	url = git@nas:jbeard4/svg-graphical-modelling-environment-framework.git
 [submodule "examples/archive.org-twilio-browser"]
 	path = examples/archive.org-twilio-browser
 	url = git@github.com:jbeard4/archive.org-twilio-browser.git
