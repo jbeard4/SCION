@@ -70,6 +70,12 @@ var grid,
       enableColumnReorder: false
     };
 
+// create the editor
+var container = document.getElementById("infoContainer");
+var editorOptions = { name : 'event', mode : 'view'};
+var editor = new JSONEditor(container, editorOptions);
+editor.setMode('view');
+
 // Create the DataView.
 var dataView = new Slick.Data.DataView();
 
@@ -84,7 +90,7 @@ dataView.onRowsChanged.subscribe(function (e, args) {
   grid.render();
 });
 
-grid = new Slick.Grid("#container", dataView, columns, options);
+grid = new Slick.Grid("#tableContainer", dataView, columns, options);
 
 grid.setSelectionModel(new Slick.RowSelectionModel());
 
@@ -93,6 +99,8 @@ dataView.setItems(data);
 grid.onSelectedRowsChanged.subscribe(function(){
   let rows = grid.getSelectedRows();
   let row = dataView.getItem(rows[0]);
+
+  editor.set(row.event);
 
   //render the docUrl on the selectedRow
   lazyRenderSchviz(
