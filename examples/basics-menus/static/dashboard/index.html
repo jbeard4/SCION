@@ -4,10 +4,9 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <link rel="shortcut icon" type="image/ico" href="favicon.ico" />
-  <title>SlickGrid example 12: Fill browser</title>
+  <title>Event Log</title>
   <link rel="stylesheet" href="./node_modules/slickgrid/slick.grid.css" type="text/css"/>
-  <link rel="stylesheet" href="examples.css" type="text/css"/>
-  <link rel="stylesheet" href="examples.css" type="text/css"/>
+  <link rel="stylesheet" href="./node_modules/slickgrid/slick-default-theme.css" type="text/css"/>
   <link href="node_modules/@jbeard/schviz2/test-integration/styles.css" rel="stylesheet"/>
   <link href="node_modules/jsoneditor/dist/jsoneditor.min.css" rel="stylesheet"/>
   <style>
@@ -53,10 +52,15 @@
     #description h2 {
       padding-left: 0.5em;
     }
+    #title {
+      position:absolute;
+      margin:.25em;
+    }
   </style>
 </head>
 <body>
 <div id="schvizContainer"></div>
+<h1 id="title"><span id="scxmlName"></span> [<span id="sessionId"></span>]</h1>
 <div id="tableContainer"></div>
 <div id="infoContainer"></div>
 

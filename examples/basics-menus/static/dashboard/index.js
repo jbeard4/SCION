@@ -76,6 +76,9 @@ var editorOptions = { name : 'event', mode : 'view'};
 var editor = new JSONEditor(container, editorOptions);
 editor.setMode('view');
 
+var scxmlName = document.getElementById('scxmlName'),
+    sessionId = document.getElementById('sessionId');
+
 // Create the DataView.
 var dataView = new Slick.Data.DataView();
 
@@ -101,6 +104,9 @@ grid.onSelectedRowsChanged.subscribe(function(){
   let row = dataView.getItem(rows[0]);
 
   editor.set(row.event);
+
+  scxmlName.textContent = row.name;
+  sessionId.textContent = row.sessionid;
 
   //render the docUrl on the selectedRow
   lazyRenderSchviz(
