@@ -1,5 +1,5 @@
 {
-  "name": "scxml-botbuilder-sample-firstRun",
+  "name": "scion-scxml-botbuilder-common",
   "version": "1.0.0",
   "description": "Bot Builder Sample - FirstRun",
   "scripts": {
@@ -13,6 +13,7 @@
     "chatbots",
     "botbuilder-samples"
   ],
+  "main" : "./index.js",
   "dependencies": {
     "botbuilder": "^3.7.0",
     "restify": "^4.3.0",

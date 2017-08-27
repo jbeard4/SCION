@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "@jbeard/schviz2": "git+ssh://git@nas:JacobeanRnD/SCHVIZ2.git#dde37285a2e52eceacf6566eaf39bdfc004352f2",
+    "@jbeard/schviz2": "git+ssh://git@nas:JacobeanRnD/SCHVIZ2.git#3a11d360073c03be9537d70b220650a41e7c1db3",
     "@jbeard/scxml": "git+ssh://git@nas:jbeard4/scion#de92de2e4f2e7f993d9731fec14972244ad24c85",
     "babel-polyfill": "^6.26.0",
     "jsoneditor": "^5.9.5",
