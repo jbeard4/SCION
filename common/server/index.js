@@ -3,6 +3,7 @@ const builder = require('botbuilder');
 const restify = require('restify');
 const scxml = require('@jbeard/scxml');
 const path = require('path');
+const _ = require('underscore');
 let fnModel;
 
 function init(srcDir,mainScxmlFile, options){
@@ -73,7 +74,7 @@ function init(srcDir,mainScxmlFile, options){
     model.prepare(function(err, fn){
       if(err) throw err;
       fnModel = fn;
-    },{console : console, util : require('util')});
+    },{console : console, util : require('util'), builder : builder, _  : _ });
   });
 
   function processEvent(event){
