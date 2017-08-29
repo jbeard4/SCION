@@ -65,21 +65,21 @@
         if (company) {
             company = company.entity.toLowerCase();
             isValid = companyData.hasOwnProperty(company);
-        } else if (session.privateConversationData.company) {
+        } else if (privateConversationData.company) {
             // Use valid company selected in previous turn
-            company = session.privateConversationData.company;
+            company = privateConversationData.company;
             isValid = true;
         }
        
         // Prompt the user to pick a company if they didn't specify a valid one.
         if (!isValid) {
             // Lets see if the user just asked for a company we don't know about.
-            //var txt = company ? session.gettext('companyUnknown', { company: company }) : 'companyMissing';
+            var txt = company ? _.template(templateStrings['companyUnknown'])({ company: company }) : templateStrings['companyMissing'];
             
             // Prompt the user to pick a company from the list. This will use the
             // keys of the companyData map for the choices.
             //launch a prompt - builder.Prompts.choice(session, txt, companyData);
-            this.raise({name : 'not.valid'});
+            this.raise({name : 'not.valid', data : { message : _event.data.message, prompt : txt}});
         } else {
             // Great! pass the company to the next step in the waterfall which will answer the question.
             // * This will match the format of the response returned from Prompts.choice().
@@ -106,6 +106,23 @@
   </state>
   <!-- if invalid, then prompt --> 
   <state id="clarify-prompt">
+    <datamodel>
+      <data id="choices" expr="Object.keys(companyData)"/>
+    </datamodel>
+    <invoke type="http://www.w3.org/TR/scxml/" src="file:choice-dialog.scxml" autoforward="true">
+      <param name="messageBuffer" expr="messageBuffer"/>
+      <param name="prompt" expr="_event.data.prompt"/>
+      <param name="choices" expr="choices"/>
+      <param name="initialEvent" expr="_event"/>
+      <param name="type" expr="'choice'"/>
+    </invoke>
+    <transition event="done.invoke">
+      <script>
+        var company = choices[_event.data];
+        this.raise({name : 'valid', data : { entity: company, message : lastMessage.data.message }})
+      </script>
+    </transition>
+    <transition target="respond" event="valid"/>
   </state>
   <!-- otherwise, give the response, and we're done --> 
   <final id="end-conversation">

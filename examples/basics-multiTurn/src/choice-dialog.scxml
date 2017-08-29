@@ -61,7 +61,7 @@
   <state id="initial-default">
     <onentry>
       <script>
-        send.call(this, initialEvent.data, type === 'choice' ? formatPrompt(prompt, choices) : prompt );
+        send.call(this, initialEvent.data.message, type === 'choice' ? formatPrompt(prompt, choices) : prompt );
       </script>
     </onentry>
     <transition target="message-received" event="message"/>
@@ -72,7 +72,7 @@
     <onentry>
       <assign location="lastMessage" expr="_event"/>
       <script>
-        let entity = parseMessageText(_event.data.text);
+        let entity = parseMessageText(_event.data.message.text);
         if(typeof entity !== 'undefined' &amp;&amp; entity !== null){
           this.raise({name : 'valid', data : entity});
         }else{
@@ -88,7 +88,7 @@
     <onentry>
       <assign location="cur_retries" expr="cur_retries+1"/>
       <script>
-        send.call(this, lastMessage.data, "I didn't understand." + ( type === 'choice' ? " Please choose an option from the list" : ''));
+        send.call(this, lastMessage.data.message, "I didn't understand." + ( type === 'choice' ? " Please choose an option from the list" : ''));
       </script>
     </onentry>
     <transition target="message-received" event="message"/>

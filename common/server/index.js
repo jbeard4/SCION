@@ -149,6 +149,7 @@ function init(srcDir,mainScxmlFile, options){
   }
 
   function initSession(messageBuffer, interpreter){
+    interpreter.on('onError',log.bind(this, interpreter, 'onError'));
     interpreter.on('onExitInterpreter',function(lastEvent){
       broadcast(interpreter, 'onExitInterpreter',lastEvent);
       log(interpreter, 'onExitInterpreter', lastEvent.name);
