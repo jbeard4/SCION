@@ -5,7 +5,10 @@ const scxml = require('@jbeard/scxml');
 const path = require('path');
 let fnModel;
 
-function init(srcDir,mainScxmlFile){
+function init(srcDir,mainScxmlFile, options){
+
+  let recognizerType = options && options.recognizer && options.recognizer.type;
+  let recognizerModelUrl = options && options.recognizer && options.recognizer.modelUrl
 
   const sessionStore = {};
 
@@ -75,9 +78,53 @@ function init(srcDir,mainScxmlFile){
 
   function processEvent(event){
     //console.log(util.inspect(event, { depth: null }));
+    //we can run event.text through the luisrecognizer here
     let interpreter = lazyInitSession(event)
-    let scxmlEvent = { name : event.type, data: event};
-    let configuration = interpreter.gen(scxmlEvent);
+    let scxmlEvent;
+
+    switch(recognizerType){
+      case 'luis' : 
+        scxmlEvent = luisRecognizer(event, ns);
+        break;
+      default : 
+        scxmlEvent = textRecognizer(event);
+        ns(null,scxmlEvent); 
+    }
+
+    function ns(err, scxmlEvent){
+      if(err) throw err;
+
+      let configuration = interpreter.gen(scxmlEvent);
+    }
+
+  }
+
+  //convert the message to an event
+  function textRecognizer(message){
+    return { name : message.type, data: message};
+  }
+
+  function luisRecognizer(message, cb){
+    console.log('message.text', message.text);
+    builder.LuisRecognizer.recognize(message.text, recognizerModelUrl, function(err, intents, entities){
+      if(err) cb(err);
+      console.log('recognizer.recognize result', err, intents, entities);
+      //do some logic to get intent with the highest score
+      let scores = intents.map( intent => intent.score )
+      let maxScore = Math.max.apply(Math, scores);
+      let maxScoreIdx = scores.indexOf(maxScore);
+      let rankingIntent = intents[maxScoreIdx];
+      let scxmlEvent = {
+        name : `message.intent.${rankingIntent.intent}`,
+        data  : {
+          message : message,
+          rankingIntent : rankingIntent,
+          intents : intents,
+          entities : entities
+        }
+      };
+      cb(null, scxmlEvent); 
+    })
   }
 
   function lazyInitSession(event){
