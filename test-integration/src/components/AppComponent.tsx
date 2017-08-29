@@ -37,10 +37,26 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
   private loadData(){
     const scionCoreBaseUrl= '/test-integration/node_modules/@jbeard/scion-core/test/tests';
     jQuery.getJSON(`${scionCoreBaseUrl}/tests.json`).then((responseData) => {
-      let testPairs = responseData.map((testUrl) =>`${scionCoreBaseUrl}/${testUrl}`);
+      let testPairs = 
+            [
+              '/tests/transition-types/test0.scxml',
+              '/tests/transition-types/test1.scxml',
+              '/tests/transition-types/test2.scxml',
+              '/tests/transition-types/test3.scxml',
+              '/tests/transition-types/test4.scxml',
+              '/tests/transition-types/test5.scxml',
+              '/tests/transition-types/test6.scxml',
+              '/tests/transition-types/test7.scxml',
+              '/tests/transition-types/test8.scxml',
+              '/tests/transition-types/test9.scxml',
+              '/tests/transition-types/test10.scxml'
+            ].concat(
+              responseData.map((testUrl) =>`${scionCoreBaseUrl}/${testUrl}`)
+            );
       this.setState({
         allTests : testPairs 
       });
+      this.handleTestChange({target : {value : testPairs[0]}});
     });
   }
 

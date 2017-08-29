@@ -276,6 +276,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
       exitInitialState = 
         this.props.allEdges.
           filter( edge => this.state.to.node.id === edge.source && 
+                          this.props.statesForDefaultEntry &&
                           this.props.statesForDefaultEntry.indexOf(edge.target) > -1 ).length;
     }
 
@@ -406,12 +407,14 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                   (
                     //handle transitions originating from initial states:
                     //the edge targets a state set for default entry
+                    this.props.statesForDefaultEntry &&
                     this.props.statesForDefaultEntry.indexOf(edge.target) > -1 &&
                     //the edge originates from an initial state
                     this.props.kgraph.getKgraphNodeById(edge.source).$type === 'initial' 
                   ) ||
                   (
                     //the transition has been explicitly enabled
+                    this.props.transitionsEnabled &&
                     this.props.transitionsEnabled.has(edge.source) && 
                     this.props.transitionsEnabled.get(edge.source).has(parseInt(edge.id.split(':')[1])) 
                   )
