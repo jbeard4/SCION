@@ -16,125 +16,128 @@
   </datamodel>
   <script src="./send-common.js"></script>
   <state id="initial-default">
-    <transition target="start-prompt" event="message"/>
+    <transition target="main" event="message"/>
   </state>
-  <state id="start-prompt">
-    <onentry>
-      <assign location="lastMessage" expr="_event"/>
-    </onentry>
-    <state id="choice">
-      <transition target="first-visit-and-prompt" cond="!hasPrompted"/>
-      <transition target="susbsequent-visit" cond="hasPrompted"/>
-    </state>
-    <state id="first-visit-and-prompt">
+  <state id="main">
+    <state id="start-prompt">
       <onentry>
-        <assign location="hasPrompted" expr="true"/>
+        <assign location="lastMessage" expr="_event"/>
+      </onentry>
+      <state id="choice">
+        <transition target="first-visit-and-prompt" cond="!hasPrompted"/>
+        <transition target="susbsequent-visit" cond="hasPrompted"/>
+      </state>
+      <state id="first-visit-and-prompt">
+        <onentry>
+          <assign location="hasPrompted" expr="true"/>
+          <script>
+            send.call(this, lastMessage.data.message, templateStrings.helpMessage);
+          </script>
+        </onentry>
+      </state>
+      <state id="susbsequent-visit"></state>
+      <transition target="first-visit-and-prompt" event="message.intent.Help"/>
+      <!-- Answer acquisition related questions like "how many companies has microsoft bought?" -->
+      <transition target="validate" event="message.intent.Acquisitions">
+        <assign location="field" expr="'acquisitions'"/>
+        <assign location="template" expr="'answerAcquisitions'"/>
+      </transition>
+      <!-- Answer IPO date related questions like "when did microsoft go public?" --> 
+      <transition target="validate" event="message.intent.IpoDate">
+        <assign location="field" expr="'ipoDate'"/>
+        <assign location="template" expr="'answerIpoDate'"/>
+      </transition>
+      <!-- Answer headquarters related questions like "where is microsoft located?" --> 
+      <transition target="validate" event="message.intent.Headquarters">
+        <assign location="field" expr="'headquarters'"/>
+        <assign location="template" expr="'answerHeadquarters'"/>
+      </transition>
+      <!-- Answer description related questions like "tell me about microsoft" --> 
+      <transition target="validate" event="message.intent.Description">
+        <assign location="field" expr="'description'"/>
+        <assign location="template" expr="'answerDescription'"/>
+      </transition>
+      <!-- Answer founder related questions like "who started microsoft?" -->
+      <transition target="validate" event="message.intent.Founders">
+        <assign location="field" expr="'founders'"/>
+        <assign location="template" expr="'answerFounders'"/>
+      </transition>
+      <!-- Answer website related questions like "how can I contact microsoft?" -->
+      <transition target="validate" event="message.intent.Website">
+        <assign location="field" expr="'website'"/>
+        <assign location="template" expr="'answerWebsite'"/>
+      </transition>
+    </state>
+    <!-- validate --> 
+    <state id="validate">
+      <onentry>
         <script>
-          send.call(this, lastMessage.data.message, templateStrings.helpMessage);
+          // Validate company passed in
+          var isValid;
+          var company = builder.EntityRecognizer.findEntity(_event.data.entities, 'CompanyName');
+          if (company) {
+              company = company.entity.toLowerCase();
+              isValid = companyData.hasOwnProperty(company);
+          } else if (privateConversationData.company) {
+              // Use valid company selected in previous turn
+              company = privateConversationData.company;
+              isValid = true;
+          }
+         
+          // Prompt the user to pick a company if they didn't specify a valid one.
+          if (!isValid) {
+              // Lets see if the user just asked for a company we don't know about.
+              var txt = company ? _.template(templateStrings['companyUnknown'])({ company: company }) : templateStrings['companyMissing'];
+              
+              // Prompt the user to pick a company from the list. This will use the
+              // keys of the companyData map for the choices.
+              //launch a prompt - builder.Prompts.choice(session, txt, companyData);
+              this.raise({name : 'not.valid', data : { message : _event.data.message, prompt : txt}});
+          } else {
+              // Great! pass the company to the next step in the waterfall which will answer the question.
+              // * This will match the format of the response returned from Prompts.choice().
+              this.raise({name : 'valid', data : { entity: company, message : _event.data.message }});
+          }
         </script>
       </onentry>
+      <transition target="respond" event="valid"/>
+      <transition target="clarify-prompt" event="not.valid"/>
     </state>
-    <state id="susbsequent-visit"></state>
-    <transition target="first-visit-and-prompt" event="message.intent.Help"/>
-    <!-- Answer acquisition related questions like "how many companies has microsoft bought?" -->
-    <transition target="validate" event="message.intent.Acquisitions">
-      <assign location="field" expr="'acquisitions'"/>
-      <assign location="template" expr="'answerAcquisitions'"/>
-    </transition>
-    <!-- Answer IPO date related questions like "when did microsoft go public?" --> 
-    <transition target="validate" event="message.intent.IpoDate">
-      <assign location="field" expr="'ipoDate'"/>
-      <assign location="template" expr="'answerIpoDate'"/>
-    </transition>
-    <!-- Answer headquarters related questions like "where is microsoft located?" --> 
-    <transition target="validate" event="message.intent.Headquarters">
-      <assign location="field" expr="'headquarters'"/>
-      <assign location="template" expr="'answerHeadquarters'"/>
-    </transition>
-    <!-- Answer description related questions like "tell me about microsoft" --> 
-    <transition target="validate" event="message.intent.Description">
-      <assign location="field" expr="'description'"/>
-      <assign location="template" expr="'answerDescription'"/>
-    </transition>
-    <!-- Answer founder related questions like "who started microsoft?" -->
-    <transition target="validate" event="message.intent.Founders">
-      <assign location="field" expr="'founders'"/>
-      <assign location="template" expr="'answerFounders'"/>
-    </transition>
-    <!-- Answer website related questions like "how can I contact microsoft?" -->
-    <transition target="validate" event="message.intent.Website">
-      <assign location="field" expr="'website'"/>
-      <assign location="template" expr="'answerWebsite'"/>
-    </transition>
-  </state>
-  <!-- validate --> 
-  <state id="validate">
-    <onentry>
-      <script>
-        // Validate company passed in
-        var isValid;
-        var company = builder.EntityRecognizer.findEntity(_event.data.entities, 'CompanyName');
-        if (company) {
-            company = company.entity.toLowerCase();
-            isValid = companyData.hasOwnProperty(company);
-        } else if (privateConversationData.company) {
-            // Use valid company selected in previous turn
-            company = privateConversationData.company;
-            isValid = true;
-        }
-       
-        // Prompt the user to pick a company if they didn't specify a valid one.
-        if (!isValid) {
-            // Lets see if the user just asked for a company we don't know about.
-            var txt = company ? _.template(templateStrings['companyUnknown'])({ company: company }) : templateStrings['companyMissing'];
-            
-            // Prompt the user to pick a company from the list. This will use the
-            // keys of the companyData map for the choices.
-            //launch a prompt - builder.Prompts.choice(session, txt, companyData);
-            this.raise({name : 'not.valid', data : { message : _event.data.message, prompt : txt}});
-        } else {
-            // Great! pass the company to the next step in the waterfall which will answer the question.
-            // * This will match the format of the response returned from Prompts.choice().
-            this.raise({name : 'valid', data : { entity: company, message : _event.data.message }});
-        }
-      </script>
-    </onentry>
-    <transition target="respond" event="valid"/>
-    <transition target="clarify-prompt" event="not.valid"/>
-  </state>
-  <state id="respond">
-    <onentry>
-      <!-- remember company for future turns with the user -->
-      <assign location="privateConversationData.company" expr="_event.data.entity"/>
-      <script>
-        var company = privateConversationData.company = _event.data.entity;
-        //we need args.template and args.field
-        var templateArgs = { company: company, value: companyData[company][field] };
-        send.call(this, _event.data.message, _.template(templateStrings[template])(templateArgs));
-        this.raise({name : 'done'});
-      </script>
-    </onentry>
-    <transition event="done" target="start-prompt"/>
-  </state>
-  <!-- if invalid, then prompt --> 
-  <state id="clarify-prompt">
-    <datamodel>
-      <data id="choices" expr="Object.keys(companyData)"/>
-    </datamodel>
-    <invoke type="http://www.w3.org/TR/scxml/" src="file:choice-dialog.scxml" autoforward="true">
-      <param name="messageBuffer" expr="messageBuffer"/>
-      <param name="prompt" expr="_event.data.prompt"/>
-      <param name="choices" expr="choices"/>
-      <param name="initialEvent" expr="_event"/>
-      <param name="type" expr="'choice'"/>
-    </invoke>
-    <transition event="done.invoke">
-      <script>
-        var company = choices[_event.data];
-        this.raise({name : 'valid', data : { entity: company, message : lastMessage.data.message }})
-      </script>
-    </transition>
-    <transition target="respond" event="valid"/>
+    <state id="respond">
+      <onentry>
+        <!-- remember company for future turns with the user -->
+        <assign location="privateConversationData.company" expr="_event.data.entity"/>
+        <script>
+          var company = privateConversationData.company = _event.data.entity;
+          //we need args.template and args.field
+          var templateArgs = { company: company, value: companyData[company][field] };
+          send.call(this, _event.data.message, _.template(templateStrings[template])(templateArgs));
+          this.raise({name : 'done'});
+        </script>
+      </onentry>
+      <transition event="done" target="start-prompt"/>
+    </state>
+    <!-- if invalid, then prompt --> 
+    <state id="clarify-prompt">
+      <datamodel>
+        <data id="choices" expr="Object.keys(companyData)"/>
+      </datamodel>
+      <invoke type="http://www.w3.org/TR/scxml/" src="file:choice-dialog.scxml" autoforward="true">
+        <param name="messageBuffer" expr="messageBuffer"/>
+        <param name="prompt" expr="_event.data.prompt"/>
+        <param name="choices" expr="choices"/>
+        <param name="initialEvent" expr="_event"/>
+        <param name="type" expr="'choice'"/>
+      </invoke>
+      <transition event="done.invoke">
+        <script>
+          var company = choices[_event.data];
+          this.raise({name : 'valid', data : { entity: company, message : lastMessage.data.message }})
+        </script>
+      </transition>
+      <transition target="respond" event="valid"/>
+    </state>
+    <transition target="end-conversation" event="message.intent.None" cond="_event.data.message.text === 'quit'"/>
   </state>
   <!-- otherwise, give the response, and we're done --> 
   <final id="end-conversation">
