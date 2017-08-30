@@ -109,7 +109,7 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
 
   _toBegin(props){
     return props.edge.$hyperlink && (!this.componentHasRendered || props.redraw) ? 
-      `${props.edge.$hyperlink}_last.endEvent` : 
+      `${this.normalizeStateId(props.edge.$hyperlink)}_last.endEvent` : 
       'indefinite'; 
   }
 
@@ -245,6 +245,10 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
     return toReturn;
   }
 
+  private normalizeStateId(id){
+    return id.replace(/-/g,'_');
+  }
+
   public render(){
     var edgeId = this.props.edge.id;
     var markerId = `${edgeId}:marker`;
@@ -276,7 +280,7 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
             !this.props.disableAnimation && 
               <animate attributeName="d" attributeType="XML" fill="freeze" 
                        ref={(e: SVGAnimationElement) => { this.svgPathAnimation = e; }}
-                       id={ edgeId + '_last' }
+                       id={ `${this.normalizeStateId(edgeId)}_last` }
                        keyTimes={ this.state.keyTimes }
                        values={ this.state.path.map(this._edgeToD.bind(this)).join(';') }
                        begin={ this.state.begin.path }
