@@ -67,46 +67,50 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
 
   private handleTestChange(event){
     const url = event.target.value;
-    this.stopInterpreter(() => {
-      const jqXHR = jQuery.ajax({
-        url : url,
-        method : 'GET',
-        dataType : 'text'
-      });
-      jqXHR.then((responseData) => {
-        let contentType = jqXHR.getResponseHeader('content-type'); 
+    const jqXHR = jQuery.ajax({
+      url : url,
+      method : 'GET',
+      dataType : 'text'
+    });
+    jqXHR.then((responseData) => {
+      let contentType = jqXHR.getResponseHeader('content-type'); 
 
-        switch(contentType){
-          case 'application/scxml+xml':
-          case 'text/xml':
-          case 'application/xml':
-            scxml.documentStringToModel(url, responseData, (err, model : scxml.SCModel) => {
+      switch(contentType){
+        case 'application/scxml+xml':
+        case 'text/xml':
+        case 'application/xml':
+          scxml.documentStringToModel(url, responseData, (err, model : scxml.SCModel) => {
+            if(err) throw err;
+            model.prepare((err, fnModel : scxml.scion.FnModel) => {
               if(err) throw err;
-              model.prepare((err, fnModel : scxml.scion.FnModel) => {
-                if(err) throw err;
-                this.setState({
-                  scjson : null,
-                  fnModel : fnModel
-                }); 
-              });
+              this.setState({
+                interpreter : null,
+                configuration : null,
+                scjson : null,
+                fnModel : fnModel
+              }); 
             });
-            break;
-          case 'application/json':
-            this.setState({
-              scjson : JSON.parse(responseData),
-              fnModel : null
-            }); 
-            break;
-          case 'application/javascript':
-            this.setState({
-              scjson : null,
-              fnModel : eval(responseData.replace(/module.exports *= */,''))
-            }); 
-            break;
-          default:
-      ;     throw new Error('Unrecognized mime type in response');
-        }
-      });
+          });
+          break;
+        case 'application/json':
+          this.setState({
+            interpreter : null,
+            configuration : null,
+            scjson : JSON.parse(responseData),
+            fnModel : null
+          }); 
+          break;
+        case 'application/javascript':
+          this.setState({
+            interpreter : null,
+            configuration : null,
+            scjson : null,
+            fnModel : eval(responseData.replace(/module.exports *= */,''))
+          }); 
+          break;
+        default:
+    ;     throw new Error('Unrecognized mime type in response');
+      }
     });
     }
 
