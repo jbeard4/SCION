@@ -280,6 +280,8 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                           this.props.statesForDefaultEntry.indexOf(edge.target) > -1 ).length;
     }
 
+    const isStateGenerated = this.props.node.id.match(/^\$generated-/);
+
     let toReturn = <g id={this.state.to.node.id} 
             className={
               classNames({
@@ -360,7 +362,8 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
         x={this.props.node.width / 2} 
         y={isLeaf ? this.props.node.height / 2 : constants.LEAF_NODE_PADDING_H}  
         visibility={this.props.isRoot ? 'hidden' : 'visible'}
-        opacity={this.props.disableAnimation && !this.props.node.id.match(/^\$generated-/) ? 1 : 0}
+        opacity={isStateGenerated ? 0 :
+                  (this.props.disableAnimation ? 1 : 0)}
         >
         {this.props.node.$type === 'virtual' ? this.props.node.labels[0].text : this.props.node.id}
         {
@@ -371,7 +374,8 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                      begin="indefinite"
                      className={constants.START}
                      dur={constants.ANIM_DURATION} 
-                     from={this.initialRender ? 1 : 0} to={1} />
+                     from={isStateGenerated  ? 0 : (this.initialRender ? 1 : 0)} 
+                     to={isStateGenerated  ? 0 : 1} />
         }
       </text>
 
