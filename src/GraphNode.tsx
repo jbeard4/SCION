@@ -38,7 +38,7 @@ export interface GraphNodeProps {
   redraw? : boolean;
   configuration? : string[];
   disableAnimation? : boolean;
-  transitionsEnabled? : Map<string, Set<number>>;
+  enabledEdges : KGraphEdge[];
   previousConfiguration? : string[];
   statesForDefaultEntry : string[];
 }
@@ -390,7 +390,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                 redraw={this.props.redraw}
                 configuration={this.props.configuration}
                 disableAnimation={this.props.disableAnimation}
-                transitionsEnabled={this.props.transitionsEnabled}
+                enabledEdges={this.props.enabledEdges}
                 previousConfiguration={this.props.previousConfiguration}
                 statesForDefaultEntry={this.props.statesForDefaultEntry}
                 />
@@ -405,19 +405,17 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                 disableAnimation={this.props.disableAnimation}
                 highlighted={ 
                   (
+                    //the transition has been explicitly enabled
+                    this.props.enabledEdges.indexOf(edge) > -1
+                  ) || 
+                  (
                     //handle transitions originating from initial states:
                     //the edge targets a state set for default entry
                     this.props.statesForDefaultEntry &&
                     this.props.statesForDefaultEntry.indexOf(edge.target) > -1 &&
                     //the edge originates from an initial state
                     this.props.kgraph.getKgraphNodeById(edge.source).$type === 'initial' 
-                  ) ||
-                  (
-                    //the transition has been explicitly enabled
-                    this.props.transitionsEnabled &&
-                    this.props.transitionsEnabled.has(edge.source) && 
-                    this.props.transitionsEnabled.get(edge.source).has(parseInt(edge.id.split(':')[1])) 
-                  )
+                  ) 
                 }
                 />
             )) 

@@ -24,6 +24,7 @@ export interface GraphRootProps {
 
 export interface GraphRootAnimation {
   allEdges : KGraphEdge[];
+  enabledEdges : KGraphEdge[];
   kgraph : KGraph;
   fromNode : KGraphNode;
   toNode : KGraphNode;
@@ -45,6 +46,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     super(props);
     this.state = { 
       allEdges : [],
+      enabledEdges : [],
       kgraph : null,
       fromZoom : {x : 0, y : 0, width : 0, height : 0},
       toZoom : {x : 0, y : 0, width : 0, height : 0},
@@ -211,11 +213,30 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     );
   }
 
-  private initKGraph({scjson, layoutOptions, redraw} : GraphRootProps , initialRender : boolean){
+  private _getEnabledEdges(allEdges, transitionsEnabled){
+    let enabledEdges = allEdges.filter( edge => 
+      transitionsEnabled &&
+      transitionsEnabled.has(edge.source) && 
+      transitionsEnabled.get(edge.source).has(parseInt(edge.id.split(':')[1])) 
+    );
+    let edgeIds = allEdges.map(edge => edge.id);
+    let enabledHyperedges = enabledEdges.
+      filter( edge => edge.$hyperlink ).
+      map( edge => { 
+        let idx = edgeIds.indexOf(edge.$hyperlink);
+        return allEdges[idx];
+      });
+
+    return enabledEdges.concat( enabledHyperedges );
+  }
+
+  private initKGraph({scjson, layoutOptions, redraw, transitionsEnabled} : GraphRootProps , initialRender : boolean){
     //if scjson is not the same, create a new kgraph
     //TODO: memoize
     if(scjson){
       let kgraph = new KGraph(new IdGenerator(), this, scjson);
+      let allEdges = kgraph ? this._getAllEdges(kgraph) : [];
+      let enabledEdges = this._getEnabledEdges(allEdges, transitionsEnabled);
       const options = this.getDefaultLayoutOptions(layoutOptions)
       if(!this.props.disableAnimation) this.svgRootElement.pauseAnimations();
       kgraph.updateLayout(options, (err, rootNode) => {
@@ -223,7 +244,8 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
         if(err) throw err;
         let toZoom = {x : 0, y : 0, width : rootNode.width, height : rootNode.height};
         this.setState({ 
-          allEdges : kgraph ? this._getAllEdges(kgraph) : null,   //TODO: this is likely to be a hotspot. we probably want to move this search logic inside of the kgraph data structure
+          allEdges : allEdges,   //TODO: this is likely to be a hotspot. we probably want to move this search logic inside of the kgraph data structure
+          enabledEdges : enabledEdges,
           kgraph : kgraph,
           fromZoom : initialRender || redraw ? toZoom : this.svgRootElement.viewBox.animVal,
           toZoom : toZoom,
@@ -262,6 +284,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   }
 
   render(){
+    //modify transitionsEnabled to support hyperlinks
     let from = `${[this.state.fromZoom.x, this.state.fromZoom.y, this.state.fromZoom.width,this.state.fromZoom.height].join(' ')}`;
     let to = `${[this.state.toZoom.x, this.state.toZoom.y, this.state.toZoom.width, this.state.toZoom.height].join(' ')}`;
     let viewBoxValues = `${from};${to}`;
@@ -314,7 +337,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
                 redraw={this.props.redraw}
                 configuration={this.props.configuration}
                 disableAnimation={this.props.disableAnimation}
-                transitionsEnabled={this.props.transitionsEnabled}
+                enabledEdges={this.state.enabledEdges}
                 previousConfiguration={this.props.previousConfiguration}
                 statesForDefaultEntry={this.props.statesForDefaultEntry}
                 />
