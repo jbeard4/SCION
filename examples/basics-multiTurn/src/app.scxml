@@ -12,6 +12,7 @@
     <data id="lastMessage"/>
     <data id="field"/>
     <data id="template"/>
+    <data id="hasPrompted" expr="false"/>
   </datamodel>
   <script src="./send-common.js"></script>
   <state id="initial-default">
@@ -20,10 +21,21 @@
   <state id="start-prompt">
     <onentry>
       <assign location="lastMessage" expr="_event"/>
-      <script>
-        send.call(this, lastMessage.data.message, templateStrings.helpMessage);
-      </script>
     </onentry>
+    <state id="choice">
+      <transition target="first-visit-and-prompt" cond="!hasPrompted"/>
+      <transition target="susbsequent-visit" cond="hasPrompted"/>
+    </state>
+    <state id="first-visit-and-prompt">
+      <onentry>
+        <assign location="hasPrompted" expr="true"/>
+        <script>
+          send.call(this, lastMessage.data.message, templateStrings.helpMessage);
+        </script>
+      </onentry>
+    </state>
+    <state id="susbsequent-visit"></state>
+    <transition target="first-visit-and-prompt" event="message.intent.Help"/>
     <!-- Answer acquisition related questions like "how many companies has microsoft bought?" -->
     <transition target="validate" event="message.intent.Acquisitions">
       <assign location="field" expr="'acquisitions'"/>
@@ -102,7 +114,7 @@
         this.raise({name : 'done'});
       </script>
     </onentry>
-    <transition event="done" target="initial-default"/>
+    <transition event="done" target="start-prompt"/>
   </state>
   <!-- if invalid, then prompt --> 
   <state id="clarify-prompt">
