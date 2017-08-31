@@ -7,7 +7,7 @@
     <data id="lastMessage"/>
     <data id="firstMessage"/>
   </datamodel>
-  <script src="./send-common.js"></script>
+  <script src="../node_modules/scion-scxml-botbuilder-common-scxml-components/send-common.js"></script>
   <state id="initial-default">
     <transition target="prompt" event="message"/>
   </state>
@@ -22,7 +22,7 @@
     <datamodel>
       <data id="choices" expr="['Flip A Coin','Roll Dice','Magic 8-Ball','Quit']"/>
     </datamodel>
-    <invoke type="http://www.w3.org/TR/scxml/" src="file:choice-dialog.scxml" autoforward="true">
+    <invoke type="http://www.w3.org/TR/scxml/" src="file:../node_modules/scion-scxml-botbuilder-common-scxml-components/choice-dialog.scxml" autoforward="true">
       <param name="messageBuffer" expr="messageBuffer"/>
       <param name="prompt" expr="'Choose an option:'"/>
       <param name="choices" expr="choices"/>
@@ -63,7 +63,7 @@
   <final id="end-conversation">
     <onentry>
       <script>
-        send.call(this, lastMessage.data, "Goodbye until next time...");
+        send.call(this, lastMessage.data.message, "Goodbye until next time...");
       </script>
     </onentry>
   </final>

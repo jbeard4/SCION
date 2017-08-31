@@ -102,7 +102,7 @@ function init(srcDir,mainScxmlFile, options){
 
   //convert the message to an event
   function textRecognizer(message){
-    return { name : message.type, data: message};
+    return { name : message.type, data: {message : message} };
   }
 
   function luisRecognizer(message, cb){

@@ -29,27 +29,12 @@
         'Very doubtful'
       ]"/>
   </datamodel>
-  <script>
-    function send(){
-      var args = Array.from(arguments);
-      var event = args[0];
-      var textArgs = args.slice(1);
-      var message = {
-        "type": event.type,
-        "agent": "botbuilder",
-        "source": event.source,
-        "textLocale": event.textLocale,
-        "address": event.address,
-        "text": textArgs.join('')
-      };
-      messageBuffer.push(message);
-    }
-  </script>
+  <script src="../node_modules/scion-scxml-botbuilder-common-scxml-components/send-common.js"></script>
   <state id="initial-default">
     <transition event="message">
       <assign location="lastMessage" expr="_event"/>
     </transition>
-    <invoke type="http://www.w3.org/TR/scxml/" src="file:choice-dialog.scxml" autoforward="true">
+    <invoke type="http://www.w3.org/TR/scxml/" src="file:../node_modules/scion-scxml-botbuilder-common-scxml-components/choice-dialog.scxml" autoforward="true">
       <param name="messageBuffer" expr="messageBuffer"/>
       <param name="prompt" expr="'What is your question?'"/>
       <param name="initialEvent" expr="initialEvent"/>
@@ -60,7 +45,7 @@
   <final id="done">
     <onentry>
       <script>
-        send.call(this, lastMessage.data, answers[Math.floor(Math.random() * answers.length)]);
+        send.call(this, lastMessage.data.message, answers[Math.floor(Math.random() * answers.length)]);
       </script>
     </onentry>
   </final>
