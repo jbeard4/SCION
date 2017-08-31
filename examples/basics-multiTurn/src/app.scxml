@@ -14,7 +14,7 @@
     <data id="template"/>
     <data id="hasPrompted" expr="false"/>
   </datamodel>
-  <script src="./send-common.js"></script>
+  <script src="../node_modules/scion-scxml-botbuilder-common-scxml-components/send-common.js"></script>
   <parallel id="main">
     <state>
       <state id="cache-last-message">
@@ -129,7 +129,7 @@
         <datamodel>
           <data id="choices" expr="Object.keys(companyData)"/>
         </datamodel>
-        <invoke type="http://www.w3.org/TR/scxml/" src="file:choice-dialog.scxml" autoforward="true">
+        <invoke type="http://www.w3.org/TR/scxml/" src="file:../node_modules/scion-scxml-botbuilder-common-scxml-components/choice-dialog.scxml" autoforward="true">
           <param name="messageBuffer" expr="messageBuffer"/>
           <param name="prompt" expr="_event.data.prompt"/>
           <param name="choices" expr="choices"/>
