@@ -13,16 +13,18 @@ function luisRecognizer(message, cb, options){
     let maxScore = Math.max.apply(Math, scores);
     let maxScoreIdx = scores.indexOf(maxScore);
     let rankingIntent = intents[maxScoreIdx];
-    let scxmlEvent = {
-      name : `message.intent.${rankingIntent.intent}`,
-      data  : {
-        message : message,
-        rankingIntent : rankingIntent,
-        intents : intents,
-        entities : entities
-      }
-    };
-    cb(null, scxmlEvent); 
+    if(rankingIntent){
+      let scxmlEvent = {
+        name : `message.intent.${rankingIntent.intent}`,
+        data  : {
+          message : message,
+          rankingIntent : rankingIntent,
+          intents : intents,
+          entities : entities
+        }
+      };
+      cb(null, scxmlEvent); 
+    }
   })
 }
 

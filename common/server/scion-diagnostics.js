@@ -79,10 +79,11 @@ function init(server,sessionStore,srcDir,options){
     interpreter.on('onSmallStepEnd',function(){
       broadcast(interpreter, 'onSmallStepEnd');
     });
-    interpreter.on('onInvokedSessionInitialized', function(invokedInterpreter){
-      initSession(messageBuffer, invokedInterpreter);
-    });
+
     //TODO: on done, remove event listeners, to avoid memory leaks
+    interpreter.on('onInvokedSessionInitialized', function(invokedInterpreter){
+      initSession(invokedInterpreter);
+    });
   }
 }
 
