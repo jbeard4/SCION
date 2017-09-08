@@ -74,7 +74,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
 
     //let n = event.deltaY > 0 ? 1 : -1;
     //const offset = .1 * n;
-    let offset = .5;
+    let offset = .4;
     offset = event.deltaY > 0 ? 1-offset : 1+offset;
     
     let fromZoom = this.svgRootElement.viewBox.animVal;
