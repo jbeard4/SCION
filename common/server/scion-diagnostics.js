@@ -2,6 +2,7 @@ const restify = require('restify');
 const util = require('util');
 const scxml = require('@jbeard/scxml');
 const path = require('path');
+const log = require('./util').log;
 
 function init(server,sessionStore,srcDir,options){
 
@@ -47,10 +48,6 @@ function init(server,sessionStore,srcDir,options){
         event : event
       }) + '\n\n'); // Note the extra newline
     }
-  }
-
-  function log(interpreter, eventName, value){
-    console.log(path.parse(interpreter._model.docUrl).name, interpreter.opts.sessionid, eventName, value);
   }
 
   function initSession(interpreter){

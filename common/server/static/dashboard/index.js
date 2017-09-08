@@ -1,60 +1,71 @@
-var source = new EventSource('/api/update-stream');
+const EVENTSOURCE_TIMEOUT = 1000;
 
-let previousConfiguration = [],
-    statesForDefaultEntry = [],
-    currentEvent,
+function initEventSource(){
+  var source = new EventSource('/api/update-stream');
+
+  let previousConfiguration = [],
+      statesForDefaultEntry = [],
+      currentEvent,
+      transitionsEnabled  = new Map();
+
+  source.addEventListener('onSmallStepBegin', function(e) {
+    let message = JSON.parse(e.data);
+    previousConfiguration = message.snapshot[0];
     transitionsEnabled  = new Map();
+    statesForDefaultEntry = [];
+    currentEvent = message.event;
+  }, false);
 
-source.addEventListener('onSmallStepBegin', function(e) {
-  let message = JSON.parse(e.data);
-  previousConfiguration = message.snapshot[0];
-  transitionsEnabled  = new Map();
-  statesForDefaultEntry = [];
-  currentEvent = message.event;
-}, false);
-
-source.addEventListener('onTransition', function(e) {
-  let message = JSON.parse(e.data);
-  let transitionSourceId, transitionTargetIds, transitionIndex;
-  [transitionSourceId, transitionTargetIds, transitionIndex] = message.event;
-  let enabledTransitionIndexes;
-  if(transitionsEnabled.has(transitionSourceId)){
-    enabledTransitionIndexes = transitionsEnabled.get(transitionSourceId)
-  } else {
-    enabledTransitionIndexes = new Set();
-    transitionsEnabled.set(transitionSourceId, enabledTransitionIndexes);
-  }
-  enabledTransitionIndexes.add(transitionIndex);
-}, false);
+  source.addEventListener('onTransition', function(e) {
+    let message = JSON.parse(e.data);
+    let transitionSourceId, transitionTargetIds, transitionIndex;
+    [transitionSourceId, transitionTargetIds, transitionIndex] = message.event;
+    let enabledTransitionIndexes;
+    if(transitionsEnabled.has(transitionSourceId)){
+      enabledTransitionIndexes = transitionsEnabled.get(transitionSourceId)
+    } else {
+      enabledTransitionIndexes = new Set();
+      transitionsEnabled.set(transitionSourceId, enabledTransitionIndexes);
+    }
+    enabledTransitionIndexes.add(transitionIndex);
+  }, false);
 
 
-source.addEventListener('onDefaultEntry', function(e) {
-  let message = JSON.parse(e.data);
-  statesForDefaultEntry.push(message.event);
-});
-
-source.addEventListener('onSmallStepEnd', function(e) {
-  let message = JSON.parse(e.data);
-
-  dataView.insertItem(0, {
-      id : e.lastEventId, 
-      name : message.name,
-      docUrl : message.docUrl,
-      sessionid : message.sessionid,
-      //updateName : updateName,
-      eventName : currentEvent ? currentEvent.name : '<null>',
-      snapshot : message.snapshot,
-      event : currentEvent,
-      transitionsEnabled : transitionsEnabled,
-      previousConfiguration : previousConfiguration,
-      statesForDefaultEntry : statesForDefaultEntry
+  source.addEventListener('onDefaultEntry', function(e) {
+    let message = JSON.parse(e.data);
+    statesForDefaultEntry.push(message.event);
   });
 
-  grid.setSelectedRows([0]);
+  source.addEventListener('onSmallStepEnd', function(e) {
+    let message = JSON.parse(e.data);
+
+    dataView.insertItem(0, {
+        id : e.lastEventId, 
+        name : message.name,
+        docUrl : message.docUrl,
+        sessionid : message.sessionid,
+        //updateName : updateName,
+        eventName : currentEvent ? currentEvent.name : '<null>',
+        snapshot : message.snapshot,
+        event : currentEvent,
+        transitionsEnabled : transitionsEnabled,
+        previousConfiguration : previousConfiguration,
+        statesForDefaultEntry : statesForDefaultEntry
+    });
+
+    grid.setSelectedRows([0]);
 
 
-}, false);
+  }, false);
 
+  source.onerror = function(err) {
+    console.log('sse error',err);
+    source.close();
+    setTimeout(function(){
+      initEventSource();    //restart the event source
+    }, EVENTSOURCE_TIMEOUT);
+  };
+}
 
 var grid,
     data = [],
@@ -149,3 +160,6 @@ function renderSchviz(scjson,snapshot,transitionsEnabled,previousConfiguration,s
   );
 
 }
+
+
+initEventSource();
