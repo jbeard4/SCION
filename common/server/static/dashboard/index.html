@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="./node_modules/slickgrid/slick-default-theme.css" type="text/css"/>
   <link href="node_modules/@jbeard/schviz2/test-integration/styles.css" rel="stylesheet"/>
   <link href="node_modules/jsoneditor/dist/jsoneditor.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <style>
     html, body {
       margin: 0;
@@ -56,18 +57,35 @@
       position:absolute;
       margin:.25em;
     }
+
+    #tabs {
+      height: 100%;
+      border: 0;
+      margin: 0;
+      padding: 0;
+    }
   </style>
 </head>
 <body>
 <div id="schvizContainer"></div>
 <h1 id="title"><span id="scxmlName"></span> [<span id="sessionId"></span>]</h1>
 <div id="tableContainer"></div>
-<div id="infoContainer"></div>
+<div id="infoContainer">
+  <div id="tabs">
+    <ul>
+      <li><a href="#events-tab">Input Event</a></li>
+      <li><a href="#snapshot-tab">Datamodel</a></li>
+    </ul>
+    <div id="events-tab"> </div>
+    <div id="snapshot-tab"> </div>
+  </div>
+</div>
 
 <script src="./node_modules/react/dist/react.js"></script>
 <script src="./node_modules/react-dom/dist/react-dom.js"></script>
 <script src="./node_modules/slickgrid/lib/jquery-1.11.2.min.js"></script>
 <script src="./node_modules/slickgrid/lib/jquery.event.drag-2.3.0.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 <script src="node_modules/babel-polyfill/dist/polyfill.js"></script>
 <script src="./node_modules/@jbeard/scxml/dist/scxml.js"></script>

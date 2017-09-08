@@ -81,11 +81,19 @@ var grid,
       enableColumnReorder: false
     };
 
-// create the editor
-var container = document.getElementById("infoContainer");
-var editorOptions = { name : 'event', mode : 'view'};
-var editor = new JSONEditor(container, editorOptions);
-editor.setMode('view');
+// create the eventEditor
+var tabs = $('#tabs').tabs({heightStyle: "fill"});
+
+function initEditor(containerId){
+  var editorOptions = { name : 'event', mode : 'view'};
+  var container = document.getElementById(containerId);
+  var editor = new JSONEditor(container, editorOptions);
+  editor.setMode('view');
+  return editor;
+}
+
+var eventEditor = initEditor("events-tab"),
+    snapshotEditor = initEditor("snapshot-tab");
 
 var scxmlName = document.getElementById('scxmlName'),
     sessionId = document.getElementById('sessionId');
@@ -114,7 +122,8 @@ grid.onSelectedRowsChanged.subscribe(function(){
   let rows = grid.getSelectedRows();
   let row = dataView.getItem(rows[0]);
 
-  editor.set(row.event);
+  eventEditor.set(row.event);
+  snapshotEditor.set(row.snapshot[3]);
 
   scxmlName.textContent = row.name;
   sessionId.textContent = row.sessionid;
