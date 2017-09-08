@@ -109,10 +109,15 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     toZoom.width = toZoom.width > this.state.toNode.width ? this.state.toNode.width : toZoom.width;
     toZoom.height = toZoom.height > this.state.toNode.height ? this.state.toNode.height : toZoom.height;
 
-    this.viewBoxAnimation.setAttributeNS(null, 'from', this.svgRectToViewBox(fromZoom));
-    this.viewBoxAnimation.setAttributeNS(null, 'to', this.svgRectToViewBox(toZoom));
-    this.viewBoxAnimation.setAttributeNS(null, 'dur', '250ms');
-    this.viewBoxAnimation.beginElement();
+    if(!this.props.disableAnimation){
+      this.viewBoxAnimation.setAttributeNS(null, 'from', this.svgRectToViewBox(fromZoom));
+      this.viewBoxAnimation.setAttributeNS(null, 'to', this.svgRectToViewBox(toZoom));
+      this.viewBoxAnimation.setAttributeNS(null, 'dur', '250ms');
+      this.viewBoxAnimation.beginElement();
+    } else{
+      this.svgRootElement.setAttributeNS(null, 'viewBox', this.svgRectToViewBox(toZoom));
+    }
+
     _.extend(
       this.state,
       {
@@ -200,10 +205,16 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     };
     
     let viewBox = `${toZoom.x} ${toZoom.y} ${toZoom.width} ${toZoom.height}`;
-    this.viewBoxAnimation.setAttributeNS(null, 'from', viewBox);
-    this.viewBoxAnimation.setAttributeNS(null, 'to', viewBox);
-    this.viewBoxAnimation.setAttributeNS(null, 'dur', '0ms');
-    this.viewBoxAnimation.beginElement();
+
+    if(!this.props.disableAnimation){
+      this.viewBoxAnimation.setAttributeNS(null, 'from', viewBox);
+      this.viewBoxAnimation.setAttributeNS(null, 'to', viewBox);
+      this.viewBoxAnimation.setAttributeNS(null, 'dur', '0ms');
+      this.viewBoxAnimation.beginElement();
+    } else{
+      this.svgRootElement.setAttributeNS(null, 'viewBox', viewBox);
+    }
+
     _.extend(
       this.state,
       {
@@ -400,10 +411,15 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     let fromViewBox = this.svgRectToViewBox(fromZoom);
     let toViewBox = this.svgRectToViewBox(toZoom);
 
-    this.viewBoxAnimation.setAttributeNS(null, 'from', fromViewBox);
-    this.viewBoxAnimation.setAttributeNS(null, 'to', toViewBox);
-    this.viewBoxAnimation.setAttributeNS(null, 'dur', '250ms');
-    this.viewBoxAnimation.beginElement();
+    if(!this.props.disableAnimation){
+      this.viewBoxAnimation.setAttributeNS(null, 'from', fromViewBox);
+      this.viewBoxAnimation.setAttributeNS(null, 'to', toViewBox);
+      this.viewBoxAnimation.setAttributeNS(null, 'dur', '250ms');
+      this.viewBoxAnimation.beginElement();
+    } else{
+      this.svgRootElement.setAttributeNS(null, 'viewBox', toViewBox);
+    }
+
     _.extend(
       this.state,
       {
