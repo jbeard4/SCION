@@ -11,8 +11,8 @@ function init(server,sessionStore,srcDir,options){
 
   //serve static files
   //TODO: factor this out
-  server.get(/.*\.scxml/, restify.serveStatic({
-    'directory': srcDir
+  server.get(/\/?.*\.scxml/, restify.serveStatic({
+    'directory': process.env.PWD
   }));
   server.get(/\/dashboard.*/, restify.serveStatic({
     'directory': path.join(__dirname, 'static'),
@@ -42,7 +42,7 @@ function init(server,sessionStore,srcDir,options){
       res.write('event: ' + eventName + '\n');
       res.write("data: " + JSON.stringify({
         name : path.parse(interpreter._model.docUrl).name, 
-        docUrl : path.relative(srcDir, interpreter._model.docUrl),
+        docUrl : path.relative('.', interpreter._model.docUrl),
         sessionid : interpreter.opts.sessionid,
         snapshot : interpreter.getSnapshot(), 
         event : event
