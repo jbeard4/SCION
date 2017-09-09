@@ -94,7 +94,8 @@ function initEditor(containerId){
 }
 
 var eventEditor = initEditor("events-tab"),
-    snapshotEditor = initEditor("snapshot-tab");
+    snapshotEditor = initEditor("snapshot-tab"),
+    innerQueueEditor = initEditor("innerqueue-tab");
 
 var titleElement = document.getElementById('title');
 
@@ -118,12 +119,15 @@ grid.setSelectionModel(new Slick.RowSelectionModel());
 
 dataView.setItems(data);
 
-var diffTab = document.getElementById('diff-tab');
+var diffTab = document.getElementById('diff-tab'),
+    innerQueueTab = document.getElementById('innerqueue-tab'),
+    innerQueueDiffTab = document.getElementById('innerqueue-diff-tab');
 
 grid.onSelectedRowsChanged.subscribe(function(){
   let rows = grid.getSelectedRows();
   let row = dataView.getItem(rows[0]);
   var datamodel = row.snapshot[3];
+  var innerQueue = row.snapshot[4];
 
   var precedingRows = dataView.getItems().slice(rows[0] + 1);
 
@@ -139,6 +143,7 @@ grid.onSelectedRowsChanged.subscribe(function(){
 
   eventEditor.set(row.event);
   snapshotEditor.set(datamodel);
+  innerQueueEditor.set(innerQueue); 
 
   titleElement.innerHTML = row.name + ' [' + row.sessionid+ ']' + 
     row.parentSessionIds.map(function(sessionId){
@@ -156,14 +161,22 @@ grid.onSelectedRowsChanged.subscribe(function(){
   //look up previous datamodel
   if(previousRow){
     var prevDatamodel = previousRow.snapshot[3];
-    var delta = jsondiffpatch.diff(prevDatamodel, datamodel);
-    if(delta){
-      diffTab.innerHTML = jsondiffpatch.formatters.html.format(delta, prevDatamodel);
-    }else{
-      diffTab.innerHTML = 'No change.';
-    }
+    var prevInnerQueue = previousRow.snapshot[4];
+
+    [
+      [prevDatamodel, datamodel, diffTab],
+      [prevInnerQueue, innerQueue, innerQueueDiffTab]
+    ].forEach(function(o){
+      var prev = [0], cur = o[1], tab = o[2];
+      var delta = jsondiffpatch.diff(prev, cur);
+      if(delta){
+        tab.innerHTML = jsondiffpatch.formatters.html.format(delta, prev);
+      }else{
+        tab.innerHTML = 'No change.';
+      }
+    });
   } else{
-    document.getElementById('diff-tab').innerHTML = 'Unable to find previous small-step for session.';
+    innerQueueDiffTab.innerHTML = diffTab.innerHTML = 'Unable to find previous small-step for session.';
   }
 
 })
