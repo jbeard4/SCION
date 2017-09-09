@@ -118,28 +118,31 @@ grid.setSelectionModel(new Slick.RowSelectionModel());
 
 dataView.setItems(data);
 
+var diffTab = document.getElementById('diff-tab');
+
 grid.onSelectedRowsChanged.subscribe(function(){
   let rows = grid.getSelectedRows();
   let row = dataView.getItem(rows[0]);
-
-  eventEditor.set(row.event);
-  snapshotEditor.set(row.snapshot[3]);
+  var datamodel = row.snapshot[3];
 
   var precedingRows = dataView.getItems().slice(rows[0] + 1);
 
+  //look up previous smallstep-row of this sessionid, if it exists
+  var previousRow;
+  for(var i=0; i < precedingRows.length; i++){
+    var currentRow = precedingRows[i];
+    if(currentRow.sessionid == row.sessionid){
+      previousRow = currentRow;
+      break;
+    }
+  }
+
+  eventEditor.set(row.event);
+  snapshotEditor.set(datamodel);
+
   titleElement.innerHTML = row.name + ' [' + row.sessionid+ ']' + 
     row.parentSessionIds.map(function(sessionId){
-      //look up name
-      var matchingRow;
-      for(var i=0; i < precedingRows.length; i++){
-        var currentRow = precedingRows[i];
-        if(currentRow.sessionid == sessionId){
-          matchingRow = currentRow;
-          break;
-        }
-      }
-
-      return ' << ' + matchingRow.name + ' [' + sessionId + ']';    //TODO: look up SCXML info
+      return ' << ' + (previousRow ? previousRow.name : '') + ' [' + sessionId + ']';    //TODO: look up SCXML info
     }).join('')
 
   //render the docUrl on the selectedRow
@@ -149,6 +152,20 @@ grid.onSelectedRowsChanged.subscribe(function(){
       row.transitionsEnabled,
       row.previousConfiguration,
       row.statesForDefaultEntry);
+
+  //look up previous datamodel
+  if(previousRow){
+    var prevDatamodel = previousRow.snapshot[3];
+    var delta = jsondiffpatch.diff(prevDatamodel, datamodel);
+    if(delta){
+      diffTab.innerHTML = jsondiffpatch.formatters.html.format(delta, prevDatamodel);
+    }else{
+      diffTab.innerHTML = 'No change.';
+    }
+  } else{
+    document.getElementById('diff-tab').innerHTML = 'Unable to find previous small-step for session.';
+  }
+
 })
 
 let schviz;
@@ -183,6 +200,5 @@ function renderSchviz(scjson,snapshot,transitionsEnabled,previousConfiguration,s
   );
 
 }
-
 
 initEventSource();

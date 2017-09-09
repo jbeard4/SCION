@@ -10,6 +10,8 @@
   <link href="node_modules/@jbeard/schviz2/test-integration/styles.css" rel="stylesheet"/>
   <link href="node_modules/jsoneditor/dist/jsoneditor.min.css" rel="stylesheet"/>
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="./node_modules/jsondiffpatch/public/formatters-styles/html.css" type="text/css" />
+  <link rel="stylesheet" href="./node_modules/jsondiffpatch/public/formatters-styles/annotated.css" type="text/css" />
   <style>
     html, body {
       margin: 0;
@@ -75,9 +77,11 @@
     <ul>
       <li><a href="#events-tab">Input Event</a></li>
       <li><a href="#snapshot-tab">Datamodel</a></li>
+      <li><a href="#diff-tab">Diff</a></li>
     </ul>
     <div id="events-tab"> </div>
     <div id="snapshot-tab"> </div>
+    <div id="diff-tab"> </div>
   </div>
 </div>
 
@@ -96,6 +100,8 @@
 <script src="./node_modules/slickgrid/slick.dataview.js"></script>
 <script src="./node_modules/slickgrid/plugins/slick.rowselectionmodel.js"></script>
 <script src="./node_modules/jsoneditor/dist/jsoneditor.min.js"></script>
+<script src="./node_modules/jsondiffpatch/public/build/jsondiffpatch.min.js"></script>
+<script src="./node_modules/jsondiffpatch/public/build/jsondiffpatch-formatters.min.js"></script>
 <script src="./index.js"></script>
 </body>
 </html>

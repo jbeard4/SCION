@@ -7,6 +7,7 @@
     "@jbeard/schviz2": "git+ssh://git@nas:JacobeanRnD/SCHVIZ2.git#542b1fcdc894ed9dea61531b06549cc4e9ab2520",
     "@jbeard/scxml": "git+ssh://git@nas:jbeard4/scion#de92de2e4f2e7f993d9731fec14972244ad24c85",
     "babel-polyfill": "^6.26.0",
+    "jsondiffpatch": "^0.2.4",
     "jsoneditor": "^5.9.5",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
