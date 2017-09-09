@@ -93,9 +93,9 @@ function init(server,sessionStore,srcDir,options){
     });
 
     //TODO: on done, remove event listeners, to avoid memory leaks
-    interpreter.on('onInvokedSessionInitialized', function(invokedInterpreter){
-      initSession(invokedInterpreter);
-    });
+    //interpreter.on('onInvokedSessionInitialized', function(invokedInterpreter){
+    //  initSession(invokedInterpreter);
+    //});
   }
 }
 
