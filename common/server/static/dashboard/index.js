@@ -48,6 +48,7 @@ function initEventSource(){
         eventName : currentEvent ? currentEvent.name : '<null>',
         snapshot : message.snapshot,
         event : currentEvent,
+        parentSessionIds : message.parentSessionIds,
         transitionsEnabled : transitionsEnabled,
         previousConfiguration : previousConfiguration,
         statesForDefaultEntry : statesForDefaultEntry
@@ -95,8 +96,7 @@ function initEditor(containerId){
 var eventEditor = initEditor("events-tab"),
     snapshotEditor = initEditor("snapshot-tab");
 
-var scxmlName = document.getElementById('scxmlName'),
-    sessionId = document.getElementById('sessionId');
+var titleElement = document.getElementById('title');
 
 // Create the DataView.
 var dataView = new Slick.Data.DataView();
@@ -125,8 +125,22 @@ grid.onSelectedRowsChanged.subscribe(function(){
   eventEditor.set(row.event);
   snapshotEditor.set(row.snapshot[3]);
 
-  scxmlName.textContent = row.name;
-  sessionId.textContent = row.sessionid;
+  var precedingRows = dataView.getItems().slice(rows[0] + 1);
+
+  titleElement.innerHTML = row.name + ' [' + row.sessionid+ ']' + 
+    row.parentSessionIds.map(function(sessionId){
+      //look up name
+      var matchingRow;
+      for(var i=0; i < precedingRows.length; i++){
+        var currentRow = precedingRows[i];
+        if(currentRow.sessionid == sessionId){
+          matchingRow = currentRow;
+          break;
+        }
+      }
+
+      return ' << ' + matchingRow.name + ' [' + sessionId + ']';    //TODO: look up SCXML info
+    }).join('')
 
   //render the docUrl on the selectedRow
   lazyRenderSchviz(

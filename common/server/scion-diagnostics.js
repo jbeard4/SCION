@@ -36,7 +36,18 @@ function init(server,sessionStore,srcDir,options){
     initSession(interpreter);
   });
 
+  function getParentSessionIds(interpreter){
+    var arr = [];
+    var parentSession = interpreter.opts.parentSession;
+    while(parentSession){
+      arr.push(parentSession.opts.sessionid);
+      parentSession = parentSession.opts.parentSession;
+    }
+    return arr;
+  }
+
   function broadcast(interpreter, eventName, event){
+    
     for(let res of responses){
       res.write('id: ' + (messageCount++) + '\n');
       res.write('event: ' + eventName + '\n');
@@ -44,6 +55,7 @@ function init(server,sessionStore,srcDir,options){
         name : path.parse(interpreter._model.docUrl).name, 
         docUrl : path.relative('.', interpreter._model.docUrl),
         sessionid : interpreter.opts.sessionid,
+        parentSessionIds : getParentSessionIds(interpreter),
         snapshot : interpreter.getSnapshot(), 
         event : event
       }) + '\n\n'); // Note the extra newline
