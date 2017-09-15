@@ -39,6 +39,37 @@ export class KGraph {
     return this._updateKgraph(this._kgraphRoot, options, cb, false);
   }
 
+  _processKGraphPreLayout(kgraph){
+    //make sure that the width of the state is 
+    function walk(node){
+      if(node.$type === 'initial' || node.$type === 'final'){
+        _.extend(node, { 
+          "width" : constants.INITIAL_RADIUS,
+          "height" : constants.INITIAL_RADIUS
+        });
+      } else if (node.labels && node.labels.length) {
+        var [width, height] =  this._svgRenderer.getStateMinDimensions(node.labels[0].text);
+        _.extend(node, { 
+          "width" : width,
+          "height" : height
+        });
+      }
+      if(node.edges && node.edges.length){
+        node.edges.forEach( edge => {
+          if(edge.labels && edge.labels.length){
+            var [width, height] =  this._svgRenderer.measureTextDimensions(edge.labels[0].text);
+            _.extend(edge, { 
+              "width" : width,
+              "height" : height
+            });
+          }
+        }) 
+      }
+      if(node.children) node.children.forEach(walk.bind(this));
+    }
+    walk.call(this, kgraph);
+  }
+
   _processKGraphPostLayout(kgraph){
     //make sure that the width of the state is 
     function walk(node){
@@ -62,6 +93,7 @@ export class KGraph {
     debug('kgraph before layout',JSON.stringify(kgraph,null,4));   //TODO: enable debug module
     var t1 = Date.now();
     try {
+      this._processKGraphPreLayout(kgraph);
       $klay.layout({
         graph : kgraph,
         options : options,

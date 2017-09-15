@@ -209,18 +209,13 @@ export default class SCJSONToKGraphTransformer {
         "id" : state.id,
         "labels" : [],
         "edges" : [],
-        "width" : constants.INITIAL_RADIUS,
-        "height" : constants.INITIAL_RADIUS
       };
     }else{
       var label = state.$type === 'virtual' ? '...' : state.id;
-      var [width, height] =  this._svgRenderer.getStateMinDimensions(label);
       stateKlayNode = {
         "id" : state.id,
         "labels" : [ { text : label || '' } ],
-        "edges" : [],
-        "width" : width,
-        "height" : height
+        "edges" : []
       };
     }
 
@@ -244,12 +239,9 @@ export default class SCJSONToKGraphTransformer {
 
             var event = transition.event;
             if(event){
-              var eventBBox = this._svgRenderer.measureTextDimensions(event); 
               var klayLabel = new KGraphLabel();
               _.extend(klayLabel, { 
-                text : event, 
-                width : eventBBox.width, 
-                height : eventBBox.height 
+                text : event
               });
               klayEdge.labels.push(klayLabel);
               klayNodeToScjsonMap.set(klayEdge, transition);
