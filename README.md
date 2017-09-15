@@ -133,7 +133,8 @@ Returns a `snapshot` object, of the form :
     configuration,
     history,
     isInFinalState,
-    dataModel
+    dataModel,
+    internalEventQueue
 ]
 ```
 
