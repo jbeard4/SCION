@@ -202,12 +202,6 @@ export default class SCJSONToKGraphTransformer {
     return allDescendants;
   }
 
-  _getStateMinDimensions(labelText){
-    var bbox = this._svgRenderer.measureTextDimensions(labelText);
-    return [ bbox.width + constants.LEAF_NODE_PADDING_W * 2,
-              bbox.height + constants.LEAF_NODE_PADDING_H * 2 ];
-  }
-
   _scjsonStateToKlayNode(klayNodeToScjsonMap, idMap, rootState, parentState, state){
     let stateKlayNode : KGraphNode;
     if(state.$type === 'initial' || state.$type === 'final'){
@@ -220,7 +214,7 @@ export default class SCJSONToKGraphTransformer {
       };
     }else{
       var label = state.$type === 'virtual' ? '...' : state.id;
-      var [width, height] =  this._getStateMinDimensions(label);
+      var [width, height] =  this._svgRenderer.getStateMinDimensions(label);
       stateKlayNode = {
         "id" : state.id,
         "labels" : [ { text : label || '' } ],

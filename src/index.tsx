@@ -10,9 +10,11 @@ import GraphNode from './GraphNode';
 import _ = require('underscore');
 import {LayoutOptions} from './IKGraphRenderBackend';
 import {SCState, SCTransition, findStateById} from './SCJSON';
+import SCJSONToKGraphTransformer from './SCJSONToKGraphTransformer';
 
 export interface GraphRootProps {
-  scjson : any,    //TODO: add types to SCION, and refactor this ot use the type
+  scjson? : any,    //TODO: add types to SCION, and refactor this ot use the type
+  kgraphRoot? : KGraphNode,
   layoutOptions? : LayoutOptions,
   redraw? : boolean,
   configuration? : string[],
@@ -136,9 +138,21 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     return bbox; 
   }
 
+
+  public getStateMinDimensions(labelText){
+    var bbox = this.measureTextDimensions(labelText);
+    return [ bbox.width + constants.LEAF_NODE_PADDING_W * 2,
+              bbox.height + constants.LEAF_NODE_PADDING_H * 2 ];
+  }
+
   componentWillReceiveProps(props : GraphRootProps){
-    if(props.scjson !== this.props.scjson ||
-        props.layoutOptions !== this.props.layoutOptions) this.initKGraph(props, false);
+    this.checkProps(props);
+    if(props.scjson &&
+        (props.scjson !== this.props.scjson) ||
+        (props.layoutOptions !== this.props.layoutOptions)) this.initSCJson(props, false);
+    if(props.kgraphRoot &&
+        (props.kgraphRoot !== this.props.kgraphRoot) ||
+        (props.layoutOptions !== this.props.layoutOptions)) this.initKGraph(props, false);
   }
 
   //later, try handleMouseClick
@@ -241,53 +255,71 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     return enabledEdges.concat( enabledHyperedges );
   }
 
-  private initKGraph({scjson, layoutOptions, redraw, transitionsEnabled} : GraphRootProps , initialRender : boolean){
+  private initSCJson(props : GraphRootProps , initialRender : boolean){
     //if scjson is not the same, create a new kgraph
     //TODO: memoize
-    if(scjson){
-      let kgraph = new KGraph(new IdGenerator(), this, scjson);
-      let allEdges = kgraph ? this._getAllEdges(kgraph) : [];
-      let enabledEdges = this._getEnabledEdges(allEdges, transitionsEnabled);
-      const options = this.getDefaultLayoutOptions(layoutOptions)
-      if(!this.props.disableAnimation) this.svgRootElement.pauseAnimations();
-      kgraph.updateLayout(options, (err, rootNode) => {
-        //console.log('kgraph rootNode',rootNode);
-        if(err) throw err;
-        let toZoom = {x : 0, y : 0, width : rootNode.width, height : rootNode.height};
-        this.setState({ 
-          allEdges : allEdges,   //TODO: this is likely to be a hotspot. we probably want to move this search logic inside of the kgraph data structure
-          enabledEdges : enabledEdges,
-          kgraph : kgraph,
-          fromZoom : initialRender || redraw ? toZoom : this.svgRootElement.viewBox.animVal,
-          toZoom : toZoom,
-          fromNode : this.state.toNode,
-          toNode : rootNode
-        }, () => {
-          //add a timeout to let the thread settle before starting animations
-          //without this, on large models, we lose the first few animation frames
-          if(!this.props.disableAnimation) setTimeout( () => {
-            this.svgRootElement.unpauseAnimations();
-          })
-        });
-      })  
+    if(props.scjson){
+      let idGenerator = new IdGenerator();
+      let transformer = new SCJSONToKGraphTransformer(idGenerator, this);
+      var newKlayToScjsonMap, newKgraphRoot; 
+      [newKlayToScjsonMap, newKgraphRoot] = transformer.transform(props.scjson);
+      this.initKGraph(props, initialRender, idGenerator, newKgraphRoot);
     }
+  }
+
+  private initKGraph(props : GraphRootProps , initialRender : boolean, idGen?: IdGenerator, kgRoot? : KGraphNode){
+    let idGenerator = idGen || new IdGenerator(); 
+    let kgraphRoot = props.kgraphRoot || kgRoot;
+    let kgraph = new KGraph(idGenerator, this, kgraphRoot);
+    let allEdges = kgraph ? this._getAllEdges(kgraph) : [];
+    let enabledEdges = this._getEnabledEdges(allEdges, props.transitionsEnabled);
+    const options = this.getDefaultLayoutOptions(props.layoutOptions)
+    if(!this.props.disableAnimation) this.svgRootElement.pauseAnimations();
+    kgraph.updateLayout(options, (err, rootNode) => {
+      //console.log('kgraph rootNode',rootNode);
+      if(err) throw err;
+      let toZoom = {x : 0, y : 0, width : rootNode.width, height : rootNode.height};
+      this.setState({ 
+        allEdges : allEdges,   //TODO: this is likely to be a hotspot. we probably want to move this search logic inside of the kgraph data structure
+        enabledEdges : enabledEdges,
+        kgraph : kgraph,
+        fromZoom : initialRender || props.redraw ? toZoom : this.svgRootElement.viewBox.animVal,
+        toZoom : toZoom,
+        fromNode : this.state.toNode,
+        toNode : rootNode
+      }, () => {
+        //add a timeout to let the thread settle before starting animations
+        //without this, on large models, we lose the first few animation frames
+        if(!this.props.disableAnimation) setTimeout( () => {
+          this.svgRootElement.unpauseAnimations();
+        })
+      });
+    })  
   }
 
   componentDidUpdate(){
     this.animate();
   }
 
+  private checkProps(props){
+    if(props.scjson && props.kgraphRoot) throw new Error('You can specify scjson or kgraph props, but not both');
+    if(!props.scjson && !props.kgraphRoot) throw new Error('You must specify one of scjson or kgraph props, but not both');
+  }
+
   componentDidMount(){
-    this.initKGraph(this.props, true);
+    this.checkProps(this.props);
+    if(this.props.scjson) this.initSCJson(this.props, true);
+    if(this.props.kgraphRoot) this.initKGraph(this.props, true);
     this.animate();
   }
 
   public toggleExpandContractState(nodeId : string){
+    //TODO: refactor this so that it only affects KGraph?
     //transform model
     let state:SCState = findStateById(this.props.scjson, nodeId);
     state.$meta = state.$meta || {};
     state.$meta.isCollapsed = !state.$meta.isCollapsed;   //toggle contracted
-    this.initKGraph(this.props, false);
+    this.initSCJson(this.props, false);
   }
 
   private animate(){

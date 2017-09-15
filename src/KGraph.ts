@@ -1,6 +1,5 @@
 import $klay = require('klayjs');
 import _ = require('underscore');
-import SCJSONToKGraphTransformer from './SCJSONToKGraphTransformer';
 import IdGenerator from './IdGenerator';
 import Debug = require('debug');
 import GraphRoot from './index'
@@ -10,19 +9,18 @@ import {SCState} from './SCJSON';
 import constants from './constants';
 
 
-export class KGraph extends SCJSONToKGraphTransformer {
+export class KGraph {
 
-  _klayToScjsonMap : Map<SCState,KGraphNode>; 
   _kgraphRoot : KGraphNode;
   _idMap : Map<string, KGraphNode>;
   _childToParentMap : Map<string, KGraphNode>;
+  _idGenerator : IdGenerator; 
+  _svgRenderer : GraphRoot;
 
-  constructor(idGenerator: IdGenerator, svgRenderer : GraphRoot, scjson: any){
-    super(idGenerator, svgRenderer);
-    var newKlayToScjsonMap, newKgraphRoot; 
-    [newKlayToScjsonMap, newKgraphRoot] = this.transform(scjson);
-    this._klayToScjsonMap = newKlayToScjsonMap; 
-    this._kgraphRoot = newKgraphRoot;
+  constructor(idGenerator: IdGenerator, svgRenderer : GraphRoot, kgraphRoot: KGraphNode){
+    this._idGenerator = idGenerator;
+    this._svgRenderer = svgRenderer;
+    this._kgraphRoot = kgraphRoot;
     this._normalize(this._kgraphRoot);
   }
 
@@ -46,7 +44,7 @@ export class KGraph extends SCJSONToKGraphTransformer {
     function walk(node){
       if(node.labels && node.labels.length){
         var label = node.labels[0].text;
-        var [minWidth, height] =  this._getStateMinDimensions(label);
+        var [minWidth, height] =  this._svgRenderer.getStateMinDimensions(label);
         if(node.width < minWidth){
           node.width = minWidth; 
         }
