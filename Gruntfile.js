@@ -113,7 +113,7 @@ module.exports = function(grunt) {
   grunt.registerTask('scxml-test-client', 'Run scxml tests in node. ', function(){
     var done = this.async();
     //TODO: convert to submodule. 
-    var startTests = require('scxml-test-framework');
+    var startTests = require('@jbeard/scxml-test-framework');
     startTests({
       verbose : false,
       report : 'console',
