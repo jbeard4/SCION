@@ -1,20 +1,21 @@
 var async = require('async');
+var _ = require('underscore');
 
 //if we've specified individual tests via argv, get them
 //otherwise, pull it from the registry
 var tests = require('../../tests/tests.js');
-var testSerializations = [false];
-var testGenAsync = [false];
+var testSerializations = [true, false];
+var testGenAsync = [true, false];
 
 var testOptions = [];
 testSerializations.forEach(function(testSerialization){
   testGenAsync.forEach(function(testGenAsync){
     tests.forEach(function(test){
       testOptions.push({
-        testSerialization : false,
-        testGenAsync : false,
+        testSerialization : testSerialization,
+        testGenAsync : testGenAsync,
         test : test,
-        name : test.name + (false ? '(serialization)' : '') + (false ? '(async)' : '')
+        name : test.name + (testSerialization ? '(serialization)' : '') + (testGenAsync ? '(async)' : '')
       });
     });
   });
@@ -31,7 +32,12 @@ module.exports = function(scion){
 
           //t.plan(test.test.events.length + 1);
 
-          var sc = new scion.Statechart(test.test.sc);
+          var options = {};
+          if(test.testSerialization || test.testGenAsync){
+            options.doSend = doSend; //add a hook to intercept the event dispatch
+          }
+
+          var sc = new scion.Statechart(test.test.sc, options);
 
           var actualInitialConf = sc.start();
 
@@ -49,7 +55,7 @@ module.exports = function(scion){
 
                   if(test.testSerialization && mostRecentSnapshot){
                     //load up state machine state
-                    sc = new scion.Statechart(test.test.sc,{snapshot : JSON.parse(mostRecentSnapshot)});
+                    sc = new scion.Statechart(test.test.sc,_.extend({snapshot : JSON.parse(mostRecentSnapshot)},options));
                   }
 
                   //console.log('sending event',nextEvent.event);
@@ -77,7 +83,6 @@ module.exports = function(scion){
                     if(test.testSerialization){
                       mostRecentSnapshot = JSON.stringify(sc.getSnapshot());
                       //console.log('mostRecentSnapshot',mostRecentSnapshot);
-                      sc = null;  //clear the statechart in memory, just because
                     }
 
                     cb();
@@ -96,6 +101,31 @@ module.exports = function(scion){
               //we could explicitly end here by calling t.end(), but we don't need to - t.plan() should take care of it automatically
               t.done();
           });
+
+          //this is a hook to handle tests with options serialization and async
+          function doSend(session, event){
+            if(test.testSerialization && mostRecentSnapshot){
+              sc = new scion.Statechart(test.test.sc,_.extend({
+                sessionid : session.opts.sessionid,   //reuse existing sessionid
+                snapshot : JSON.parse(mostRecentSnapshot)
+              }, options));
+            }
+            if(test.testGenAsync){
+              sc.genAsync(event, eventProcessed);
+            } else {
+              try {
+                var conf = sc.gen(event);
+                eventProcessed(null, conf);
+              } catch (e){
+                eventProcessed(e);
+              }
+            }
+            function eventProcessed(err, actualNextConf){
+              if(test.testSerialization){
+                mostRecentSnapshot = JSON.stringify(sc.getSnapshot());
+              }
+            }
+          }
       };
   });
 
