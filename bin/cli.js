@@ -24,14 +24,19 @@ if(argv.compile === 'scjson' || argv.compile === 'json'){
   var scxmlToScjson = require('../lib/compiler/scxml-to-scjson');
   var util = require('util');
   var scjson = scxmlToScjson(fs.readFileSync(argv.input,'utf8'));
-  console.log(util.inspect(scjson,{showHidden: false, depth: null}));
+  var s = JSON.stringify(scjson,4,4);
+  if(!argv.output || argv.output === '-'){
+    console.log(s);
+  } else {
+    fs.writeFileSync(argv.output, s); 
+  }
 } else {
   scxml.pathToModel(argv.input, function(err, model){
     if(err) return console.error(err);
     if(argv.compile){
       model.prepareModuleString(function(err, moduleString){
         if(err) return console.error(err);
-        if(argv.output === '-'){
+        if(!argv.output || argv.output === '-'){
           console.log(moduleString);
         } else {
           fs.writeFileSync(argv.output, moduleString); 
