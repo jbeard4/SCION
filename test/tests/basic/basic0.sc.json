@@ -1,10 +1,12 @@
 {
-    "": "http://www.w3.org/2005/07/scxml",
+    "{http://www.w3.org/2000/xmlns/}": "http://www.w3.org/2005/07/scxml",
     "initial": "a",
     "$type": "scxml",
+    "id": "$generated-scxml-0",
     "states": [
         {
-            "id": "a"
+            "id": "a",
+            "$type": "state"
         }
     ]
 }

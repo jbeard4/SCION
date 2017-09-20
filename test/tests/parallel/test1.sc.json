@@ -1,6 +1,7 @@
 {
-    "": "http://www.w3.org/2005/07/scxml",
+    "{http://www.w3.org/2000/xmlns/}": "http://www.w3.org/2005/07/scxml",
     "$type": "scxml",
+    "id": "$generated-scxml-0",
     "states": [
         {
             "id": "p",
@@ -8,9 +9,11 @@
             "states": [
                 {
                     "id": "a",
+                    "$type": "state",
                     "states": [
                         {
                             "$type": "initial",
+                            "id": "$generated-initial-0",
                             "transitions": [
                                 {
                                     "target": "a1"
@@ -19,6 +22,7 @@
                         },
                         {
                             "id": "a1",
+                            "$type": "state",
                             "transitions": [
                                 {
                                     "event": "t",
@@ -27,15 +31,18 @@
                             ]
                         },
                         {
-                            "id": "a2"
+                            "id": "a2",
+                            "$type": "state"
                         }
                     ]
                 },
                 {
                     "id": "b",
+                    "$type": "state",
                     "states": [
                         {
                             "$type": "initial",
+                            "id": "$generated-initial-1",
                             "transitions": [
                                 {
                                     "target": "b1"
@@ -44,6 +51,7 @@
                         },
                         {
                             "id": "b1",
+                            "$type": "state",
                             "transitions": [
                                 {
                                     "event": "t",
@@ -52,7 +60,8 @@
                             ]
                         },
                         {
-                            "id": "b2"
+                            "id": "b2",
+                            "$type": "state"
                         }
                     ]
                 }

@@ -35,15 +35,15 @@ module.exports = function(scion){
 
           var actualInitialConf = sc.start();
 
-          console.log('initial configuration',actualInitialConf);
+          //console.log('initial configuration',actualInitialConf);
 
           t.deepEqual(actualInitialConf.sort(),test.test.test.initialConfiguration.sort(),'initial configuration');
 
           var mostRecentSnapshot;
 
-          console.log('test.test.test.events', test.test.test.events);
+          //console.log('test.test.test.events', test.test.test.events);
           async.eachSeries(test.test.test.events,function(nextEvent,cb){
-              console.log('nextEvent', nextEvent);
+              //console.log('nextEvent', nextEvent);
 
               function ns(){
 
@@ -69,7 +69,7 @@ module.exports = function(scion){
                   function ns2(err, actualNextConf){
 
                     //TODO: handle err
-                    console.log('next configuration',actualNextConf);
+                    //console.log('next configuration',actualNextConf);
 
                     t.deepEqual(actualNextConf.sort(),nextEvent.nextConfiguration.sort(),'next configuration after sending event ' + nextEvent.event.name);
                     //dump state machine state
