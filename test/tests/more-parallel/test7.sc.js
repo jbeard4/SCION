@@ -1,103 +1,110 @@
-//Generated on Tuesday, June 17, 2014 21:23:28 by the SCION SCXML compiler
-module.exports = (function(_x,_sessionid,_name,_ioprocessors,In){
-    
-    
-    
-    
-    
-    
-    
-    
-    function $deserializeDatamodel($serializedDatamodel){
-    
-        $scion_early_binding_datamodel_has_fired = true;
+//Generated on 2017-9-20 12:41:59 by the SCION SCXML compiler
+function rootConstructor(_x,_sessionid,_ioprocessors,In){
+   var _name = 'undefined';
+function $deserializeDatamodel($serializedDatamodel){
+
+}
+function $serializeDatamodel(){
+   return {
+
+   };
+}
+return {
+ "{http://www.w3.org/2000/xmlns/}": "http://www.w3.org/2005/07/scxml",
+ "$type": "scxml",
+ "id": "$generated-scxml-0",
+ "states": [
+  {
+   "id": "p",
+   "$type": "parallel",
+   "states": [
+    {
+     "id": "a",
+     "$type": "state",
+     "transitions": [
+      {
+       "event": "t",
+       "target": "a22"
+      }
+     ],
+     "states": [
+      {
+       "id": "a1",
+       "$type": "state",
+       "states": [
+        {
+         "id": "a11",
+         "$type": "state"
+        },
+        {
+         "id": "a12",
+         "$type": "state"
+        }
+       ]
+      },
+      {
+       "id": "a2",
+       "$type": "state",
+       "states": [
+        {
+         "id": "a21",
+         "$type": "state"
+        },
+        {
+         "id": "a22",
+         "$type": "state"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "b",
+     "$type": "state",
+     "transitions": [
+      {
+       "event": "t",
+       "target": "b22"
+      }
+     ],
+     "states": [
+      {
+       "id": "b1",
+       "$type": "state",
+       "states": [
+        {
+         "id": "b11",
+         "$type": "state"
+        },
+        {
+         "id": "b12",
+         "$type": "state"
+        }
+       ]
+      },
+      {
+       "id": "b2",
+       "$type": "state",
+       "states": [
+        {
+         "id": "b21",
+         "$type": "state"
+        },
+        {
+         "id": "b22",
+         "$type": "state"
+        }
+       ]
+      }
+     ]
     }
-    
-    function $serializeDatamodel(){
-       return {
-    
-       };
-    }
-    
-    
-    
-    return {
-        "": "http://www.w3.org/2005/07/scxml",
-        "$type": "scxml",
-        "states": [
-            {
-                "id": "p",
-                "$type": "parallel",
-                "states": [
-                    {
-                        "id": "a",
-                        "transitions": [
-                            {
-                                "event": "t",
-                                "target": "a22"
-                            }
-                        ],
-                        "states": [
-                            {
-                                "id": "a1",
-                                "states": [
-                                    {
-                                        "id": "a11"
-                                    },
-                                    {
-                                        "id": "a12"
-                                    }
-                                ]
-                            },
-                            {
-                                "id": "a2",
-                                "states": [
-                                    {
-                                        "id": "a21"
-                                    },
-                                    {
-                                        "id": "a22"
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "id": "b",
-                        "transitions": [
-                            {
-                                "event": "t",
-                                "target": "b22"
-                            }
-                        ],
-                        "states": [
-                            {
-                                "id": "b1",
-                                "states": [
-                                    {
-                                        "id": "b11"
-                                    },
-                                    {
-                                        "id": "b12"
-                                    }
-                                ]
-                            },
-                            {
-                                "id": "b2",
-                                "states": [
-                                    {
-                                        "id": "b21"
-                                    },
-                                    {
-                                        "id": "b22"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            }
-        ],
-        "$deserializeDatamodel": $deserializeDatamodel,
-        "$serializeDatamodel": $serializeDatamodel
-    };});
+   ]
+  }
+ ],
+ "$deserializeDatamodel": $deserializeDatamodel,
+ "$serializeDatamodel": $serializeDatamodel,
+ "docUrl": "/home/jacob/workspace/scxml-test-framework/test/more-parallel/test7.scxml"
+};
+}
+module.exports = rootConstructor;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiJ9

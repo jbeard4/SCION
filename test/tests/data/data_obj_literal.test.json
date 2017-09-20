@@ -1,0 +1,11 @@
+{
+    "initialConfiguration" : ["s1"],
+    "events" : [
+        {
+            "event" : { "name" : "pass" },
+            "nextConfiguration" : ["pass"]
+        }
+    ]
+}
+
+
