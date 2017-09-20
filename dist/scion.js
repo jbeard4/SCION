@@ -122,8 +122,12 @@
         function generateId(type) {
             if (idCount[type] === undefined) idCount[type] = 0;
 
-            var count = idCount[type]++;
-            return '$generated-' + type + '-' + count;
+            do {
+                var count = idCount[type]++;
+                var id = '$generated-' + type + '-' + count;
+            } while (idToStateMap.has(id));
+
+            return id;
         }
 
         function wrapInFakeRootState(state) {
@@ -133,6 +137,7 @@
                     return null;
                 },
                 $idToStateMap: idToStateMap, //keep this for handy deserialization of serialized configuration
+                docUrl: state.docUrl,
                 states: [{
                     $type: 'initial',
                     transitions: [{
@@ -152,19 +157,25 @@
             return this.id;
         }
 
+        function populateStateIdMap(state) {
+            //populate state id map
+            if (state.id) {
+                idToStateMap.set(state.id, state);
+            }
+
+            if (state.states) {
+                for (var j = 0, len = state.states.length; j < len; j++) {
+                    populateStateIdMap(state.states[j]);
+                }
+            }
+        }
+
         function traverse(ancestors, state) {
 
             if (printTrace) state.toString = stateToString;
 
             //add to global transition and state id caches
             if (state.transitions) transitions.push.apply(transitions, state.transitions);
-
-            //populate state id map
-            if (state.id) {
-                if (idToStateMap.has(state.id)) throw new Error('Redefinition of state id ' + state.id);
-
-                idToStateMap.set(state.id, state);
-            }
 
             //create a default type, just to normalize things
             //this way we can check for unsupported types below
@@ -385,7 +396,7 @@
             var commonAncestors = [];
             for (var j = 0, len = s1.ancestors.length; j < len; j++) {
                 var anc = s1.ancestors[j];
-                if (anc.typeEnum === STATE_TYPES.COMPOSITE && anc.descendants.indexOf(s2) > -1) {
+                if ((anc.typeEnum === STATE_TYPES.COMPOSITE || anc.typeEnum === STATE_TYPES.PARALLEL) && anc.descendants.indexOf(s2) > -1) {
                     commonAncestors.push(anc);
                 }
             };
@@ -395,6 +406,7 @@
 
         //main execution starts here
         //FIXME: only wrap in root state if it's not a compound state
+        populateStateIdMap(rootState);
         var fakeRootState = wrapInFakeRootState(rootState); //I wish we had pointer semantics and could make this a C-style "out argument". Instead we return him
         traverse([], fakeRootState);
         connectTransitionGraph();
@@ -439,6 +451,19 @@
     };
 
     EventEmitter.prototype.off = function _off(type, listener) {
+
+        if (typeof type === 'undefined') {
+            Object.keys(this._listeners).forEach(function (type) {
+                for (var i = 0; i < this._listeners[type].length; i += 1) {
+                    if (this._listeners[type][i].listener === listener) {
+                        index = i;
+                        break;
+                    }
+                }
+            }, this);
+            return this;
+        }
+
         if (!Array.isArray(this._listeners[type])) {
             return this;
         }
@@ -663,7 +688,6 @@
         },
         getAncestors: function getAncestors(s, root) {
             var ancestors, index, state;
-            if (root === null) return [];
             index = s.ancestors.indexOf(root);
             if (index > -1) {
                 return s.ancestors.slice(0, index);
@@ -677,25 +701,6 @@
         },
         getDescendantsOrSelf: function getDescendantsOrSelf(s) {
             return [s].concat(s.descendants);
-        },
-        /** @this {model} */
-        isOrthogonalTo: function isOrthogonalTo(s1, s2) {
-            //Two control states are orthogonal if they are not ancestrally
-            //related, and their smallest, mutual parent is a Concurrent-state.
-            if (s1 === null || s2 === null) return true;
-            return !this.isAncestrallyRelatedTo(s1, s2) && this.getLCA(s1, s2).typeEnum === STATE_TYPES.PARALLEL;
-        },
-        /** @this {model} */
-        isAncestrallyRelatedTo: function isAncestrallyRelatedTo(s1, s2) {
-            //Two control states are ancestrally related if one is child/grandchild of another.
-            return this.getAncestorsOrSelf(s2).indexOf(s1) > -1 || this.getAncestorsOrSelf(s1).indexOf(s2) > -1;
-        },
-        /** @this {model} */
-        getLCA: function getLCA(s1, s2) {
-            var commonAncestors = this.getAncestors(s1).filter(function (a) {
-                return a.descendants.indexOf(s2) > -1;
-            }, this);
-            return commonAncestors[0];
         }
     };
 
@@ -764,7 +769,7 @@
         return o;
     }
 
-    var printTrace = !!process.env.DEBUG;
+    var printTrace = typeof process !== 'undefined' && !!process.env.DEBUG;
 
     BaseInterpreter.EVENTS = ['onEntry', 'onExit', 'onTransition', 'onError', 'onBigStepBegin', 'onBigStepSuspend', 'onBigStepResume', 'onSmallStepBegin', 'onSmallStepEnd', 'onBigStepEnd'];
 
@@ -834,6 +839,7 @@
             this._historyValue = deserializeHistory(opts.snapshot[1], this._model.$idToStateMap);
             this._isInFinalState = opts.snapshot[2];
             this._model.$deserializeDatamodel(opts.snapshot[3]); //load up the datamodel
+            this._internalEventQueue = opts.snapshot[4];
         } else {
             this._configuration = new this.opts.Set();
             this._historyValue = {};
@@ -862,24 +868,17 @@
             if (this._isInFinalState) return;
             this._isInFinalState = true;
             this._log('session cancelled ' + this.opts.invokeid);
-            this._exitInterpreter();
+            this._exitInterpreter(null);
         },
 
-        _exitInterpreter: function _exitInterpreter() {
+        _exitInterpreter: function _exitInterpreter(event) {
             var _this = this;
 
             //TODO: cancel invoked sessions
             //cancel all delayed sends when we enter into a final state.
             this._cancelAllDelayedSends();
 
-            var statesToExit = this._configuration.iter().map(function (s) {
-                return [s].concat(query.getAncestors(s));
-            }, this).reduce(function (a, b) {
-                return a.concat(b);
-            }, []). //flatten
-            reduce(function (a, b) {
-                return a.indexOf(b) > -1 ? a : a.concat(b);
-            }, []).sort(getStateWithHigherSourceChildPriority);
+            var statesToExit = this._getFullConfiguration().sort(getStateWithHigherSourceChildPriority);
 
             for (var j = 0, len = statesToExit.length; j < len; j++) {
                 var stateExited = statesToExit[j];
@@ -905,14 +904,18 @@
                 });
 
                 //if he is a top-level <final> state, then return the done event
-                if (this.opts.parentSession && stateExited.$type === 'final' && stateExited.parent.$type === 'scxml') {
+                if (stateExited.$type === 'final' && stateExited.parent.$type === 'scxml') {
 
-                    this._scriptingContext.send({
-                        target: '#_parent',
-                        name: 'done.invoke.' + this.opts.invokeid
-                    });
+                    if (this.opts.parentSession) {
+                        this._scriptingContext.send({
+                            target: '#_parent',
+                            name: 'done.invoke.' + this.opts.invokeid,
+                            data: stateExited.donedata && stateExited.donedata.call(this._scriptingContext, event)
+                        });
+                    }
 
                     this.opts.sessionRegistry["delete"](this.opts.sessionid);
+                    this.emit('onExitInterpreter', event);
                 }
             }
         },
@@ -960,18 +963,22 @@
             });
         },
 
-        /** @expose */
-        getFullConfiguration: function getFullConfiguration() {
+        _getFullConfiguration: function _getFullConfiguration() {
             return this._configuration.iter().map(function (s) {
                 return [s].concat(query.getAncestors(s));
             }, this).reduce(function (a, b) {
                 return a.concat(b);
             }, []). //flatten
-            map(function (s) {
-                return s.id;
-            }).reduce(function (a, b) {
+            reduce(function (a, b) {
                 return a.indexOf(b) > -1 ? a : a.concat(b);
             }, []); //uniq
+        },
+
+        /** @expose */
+        getFullConfiguration: function getFullConfiguration() {
+            return this._getFullConfiguration().map(function (s) {
+                return s.id;
+            });
         },
 
         /** @expose */
@@ -1010,34 +1017,40 @@
                 keepGoing = _selectTransitionsAnd2[1];
             }
 
-            this._finishBigStep(allStatesEntered, allStatesExited);
+            this._finishBigStep(currentEvent, allStatesEntered, allStatesExited);
         },
 
         _selectTransitionsAndPerformSmallStep: function _selectTransitionsAndPerformSmallStep(currentEvent, allStatesEntered, allStatesExited) {
+            //first select with null event
             var selectedTransitions = this._selectTransitions(currentEvent, true);
             if (selectedTransitions.isEmpty()) {
-                currentEvent = this._internalEventQueue.shift() || null;
-                selectedTransitions = this._selectTransitions(currentEvent, false);
+                var ev = this._internalEventQueue.shift();
+                if (ev) {
+                    currentEvent = ev;
+                    selectedTransitions = this._selectTransitions(currentEvent, false);
+                }
             }
 
-            this.emit('onSmallStepBegin', currentEvent);
-            var statesExited = void 0,
-                statesEntered = void 0;
+            if (!selectedTransitions.isEmpty()) {
+                this.emit('onSmallStepBegin', currentEvent);
+                var statesExited = void 0,
+                    statesEntered = void 0;
 
-            var _performSmallStep = this._performSmallStep(currentEvent, selectedTransitions);
+                var _performSmallStep = this._performSmallStep(currentEvent, selectedTransitions);
 
-            var _performSmallStep2 = _slicedToArray(_performSmallStep, 2);
+                var _performSmallStep2 = _slicedToArray(_performSmallStep, 2);
 
-            statesExited = _performSmallStep2[0];
-            statesEntered = _performSmallStep2[1];
+                statesExited = _performSmallStep2[0];
+                statesEntered = _performSmallStep2[1];
 
-            if (statesExited) statesExited.forEach(function (s) {
-                return allStatesExited.add(s);
-            });
-            if (statesEntered) statesEntered.forEach(function (s) {
-                return allStatesEntered.add(s);
-            });
-            this.emit('onSmallStepEnd', currentEvent);
+                if (statesExited) statesExited.forEach(function (s) {
+                    return allStatesExited.add(s);
+                });
+                if (statesEntered) statesEntered.forEach(function (s) {
+                    return allStatesEntered.add(s);
+                });
+                this.emit('onSmallStepEnd', currentEvent);
+            }
             var keepGoing = !selectedTransitions.isEmpty() || this._internalEventQueue.length;
             return [currentEvent, keepGoing];
         },
@@ -1045,7 +1058,7 @@
         _startBigStep: function _startBigStep(e) {
             var _this3 = this;
 
-            this.emit('onBigStepBegin');
+            this.emit('onBigStepBegin', e);
 
             //do applyFinalize and autoforward
             this._configuration.iter().forEach(function (state) {
@@ -1072,11 +1085,11 @@
             var allStatesExited = new Set(),
                 allStatesEntered = new Set();
             var keepGoing = true;
-            var currentEvent = null;
+            var currentEvent = e;
             return [allStatesEntered, allStatesExited, keepGoing, currentEvent];
         },
 
-        _finishBigStep: function _finishBigStep(allStatesEntered, allStatesExited, cb) {
+        _finishBigStep: function _finishBigStep(e, allStatesEntered, allStatesExited, cb) {
             var _this4 = this;
 
             var statesToInvoke = Array.from(new Set([].concat(_toConsumableArray(allStatesEntered)).filter(function (s) {
@@ -1086,7 +1099,7 @@
             // Here we invoke whatever needs to be invoked. The implementation of 'invoke' is platform-specific
             statesToInvoke.forEach(function (s) {
                 s.invokes.forEach(function (f) {
-                    return _this4._evaluateAction(null, f);
+                    return _this4._evaluateAction(e, f);
                 });
             });
 
@@ -1105,7 +1118,7 @@
                 return s.typeEnum === STATE_TYPES.FINAL;
             });
             if (this._isInFinalState) {
-                this._exitInterpreter();
+                this._exitInterpreter(e);
             }
             this.emit('onBigStepEnd');
             if (cb) cb(undefined, this.getConfiguration());
@@ -1176,7 +1189,7 @@
                     this.emit('onBigStepSuspend');
                     setImmediate(nextStep.bind(this), 'onBigStepResume');
                 } else {
-                    this._finishBigStep(allStatesEntered, allStatesExited, cb);
+                    this._finishBigStep(currentEvent, allStatesEntered, allStatesExited, cb);
                 }
             }
             nextStep.call(this, 'onBigStepBegin');
@@ -1184,181 +1197,251 @@
 
         /** @private */
         _performSmallStep: function _performSmallStep(currentEvent, selectedTransitions) {
-            var _this5 = this;
 
             this._log("selecting transitions with currentEvent", currentEvent);
 
             this._log("selected transitions", selectedTransitions);
 
-            if (!selectedTransitions.isEmpty()) {
+            var statesExited = void 0,
+                statesEntered = void 0;
 
-                this._log("sorted transitions", selectedTransitions);
+            if (!selectedTransitions.isEmpty()) {
 
                 //we only want to enter and exit states from transitions with targets
                 //filter out targetless transitions here - we will only use these to execute transition actions
                 var selectedTransitionsWithTargets = new this.opts.Set(selectedTransitions.iter().filter(transitionWithTargets));
 
-                var exitedTuple = this._getStatesExited(selectedTransitionsWithTargets),
-                    basicStatesExited = exitedTuple[0],
-                    statesExited = exitedTuple[1];
+                statesExited = this._exitStates(currentEvent, selectedTransitionsWithTargets);
+                this._executeTransitions(currentEvent, selectedTransitions);
+                statesEntered = this._enterStates(currentEvent, selectedTransitionsWithTargets);
 
-                var statesEntered = this._getStatesEntered(selectedTransitionsWithTargets);
+                this._log("new configuration ", this._configuration);
+            }
 
-                this._log("basicStatesExited ", basicStatesExited);
-                this._log("statesExited ", statesExited);
-                this._log("statesEntered ", statesEntered);
+            return [statesExited, statesEntered];
+        },
 
-                var eventsToAddToInnerQueue = new this.opts.Set();
+        _exitStates: function _exitStates(currentEvent, selectedTransitionsWithTargets) {
+            var basicStatesExited = void 0,
+                statesExited = void 0;
 
-                //update history states
-                this._log("executing state exit actions");
+            var _getStatesExited = this._getStatesExited(selectedTransitionsWithTargets);
 
-                for (var j = 0, len = statesExited.length; j < len; j++) {
-                    var stateExited = statesExited[j];
+            var _getStatesExited2 = _slicedToArray(_getStatesExited, 2);
 
-                    if (stateExited.isAtomic) this._configuration.remove(stateExited);
+            basicStatesExited = _getStatesExited2[0];
+            statesExited = _getStatesExited2[1];
 
-                    this._log("exiting ", stateExited.id);
 
-                    //invoke listeners
-                    this.emit('onExit', stateExited.id);
+            this._log('exiting states');
+            for (var j = 0, len = statesExited.length; j < len; j++) {
+                var stateExited = statesExited[j];
 
-                    if (stateExited.onExit !== undefined) {
-                        for (var exitIdx = 0, exitLen = stateExited.onExit.length; exitIdx < exitLen; exitIdx++) {
-                            var block = stateExited.onExit[exitIdx];
-                            for (var blockIdx = 0, blockLen = block.length; blockIdx < blockLen; blockIdx++) {
-                                var actionRef = block[blockIdx];
-                                try {
-                                    actionRef.call(this._scriptingContext, currentEvent);
-                                } catch (e) {
-                                    this._handleError(e, actionRef);
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                if (stateExited.isAtomic) this._configuration.remove(stateExited);
 
-                    var f;
-                    if (stateExited.historyRef) {
-                        var _iteratorNormalCompletion5 = true;
-                        var _didIteratorError5 = false;
-                        var _iteratorError5 = undefined;
+                this._log("exiting ", stateExited.id);
 
-                        try {
-                            for (var _iterator5 = stateExited.historyRef[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-                                var historyRef = _step5.value;
+                //invoke listeners
+                this.emit('onExit', stateExited.id);
 
-                                if (historyRef.isDeep) {
-                                    f = function f(s0) {
-                                        return s0.typeEnum === STATE_TYPES.BASIC && stateExited.descendants.indexOf(s0) > -1;
-                                    };
-                                } else {
-                                    f = function f(s0) {
-                                        return s0.parent === stateExited;
-                                    };
-                                }
-                                //update history
-                                this._historyValue[historyRef.id] = statesExited.filter(f);
-                            }
-                        } catch (err) {
-                            _didIteratorError5 = true;
-                            _iteratorError5 = err;
-                        } finally {
+                if (stateExited.onExit !== undefined) {
+                    for (var exitIdx = 0, exitLen = stateExited.onExit.length; exitIdx < exitLen; exitIdx++) {
+                        var block = stateExited.onExit[exitIdx];
+                        for (var blockIdx = 0, blockLen = block.length; blockIdx < blockLen; blockIdx++) {
+                            var actionRef = block[blockIdx];
                             try {
-                                if (!_iteratorNormalCompletion5 && _iterator5["return"]) {
-                                    _iterator5["return"]();
-                                }
-                            } finally {
-                                if (_didIteratorError5) {
-                                    throw _iteratorError5;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // -> Concurrency: Number of transitions: Multiple
-                // -> Concurrency: Order of transitions: Explicitly defined
-                var sortedTransitions = selectedTransitions.iter().sort(transitionComparator);
-
-                this._log("executing transitition actions");
-
-                for (var stxIdx = 0, len = sortedTransitions.length; stxIdx < len; stxIdx++) {
-                    var transition = sortedTransitions[stxIdx];
-
-                    var targetIds = transition.targets && transition.targets.map(function (target) {
-                        return target.id;
-                    });
-
-                    this.emit('onTransition', transition.source.id, targetIds, transition.source.transitions.indexOf(transition));
-
-                    if (transition.onTransition !== undefined) {
-                        for (var txIdx = 0, txLen = transition.onTransition.length; txIdx < txLen; txIdx++) {
-                            var _actionRef = transition.onTransition[txIdx];
-                            try {
-                                _actionRef.call(this._scriptingContext, currentEvent);
+                                actionRef.call(this._scriptingContext, currentEvent);
                             } catch (e) {
-                                this._handleError(e, _actionRef);
+                                this._handleError(e, actionRef);
                                 break;
                             }
                         }
                     }
                 }
 
-                this._log("executing state enter actions");
+                var f;
+                if (stateExited.historyRef) {
+                    var _iteratorNormalCompletion5 = true;
+                    var _didIteratorError5 = false;
+                    var _iteratorError5 = undefined;
 
-                for (var enterIdx = 0, enterLen = statesEntered.length; enterIdx < enterLen; enterIdx++) {
-                    var stateEntered = statesEntered[enterIdx];
+                    try {
+                        for (var _iterator5 = stateExited.historyRef[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                            var historyRef = _step5.value;
 
-                    if (stateEntered.isAtomic) this._configuration.add(stateEntered);
-
-                    this._log("entering", stateEntered.id);
-
-                    this.emit('onEntry', stateEntered.id);
-
-                    if (stateEntered.onEntry !== undefined) {
-                        for (var entryIdx = 0, entryLen = stateEntered.onEntry.length; entryIdx < entryLen; entryIdx++) {
-                            var _block = stateEntered.onEntry[entryIdx];
-                            for (var _blockIdx = 0, _blockLen = _block.length; _blockIdx < _blockLen; _blockIdx++) {
-                                var _actionRef2 = _block[_blockIdx];
-                                try {
-                                    _actionRef2.call(this._scriptingContext, currentEvent);
-                                } catch (e) {
-                                    this._handleError(e, _actionRef2);
-                                    break;
-                                }
+                            if (historyRef.isDeep) {
+                                f = function f(s0) {
+                                    return s0.typeEnum === STATE_TYPES.BASIC && stateExited.descendants.indexOf(s0) > -1;
+                                };
+                            } else {
+                                f = function f(s0) {
+                                    return s0.parent === stateExited;
+                                };
+                            }
+                            //update history
+                            this._historyValue[historyRef.id] = statesExited.filter(f);
+                        }
+                    } catch (err) {
+                        _didIteratorError5 = true;
+                        _iteratorError5 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion5 && _iterator5["return"]) {
+                                _iterator5["return"]();
+                            }
+                        } finally {
+                            if (_didIteratorError5) {
+                                throw _iteratorError5;
                             }
                         }
                     }
-                }
-
-                for (var enterIdx = 0, enterLen = statesEntered.length; enterIdx < enterLen; enterIdx++) {
-                    var stateEntered = statesEntered[enterIdx];
-                    if (stateEntered.typeEnum === STATE_TYPES.FINAL) {
-                        var parent = stateEntered.parent;
-                        var grandparent = parent.parent;
-                        this._internalEventQueue.push({ name: "done.state." + parent.id, data: stateEntered.donedata }); //TODO: implement donedata
-                        if (grandparent && grandparent.typeEnum === STATE_TYPES.PARALLEL) {
-                            if (grandparent.states.every(function (s) {
-                                return _this5.isInFinalState(s);
-                            })) {
-                                this._internalEventQueue.push({ name: "done.state." + grandparent.id });
-                            }
-                        }
-                    }
-                }
-
-                this._log("new configuration ", this._configuration);
-
-                //add set of generated events to the innerEventQueue -> Event Lifelines: Next small-step
-                if (!eventsToAddToInnerQueue.isEmpty()) {
-                    this._log("adding triggered events to inner queue ", eventsToAddToInnerQueue);
-                    this._internalEventQueue.push(eventsToAddToInnerQueue);
                 }
             }
 
-            //if selectedTransitions is empty, we have reached a stable state, and the big-step will stop, otherwise will continue -> Maximality: Take-Many
-            return [statesExited, statesEntered];
+            return statesExited;
+        },
+
+        _executeTransitions: function _executeTransitions(currentEvent, selectedTransitions) {
+            var sortedTransitions = selectedTransitions.iter().sort(transitionComparator);
+
+            this._log("executing transitition actions");
+            for (var stxIdx = 0, len = sortedTransitions.length; stxIdx < len; stxIdx++) {
+                var transition = sortedTransitions[stxIdx];
+
+                var targetIds = transition.targets && transition.targets.map(function (target) {
+                    return target.id;
+                });
+
+                this.emit('onTransition', transition.source.id, targetIds, transition.source.transitions.indexOf(transition));
+
+                if (transition.onTransition !== undefined) {
+                    for (var txIdx = 0, txLen = transition.onTransition.length; txIdx < txLen; txIdx++) {
+                        var actionRef = transition.onTransition[txIdx];
+                        try {
+                            actionRef.call(this._scriptingContext, currentEvent);
+                        } catch (e) {
+                            this._handleError(e, actionRef);
+                            break;
+                        }
+                    }
+                }
+            }
+        },
+
+        _enterStates: function _enterStates(currentEvent, selectedTransitionsWithTargets) {
+            var _this5 = this;
+
+            this._log("entering states");
+
+            var statesEntered = new Set();
+            var statesForDefaultEntry = new Set();
+            // initialize the temporary table for default content in history states
+            var defaultHistoryContent = {};
+            this._computeEntrySet(selectedTransitionsWithTargets, statesEntered, statesForDefaultEntry, defaultHistoryContent);
+            statesEntered = [].concat(_toConsumableArray(statesEntered)).sort(sortInEntryOrder);
+
+            this._log("statesEntered ", statesEntered);
+
+            for (var enterIdx = 0, enterLen = statesEntered.length; enterIdx < enterLen; enterIdx++) {
+                var stateEntered = statesEntered[enterIdx];
+
+                if (stateEntered.isAtomic) this._configuration.add(stateEntered);
+
+                this._log("entering", stateEntered.id);
+
+                this.emit('onEntry', stateEntered.id);
+
+                if (stateEntered.onEntry !== undefined) {
+                    for (var entryIdx = 0, entryLen = stateEntered.onEntry.length; entryIdx < entryLen; entryIdx++) {
+                        var block = stateEntered.onEntry[entryIdx];
+                        for (var blockIdx = 0, blockLen = block.length; blockIdx < blockLen; blockIdx++) {
+                            var actionRef = block[blockIdx];
+                            try {
+                                actionRef.call(this._scriptingContext, currentEvent);
+                            } catch (e) {
+                                this._handleError(e, actionRef);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (statesForDefaultEntry.has(stateEntered)) {
+                    var _iteratorNormalCompletion6 = true;
+                    var _didIteratorError6 = false;
+                    var _iteratorError6 = undefined;
+
+                    try {
+                        for (var _iterator6 = stateEntered.initialRef[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+                            var initialState = _step6.value;
+
+                            this.emit('onDefaultEntry', initialState.id);
+                            if (initialState.typeEnum === STATE_TYPES.INITIAL) {
+                                var transition = initialState.transitions[0];
+                                if (transition.onTransition !== undefined) {
+                                    this._log('executing initial transition content for initial state of parent state', stateEntered.id);
+                                    for (var txIdx = 0, txLen = transition.onTransition.length; txIdx < txLen; txIdx++) {
+                                        var _actionRef = transition.onTransition[txIdx];
+                                        try {
+                                            _actionRef.call(this._scriptingContext, currentEvent);
+                                        } catch (e) {
+                                            this._handleError(e, _actionRef);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        _didIteratorError6 = true;
+                        _iteratorError6 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion6 && _iterator6["return"]) {
+                                _iterator6["return"]();
+                            }
+                        } finally {
+                            if (_didIteratorError6) {
+                                throw _iteratorError6;
+                            }
+                        }
+                    }
+                }
+
+                if (defaultHistoryContent[stateEntered.id]) {
+                    var _transition = defaultHistoryContent[stateEntered.id];
+                    if (_transition.onTransition !== undefined) {
+                        this._log('executing history transition content for history state of parent state', stateEntered.id);
+                        for (var txIdx = 0, txLen = _transition.onTransition.length; txIdx < txLen; txIdx++) {
+                            var _actionRef2 = _transition.onTransition[txIdx];
+                            try {
+                                _actionRef2.call(this._scriptingContext, currentEvent);
+                            } catch (e) {
+                                this._handleError(e, _actionRef2);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (var enterIdx = 0, enterLen = statesEntered.length; enterIdx < enterLen; enterIdx++) {
+                var stateEntered = statesEntered[enterIdx];
+                if (stateEntered.typeEnum === STATE_TYPES.FINAL) {
+                    var parent = stateEntered.parent;
+                    var grandparent = parent.parent;
+                    this._internalEventQueue.push({ name: "done.state." + parent.id, data: stateEntered.donedata && stateEntered.donedata.call(this._scriptingContext, currentEvent) });
+                    if (grandparent && grandparent.typeEnum === STATE_TYPES.PARALLEL) {
+                        if (grandparent.states.every(function (s) {
+                            return _this5.isInFinalState(s);
+                        })) {
+                            this._internalEventQueue.push({ name: "done.state." + grandparent.id });
+                        }
+                    }
+                }
+            }
+
+            return statesEntered;
         },
 
         isInFinalState: function isInFinalState(s) {
@@ -1385,7 +1468,7 @@
         },
 
         _handleError: function _handleError(e, actionRef) {
-            var event = e instanceof Error || e.__proto__.name === 'Error' ? //we can't just do 'e instanceof Error', because the Error object in the sandbox is from a different context, and instanceof will return false
+            var event = e instanceof Error || typeof e.__proto__.name === 'string' && e.__proto__.name.match(/^.*Error$/) ? //we can't just do 'e instanceof Error', because the Error object in the sandbox is from a different context, and instanceof will return false
             {
                 name: 'error.execution',
                 data: {
@@ -1440,56 +1523,23 @@
             return [basicStatesExited, sortedStatesExited];
         },
 
-        _getStatesEntered: function _getStatesEntered(enabledTransitions) {
-            var statesToEnter = new Set();
-            // initialize the temporary table for default content in history states
-            this._computeEntrySet(enabledTransitions, statesToEnter);
-            return [].concat(_toConsumableArray(statesToEnter)).sort(sortInEntryOrder);
-        },
-
-        _computeEntrySet: function _computeEntrySet(transitions, statesToEnter) {
-            var _iteratorNormalCompletion6 = true;
-            var _didIteratorError6 = false;
-            var _iteratorError6 = undefined;
+        _computeEntrySet: function _computeEntrySet(transitions, statesToEnter, statesForDefaultEntry, defaultHistoryContent) {
+            var _iteratorNormalCompletion7 = true;
+            var _didIteratorError7 = false;
+            var _iteratorError7 = undefined;
 
             try {
-                for (var _iterator6 = transitions.iter()[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-                    var t = _step6.value;
-                    var _iteratorNormalCompletion7 = true;
-                    var _didIteratorError7 = false;
-                    var _iteratorError7 = undefined;
-
-                    try {
-                        for (var _iterator7 = t.targets[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-                            var s = _step7.value;
-
-                            this._addDescendantStatesToEnter(s, statesToEnter);
-                        }
-                    } catch (err) {
-                        _didIteratorError7 = true;
-                        _iteratorError7 = err;
-                    } finally {
-                        try {
-                            if (!_iteratorNormalCompletion7 && _iterator7["return"]) {
-                                _iterator7["return"]();
-                            }
-                        } finally {
-                            if (_didIteratorError7) {
-                                throw _iteratorError7;
-                            }
-                        }
-                    }
-
-                    var ancestor = t.scope;
+                for (var _iterator7 = transitions.iter()[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+                    var t = _step7.value;
                     var _iteratorNormalCompletion8 = true;
                     var _didIteratorError8 = false;
                     var _iteratorError8 = undefined;
 
                     try {
-                        for (var _iterator8 = this._getEffectiveTargetStates(t)[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-                            var _s = _step8.value;
+                        for (var _iterator8 = t.targets[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+                            var s = _step8.value;
 
-                            this._addAncestorStatesToEnter(_s, ancestor, statesToEnter);
+                            this._addDescendantStatesToEnter(s, statesToEnter, statesForDefaultEntry, defaultHistoryContent);
                         }
                     } catch (err) {
                         _didIteratorError8 = true;
@@ -1505,18 +1555,44 @@
                             }
                         }
                     }
+
+                    var ancestor = t.scope;
+                    var _iteratorNormalCompletion9 = true;
+                    var _didIteratorError9 = false;
+                    var _iteratorError9 = undefined;
+
+                    try {
+                        for (var _iterator9 = this._getEffectiveTargetStates(t)[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+                            var _s = _step9.value;
+
+                            this._addAncestorStatesToEnter(_s, ancestor, statesToEnter, statesForDefaultEntry, defaultHistoryContent);
+                        }
+                    } catch (err) {
+                        _didIteratorError9 = true;
+                        _iteratorError9 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion9 && _iterator9["return"]) {
+                                _iterator9["return"]();
+                            }
+                        } finally {
+                            if (_didIteratorError9) {
+                                throw _iteratorError9;
+                            }
+                        }
+                    }
                 }
             } catch (err) {
-                _didIteratorError6 = true;
-                _iteratorError6 = err;
+                _didIteratorError7 = true;
+                _iteratorError7 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion6 && _iterator6["return"]) {
-                        _iterator6["return"]();
+                    if (!_iteratorNormalCompletion7 && _iterator7["return"]) {
+                        _iterator7["return"]();
                     }
                 } finally {
-                    if (_didIteratorError6) {
-                        throw _iteratorError6;
+                    if (_didIteratorError7) {
+                        throw _iteratorError7;
                     }
                 }
             }
@@ -1524,13 +1600,13 @@
 
         _getEffectiveTargetStates: function _getEffectiveTargetStates(transition) {
             var targets = new Set();
-            var _iteratorNormalCompletion9 = true;
-            var _didIteratorError9 = false;
-            var _iteratorError9 = undefined;
+            var _iteratorNormalCompletion10 = true;
+            var _didIteratorError10 = false;
+            var _iteratorError10 = undefined;
 
             try {
-                for (var _iterator9 = transition.targets[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-                    var s = _step9.value;
+                for (var _iterator10 = transition.targets[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+                    var s = _step10.value;
 
                     if (s.typeEnum === STATE_TYPES.HISTORY) {
                         if (s.id in this._historyValue) this._historyValue[s.id].forEach(function (state) {
@@ -1543,16 +1619,16 @@
                     }
                 }
             } catch (err) {
-                _didIteratorError9 = true;
-                _iteratorError9 = err;
+                _didIteratorError10 = true;
+                _iteratorError10 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion9 && _iterator9["return"]) {
-                        _iterator9["return"]();
+                    if (!_iteratorNormalCompletion10 && _iterator10["return"]) {
+                        _iterator10["return"]();
                     }
                 } finally {
-                    if (_didIteratorError9) {
-                        throw _iteratorError9;
+                    if (_didIteratorError10) {
+                        throw _iteratorError10;
                     }
                 }
             }
@@ -1560,45 +1636,20 @@
             return targets;
         },
 
-        _addDescendantStatesToEnter: function _addDescendantStatesToEnter(state, statesToEnter) {
+        _addDescendantStatesToEnter: function _addDescendantStatesToEnter(state, statesToEnter, statesForDefaultEntry, defaultHistoryContent) {
             var _this7 = this;
 
             if (state.typeEnum === STATE_TYPES.HISTORY) {
                 if (this._historyValue[state.id]) {
-                    var _iteratorNormalCompletion10 = true;
-                    var _didIteratorError10 = false;
-                    var _iteratorError10 = undefined;
-
-                    try {
-                        for (var _iterator10 = this._historyValue[state.id][Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
-                            var s = _step10.value;
-
-                            this._addDescendantStatesToEnter(s, statesToEnter);
-                        }
-                    } catch (err) {
-                        _didIteratorError10 = true;
-                        _iteratorError10 = err;
-                    } finally {
-                        try {
-                            if (!_iteratorNormalCompletion10 && _iterator10["return"]) {
-                                _iterator10["return"]();
-                            }
-                        } finally {
-                            if (_didIteratorError10) {
-                                throw _iteratorError10;
-                            }
-                        }
-                    }
-
                     var _iteratorNormalCompletion11 = true;
                     var _didIteratorError11 = false;
                     var _iteratorError11 = undefined;
 
                     try {
                         for (var _iterator11 = this._historyValue[state.id][Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
-                            var _s2 = _step11.value;
+                            var s = _step11.value;
 
-                            this._addAncestorStatesToEnter(_s2, state.parent, statesToEnter);
+                            this._addDescendantStatesToEnter(s, statesToEnter, statesForDefaultEntry, defaultHistoryContent);
                         }
                     } catch (err) {
                         _didIteratorError11 = true;
@@ -1614,21 +1665,16 @@
                             }
                         }
                     }
-                } else {
-                    statesToEnter.add(state);
-                }
-            } else {
-                statesToEnter.add(state);
-                if (state.typeEnum === STATE_TYPES.COMPOSITE) {
+
                     var _iteratorNormalCompletion12 = true;
                     var _didIteratorError12 = false;
                     var _iteratorError12 = undefined;
 
                     try {
-                        for (var _iterator12 = state.initialRef[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
-                            var _s3 = _step12.value;
+                        for (var _iterator12 = this._historyValue[state.id][Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+                            var _s2 = _step12.value;
 
-                            this._addDescendantStatesToEnter(_s3, statesToEnter);
+                            this._addAncestorStatesToEnter(_s2, state.parent, statesToEnter, statesForDefaultEntry, defaultHistoryContent);
                         }
                     } catch (err) {
                         _didIteratorError12 = true;
@@ -1644,16 +1690,17 @@
                             }
                         }
                     }
-
+                } else {
+                    defaultHistoryContent[state.parent.id] = state.transitions[0];
                     var _iteratorNormalCompletion13 = true;
                     var _didIteratorError13 = false;
                     var _iteratorError13 = undefined;
 
                     try {
-                        for (var _iterator13 = state.initialRef[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
-                            var _s4 = _step13.value;
+                        for (var _iterator13 = state.transitions[0].targets[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
+                            var _s3 = _step13.value;
 
-                            this._addAncestorStatesToEnter(_s4, state, statesToEnter);
+                            this._addDescendantStatesToEnter(_s3, statesToEnter, statesForDefaultEntry, defaultHistoryContent);
                         }
                     } catch (err) {
                         _didIteratorError13 = true;
@@ -1669,37 +1716,165 @@
                             }
                         }
                     }
+
+                    var _iteratorNormalCompletion14 = true;
+                    var _didIteratorError14 = false;
+                    var _iteratorError14 = undefined;
+
+                    try {
+                        for (var _iterator14 = state.transitions[0].targets[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
+                            var _s4 = _step14.value;
+
+                            this._addAncestorStatesToEnter(_s4, state.parent, statesToEnter, statesForDefaultEntry, defaultHistoryContent);
+                        }
+                    } catch (err) {
+                        _didIteratorError14 = true;
+                        _iteratorError14 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion14 && _iterator14["return"]) {
+                                _iterator14["return"]();
+                            }
+                        } finally {
+                            if (_didIteratorError14) {
+                                throw _iteratorError14;
+                            }
+                        }
+                    }
+                }
+            } else {
+                statesToEnter.add(state);
+                if (state.typeEnum === STATE_TYPES.COMPOSITE) {
+                    statesForDefaultEntry.add(state);
+                    //for each state in initialRef, if it is an initial state, then add ancestors and descendants.
+                    var _iteratorNormalCompletion15 = true;
+                    var _didIteratorError15 = false;
+                    var _iteratorError15 = undefined;
+
+                    try {
+                        for (var _iterator15 = state.initialRef[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
+                            var _s5 = _step15.value;
+
+                            var targets = _s5.typeEnum === STATE_TYPES.INITIAL ? _s5.transitions[0].targets : [_s5];
+                            var _iteratorNormalCompletion17 = true;
+                            var _didIteratorError17 = false;
+                            var _iteratorError17 = undefined;
+
+                            try {
+                                for (var _iterator17 = targets[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
+                                    var targetState = _step17.value;
+
+                                    this._addDescendantStatesToEnter(targetState, statesToEnter, statesForDefaultEntry, defaultHistoryContent);
+                                }
+                            } catch (err) {
+                                _didIteratorError17 = true;
+                                _iteratorError17 = err;
+                            } finally {
+                                try {
+                                    if (!_iteratorNormalCompletion17 && _iterator17["return"]) {
+                                        _iterator17["return"]();
+                                    }
+                                } finally {
+                                    if (_didIteratorError17) {
+                                        throw _iteratorError17;
+                                    }
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        _didIteratorError15 = true;
+                        _iteratorError15 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion15 && _iterator15["return"]) {
+                                _iterator15["return"]();
+                            }
+                        } finally {
+                            if (_didIteratorError15) {
+                                throw _iteratorError15;
+                            }
+                        }
+                    }
+
+                    var _iteratorNormalCompletion16 = true;
+                    var _didIteratorError16 = false;
+                    var _iteratorError16 = undefined;
+
+                    try {
+                        for (var _iterator16 = state.initialRef[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
+                            var _s6 = _step16.value;
+
+                            var _targets = _s6.typeEnum === STATE_TYPES.INITIAL ? _s6.transitions[0].targets : [_s6];
+                            var _iteratorNormalCompletion18 = true;
+                            var _didIteratorError18 = false;
+                            var _iteratorError18 = undefined;
+
+                            try {
+                                for (var _iterator18 = _targets[Symbol.iterator](), _step18; !(_iteratorNormalCompletion18 = (_step18 = _iterator18.next()).done); _iteratorNormalCompletion18 = true) {
+                                    var _targetState = _step18.value;
+
+                                    this._addAncestorStatesToEnter(_targetState, state, statesToEnter, statesForDefaultEntry, defaultHistoryContent);
+                                }
+                            } catch (err) {
+                                _didIteratorError18 = true;
+                                _iteratorError18 = err;
+                            } finally {
+                                try {
+                                    if (!_iteratorNormalCompletion18 && _iterator18["return"]) {
+                                        _iterator18["return"]();
+                                    }
+                                } finally {
+                                    if (_didIteratorError18) {
+                                        throw _iteratorError18;
+                                    }
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        _didIteratorError16 = true;
+                        _iteratorError16 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion16 && _iterator16["return"]) {
+                                _iterator16["return"]();
+                            }
+                        } finally {
+                            if (_didIteratorError16) {
+                                throw _iteratorError16;
+                            }
+                        }
+                    }
                 } else {
                     if (state.typeEnum === STATE_TYPES.PARALLEL) {
-                        var _iteratorNormalCompletion14 = true;
-                        var _didIteratorError14 = false;
-                        var _iteratorError14 = undefined;
+                        var _iteratorNormalCompletion19 = true;
+                        var _didIteratorError19 = false;
+                        var _iteratorError19 = undefined;
 
                         try {
                             var _loop = function _loop() {
-                                var child = _step14.value;
+                                var child = _step19.value;
 
                                 if (![].concat(_toConsumableArray(statesToEnter)).some(function (s) {
                                     return query.isDescendant(s, child);
                                 })) {
-                                    _this7._addDescendantStatesToEnter(child, statesToEnter);
+                                    _this7._addDescendantStatesToEnter(child, statesToEnter, statesForDefaultEntry, defaultHistoryContent);
                                 }
                             };
 
-                            for (var _iterator14 = state.states[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
+                            for (var _iterator19 = state.states[Symbol.iterator](), _step19; !(_iteratorNormalCompletion19 = (_step19 = _iterator19.next()).done); _iteratorNormalCompletion19 = true) {
                                 _loop();
                             }
                         } catch (err) {
-                            _didIteratorError14 = true;
-                            _iteratorError14 = err;
+                            _didIteratorError19 = true;
+                            _iteratorError19 = err;
                         } finally {
                             try {
-                                if (!_iteratorNormalCompletion14 && _iterator14["return"]) {
-                                    _iterator14["return"]();
+                                if (!_iteratorNormalCompletion19 && _iterator19["return"]) {
+                                    _iterator19["return"]();
                                 }
                             } finally {
-                                if (_didIteratorError14) {
-                                    throw _iteratorError14;
+                                if (_didIteratorError19) {
+                                    throw _iteratorError19;
                                 }
                             }
                         }
@@ -1708,67 +1883,72 @@
             }
         },
 
-        _addAncestorStatesToEnter: function _addAncestorStatesToEnter(state, ancestor, statesToEnter) {
+        _addAncestorStatesToEnter: function _addAncestorStatesToEnter(state, ancestor, statesToEnter, statesForDefaultEntry, defaultHistoryContent) {
             var _this8 = this;
 
-            var _iteratorNormalCompletion15 = true;
-            var _didIteratorError15 = false;
-            var _iteratorError15 = undefined;
+            var traverse = function traverse(anc) {
+                if (anc.typeEnum === STATE_TYPES.PARALLEL) {
+                    var _iteratorNormalCompletion20 = true;
+                    var _didIteratorError20 = false;
+                    var _iteratorError20 = undefined;
 
-            try {
-                for (var _iterator15 = query.getAncestors(state, ancestor)[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
-                    var anc = _step15.value;
+                    try {
+                        var _loop2 = function _loop2() {
+                            var child = _step20.value;
 
-                    statesToEnter.add(anc);
-                    if (anc.typeEnum === STATE_TYPES.PARALLEL) {
-                        var _iteratorNormalCompletion16 = true;
-                        var _didIteratorError16 = false;
-                        var _iteratorError16 = undefined;
-
-                        try {
-                            var _loop2 = function _loop2() {
-                                var child = _step16.value;
-
-                                if (![].concat(_toConsumableArray(statesToEnter)).some(function (s) {
-                                    return query.isDescendant(s, child);
-                                })) {
-                                    _this8._addDescendantStatesToEnter(child, statesToEnter);
-                                }
-                            };
-
-                            for (var _iterator16 = anc.states[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
-                                _loop2();
+                            if (child.typeEnum !== STATE_TYPES.HISTORY && ![].concat(_toConsumableArray(statesToEnter)).some(function (s) {
+                                return query.isDescendant(s, child);
+                            })) {
+                                _this8._addDescendantStatesToEnter(child, statesToEnter, statesForDefaultEntry, defaultHistoryContent);
                             }
-                        } catch (err) {
-                            _didIteratorError16 = true;
-                            _iteratorError16 = err;
+                        };
+
+                        for (var _iterator20 = anc.states[Symbol.iterator](), _step20; !(_iteratorNormalCompletion20 = (_step20 = _iterator20.next()).done); _iteratorNormalCompletion20 = true) {
+                            _loop2();
+                        }
+                    } catch (err) {
+                        _didIteratorError20 = true;
+                        _iteratorError20 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion20 && _iterator20["return"]) {
+                                _iterator20["return"]();
+                            }
                         } finally {
-                            try {
-                                if (!_iteratorNormalCompletion16 && _iterator16["return"]) {
-                                    _iterator16["return"]();
-                                }
-                            } finally {
-                                if (_didIteratorError16) {
-                                    throw _iteratorError16;
-                                }
+                            if (_didIteratorError20) {
+                                throw _iteratorError20;
                             }
                         }
                     }
                 }
+            };
+            var _iteratorNormalCompletion21 = true;
+            var _didIteratorError21 = false;
+            var _iteratorError21 = undefined;
+
+            try {
+                for (var _iterator21 = query.getAncestors(state, ancestor)[Symbol.iterator](), _step21; !(_iteratorNormalCompletion21 = (_step21 = _iterator21.next()).done); _iteratorNormalCompletion21 = true) {
+                    var anc = _step21.value;
+
+                    statesToEnter.add(anc);
+                    traverse(anc);
+                }
             } catch (err) {
-                _didIteratorError15 = true;
-                _iteratorError15 = err;
+                _didIteratorError21 = true;
+                _iteratorError21 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion15 && _iterator15["return"]) {
-                        _iterator15["return"]();
+                    if (!_iteratorNormalCompletion21 && _iterator21["return"]) {
+                        _iterator21["return"]();
                     }
                 } finally {
-                    if (_didIteratorError15) {
-                        throw _iteratorError15;
+                    if (_didIteratorError21) {
+                        throw _iteratorError21;
                     }
                 }
             }
+
+            traverse(ancestor);
         },
 
         /** @private */
@@ -1779,27 +1959,27 @@
             var e = this._evaluateAction.bind(this, currentEvent);
 
             var atomicStates = this._configuration.iter().sort(transitionComparator);
-            var _iteratorNormalCompletion17 = true;
-            var _didIteratorError17 = false;
-            var _iteratorError17 = undefined;
+            var _iteratorNormalCompletion22 = true;
+            var _didIteratorError22 = false;
+            var _iteratorError22 = undefined;
 
             try {
-                for (var _iterator17 = atomicStates[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
-                    var state = _step17.value;
-                    var _iteratorNormalCompletion18 = true;
-                    var _didIteratorError18 = false;
-                    var _iteratorError18 = undefined;
+                for (var _iterator22 = atomicStates[Symbol.iterator](), _step22; !(_iteratorNormalCompletion22 = (_step22 = _iterator22.next()).done); _iteratorNormalCompletion22 = true) {
+                    var state = _step22.value;
+                    var _iteratorNormalCompletion23 = true;
+                    var _didIteratorError23 = false;
+                    var _iteratorError23 = undefined;
 
                     try {
-                        loop: for (var _iterator18 = [state].concat(query.getAncestors(state))[Symbol.iterator](), _step18; !(_iteratorNormalCompletion18 = (_step18 = _iterator18.next()).done); _iteratorNormalCompletion18 = true) {
-                            var s = _step18.value;
-                            var _iteratorNormalCompletion19 = true;
-                            var _didIteratorError19 = false;
-                            var _iteratorError19 = undefined;
+                        loop: for (var _iterator23 = [state].concat(query.getAncestors(state))[Symbol.iterator](), _step23; !(_iteratorNormalCompletion23 = (_step23 = _iterator23.next()).done); _iteratorNormalCompletion23 = true) {
+                            var s = _step23.value;
+                            var _iteratorNormalCompletion24 = true;
+                            var _didIteratorError24 = false;
+                            var _iteratorError24 = undefined;
 
                             try {
-                                for (var _iterator19 = s.transitions[Symbol.iterator](), _step19; !(_iteratorNormalCompletion19 = (_step19 = _iterator19.next()).done); _iteratorNormalCompletion19 = true) {
-                                    var t = _step19.value;
+                                for (var _iterator24 = s.transitions[Symbol.iterator](), _step24; !(_iteratorNormalCompletion24 = (_step24 = _iterator24.next()).done); _iteratorNormalCompletion24 = true) {
+                                    var t = _step24.value;
 
                                     if (transitionSelector(t, currentEvent, e, selectEventlessTransitions)) {
                                         enabledTransitions.add(t);
@@ -1807,46 +1987,46 @@
                                     }
                                 }
                             } catch (err) {
-                                _didIteratorError19 = true;
-                                _iteratorError19 = err;
+                                _didIteratorError24 = true;
+                                _iteratorError24 = err;
                             } finally {
                                 try {
-                                    if (!_iteratorNormalCompletion19 && _iterator19["return"]) {
-                                        _iterator19["return"]();
+                                    if (!_iteratorNormalCompletion24 && _iterator24["return"]) {
+                                        _iterator24["return"]();
                                     }
                                 } finally {
-                                    if (_didIteratorError19) {
-                                        throw _iteratorError19;
+                                    if (_didIteratorError24) {
+                                        throw _iteratorError24;
                                     }
                                 }
                             }
                         }
                     } catch (err) {
-                        _didIteratorError18 = true;
-                        _iteratorError18 = err;
+                        _didIteratorError23 = true;
+                        _iteratorError23 = err;
                     } finally {
                         try {
-                            if (!_iteratorNormalCompletion18 && _iterator18["return"]) {
-                                _iterator18["return"]();
+                            if (!_iteratorNormalCompletion23 && _iterator23["return"]) {
+                                _iterator23["return"]();
                             }
                         } finally {
-                            if (_didIteratorError18) {
-                                throw _iteratorError18;
+                            if (_didIteratorError23) {
+                                throw _iteratorError23;
                             }
                         }
                     }
                 }
             } catch (err) {
-                _didIteratorError17 = true;
-                _iteratorError17 = err;
+                _didIteratorError22 = true;
+                _iteratorError22 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion17 && _iterator17["return"]) {
-                        _iterator17["return"]();
+                    if (!_iteratorNormalCompletion22 && _iterator22["return"]) {
+                        _iterator22["return"]();
                     }
                 } finally {
-                    if (_didIteratorError17) {
-                        throw _iteratorError17;
+                    if (_didIteratorError22) {
+                        throw _iteratorError22;
                     }
                 }
             }
@@ -1858,33 +2038,101 @@
             return priorityEnabledTransitions;
         },
 
-        /** @private */
-        _removeConflictingTransition: function _removeConflictingTransition(enabledTransitions) {
-            var filteredTransitions = new this.opts.Set();
-            //toList sorts the transitions in the order of the states that selected them
-            var _iteratorNormalCompletion20 = true;
-            var _didIteratorError20 = false;
-            var _iteratorError20 = undefined;
+        _computeExitSet: function _computeExitSet(transitions) {
+            var statesToExit = new Set();
+            var _iteratorNormalCompletion25 = true;
+            var _didIteratorError25 = false;
+            var _iteratorError25 = undefined;
 
             try {
-                for (var _iterator20 = enabledTransitions.iter()[Symbol.iterator](), _step20; !(_iteratorNormalCompletion20 = (_step20 = _iterator20.next()).done); _iteratorNormalCompletion20 = true) {
-                    var t1 = _step20.value;
+                for (var _iterator25 = transitions[Symbol.iterator](), _step25; !(_iteratorNormalCompletion25 = (_step25 = _iterator25.next()).done); _iteratorNormalCompletion25 = true) {
+                    var t = _step25.value;
+
+                    if (t.targets) {
+                        var scope = t.scope;
+                        var _iteratorNormalCompletion26 = true;
+                        var _didIteratorError26 = false;
+                        var _iteratorError26 = undefined;
+
+                        try {
+                            for (var _iterator26 = this._getFullConfiguration()[Symbol.iterator](), _step26; !(_iteratorNormalCompletion26 = (_step26 = _iterator26.next()).done); _iteratorNormalCompletion26 = true) {
+                                var s = _step26.value;
+
+                                if (query.isDescendant(s, scope)) statesToExit.add(s);
+                            }
+                        } catch (err) {
+                            _didIteratorError26 = true;
+                            _iteratorError26 = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion26 && _iterator26["return"]) {
+                                    _iterator26["return"]();
+                                }
+                            } finally {
+                                if (_didIteratorError26) {
+                                    throw _iteratorError26;
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                _didIteratorError25 = true;
+                _iteratorError25 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion25 && _iterator25["return"]) {
+                        _iterator25["return"]();
+                    }
+                } finally {
+                    if (_didIteratorError25) {
+                        throw _iteratorError25;
+                    }
+                }
+            }
+
+            return statesToExit;
+        },
+
+        /** @private */
+        _removeConflictingTransition: function _removeConflictingTransition(enabledTransitions) {
+            var _this9 = this;
+
+            var filteredTransitions = new this.opts.Set();
+            //toList sorts the transitions in the order of the states that selected them
+            var _iteratorNormalCompletion27 = true;
+            var _didIteratorError27 = false;
+            var _iteratorError27 = undefined;
+
+            try {
+                for (var _iterator27 = enabledTransitions.iter()[Symbol.iterator](), _step27; !(_iteratorNormalCompletion27 = (_step27 = _iterator27.next()).done); _iteratorNormalCompletion27 = true) {
+                    var t1 = _step27.value;
 
                     var t1Preempted = false;
                     var transitionsToRemove = new Set();
-                    var _iteratorNormalCompletion21 = true;
-                    var _didIteratorError21 = false;
-                    var _iteratorError21 = undefined;
+                    var _iteratorNormalCompletion28 = true;
+                    var _didIteratorError28 = false;
+                    var _iteratorError28 = undefined;
 
                     try {
                         var _loop3 = function _loop3() {
-                            var t2 = _step21.value;
+                            var t2 = _step28.value;
 
-                            var t1ExitSet = query.getAncestors(t1.source, t1.scope); //t1 exit set
-                            var t2ExitSet = query.getAncestors(t2.source, t2.scope); //t2 exit set
-                            var hasIntersection = t1ExitSet.some(function (s) {
-                                return t2ExitSet.indexOf(s) > -1;
-                            }); //is this the same as arena orthogonal?
+                            //TODO: can we compute this statically? for example, by checking if the transition scopes are arena orthogonal?
+                            var t1ExitSet = _this9._computeExitSet([t1]);
+                            var t2ExitSet = _this9._computeExitSet([t2]);
+                            var hasIntersection = [].concat(_toConsumableArray(t1ExitSet)).some(function (s) {
+                                return t2ExitSet.has(s);
+                            }) || [].concat(_toConsumableArray(t2ExitSet)).some(function (s) {
+                                return t1ExitSet.has(s);
+                            });
+                            _this9._log('t1ExitSet', t1.source.id, [].concat(_toConsumableArray(t1ExitSet)).map(function (s) {
+                                return s.id;
+                            }));
+                            _this9._log('t2ExitSet', t2.source.id, [].concat(_toConsumableArray(t2ExitSet)).map(function (s) {
+                                return s.id;
+                            }));
+                            _this9._log('hasIntersection', hasIntersection);
                             if (hasIntersection) {
                                 if (t2.source.descendants.indexOf(t1.source) > -1) {
                                     //is this the same as being ancestrally related?
@@ -1896,48 +2144,48 @@
                             }
                         };
 
-                        for (var _iterator21 = filteredTransitions.iter()[Symbol.iterator](), _step21; !(_iteratorNormalCompletion21 = (_step21 = _iterator21.next()).done); _iteratorNormalCompletion21 = true) {
+                        for (var _iterator28 = filteredTransitions.iter()[Symbol.iterator](), _step28; !(_iteratorNormalCompletion28 = (_step28 = _iterator28.next()).done); _iteratorNormalCompletion28 = true) {
                             var _ret3 = _loop3();
 
                             if (_ret3 === 'break') break;
                         }
                     } catch (err) {
-                        _didIteratorError21 = true;
-                        _iteratorError21 = err;
+                        _didIteratorError28 = true;
+                        _iteratorError28 = err;
                     } finally {
                         try {
-                            if (!_iteratorNormalCompletion21 && _iterator21["return"]) {
-                                _iterator21["return"]();
+                            if (!_iteratorNormalCompletion28 && _iterator28["return"]) {
+                                _iterator28["return"]();
                             }
                         } finally {
-                            if (_didIteratorError21) {
-                                throw _iteratorError21;
+                            if (_didIteratorError28) {
+                                throw _iteratorError28;
                             }
                         }
                     }
 
                     if (!t1Preempted) {
-                        var _iteratorNormalCompletion22 = true;
-                        var _didIteratorError22 = false;
-                        var _iteratorError22 = undefined;
+                        var _iteratorNormalCompletion29 = true;
+                        var _didIteratorError29 = false;
+                        var _iteratorError29 = undefined;
 
                         try {
-                            for (var _iterator22 = transitionsToRemove[Symbol.iterator](), _step22; !(_iteratorNormalCompletion22 = (_step22 = _iterator22.next()).done); _iteratorNormalCompletion22 = true) {
-                                var t3 = _step22.value;
+                            for (var _iterator29 = transitionsToRemove[Symbol.iterator](), _step29; !(_iteratorNormalCompletion29 = (_step29 = _iterator29.next()).done); _iteratorNormalCompletion29 = true) {
+                                var t3 = _step29.value;
 
                                 filteredTransitions.remove(t3);
                             }
                         } catch (err) {
-                            _didIteratorError22 = true;
-                            _iteratorError22 = err;
+                            _didIteratorError29 = true;
+                            _iteratorError29 = err;
                         } finally {
                             try {
-                                if (!_iteratorNormalCompletion22 && _iterator22["return"]) {
-                                    _iterator22["return"]();
+                                if (!_iteratorNormalCompletion29 && _iterator29["return"]) {
+                                    _iterator29["return"]();
                                 }
                             } finally {
-                                if (_didIteratorError22) {
-                                    throw _iteratorError22;
+                                if (_didIteratorError29) {
+                                    throw _iteratorError29;
                                 }
                             }
                         }
@@ -1946,16 +2194,16 @@
                     }
                 }
             } catch (err) {
-                _didIteratorError20 = true;
-                _iteratorError20 = err;
+                _didIteratorError27 = true;
+                _iteratorError27 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion20 && _iterator20["return"]) {
-                        _iterator20["return"]();
+                    if (!_iteratorNormalCompletion27 && _iterator27["return"]) {
+                        _iterator27["return"]();
                     }
                 } finally {
-                    if (_didIteratorError20) {
-                        throw _iteratorError20;
+                    if (_didIteratorError27) {
+                        throw _iteratorError27;
                     }
                 }
             }
@@ -2046,9 +2294,7 @@
           serialization when the interpreter is not executing a big-step.
         */
         getSnapshot: function getSnapshot() {
-            if (this._isStepping) throw new Error('getSnapshot cannot be called while interpreter is executing a big-step');
-
-            return [this.getConfiguration(), this._serializeHistory(), this._isInFinalState, this._model.$serializeDatamodel()];
+            return [this.getConfiguration(), this._serializeHistory(), this._isInFinalState, this._model.$serializeDatamodel(), this._internalEventQueue.slice()];
         },
 
         _serializeHistory: function _serializeHistory() {
@@ -2074,6 +2320,8 @@
         this._isStepping = false;
 
         BaseInterpreter.call(this, model, opts); //call super constructor
+
+        module.exports.emit('new', this);
     }
 
     function beget(o) {
@@ -2182,19 +2430,20 @@
             return (this._interpreter.opts.xmlParser || InterpreterScriptingContext.xmlParser).parse(xmlString);
         },
         invoke: function invoke(invokeObj) {
-            var _this9 = this;
+            var _this10 = this;
 
             //look up invoker by type. assume invokers are passed in as an option to constructor
             this._invokeMap[invokeObj.id] = new Promise(function (resolve, reject) {
-                (_this9._interpreter.opts.invokers || InterpreterScriptingContext.invokers)[invokeObj.type](_this9._interpreter, invokeObj, function (err, session) {
+                (_this10._interpreter.opts.invokers || InterpreterScriptingContext.invokers)[invokeObj.type](_this10._interpreter, invokeObj, function (err, session) {
                     if (err) return reject(err);
 
+                    _this10._interpreter.emit('onInvokedSessionInitialized', session);
                     resolve(session);
                 });
             });
         },
         cancelInvoke: function cancelInvoke(invokeid) {
-            var _this10 = this;
+            var _this11 = this;
 
             //TODO: on cancel invoke clean up this._invokeMap
             var sessionPromise = this._invokeMap[invokeid];
@@ -2202,10 +2451,10 @@
             if (sessionPromise) {
                 this._interpreter._log('sessionPromise found');
                 sessionPromise.then(function (session) {
-                    _this10._interpreter._log('resolved session ' + invokeid + '. cancelling... ');
+                    _this11._interpreter._log('resolved session ' + invokeid + '. cancelling... ');
                     session.cancel();
                     //clean up
-                    delete _this10._invokeMap[invokeid];
+                    delete _this11._invokeMap[invokeid];
                 }, function (err) {
                     //TODO: dispatch error back into the state machine as error.communication
                 });
@@ -2220,7 +2469,7 @@
                 event.type = isInternal ? 'internal' : 'external';
             }
             ['name', 'sendid', 'invokeid', 'data', 'origin', 'origintype'].forEach(function (prop) {
-                if (!event[prop]) {
+                if (typeof event[prop] === 'undefined') {
                     event[prop] = undefined;
                 }
             });
@@ -2246,7 +2495,7 @@
             }
 
             function defaultSendAction(event, options) {
-                var _this11 = this;
+                var _this12 = this;
 
                 if (typeof setTimeout === 'undefined') throw new Error('Default implementation of Statechart.prototype.send will not work unless setTimeout is defined globally.');
 
@@ -2278,7 +2527,7 @@
                         //TODO: test this code path.
                         var invokeId = match[1];
                         this._invokeMap[invokeId].then(function (session) {
-                            doSend.call(_this11, session);
+                            doSend.call(_this12, session);
                         });
                     } else {
                         throw new Error('Unrecognized send target.'); //TODO: dispatch error back into the state machine
@@ -2292,7 +2541,11 @@
                     var timeoutHandle = setTimeout(function () {
                         if (event.sendid) delete this._timeoutMap[event.sendid];
                         this._timeouts["delete"](timeoutOptions);
-                        session[this._interpreter.opts.sendAsync ? 'genAsync' : 'gen'](event);
+                        if (this._interpreter.opts.doSend) {
+                            this._interpreter.opts.doSend(session, event);
+                        } else {
+                            session[this._interpreter.opts.sendAsync ? 'genAsync' : 'gen'](event);
+                        }
                     }.bind(this), options.delay || 0);
 
                     var timeoutOptions = {
@@ -2339,7 +2592,7 @@
         }
     };
 
-    module.exports = {
+    module.exports = extend(new EventEmitter(), {
         /** @expose */
         BaseInterpreter: BaseInterpreter,
         /** @expose */
@@ -2352,6 +2605,6 @@
         initializeModel: initializeModel,
         /** @expose */
         InterpreterScriptingContext: InterpreterScriptingContext
-    };
+    });
 });
 //# sourceMappingURL=scion.js.map
