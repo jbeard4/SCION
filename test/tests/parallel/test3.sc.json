@@ -1,7 +1,8 @@
 {
-    "": "http://www.w3.org/2005/07/scxml",
+    "{http://www.w3.org/2000/xmlns/}": "http://www.w3.org/2005/07/scxml",
     "initial": "p1",
     "$type": "scxml",
+    "id": "$generated-scxml-0",
     "states": [
         {
             "id": "p1",
@@ -10,6 +11,7 @@
                 {
                     "id": "s1",
                     "initial": "p2",
+                    "$type": "state",
                     "states": [
                         {
                             "id": "p2",
@@ -18,9 +20,11 @@
                                 {
                                     "id": "s3",
                                     "initial": "s3.1",
+                                    "$type": "state",
                                     "states": [
                                         {
                                             "id": "s3.1",
+                                            "$type": "state",
                                             "transitions": [
                                                 {
                                                     "target": "s3.2",
@@ -29,12 +33,14 @@
                                             ]
                                         },
                                         {
-                                            "id": "s3.2"
+                                            "id": "s3.2",
+                                            "$type": "state"
                                         }
                                     ]
                                 },
                                 {
-                                    "id": "s4"
+                                    "id": "s4",
+                                    "$type": "state"
                                 }
                             ]
                         },
@@ -43,10 +49,12 @@
                             "$type": "parallel",
                             "states": [
                                 {
-                                    "id": "s5"
+                                    "id": "s5",
+                                    "$type": "state"
                                 },
                                 {
-                                    "id": "s6"
+                                    "id": "s6",
+                                    "$type": "state"
                                 }
                             ]
                         }
@@ -55,16 +63,19 @@
                 {
                     "id": "s2",
                     "initial": "p4",
+                    "$type": "state",
                     "states": [
                         {
                             "id": "p4",
                             "$type": "parallel",
                             "states": [
                                 {
-                                    "id": "s7"
+                                    "id": "s7",
+                                    "$type": "state"
                                 },
                                 {
-                                    "id": "s8"
+                                    "id": "s8",
+                                    "$type": "state"
                                 }
                             ],
                             "transitions": [
@@ -79,10 +90,12 @@
                             "$type": "parallel",
                             "states": [
                                 {
-                                    "id": "s9"
+                                    "id": "s9",
+                                    "$type": "state"
                                 },
                                 {
-                                    "id": "s10"
+                                    "id": "s10",
+                                    "$type": "state"
                                 }
                             ]
                         }

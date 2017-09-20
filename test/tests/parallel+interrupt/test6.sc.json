@@ -1,7 +1,8 @@
 {
-    "": "http://www.w3.org/2005/07/scxml",
+    "{http://www.w3.org/2000/xmlns/}": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "$type": "scxml",
+    "id": "$generated-scxml-0",
     "states": [
         {
             "id": "b",
@@ -10,9 +11,11 @@
                 {
                     "id": "c",
                     "initial": "g",
+                    "$type": "state",
                     "states": [
                         {
                             "id": "g",
+                            "$type": "state",
                             "transitions": [
                                 {
                                     "event": "t",
@@ -21,7 +24,8 @@
                             ]
                         },
                         {
-                            "id": "h"
+                            "id": "h",
+                            "$type": "state"
                         }
                     ]
                 },
@@ -32,9 +36,11 @@
                         {
                             "id": "e",
                             "initial": "e1",
+                            "$type": "state",
                             "states": [
                                 {
                                     "id": "e1",
+                                    "$type": "state",
                                     "transitions": [
                                         {
                                             "event": "t",
@@ -43,16 +49,19 @@
                                     ]
                                 },
                                 {
-                                    "id": "e2"
+                                    "id": "e2",
+                                    "$type": "state"
                                 }
                             ]
                         },
                         {
                             "id": "f",
                             "initial": "f1",
+                            "$type": "state",
                             "states": [
                                 {
                                     "id": "f1",
+                                    "$type": "state",
                                     "transitions": [
                                         {
                                             "event": "t",
@@ -61,7 +70,8 @@
                                     ]
                                 },
                                 {
-                                    "id": "f2"
+                                    "id": "f2",
+                                    "$type": "state"
                                 }
                             ]
                         }

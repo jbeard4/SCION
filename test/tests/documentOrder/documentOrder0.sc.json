@@ -1,9 +1,11 @@
 {
-    "": "http://www.w3.org/2005/07/scxml",
+    "{http://www.w3.org/2000/xmlns/}": "http://www.w3.org/2005/07/scxml",
     "$type": "scxml",
+    "id": "$generated-scxml-0",
     "states": [
         {
             "id": "a",
+            "$type": "state",
             "transitions": [
                 {
                     "target": "b",
@@ -16,10 +18,12 @@
             ]
         },
         {
-            "id": "b"
+            "id": "b",
+            "$type": "state"
         },
         {
-            "id": "c"
+            "id": "c",
+            "$type": "state"
         }
     ]
 }

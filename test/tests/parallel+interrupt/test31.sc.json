@@ -1,7 +1,8 @@
 {
-    "": "http://www.w3.org/2005/07/scxml",
+    "{http://www.w3.org/2000/xmlns/}": "http://www.w3.org/2005/07/scxml",
     "initial": "b",
     "$type": "scxml",
+    "id": "$generated-scxml-0",
     "states": [
         {
             "id": "b",
@@ -10,9 +11,11 @@
                 {
                     "id": "c",
                     "initial": "c1",
+                    "$type": "state",
                     "states": [
                         {
                             "id": "c1",
+                            "$type": "state",
                             "transitions": [
                                 {
                                     "event": "t",
@@ -25,9 +28,11 @@
                 {
                     "id": "d",
                     "initial": "d1",
+                    "$type": "state",
                     "states": [
                         {
                             "id": "d1",
+                            "$type": "state",
                             "transitions": [
                                 {
                                     "event": "t",
@@ -36,7 +41,8 @@
                             ]
                         },
                         {
-                            "id": "d2"
+                            "id": "d2",
+                            "$type": "state"
                         }
                     ]
                 }
@@ -51,12 +57,15 @@
         {
             "id": "a",
             "initial": "a1",
+            "$type": "state",
             "states": [
                 {
-                    "id": "a1"
+                    "id": "a1",
+                    "$type": "state"
                 },
                 {
-                    "id": "a2"
+                    "id": "a2",
+                    "$type": "state"
                 }
             ]
         }

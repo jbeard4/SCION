@@ -1,7 +1,8 @@
 {
-    "": "http://www.w3.org/2005/07/scxml",
+    "{http://www.w3.org/2000/xmlns/}": "http://www.w3.org/2005/07/scxml",
     "initial": "a",
     "$type": "scxml",
+    "id": "$generated-scxml-0",
     "states": [
         {
             "id": "a",
@@ -26,9 +27,11 @@
                                                 {
                                                     "id": "i",
                                                     "initial": "i1",
+                                                    "$type": "state",
                                                     "states": [
                                                         {
                                                             "id": "i1",
+                                                            "$type": "state",
                                                             "transitions": [
                                                                 {
                                                                     "target": "l",
@@ -37,31 +40,37 @@
                                                             ]
                                                         },
                                                         {
-                                                            "id": "i2"
+                                                            "id": "i2",
+                                                            "$type": "state"
                                                         }
                                                     ]
                                                 },
                                                 {
-                                                    "id": "j"
+                                                    "id": "j",
+                                                    "$type": "state"
                                                 }
                                             ]
                                         },
                                         {
-                                            "id": "h"
+                                            "id": "h",
+                                            "$type": "state"
                                         }
                                     ]
                                 },
                                 {
-                                    "id": "g"
+                                    "id": "g",
+                                    "$type": "state"
                                 }
                             ]
                         },
                         {
                             "id": "f",
                             "initial": "f1",
+                            "$type": "state",
                             "states": [
                                 {
                                     "id": "f1",
+                                    "$type": "state",
                                     "transitions": [
                                         {
                                             "target": "f2",
@@ -70,19 +79,22 @@
                                     ]
                                 },
                                 {
-                                    "id": "f2"
+                                    "id": "f2",
+                                    "$type": "state"
                                 }
                             ]
                         }
                     ]
                 },
                 {
-                    "id": "k"
+                    "id": "k",
+                    "$type": "state"
                 }
             ]
         },
         {
-            "id": "l"
+            "id": "l",
+            "$type": "state"
         }
     ]
 }
