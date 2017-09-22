@@ -584,3 +584,28 @@ You can then perform the following steps to script web content:
 
 [![Build status](https://travis-ci.org/jbeard4/SCION-CORE.svg?branch=master)](https://travis-ci.org/jbeard4/SCION-CORE)
 
+...
+
+Interpreter options:
+
+interpreterScriptingContext? 
+InterpreterScriptingContext?
+generateSessionid? 
+sessionid? 
+sessionRegistry? 
+console?
+Set?
+priorityComparisonFn?
+transitionSelector?
+params? - used to pass params from invoke
+snapshot?
+parentSession? - used to pass parent session during invoke
+invokeid? - support for id of invoke element at runtime
+
+customCancel
+customSend
+sendAsync
+doSend
+
+invokers
+xmlParser
