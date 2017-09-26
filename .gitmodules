@@ -1,3 +1,0 @@
-[submodule "test/scxml-test-framework"]
-	path = test/scxml-test-framework
-	url = git://github.com/jbeard4/scxml-test-framework.git
