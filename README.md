@@ -44,7 +44,7 @@ See generated API docs [here](http://jbeard4.github.io/SCION-CORE/).
 
 SCION-CORE is designed to allow you to specify the Statecharts model declaratively as a single JavaScript object literal, or as JSON. This section is intended to describe the schema of the Statecharts object model accepted by SCION-CORE. 
 
-This section will also touch briefly on semantics, but is not meant to serve as a comprehensive reference.  Unlike SCXML.js, a formal semantics has not been defined for SCION-CORE. However it is very close to [Rhapsody Semantics](http://research.microsoft.com/pubs/148761/Charts04.pdf).
+As of version 3.0, SCION-CORE implements the semantics defined in Appendix D of the SCXML specification, ["Algorithm for SCXML Interpretation"](https://www.w3.org/TR/scxml/#AlgorithmforSCXMLInterpretation).
 
 ## States
 
