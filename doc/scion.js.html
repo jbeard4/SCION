@@ -1,4 +1,32 @@
-//   Copyright 2012-2012 Jacob Beard, INFICON, and other SCION contributors
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: scion.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: scion.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>//   Copyright 2012-2012 Jacob Beard, INFICON, and other SCION contributors
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -20,17 +48,17 @@
 /**
  * An Array of strings representing the ids all of the basic states the
  * interpreter is in after a big-step completes.
- * @typedef {Array<string>} Configuration
+ * @typedef {Array&lt;string>} Configuration
  */
 
 /**
  * A set of basic and composite state ids.
- * @typedef {Array<string>} FullConfiguration
+ * @typedef {Array&lt;string>} FullConfiguration
  */
 
 /**
  * A set of basic and composite state ids.
- * @typedef {Array<string>} FullConfiguration
+ * @typedef {Array&lt;string>} FullConfiguration
  */
 
 "use strict";
@@ -63,7 +91,7 @@ const EventEmitter = require('tiny-events').EventEmitter,
   FINAL = constants.STATE_TYPES.FINAL,
   SCXML_IOPROCESSOR_TYPE  = constants.SCXML_IOPROCESSOR_TYPE;
 
-const printTrace = typeof process !== 'undefined' && !!process.env.DEBUG;
+const printTrace = typeof process !== 'undefined' &amp;&amp; !!process.env.DEBUG;
 
 BaseInterpreter.EVENTS = [
   'onEntry',
@@ -118,7 +146,7 @@ function BaseInterpreter(modelOrFnGenerator, opts){
 
     this.opts.generateSessionid = this.opts.generateSessionid || BaseInterpreter.generateSessionid;
     this.opts.sessionid = this.opts.sessionid || this.opts.generateSessionid();
-    this.opts.sessionRegistry = this.opts.sessionRegistry || BaseInterpreter.sessionRegistry;  //TODO: define a better interface. For now, assume a Map<sessionid, session>
+    this.opts.sessionRegistry = this.opts.sessionRegistry || BaseInterpreter.sessionRegistry;  //TODO: define a better interface. For now, assume a Map&lt;sessionid, session>
 
 
     let _ioprocessors = {};
@@ -257,13 +285,13 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
 
       let statesToExit = this._getFullConfiguration().sort(getStateWithHigherSourceChildPriority);
 
-      for (var j = 0, len = statesToExit.length; j < len; j++) {
+      for (var j = 0, len = statesToExit.length; j &lt; len; j++) {
           var stateExited = statesToExit[j];
 
           if(stateExited.onExit !== undefined) {
-              for (var exitIdx = 0, exitLen = stateExited.onExit.length; exitIdx < exitLen; exitIdx++) {
+              for (var exitIdx = 0, exitLen = stateExited.onExit.length; exitIdx &lt; exitLen; exitIdx++) {
                   let block = stateExited.onExit[exitIdx];
-                  for (let blockIdx = 0, blockLen = block.length; blockIdx < blockLen; blockIdx++) {
+                  for (let blockIdx = 0, blockLen = block.length; blockIdx &lt; blockLen; blockIdx++) {
                       let actionRef = block[blockIdx];
                       try {
                         actionRef.call(this._scriptingContext, null);
@@ -280,15 +308,15 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
             this._scriptingContext.cancelInvoke(invoke.id);
           })
 
-          //if he is a top-level <final> state, then return the done event
-          if( stateExited.$type === 'final' &&
+          //if he is a top-level &lt;final> state, then return the done event
+          if( stateExited.$type === 'final' &amp;&amp;
               stateExited.parent.$type === 'scxml'){
 
             if(this.opts.parentSession){
               this._scriptingContext.send({
                 target: '#_parent', 
                 name: 'done.invoke.' + this.opts.invokeid,
-                data : stateExited.donedata && stateExited.donedata.call(this._scriptingContext, event)
+                data : stateExited.donedata &amp;&amp; stateExited.donedata.call(this._scriptingContext, event)
               });
             }
 
@@ -480,7 +508,7 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
     },
 
     _finishBigStep : function(e, allStatesEntered, allStatesExited, cb){
-        let statesToInvoke = Array.from(new Set([...allStatesEntered].filter(s => s.invokes && !allStatesExited.has(s)))).sort(sortInEntryOrder);
+        let statesToInvoke = Array.from(new Set([...allStatesEntered].filter(s => s.invokes &amp;&amp; !allStatesExited.has(s)))).sort(sortInEntryOrder);
 
         // Here we invoke whatever needs to be invoked. The implementation of 'invoke' is platform-specific
         statesToInvoke.forEach( s => {
@@ -567,7 +595,7 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
         [basicStatesExited, statesExited] = this._getStatesExited(selectedTransitionsWithTargets); 
 
         this._log('exiting states')
-        for (var j = 0, len = statesExited.length; j < len; j++) {
+        for (var j = 0, len = statesExited.length; j &lt; len; j++) {
             var stateExited = statesExited[j];
 
             if(stateExited.isAtomic) this._configuration.remove(stateExited);
@@ -578,9 +606,9 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
             this.emit('onExit',stateExited.id)
 
             if(stateExited.onExit !== undefined) {
-                for (var exitIdx = 0, exitLen = stateExited.onExit.length; exitIdx < exitLen; exitIdx++) {
+                for (var exitIdx = 0, exitLen = stateExited.onExit.length; exitIdx &lt; exitLen; exitIdx++) {
                     let block = stateExited.onExit[exitIdx];
-                    for (let blockIdx = 0, blockLen = block.length; blockIdx < blockLen; blockIdx++) {
+                    for (let blockIdx = 0, blockLen = block.length; blockIdx &lt; blockLen; blockIdx++) {
                         let actionRef = block[blockIdx];
                         try {
                           actionRef.call(this._scriptingContext, currentEvent);
@@ -597,7 +625,7 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
                 for(let historyRef of stateExited.historyRef){
                     if (historyRef.isDeep) {
                         f = function(s0) {
-                            return s0.typeEnum === BASIC && stateExited.descendants.indexOf(s0) > -1;
+                            return s0.typeEnum === BASIC &amp;&amp; stateExited.descendants.indexOf(s0) > -1;
                         };
                     } else {
                         f = function(s0) {
@@ -617,15 +645,15 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
         var sortedTransitions = selectedTransitions.iter().sort(transitionComparator);
 
         this._log("executing transitition actions");
-        for (var stxIdx = 0, len = sortedTransitions.length; stxIdx < len; stxIdx++) {
+        for (var stxIdx = 0, len = sortedTransitions.length; stxIdx &lt; len; stxIdx++) {
             var transition = sortedTransitions[stxIdx];
 
-            var targetIds = transition.targets && transition.targets.map(function(target){return target.id;});
+            var targetIds = transition.targets &amp;&amp; transition.targets.map(function(target){return target.id;});
 
             this.emit('onTransition',transition.source.id,targetIds, transition.source.transitions.indexOf(transition));
 
             if(transition.onTransition !== undefined) {
-                for (var txIdx = 0, txLen = transition.onTransition.length; txIdx < txLen; txIdx++) {
+                for (var txIdx = 0, txLen = transition.onTransition.length; txIdx &lt; txLen; txIdx++) {
                     let actionRef = transition.onTransition[txIdx];
                     try {
                       actionRef.call(this._scriptingContext, currentEvent);
@@ -652,7 +680,7 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
 
         this._log("statesEntered ", statesEntered);
 
-        for (var enterIdx = 0, enterLen = statesEntered.length; enterIdx < enterLen; enterIdx++) {
+        for (var enterIdx = 0, enterLen = statesEntered.length; enterIdx &lt; enterLen; enterIdx++) {
             var stateEntered = statesEntered[enterIdx];
 
             if(stateEntered.isAtomic) this._configuration.add(stateEntered);
@@ -662,9 +690,9 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
             this.emit('onEntry',stateEntered.id);
 
             if(stateEntered.onEntry !== undefined) {
-                for (var entryIdx = 0, entryLen = stateEntered.onEntry.length; entryIdx < entryLen; entryIdx++) {
+                for (var entryIdx = 0, entryLen = stateEntered.onEntry.length; entryIdx &lt; entryLen; entryIdx++) {
                     let block = stateEntered.onEntry[entryIdx];
-                    for (let blockIdx = 0, blockLen = block.length; blockIdx < blockLen; blockIdx++) {
+                    for (let blockIdx = 0, blockLen = block.length; blockIdx &lt; blockLen; blockIdx++) {
                         let actionRef = block[blockIdx];
                         try {
                           actionRef.call(this._scriptingContext, currentEvent);
@@ -683,7 +711,7 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
                         let transition = initialState.transitions[0]
                         if(transition.onTransition !== undefined) {
                             this._log('executing initial transition content for initial state of parent state',stateEntered.id);
-                            for (var txIdx = 0, txLen = transition.onTransition.length; txIdx < txLen; txIdx++) {
+                            for (var txIdx = 0, txLen = transition.onTransition.length; txIdx &lt; txLen; txIdx++) {
                                 let actionRef = transition.onTransition[txIdx];
                                 try {
                                   actionRef.call(this._scriptingContext, currentEvent);
@@ -702,7 +730,7 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
                 let transition = defaultHistoryContent[stateEntered.id]
                 if(transition.onTransition !== undefined) {
                     this._log('executing history transition content for history state of parent state',stateEntered.id);
-                    for (var txIdx = 0, txLen = transition.onTransition.length; txIdx < txLen; txIdx++) {
+                    for (var txIdx = 0, txLen = transition.onTransition.length; txIdx &lt; txLen; txIdx++) {
                         let actionRef = transition.onTransition[txIdx];
                         try {
                           actionRef.call(this._scriptingContext, currentEvent);
@@ -715,13 +743,13 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
             }
         }
 
-        for (var enterIdx = 0, enterLen = statesEntered.length; enterIdx < enterLen; enterIdx++) {
+        for (var enterIdx = 0, enterLen = statesEntered.length; enterIdx &lt; enterLen; enterIdx++) {
             var stateEntered = statesEntered[enterIdx];
             if(stateEntered.typeEnum === FINAL){
               let parent = stateEntered.parent;
               let grandparent = parent.parent;
-              this._internalEventQueue.push({name : "done.state." + parent.id, data : stateEntered.donedata && stateEntered.donedata.call(this._scriptingContext, currentEvent)});
-              if(grandparent && grandparent.typeEnum === PARALLEL){
+              this._internalEventQueue.push({name : "done.state." + parent.id, data : stateEntered.donedata &amp;&amp; stateEntered.donedata.call(this._scriptingContext, currentEvent)});
+              if(grandparent &amp;&amp; grandparent.typeEnum === PARALLEL){
                   if(grandparent.states.every(s => this.isInFinalState(s) )){
                       this._internalEventQueue.push({name : "done.state." + grandparent.id});
                   }
@@ -734,7 +762,7 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
 
     isInFinalState : function(s){
         if(s.typeEnum === COMPOSITE){
-            return s.states.some(s => s.typeEnum === FINAL && this._configuration.contains(s));
+            return s.states.some(s => s.typeEnum === FINAL &amp;&amp; this._configuration.contains(s));
         }else if(s.typeEnum === PARALLEL){
             return s.states.every(this.isInFinalState.bind(this))
         }else{
@@ -753,7 +781,7 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
 
     _handleError : function(e, actionRef){
       let event = 
-        e instanceof Error || (typeof e.__proto__.name === 'string' && e.__proto__.name.match(/^.*Error$/)) ?  //we can't just do 'e instanceof Error', because the Error object in the sandbox is from a different context, and instanceof will return false
+        e instanceof Error || (typeof e.__proto__.name === 'string' &amp;&amp; e.__proto__.name.match(/^.*Error$/)) ?  //we can't just do 'e instanceof Error', because the Error object in the sandbox is from a different context, and instanceof will return false
           {
             name:'error.execution',
             data : {
@@ -786,7 +814,7 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
         //Here, we iterate through the transitions, and collect states
         //that match this condition. 
         var transitionList = transitions.iter();
-        for (var txIdx = 0, txLen = transitionList.length; txIdx < txLen; txIdx++) {
+        for (var txIdx = 0, txLen = transitionList.length; txIdx &lt; txLen; txIdx++) {
             var transition = transitionList[txIdx];
             var scope = transition.scope,
                 desc = scope.descendants;
@@ -795,13 +823,13 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
             //is that state a descendant of the transition scope?
             //Store ancestors of that state up to but not including the scope.
             var configList = this._configuration.iter();
-            for (var cfgIdx = 0, cfgLen = configList.length; cfgIdx < cfgLen; cfgIdx++) {
+            for (var cfgIdx = 0, cfgLen = configList.length; cfgIdx &lt; cfgLen; cfgIdx++) {
                 var state = configList[cfgIdx];
                 if(desc.indexOf(state) > -1){
                     basicStatesExited.add(state);
                     statesExited.add(state);
                     var ancestors = query.getAncestors(state,scope); 
-                    for (var ancIdx = 0, ancLen = ancestors.length; ancIdx < ancLen; ancIdx++) { 
+                    for (var ancIdx = 0, ancLen = ancestors.length; ancIdx &lt; ancLen; ancIdx++) { 
                         statesExited.add(ancestors[ancIdx]);
                     }
                 }
@@ -889,7 +917,7 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
       let traverse = (anc) => {
           if(anc.typeEnum === PARALLEL){
               for(let child of anc.states){
-                  if(child.typeEnum !== HISTORY && ![...statesToEnter].some(s => query.isDescendant(s, child))){
+                  if(child.typeEnum !== HISTORY &amp;&amp; ![...statesToEnter].some(s => query.isDescendant(s, child))){
                       this._addDescendantStatesToEnter(child,statesToEnter, statesForDefaultEntry, defaultHistoryContent) 
                   }
               }
@@ -1015,7 +1043,7 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
     * @function
     * @name Listener#onTransition 
     * @param {string} sourceStateId Id of the source state
-    * @param {Array<string>} targetStatesIds Ids of the target states
+    * @param {Array&lt;string>} targetStatesIds Ids of the target states
     * @param {number} transitionIndex Index of the transition relative to other transitions originating from source state.
     */
 
@@ -1086,7 +1114,7 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
 
     /** 
     * Query the model to get all transition events.
-    * @return {Array<string>} Transition events.
+    * @return {Array&lt;string>} Transition events.
     * @memberof BaseInterpreter.prototype 
     */
     getAllTransitionEvents : function(){
@@ -1094,13 +1122,13 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
         function getEvents(state){
 
             if(state.transitions){
-                for (var txIdx = 0, txLen = state.transitions.length; txIdx < txLen; txIdx++) {
+                for (var txIdx = 0, txLen = state.transitions.length; txIdx &lt; txLen; txIdx++) {
                     events[state.transitions[txIdx].event] = true;
                 }
             }
 
             if(state.states) {
-                for (var stateIdx = 0, stateLen = state.states.length; stateIdx < stateLen; stateIdx++) {
+                for (var stateIdx = 0, stateLen = state.states.length; stateIdx &lt; stateLen; stateIdx++) {
                     getEvents(state.states[stateIdx]);
                 }
             }
@@ -1114,11 +1142,11 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
     /**
     * Three things capture the current snapshot of a running SCION interpreter:
     *
-    *      <ul>
-    *      <li> basic configuration (the set of basic states the state machine is in)</li>
-    *      <li> history state values (the states the state machine was in last time it was in the parent of a history state)</li>
-    *      <li> the datamodel</li>
-    *      </ul>
+    *      &lt;ul>
+    *      &lt;li> basic configuration (the set of basic states the state machine is in)&lt;/li>
+    *      &lt;li> history state values (the states the state machine was in last time it was in the parent of a history state)&lt;/li>
+    *      &lt;li> the datamodel&lt;/li>
+    *      &lt;/ul>
     *      
     * The snapshot object can be serialized as JSON and saved to a database. It can
     * later be passed to the SCXML constructor to restore the state machine
@@ -1266,7 +1294,7 @@ Statechart.prototype.gen = function(evtObjOrName,optionalData) {
 * @emits BaseInterpreter#onExitInterpreter
 */
 Statechart.prototype.genAsync = function(currentEvent, cb) {
-    if (currentEvent !== null && (typeof currentEvent !== 'object' || !currentEvent || typeof currentEvent.name !== 'string')) {
+    if (currentEvent !== null &amp;&amp; (typeof currentEvent !== 'object' || !currentEvent || typeof currentEvent.name !== 'string')) {
         throw new Error('Expected currentEvent to be null or an Object with a name');
     }
     
@@ -1304,7 +1332,7 @@ function InterpreterScriptingContext(interpreter) {
 //Regex from:
 //  http://daringfireball.net/2010/07/improved_regex_for_matching_urls
 //  http://stackoverflow.com/a/6927878
-var validateUriRegex = /(#_.*)|\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/i;
+var validateUriRegex = /(#_.*)|\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()&lt;>]+|\(([^\s()&lt;>]+|(\([^\s()&lt;>]+\)))*\))+(?:\(([^\s()&lt;>]+|(\([^\s()&lt;>]+\)))*\)|[^\s`!()\[\]{};:'".,&lt;>?«»“”‘’]))/i;
 
 //TODO: consider whether this is the API we would like to expose
 InterpreterScriptingContext.prototype = {
@@ -1491,3 +1519,26 @@ module.exports = extend(new EventEmitter,{
     initializeModel : initializeModel,
     InterpreterScriptingContext : InterpreterScriptingContext
 });
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BaseInterpreter.html">BaseInterpreter</a></li><li><a href="Statechart.html">Statechart</a></li></ul><h3>Events</h3><ul><li><a href="BaseInterpreter.html#event:onError">onError</a></li><li><a href="Statechart.html#event:onError">onError</a></li></ul><h3>Interfaces</h3><ul><li><a href="Event.html">Event</a></li><li><a href="EventEmitter.html">EventEmitter</a></li><li><a href="Listener.html">Listener</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Sep 26 2017 17:11:26 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

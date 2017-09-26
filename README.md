@@ -38,107 +38,7 @@ Install SCION-CORE via npm:
 
 # API
 
-## new scion.Statechart(model)
-
-The SCXML constructor creates an interpreter instance from a model object.
-
-```javascript
-    //same model can be used to create multiple interpreter instances
-    var sc1 = new scion.Statechart(model),
-        sc2 = new scion.Statechart(model);
-```
-
-## sc.start() : `<String>`[]
-
-`sc.start` starts the SCION-CORE interpreter. `sc.start` should only be called once, and should be called before `sc.gen` is called for the first time.
-
-Returns a "basic configuration", which is an Array of strings representing the ids all of the basic states the interpreter is in after the call to `sc.start` completes.
-
-## sc.gen(String eventName, Object eventData) : `<String>`[]
-## sc.gen({name : String, data : Object}) : `<String>`[]
-
-An SCXML interpreter takes SCXML events as input, where an SCXML event is an object with "name" and "data" properties. These can be passed to method `gen` as two positional arguments, or as a single object.
-
-`sc.gen` returns a "basic configuration", which is an Array of strings representing the ids all of the basic states the interpreter is in after the call to `sc.gen` completes.
-
-```javascript
-    var sc = new scion.Statechart(model),
-
-    var data = {foo:1};
-    var configuration = sc.gen("eventName",data); 
-
-    //the following call is equivalent
-    var configuration = sc.gen({name:"eventName",data:{foo:1}}); 
-```
-
-## sc.cancel() : null
-
-Cancels the session. This clears all timers; puts the interpreter in a final state; and runs all exit actions on current states.
-
-## Event Emitter
-
-SCION-CORE includes the [tiny-events](https://github.com/ZauberNerd/tiny-events) library, and implements the following EventEmitter methods:
-
-* on(type: string, listener: Function): EventEmitter
-* once(type: string, listener: Function): EventEmitter
-* off(type: string, listener?: Function): EventEmitter
-* emit(type: string, ...args: any[]): EventEmitter
-
-SCION-CORE emits the following events:
-
-* onEntry
-* onExit
-* onTransition
-* onBigStepBegin
-* onBigStepSuspend
-* onBigStepResume
-* onSmallStepBegin
-* onSmallStepEnd
-* onBigStepEnd
-* onError
-
-The `onError` callback receives an object containing the following properties:
-
-* `tagname` - The name of the element that produced the error. 
-* `line` - The line in the source file in which the error occurred.
-* `column` - The column in the source file in which the error occurred.
-* `reason` - An informative error message. The text is platform-specific and subject to change.
-
-## sc.registerListener({onEntry : function(stateId){}, onExit : function(stateId){}, onTransition : function(sourceStateId,[targetStateIds,...]){}, onError: function(errorInfo){}})
-
-This is an alternative interface to `on`.
-
-## sc.getConfiguration() : String[]
-
-Returns current state machine ***configuration***, the set of basic states in which the state machine resides. 
-
-## sc.getFullConfiguration() : String[]
-
-Returns current state machine ***full configuration***, the set of basic states in which the state machine resides, and the hierarchical ancestors of those basic states. 
-
-## sc.isIn(String : stateId) : Boolean
-
-Returns true if the state machine is in state with id `stateId`.
-
-## sc.isFinal() : Boolean
-
-Returns true, if the state machine is in a final state. Otherwise, returns false. 
-
-## sc.getSnapshot() : Snapshot 
-
-Returns a `snapshot` object, of the form : 
-
-```
-[
-    configuration,
-    history,
-    isInFinalState,
-    dataModel,
-    internalEventQueue
-]
-```
-
-The snapshot object can be serialized as JSON and saved to a database. It can later be passed to the SCXML constructor to restore the state machine: `new scion.Statechart(model, {snapshot : snapshot})`.
+See generated API docs [here](http://jbeard4.github.io/scion-core).
 
 # Statecharts Model Schema
 
@@ -577,35 +477,7 @@ You can then perform the following steps to script web content:
 </html>
 ```
 
-
-
-
 # Build Status
 
 [![Build status](https://travis-ci.org/jbeard4/SCION-CORE.svg?branch=master)](https://travis-ci.org/jbeard4/SCION-CORE)
 
-...
-
-Interpreter options:
-
-interpreterScriptingContext? 
-InterpreterScriptingContext?
-generateSessionid? 
-sessionid? 
-sessionRegistry? 
-console?
-Set?
-priorityComparisonFn?
-transitionSelector?
-params? - used to pass params from invoke
-snapshot?
-parentSession? - used to pass parent session during invoke
-invokeid? - support for id of invoke element at runtime
-
-customCancel
-customSend
-sendAsync
-doSend
-
-invokers
-xmlParser
