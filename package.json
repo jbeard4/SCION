@@ -42,11 +42,13 @@
     "grunt-git": "^1.0.0",
     "grunt-release": "^0.14.0",
     "grunt-saucelabs": "9.0.0",
+    "jsdoc": "^3.5.5",
     "load-grunt-tasks": "^3.5.0",
     "minimist": "^1.2.0",
     "nodeunit": "^0.9.1",
     "tape": "^4.6.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "watchify": "^3.9.0"
   },
   "engines": {
     "node": ">=4.2.2"
@@ -70,8 +72,9 @@
     "test": "grunt test",
     "bundle": "browserify -d lib/scion.js -o dist/scion.js -s scion",
     "uglify": "uglifyjs dist/scion.js -o dist/scion.min.js",
-    "build": "npm run bundle && npm run uglify",
-    "watch": "watchify -d lib/scion.js -o dist/scion.js -s scion"
+    "build": "npm run bundle && npm run uglify && npm run doc",
+    "watch": "watchify -d lib/scion.js -o dist/scion.js -s scion",
+    "doc": "jsdoc -d doc/ lib/scion.js"
   },
   "dependencies": {
     "tiny-events": "^1.0.1"
