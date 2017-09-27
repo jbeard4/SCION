@@ -72,9 +72,9 @@
     "test": "grunt test",
     "bundle": "browserify -d lib/scion.js -o dist/scion.js -s scion",
     "uglify": "uglifyjs dist/scion.js -o dist/scion.min.js",
-    "build": "npm run bundle && npm run uglify && npm run doc",
+    "build": "npm run bundle && npm run uglify && npm run docs",
     "watch": "watchify -d lib/scion.js -o dist/scion.js -s scion",
-    "doc": "jsdoc -d doc/ lib/scion.js"
+    "docs": "jsdoc -d docs/ lib/scion.js"
   },
   "dependencies": {
     "tiny-events": "^1.0.1"
