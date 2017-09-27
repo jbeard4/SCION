@@ -1177,31 +1177,31 @@ Configuration.
 
 <h5>Fires:</h5>
 <ul>
-    <li>BaseInterpreter#event:onEntry</li>
+    <li>scion.BaseInterpreter#event:onEntry</li>
 
-    <li>BaseInterpreter#event:onExit</li>
+    <li>scion.BaseInterpreter#event:onExit</li>
 
-    <li>BaseInterpreter#event:onTransition</li>
+    <li>scion.BaseInterpreter#event:onTransition</li>
 
-    <li>BaseInterpreter#event:onDefaultEntry</li>
+    <li>scion.BaseInterpreter#event:onDefaultEntry</li>
 
-    <li><a href="BaseInterpreter.html#event:onError">BaseInterpreter#event:onError</a></li>
+    <li><a href="scion.BaseInterpreter.html#event:onError">scion.BaseInterpreter#event:onError</a></li>
 
-    <li>BaseInterpreter#event:onBigStepBegin</li>
+    <li>scion.BaseInterpreter#event:onBigStepBegin</li>
 
-    <li>BaseInterpreter#event:onBigStepEnd</li>
+    <li>scion.BaseInterpreter#event:onBigStepEnd</li>
 
-    <li>BaseInterpreter#event:onBigStepSuspend</li>
+    <li>scion.BaseInterpreter#event:onBigStepSuspend</li>
 
-    <li>BaseInterpreter#event:onBigStepResume</li>
+    <li>scion.BaseInterpreter#event:onBigStepResume</li>
 
-    <li>BaseInterpreter#event:onSmallStepBegin</li>
+    <li>scion.BaseInterpreter#event:onSmallStepBegin</li>
 
-    <li>BaseInterpreter#event:onSmallStepEnd</li>
+    <li>scion.BaseInterpreter#event:onSmallStepEnd</li>
 
-    <li>BaseInterpreter#event:onBigStepEnd</li>
+    <li>scion.BaseInterpreter#event:onBigStepEnd</li>
 
-    <li>BaseInterpreter#event:onExitInterpreter</li>
+    <li>scion.BaseInterpreter#event:onExitInterpreter</li>
 </ul>
 
 
@@ -1364,31 +1364,31 @@ Configuration.
 
 <h5>Fires:</h5>
 <ul>
-    <li>BaseInterpreter#event:onEntry</li>
+    <li>scion.BaseInterpreter#event:onEntry</li>
 
-    <li>BaseInterpreter#event:onExit</li>
+    <li>scion.BaseInterpreter#event:onExit</li>
 
-    <li>BaseInterpreter#event:onTransition</li>
+    <li>scion.BaseInterpreter#event:onTransition</li>
 
-    <li>BaseInterpreter#event:onDefaultEntry</li>
+    <li>scion.BaseInterpreter#event:onDefaultEntry</li>
 
-    <li><a href="BaseInterpreter.html#event:onError">BaseInterpreter#event:onError</a></li>
+    <li><a href="scion.BaseInterpreter.html#event:onError">scion.BaseInterpreter#event:onError</a></li>
 
-    <li>BaseInterpreter#event:onBigStepBegin</li>
+    <li>scion.BaseInterpreter#event:onBigStepBegin</li>
 
-    <li>BaseInterpreter#event:onBigStepEnd</li>
+    <li>scion.BaseInterpreter#event:onBigStepEnd</li>
 
-    <li>BaseInterpreter#event:onBigStepSuspend</li>
+    <li>scion.BaseInterpreter#event:onBigStepSuspend</li>
 
-    <li>BaseInterpreter#event:onBigStepResume</li>
+    <li>scion.BaseInterpreter#event:onBigStepResume</li>
 
-    <li>BaseInterpreter#event:onSmallStepBegin</li>
+    <li>scion.BaseInterpreter#event:onSmallStepBegin</li>
 
-    <li>BaseInterpreter#event:onSmallStepEnd</li>
+    <li>scion.BaseInterpreter#event:onSmallStepEnd</li>
 
-    <li>BaseInterpreter#event:onBigStepEnd</li>
+    <li>scion.BaseInterpreter#event:onBigStepEnd</li>
 
-    <li>BaseInterpreter#event:onExitInterpreter</li>
+    <li>scion.BaseInterpreter#event:onExitInterpreter</li>
 </ul>
 
 
@@ -1550,218 +1550,6 @@ Configuration.
     
 
     
-        <h3 class="subsection-title">Events</h3>
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="event:onError">onError</h4>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>tagname</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The name of the element that produced the error.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>line</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The line in the source file in which the error occurred.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>column</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The column in the source file in which the error occurred.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>reason</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">An informative error message. The text is platform-specific and subject to change.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-    <dt class="inherited-from">Inherited From:</dt>
-    <dd class="inherited-from"><ul class="dummy"><li>
-        <a href="BaseInterpreter.html#event:onError">BaseInterpreter#event:onError</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="scion.js.html">scion.js</a>, <a href="scion.js.html#line204">line 204</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-    
 </article>
 
 </section>
@@ -1772,13 +1560,13 @@ Configuration.
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="scion.BaseInterpreter.html">BaseInterpreter</a></li><li><a href="scion.Statechart.html">Statechart</a></li></ul><h3>Events</h3><ul><li><a href="BaseInterpreter.html#event:onError">onError</a></li><li><a href="scion.Statechart.html#event:onError">onError</a></li></ul><h3>Namespaces</h3><ul><li><a href="scion.html">scion</a></li></ul><h3>Interfaces</h3><ul><li><a href="Event.html">Event</a></li><li><a href="EventEmitter.html">EventEmitter</a></li><li><a href="Listener.html">Listener</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="scion.BaseInterpreter.html">BaseInterpreter</a></li><li><a href="scion.Statechart.html">Statechart</a></li></ul><h3>Events</h3><ul><li><a href="scion.BaseInterpreter.html#event:onError">onError</a></li></ul><h3>Namespaces</h3><ul><li><a href="scion.html">scion</a></li></ul><h3>Interfaces</h3><ul><li><a href="Event.html">Event</a></li><li><a href="EventEmitter.html">EventEmitter</a></li><li><a href="Listener.html">Listener</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Sep 27 2017 18:25:07 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Sep 27 2017 18:29:04 GMT-0400 (EDT)
 </footer>
 
 <script> prettyPrint(); </script>
