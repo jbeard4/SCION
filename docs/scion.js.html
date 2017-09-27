@@ -230,7 +230,7 @@ BaseInterpreter.sessionRegistry = new Map();
  */
 
 /**
-* @event BaseInterpreter#onError
+* @event scion.BaseInterpreter#onError
 * @property {string} tagname The name of the element that produced the error. 
 * @property {number} line The line in the source file in which the error occurred.
 * @property {number} column The column in the source file in which the error occurred.
@@ -336,19 +336,19 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
      * Configuration.
      * @return {Configuration}
      * @memberof BaseInterpreter.prototype
-     * @emits BaseInterpreter#onEntry
-     * @emits BaseInterpreter#onExit
-     * @emits BaseInterpreter#onTransition
-     * @emits BaseInterpreter#onDefaultEntry
-     * @emits BaseInterpreter#onError
-     * @emits BaseInterpreter#onBigStepBegin
-     * @emits BaseInterpreter#onBigStepEnd
-     * @emits BaseInterpreter#onBigStepSuspend
-     * @emits BaseInterpreter#onBigStepResume
-     * @emits BaseInterpreter#onSmallStepBegin
-     * @emits BaseInterpreter#onSmallStepEnd
-     * @emits BaseInterpreter#onBigStepEnd
-     * @emits BaseInterpreter#onExitInterpreter
+     * @emits scion.BaseInterpreter#onEntry
+     * @emits scion.BaseInterpreter#onExit
+     * @emits scion.BaseInterpreter#onTransition
+     * @emits scion.BaseInterpreter#onDefaultEntry
+     * @emits scion.BaseInterpreter#onError
+     * @emits scion.BaseInterpreter#onBigStepBegin
+     * @emits scion.BaseInterpreter#onBigStepEnd
+     * @emits scion.BaseInterpreter#onBigStepSuspend
+     * @emits scion.BaseInterpreter#onBigStepResume
+     * @emits scion.BaseInterpreter#onSmallStepBegin
+     * @emits scion.BaseInterpreter#onSmallStepEnd
+     * @emits scion.BaseInterpreter#onBigStepEnd
+     * @emits scion.BaseInterpreter#onExitInterpreter
      */
     start : function() {
         this._initStart();
@@ -368,19 +368,19 @@ BaseInterpreter.prototype = extend(beget(EventEmitter.prototype),{
      * Starts the interpreter asynchronously
      * @param  {genCallback} cb Callback invoked with an error or the interpreter's stable configuration
      * @memberof BaseInterpreter.prototype 
-     * @emits BaseInterpreter#onEntry
-     * @emits BaseInterpreter#onExit
-     * @emits BaseInterpreter#onTransition
-     * @emits BaseInterpreter#onDefaultEntry
-     * @emits BaseInterpreter#onError
-     * @emits BaseInterpreter#onBigStepBegin
-     * @emits BaseInterpreter#onBigStepEnd
-     * @emits BaseInterpreter#onBigStepSuspend
-     * @emits BaseInterpreter#onBigStepResume
-     * @emits BaseInterpreter#onSmallStepBegin
-     * @emits BaseInterpreter#onSmallStepEnd
-     * @emits BaseInterpreter#onBigStepEnd
-     * @emits BaseInterpreter#onExitInterpreter
+     * @emits scion.BaseInterpreter#onEntry
+     * @emits scion.BaseInterpreter#onExit
+     * @emits scion.BaseInterpreter#onTransition
+     * @emits scion.BaseInterpreter#onDefaultEntry
+     * @emits scion.BaseInterpreter#onError
+     * @emits scion.BaseInterpreter#onBigStepBegin
+     * @emits scion.BaseInterpreter#onBigStepEnd
+     * @emits scion.BaseInterpreter#onBigStepSuspend
+     * @emits scion.BaseInterpreter#onBigStepResume
+     * @emits scion.BaseInterpreter#onSmallStepBegin
+     * @emits scion.BaseInterpreter#onSmallStepEnd
+     * @emits scion.BaseInterpreter#onBigStepEnd
+     * @emits scion.BaseInterpreter#onExitInterpreter
      */
     startAsync : function(cb) {
         cb = this._initStart(cb);
@@ -1234,19 +1234,19 @@ Statechart.prototype = beget(BaseInterpreter.prototype);
 * @memberof Statechart.prototype 
 * @param {string|Event} evtObjOrName
 * @param {any=} optionalData
-* @emits BaseInterpreter#onEntry
-* @emits BaseInterpreter#onExit
-* @emits BaseInterpreter#onTransition
-* @emits BaseInterpreter#onDefaultEntry
-* @emits BaseInterpreter#onError
-* @emits BaseInterpreter#onBigStepBegin
-* @emits BaseInterpreter#onBigStepEnd
-* @emits BaseInterpreter#onBigStepSuspend
-* @emits BaseInterpreter#onBigStepResume
-* @emits BaseInterpreter#onSmallStepBegin
-* @emits BaseInterpreter#onSmallStepEnd
-* @emits BaseInterpreter#onBigStepEnd
-* @emits BaseInterpreter#onExitInterpreter
+* @emits scion.BaseInterpreter#onEntry
+* @emits scion.BaseInterpreter#onExit
+* @emits scion.BaseInterpreter#onTransition
+* @emits scion.BaseInterpreter#onDefaultEntry
+* @emits scion.BaseInterpreter#onError
+* @emits scion.BaseInterpreter#onBigStepBegin
+* @emits scion.BaseInterpreter#onBigStepEnd
+* @emits scion.BaseInterpreter#onBigStepSuspend
+* @emits scion.BaseInterpreter#onBigStepResume
+* @emits scion.BaseInterpreter#onSmallStepBegin
+* @emits scion.BaseInterpreter#onSmallStepEnd
+* @emits scion.BaseInterpreter#onBigStepEnd
+* @emits scion.BaseInterpreter#onExitInterpreter
 */
 Statechart.prototype.gen = function(evtObjOrName,optionalData) {
 
@@ -1283,19 +1283,19 @@ Statechart.prototype.gen = function(evtObjOrName,optionalData) {
 * @memberof Statechart.prototype 
 * @param {Event}  currentEvent The event to inject
 * @param {genCallback} cb Callback invoked with an error or the interpreter's stable configuration
-* @emits BaseInterpreter#onEntry
-* @emits BaseInterpreter#onExit
-* @emits BaseInterpreter#onTransition
-* @emits BaseInterpreter#onDefaultEntry
-* @emits BaseInterpreter#onError
-* @emits BaseInterpreter#onBigStepBegin
-* @emits BaseInterpreter#onBigStepEnd
-* @emits BaseInterpreter#onBigStepSuspend
-* @emits BaseInterpreter#onBigStepResume
-* @emits BaseInterpreter#onSmallStepBegin
-* @emits BaseInterpreter#onSmallStepEnd
-* @emits BaseInterpreter#onBigStepEnd
-* @emits BaseInterpreter#onExitInterpreter
+* @emits scion.BaseInterpreter#onEntry
+* @emits scion.BaseInterpreter#onExit
+* @emits scion.BaseInterpreter#onTransition
+* @emits scion.BaseInterpreter#onDefaultEntry
+* @emits scion.BaseInterpreter#onError
+* @emits scion.BaseInterpreter#onBigStepBegin
+* @emits scion.BaseInterpreter#onBigStepEnd
+* @emits scion.BaseInterpreter#onBigStepSuspend
+* @emits scion.BaseInterpreter#onBigStepResume
+* @emits scion.BaseInterpreter#onSmallStepBegin
+* @emits scion.BaseInterpreter#onSmallStepEnd
+* @emits scion.BaseInterpreter#onBigStepEnd
+* @emits scion.BaseInterpreter#onExitInterpreter
 */
 Statechart.prototype.genAsync = function(currentEvent, cb) {
     if (currentEvent !== null &amp;&amp; (typeof currentEvent !== 'object' || !currentEvent || typeof currentEvent.name !== 'string')) {
@@ -1533,13 +1533,13 @@ module.exports = extend(new EventEmitter,{
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="scion.BaseInterpreter.html">BaseInterpreter</a></li><li><a href="scion.Statechart.html">Statechart</a></li></ul><h3>Events</h3><ul><li><a href="BaseInterpreter.html#event:onError">onError</a></li><li><a href="scion.Statechart.html#event:onError">onError</a></li></ul><h3>Namespaces</h3><ul><li><a href="scion.html">scion</a></li></ul><h3>Interfaces</h3><ul><li><a href="Event.html">Event</a></li><li><a href="EventEmitter.html">EventEmitter</a></li><li><a href="Listener.html">Listener</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="scion.BaseInterpreter.html">BaseInterpreter</a></li><li><a href="scion.Statechart.html">Statechart</a></li></ul><h3>Events</h3><ul><li><a href="scion.BaseInterpreter.html#event:onError">onError</a></li></ul><h3>Namespaces</h3><ul><li><a href="scion.html">scion</a></li></ul><h3>Interfaces</h3><ul><li><a href="Event.html">Event</a></li><li><a href="EventEmitter.html">EventEmitter</a></li><li><a href="Listener.html">Listener</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Sep 27 2017 18:25:07 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Sep 27 2017 18:29:04 GMT-0400 (EDT)
 </footer>
 
 <script> prettyPrint(); </script>
