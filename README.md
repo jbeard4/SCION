@@ -100,3 +100,21 @@ See [SCION-CORE API](https://github.com/jbeard4/SCION-CORE#api).
 
 [![Build status](https://travis-ci.org/jbeard4/SCION.svg)](https://travis-ci.org/jbeard4/SCION)
 
+
+...
+
+model.prepare(cb, executionContext, hostContext):
+
+executionContext:
+
+<all k,v pairs>
+
+hostContext:
+
+deferCompilation
+debug
+strict
+moduleFormat
+  node
+  commonjs
+writeModuleToDisk
