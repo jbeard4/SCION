@@ -1,9 +1,9 @@
-export type FnModel = () => SCState;
+export type ModelFactory = () => SCState;
 type Configuration = string[];
 type FullConfiguration = string[];
 
 export class BaseInterpreter {
-  constructor(model : FnModel | SCState, opts? : any);
+  constructor(model : ModelFactory | SCState, opts? : any);
   start : () => Configuration;
   startAsync : (cb: (Configuration) => void) => void;
   getConfiguration : () => Configuration;
