@@ -1,4 +1,32 @@
-/*
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: SCION/lib/runtime/document-string-to-model.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: SCION/lib/runtime/document-string-to-model.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
      Copyright 2011-2012 Jacob Beard, INFICON, and other SCION contributors
 
      Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,7 +76,7 @@ function documentStringToModel(url,docString,cb,hostContext){
     if(
         (util.IS_INSPECTING                //workaround for node --inspect bug: https://github.com/nodejs/node/issues/7593
           || typeof window === 'object')   //always defer compilation in the browser, so that we get source maps
-        && typeof hostContext.deferCompilation === 'undefined'
+        &amp;&amp; typeof hostContext.deferCompilation === 'undefined'
       ){
       hostContext.deferCompilation = true;
     }
@@ -84,10 +112,10 @@ function compileModule(docUrl, rawModule, hostContext, cb) {
       let scriptCount = rootScripts.length;
       let promises = new Array(scriptCount + promiseOffset);
 
-      for (var i = 0; i < scriptCount; i++) {
+      for (var i = 0; i &lt; scriptCount; i++) {
           var curScript = rootScripts[i];
           if (curScript.src) {
-              // defer the fetch until ModelFactoryFactory.prepare
+              // defer the fetch until SCModel.prepare
               promises[i+promiseOffset] = Promise.resolve(curScript);
           } else {
               promises[i+promiseOffset] = new Promise(function(resolve, reject) {
@@ -155,7 +183,7 @@ function compileModule(docUrl, rawModule, hostContext, cb) {
 
 
     return Promise.all(invokeConstructorPromises).then(function(compiledInvokeConstructors){
-        cb(null, new ModelFactoryFactory(compiledInvokeConstructors));
+        cb(null, new SCModel(compiledInvokeConstructors));
       },function compileError(err) {
         cb(err);
       });
@@ -173,7 +201,7 @@ function CompiledInvokeConstructor(name, datamodel, rootScripts, scxmlModule){
  * @constructor
  * @memberof scxml
  */
-function ModelFactoryFactory(compiledInvokeConstructors) {
+function SCModel(compiledInvokeConstructors) {
   this.compiledInvokeConstructors = compiledInvokeConstructors;
 }
 
@@ -189,12 +217,13 @@ function ModelFactoryFactory(compiledInvokeConstructors) {
  * Prepares an scxml model for execution by binding it to an execution context
  * @param  {prepareCallback} cb  Callback to execute with the prepared model or an error
  *   The prepared model is a function to be passed into a SCION StateChart object
- * @param  {vm.Context | object} [executionContext] The execution context  (e.g. v8 VM sandbox).
- *   If a vm.Context object is provided, then the compiled SCXML module code is evaluated in that context.
- *   Otherwise, if a regular object is provided, then the given object is "contextified", which means that it is passed to vm.createContext to create a new execution context. Object keys are exposed as global variables on the new context in which the generated SCXML module code is evaluated.
+ * @param  {object} [executionContext] The execution context  (e.g. v8 VM sandbox).
+ *   If not provided, a bare bones context is constructed
  * @param  {HostContext} [hostContext]  Context provided by the interpreter host
  */
-ModelFactoryFactory.prototype.prepare = function(cb, executionContext, hostContext) {
+SCModel.prototype.prepare = function(cb, executionContext, hostContext) {
+
+
     var modelFns = []; 
     var promises = 
       this.compiledInvokeConstructors.map( (compiledInvokeConstructor, i) => {
@@ -208,7 +237,7 @@ ModelFactoryFactory.prototype.prepare = function(cb, executionContext, hostConte
                     compiledInvokeConstructor.datamodel.runInContext(execContext);
                 }
 
-                for (let i = 0; i < compiledInvokeConstructor.rootScripts.length; i++) {
+                for (let i = 0; i &lt; compiledInvokeConstructor.rootScripts.length; i++) {
                     var scriptInfo = compiledInvokeConstructor.rootScripts[i];
                     if(scriptInfo.src){
                       //lazily compile scripts that have been downloaded lazily
@@ -249,13 +278,13 @@ function createModule(url,scJson,hostContext,cb){
     }
 
     scjsonToModule.startTraversal(url, scJson, hostContext).then(function resolved(rawModule) {
-        if (platform.debug && rawModule.name) {
+        if (platform.debug &amp;&amp; rawModule.name) {
             fs.writeFileSync('/var/tmp/' + rawModule.name + '.scion', rawModule.module);
         }
 
-        for (var i = 0; i < rawModule.invokeConstructors.length; i++) {
+        for (var i = 0; i &lt; rawModule.invokeConstructors.length; i++) {
           let invokeConstructor = rawModule.invokeConstructors[i];
-          for (var j = 0; j < invokeConstructor.rootScripts.length; j++) {
+          for (var j = 0; j &lt; invokeConstructor.rootScripts.length; j++) {
               var curScript = invokeConstructor.rootScripts[j];
               if (curScript.src) {
                 curScript.src = platform.url.resolve(url, curScript.src);
@@ -275,3 +304,26 @@ function createModule(url,scJson,hostContext,cb){
 }
 
 module.exports = documentStringToModel;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="scion.BaseInterpreter.html">BaseInterpreter</a></li><li><a href="scion.Statechart.html">Statechart</a></li><li><a href="scxml.SCModel.html">SCModel</a></li></ul><h3>Events</h3><ul><li><a href="scion.BaseInterpreter.html#event:onError">onError</a></li></ul><h3>Namespaces</h3><ul><li><a href="scion.html">scion</a></li><li><a href="scxml.html">scxml</a></li></ul><h3>Interfaces</h3><ul><li><a href="Event.html">Event</a></li><li><a href="EventEmitter.html">EventEmitter</a></li><li><a href="Listener.html">Listener</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Sep 27 2017 21:12:51 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

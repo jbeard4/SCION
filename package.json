@@ -89,8 +89,9 @@
     "test": "grunt build test",
     "bundle": "browserify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
     "uglify": "uglifyjs dist/scxml.js -o dist/scxml.min.js",
-    "build": "npm run bundle && npm run uglify",
-    "watch": "watchify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v"
+    "build": "npm run bundle && npm run uglify && npm run docs",
+    "watch": "watchify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
+    "docs": "jsdoc -d docs/ lib/runtime/document-string-to-model.js lib/runtime/facade.js lib/runtime/star-to-model.js"
   },
   "browserify": {
     "transform": [
