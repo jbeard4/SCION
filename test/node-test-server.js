@@ -6,6 +6,11 @@
 const scxml = require('..'),
       http = require('http');
 
+
+if(process.env.TEST_SOURCEMAPS_PLUGIN){ 
+  require('../plugins/sourcemaps/index');  //load the sourcemaps plugin
+}
+
 var sessionCounter = 1, sessions = {}, timeouts = {}, timeoutMs = 5000, sessionRegistry = new Map();
 
 const PORT = process.env.PORT || 42000;
@@ -81,7 +86,7 @@ http.createServer(function (req, res) {
                           res.end(e.message);
                         }
                     }
-                }, {deferCompilation : false});
+                });
 
             }else if(reqJson.event && (typeof reqJson.sessionToken === "number")){
                 sessionToken = reqJson.sessionToken;
