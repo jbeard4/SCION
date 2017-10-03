@@ -3,6 +3,7 @@
 const scxml = require('..');
 const fs = require('fs');
 const repl = require('repl');
+const util = require('../lib/util');
 
 var argv = require('optimist')
     .alias('c', 'compile')
@@ -17,12 +18,12 @@ var argv = require('optimist')
     .boolean('e')
     .argv;
 
-if(argv.compile){
-  var options = {deferCompilation : true};
-} 
+if(util.IS_INSPECTING || argv.compile === 'module'){ 
+  require('../plugins/sourcemaps/index');  //load the sourcemaps plugin
+}
+
 if(argv.compile === 'scjson' || argv.compile === 'json'){
   var scxmlToScjson = require('../lib/compiler/scxml-to-scjson');
-  var util = require('util');
   var scjson = scxmlToScjson(fs.readFileSync(argv.input,'utf8'));
   var s = JSON.stringify(scjson,4,4);
   if(!argv.output || argv.output === '-'){
@@ -56,7 +57,7 @@ if(argv.compile === 'scjson' || argv.compile === 'json'){
         interpreter.start();
       },{console : console});
     }
-  }, options); 
+  }); 
 }
 
 
