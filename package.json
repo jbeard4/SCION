@@ -1,6 +1,6 @@
 {
   "name": "@jbeard/scxml",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "An implementation of SCXML in JavaScript.",
   "keywords": [
     "scxml",
@@ -34,12 +34,12 @@
     "http://www.w3.org/TR/scxml/"
   ],
   "dependencies": {
+    "@jbeard/sax": "1.3.1",
+    "@jbeard/scion-core": "2.0.1",
     "escodegen": "^1.8.1",
     "esprima": "2.7.2",
     "jsdom": "^11.1.0",
-    "optimist": "0.6.1",
-    "@jbeard/sax": "1.3.0",
-    "@jbeard/scion-core": "git+ssh://git@nas:jbeard4/scion-core#0b114e4b279ccb870cccf26c3ff8605f0ebdbe66",
+    "optimist": "^0.6.1",
     "source-map": "^0.5.6",
     "text-to-js-identifier": "0.0.4",
     "xmlserializer": "^0.6.0"
@@ -68,7 +68,7 @@
     "minimist": "^1.2.0",
     "nodeunit": "^0.9.1",
     "request": "^2.74.0",
-    "@jbeard/scxml-test-framework": "git+ssh://git@nas:jbeard4/scxml-test-framework#4c61491443f8db38b24ad33e0d97c6e1206b6ed7",
+    "@jbeard/scxml-test-framework": "1.0.3",
     "uglify-js": "^2.8.21",
     "underscore": "^1.8.3",
     "vm-browserify2": "0.0.6",
