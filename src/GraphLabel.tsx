@@ -73,7 +73,7 @@ export default class GraphLabel extends React.PureComponent<GraphLabelProps, Gra
           })
         }
         textAnchor={(this.props.label.$meta && this.props.label.$meta.textAnchor) || 'middle'}
-        dominantBaseline={(this.props.label.$meta && this.props.label.$meta.dominantBaseline) || 'text-after-edge'}
+        dominantBaseline={(this.props.label.$meta && this.props.label.$meta.dominantBaseline) || 'text-before-edge'}
         x={this.props.disableAnimation ? this.state.to.x : undefined}
         y={this.props.disableAnimation ? this.state.to.y : undefined}
         opacity={this.props.disableAnimation ? 1 : 0}
