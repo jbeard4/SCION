@@ -7,7 +7,7 @@ import Console from 'console-component';
 interface AppComponentState {
   allTests : string[]; 
   scjson : scxml.scion.SCState;
-  fnModel : scxml.scion.FnModel;
+  fnModel : scxml.scion.ModelFactory;
   layoutOptions? : any;
   redraw? : boolean;
   disableAnimation? : boolean;
@@ -79,9 +79,9 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
         case 'application/scxml+xml':
         case 'text/xml':
         case 'application/xml':
-          scxml.documentStringToModel(url, responseData, (err, model : scxml.SCModel) => {
+          scxml.documentStringToModel(url, responseData, (err, model : scxml.ModelFactoryFactory) => {
             if(err) throw err;
-            model.prepare((err, fnModel : scxml.scion.FnModel) => {
+            model.prepare((err, fnModel : scxml.scion.ModelFactory) => {
               if(err) throw err;
               this.setState({
                 interpreter : null,
