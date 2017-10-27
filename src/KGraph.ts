@@ -116,6 +116,8 @@ export class KGraph {
 
   _normalizeKgraphTransitionTargets(kgraph){
 
+    const edgesAdded = new Set<KGraphEdge>();
+
     //walk through states
     walk.call(this, kgraph, kgraph);
 
@@ -123,6 +125,7 @@ export class KGraph {
       //look for state.transitions.targets
       if(state.edges){
         state.edges.slice().forEach(function(edge){
+          if(edgesAdded.has(edge)) return;    //avoid processing an edge that has been artifically created and added
 
           //Tranistion types: 
           // 0. A -> B
@@ -246,6 +249,7 @@ export class KGraph {
                   labels : []
                 });
                 if(selfLoop) innerEdge.$hyperlink = selfLoop.id;
+                edgesAdded.add(innerEdge);
                 grandparentNode.edges.push(innerEdge);
                 return innerEdge;
 
@@ -282,6 +286,7 @@ export class KGraph {
                   $hyperlink : edge.id,
                   labels : []
                 };
+                edgesAdded.add(innerEdge);
                 debug('innerEdge.$hyperlink', innerEdge.$hyperlink);
                 grandparentNode.edges.push(innerEdge);
                 return innerEdge;
