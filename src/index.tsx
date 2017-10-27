@@ -5,6 +5,7 @@ import * as React from "react";
 import constants from './constants';
 import IdGenerator from './IdGenerator';
 import Debug = require('debug');
+import scxml = require('@jbeard/scxml');    //TODO: make scxml an es6 module
 const debug = Debug('GraphNode');
 import GraphNode from './GraphNode';
 import _ = require('underscore');
@@ -13,7 +14,11 @@ import {SCState, SCTransition, findStateById} from './SCJSON';
 import SCJSONToKGraphTransformer from './SCJSONToKGraphTransformer';
 
 export interface GraphRootProps {
-  scjson? : any,    //TODO: add types to SCION, and refactor this ot use the type
+  pathToSCXML? : string;
+  urlToSCXML? : string;
+  scxmlDocumentString? : string;
+  modelFactory? : scxml.scion.ModelFactory, 
+  scjson? : scxml.scion.SCState,  //TODO: refactor this property name to 'scState' 
   kgraphRoot? : KGraphNode,
   layoutOptions? : LayoutOptions,
   redraw? : boolean,
@@ -22,6 +27,7 @@ export interface GraphRootProps {
   transitionsEnabled? : Map<string, Set<number>>;
   previousConfiguration? : string[];
   statesForDefaultEntry? : string[];
+  disableZoom? : boolean
 }
 
 export interface GraphRootAnimation {
@@ -55,6 +61,15 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       fromNode : null,
       toNode : null
     };
+    if( props.pathToSCXML ||
+          props.urlToSCXML ||
+          props.scxmlDocumentString) { 
+      this.initSCXML(props, true);
+    } else if(props.scjson){
+      this.initSCJson(props, true);
+    } else if (props.kgraphRoot ){
+      this.initKGraph(props, true);
+    } 
   }
 
   private getDefaultLayoutOptions(layoutOptions){
@@ -147,12 +162,30 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
 
   componentWillReceiveProps(props : GraphRootProps){
     this.checkProps(props);
-    if(props.scjson &&
-        (props.scjson !== this.props.scjson) ||
-        (props.layoutOptions !== this.props.layoutOptions)) this.initSCJson(props, false);
-    if(props.kgraphRoot &&
-        (props.kgraphRoot !== this.props.kgraphRoot) ||
-        (props.layoutOptions !== this.props.layoutOptions)) this.initKGraph(props, false);
+    if(
+      (props.pathToSCXML || props.urlToSCXML || props.scxmlDocumentString) &&
+      (
+       props.pathToSCXML !== this.props.pathToSCXML || 
+       props.urlToSCXML !== this.props.urlToSCXML ||
+       props.scxmlDocumentString !== this.props.scxmlDocumentString ||
+       props.layoutOptions !== this.props.layoutOptions
+      ) 
+    ) this.initSCXML(props, false);
+    if(
+      ( props.scjson || props.modelFactory ) &&
+      (
+        props.scjson !== this.props.scjson ||
+        props.modelFactory !== this.props.modelFactory ||
+        props.layoutOptions !== this.props.layoutOptions
+      ) 
+    ) this.initSCJson(props, false);
+    if(
+      props.kgraphRoot &&
+      (
+        props.kgraphRoot !== this.props.kgraphRoot ||
+        props.layoutOptions !== this.props.layoutOptions
+      )
+    ) this.initKGraph(props, false);
   }
 
   //later, try handleMouseClick
@@ -255,17 +288,42 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     return enabledEdges.concat( enabledHyperedges );
   }
 
+  private initSCXML(props : GraphRootProps , initialRender : boolean){
+
+    const handler = (err, model : scxml.ModelFactoryFactory) => {
+      if(err) throw err;
+      model.prepare((err, modelFactory : scxml.scion.ModelFactory) => {
+        if(err) throw err;
+        let augmentedProps = _.extend({}, props, {modelFactory : modelFactory});
+        this.initSCJson(augmentedProps, initialRender);
+      });
+    }
+
+    if(props.pathToSCXML){
+      scxml.pathToModel(props.pathToSCXML, handler);
+    }else if(props.urlToSCXML){
+      scxml.urlToModel(props.urlToSCXML, handler);
+    }else if(props.scxmlDocumentString){
+      scxml.documentStringToModel(null, props.scxmlDocumentString, handler);
+    }else {
+      throw new Error('TODO');
+    }
+
+  }
+
   private initSCJson(props : GraphRootProps , initialRender : boolean){
     //if scjson is not the same, create a new kgraph
     //TODO: memoize
-    if(props.scjson){
+    let augmentedProps = props.modelFactory ? _.extend({}, props, {scjson : props.modelFactory()}) : props;
+    if(augmentedProps.scjson){
       let idGenerator = new IdGenerator();
       let transformer = new SCJSONToKGraphTransformer(idGenerator, this);
       var newKlayToScjsonMap, newKgraphRoot; 
-      [newKlayToScjsonMap, newKgraphRoot] = transformer.transform(props.scjson);
-      this.initKGraph(props, initialRender, idGenerator, newKgraphRoot);
+      [newKlayToScjsonMap, newKgraphRoot] = transformer.transform(augmentedProps.scjson);
+      this.initKGraph(augmentedProps, initialRender, idGenerator, newKgraphRoot);
     }
   }
+
 
   private initKGraph(props : GraphRootProps , initialRender : boolean, idGen?: IdGenerator, kgRoot? : KGraphNode){
     let idGenerator = idGen || new IdGenerator(); 
@@ -302,8 +360,17 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   }
 
   private checkProps(props){
-    if(props.scjson && props.kgraphRoot) throw new Error('You can specify scjson or kgraph props, but not both');
-    if(!props.scjson && !props.kgraphRoot) throw new Error('You must specify one of scjson or kgraph props, but not both');
+    var propNames = [
+      'pathToSCXML',
+      'urlToSCXML',
+      'scxmlDocumentString',
+      'scjson',
+      'modelFactory',
+      'kgraphRoot'
+    ]
+    let namesInProps = propNames.filter( n => props[n] )
+    if(namesInProps.length !== 1) throw new Error('SCHVIZ must have exactly one of the following properties: ' + propNames.join(', '));
+    return true;
   }
 
   componentDidMount(){
@@ -335,7 +402,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     return <div style={{width:'100%', height:'100%',position:'absolute'}}>
         <svg width="100%" height="100%" 
           ref={(e: SVGSVGElement) => { this.svgRootElement = e; }}
-          onWheel={this.handleMouseWheel.bind(this)}
+          onWheel={this.props.disableZoom ? null : this.handleMouseWheel.bind(this)}
           onClick={this.handleClick.bind(this)}
           onMouseDown={this.handleMouseDown.bind(this)}
           onMouseUp={this.handleMouseUp.bind(this)}

@@ -5,7 +5,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
+    "@jbeard/scxml": "4.0.3",
     "babel-polyfill": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
     "classnames": "^2.2.5",
     "debug": "^2.6.3",
     "grunt": "^1.0.1",
