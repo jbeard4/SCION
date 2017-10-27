@@ -61,15 +61,6 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       fromNode : null,
       toNode : null
     };
-    if( props.pathToSCXML ||
-          props.urlToSCXML ||
-          props.scxmlDocumentString) { 
-      this.initSCXML(props, true);
-    } else if(props.scjson){
-      this.initSCJson(props, true);
-    } else if (props.kgraphRoot ){
-      this.initKGraph(props, true);
-    } 
   }
 
   private getDefaultLayoutOptions(layoutOptions){
@@ -375,8 +366,16 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
 
   componentDidMount(){
     this.checkProps(this.props);
-    if(this.props.scjson) this.initSCJson(this.props, true);
-    if(this.props.kgraphRoot) this.initKGraph(this.props, true);
+    if( this.props.pathToSCXML ||
+          this.props.urlToSCXML ||
+          this.props.scxmlDocumentString) { 
+      this.initSCXML(this.props, true);
+    } else if(this.props.scjson){
+      this.initSCJson(this.props, true);
+    } else if (this.props.kgraphRoot ){
+      this.initKGraph(this.props, true);
+    } 
+
     this.animate();
   }
 
