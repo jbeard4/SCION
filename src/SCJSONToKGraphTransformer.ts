@@ -265,7 +265,7 @@ export default class SCJSONToKGraphTransformer {
       if(state.initial){
         //initial attribute - create a fake <initial> scjson node 
         var transition = {
-          target : state.initial.trim().split(/\s+/)
+          target : state.initial
         };
         if(transition.target.length === 1){
           transition.target = transition.target[0];
