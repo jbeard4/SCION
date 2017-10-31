@@ -238,10 +238,21 @@ export default class SCJSONToKGraphTransformer {
             klayNodeToScjsonMap.set(klayEdge, transition);
 
             var event = transition.event;
-            if(event){
+            var condExpr;
+            if(typeof transition.cond === 'function'){
+                var condMatch = transition.cond.toString().match(/function \$cond_l\d+_c\d+\(_event\){\nreturn (.*);\n}/);
+                if(condMatch){
+                  condExpr = condMatch[1];
+                }
+            } else if (typeof transition.cond === 'object' && typeof transition.cond.expr === 'string'){
+              condExpr = transition.cond.expr;
+            } else if (typeof transition.cond === 'string'){
+              condExpr = transition.cond;
+            }
+            if(event || condExpr){
               var klayLabel = new KGraphLabel();
               _.extend(klayLabel, { 
-                text : event
+                text : `${event || ''}${condExpr ? `[${condExpr}]` : ''}`
               });
               klayEdge.labels.push(klayLabel);
               klayNodeToScjsonMap.set(klayEdge, transition);
