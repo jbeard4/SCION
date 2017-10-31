@@ -295,7 +295,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
             }
             ref={(e: SVGGElement) => { this.svgGElement = e; }}
             onDoubleClick={ this.handleDoubleClick.bind(this) }
-            transform={this.props.disableAnimation ? ('translate(' + this.state.to.translate.x + ',' + this.state.to.translate.y + ')') : undefined}
+            transform={this.props.disableAnimation && this.state.to.translate.x && this.state.to.translate.y ? ('translate(' + this.state.to.translate.x + ',' + this.state.to.translate.y + ')') : undefined}
             >
         {
           !this.props.disableAnimation && 
