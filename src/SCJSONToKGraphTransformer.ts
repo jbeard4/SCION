@@ -279,10 +279,10 @@ export default class SCJSONToKGraphTransformer {
         "labels" : [{text : 'onentry'}],
         "properties": { "borderSpacing": 6, "spacing": 0 },
         "children" : state.onEntry.reduce(function(a, b){ return a.concat(b); }, []).
-                      map(function(action, i){
+                      map((action, i) => {
                         return {
                           "id" : `${state.id}:onentry:${i}`,
-                          "labels" : [{text : `${action.$type}`}],
+                          "labels" : [{text : this._actionToLabel(action)}],
                           "$type" : "action"
                         };
                       })
@@ -343,6 +343,37 @@ export default class SCJSONToKGraphTransformer {
       if(node.states) node.states.forEach((substate, i) => { walk(node, i, substate); });
     }.bind(this));
     walk(null, 0, scjson);
+  }
+
+  _actionToLabel(action){
+    console.log('action',action);
+    switch(action.$type){
+      case 'script':
+        return `\u2615 ${action.content.trim()}`;
+      case 'assign':
+        return `\u21D2 ${action.location.expr} = ${action.expr.expr}`;
+      case 'raise':
+        break;
+      case 'if':
+        break;
+      case 'foreach':
+        break;
+      case 'log':
+        break;
+      case 'datamodel':
+        break;
+      case 'data':
+        break;
+      case 'send':
+        break;
+      case 'cancel':
+        break;
+      case 'invoke':
+        break;
+      default:
+        break;
+    }
+    return '';
   }
 
 }
