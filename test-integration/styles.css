@@ -74,6 +74,11 @@ g.node.compound > line {
   stroke-width:.1;
 } 
 
+
+g.node.type__actionContainer > rect, g.node.type__action > rect {
+  stroke-width:.1;
+}
+
 g.compound.type__parallel > g > g.node > rect {
   stroke-dasharray : 1 1;
 } 

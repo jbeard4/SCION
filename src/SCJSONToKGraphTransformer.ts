@@ -271,6 +271,25 @@ export default class SCJSONToKGraphTransformer {
     if(state.states){
       stateKlayNode.children = state.states.map(this._scjsonStateToKlayNode.bind(this, klayNodeToScjsonMap, idMap, rootState, parentState));
     }
+    if(state.onEntry && state.onEntry.length){
+      stateKlayNode.children = stateKlayNode.children || [];
+      const o = {
+        "id" : `${state.id}:onentry`,
+        "$type" : "actionContainer",
+        "labels" : [{text : 'onentry'}],
+        "properties": { "borderSpacing": 6, "spacing": 0 },
+        "children" : state.onEntry.reduce(function(a, b){ return a.concat(b); }, []).
+                      map(function(action, i){
+                        return {
+                          "id" : `${state.id}:onentry:${i}`,
+                          "labels" : [{text : `${action.$type}`}],
+                          "$type" : "action"
+                        };
+                      })
+      };
+      console.log('o',o);
+      stateKlayNode.children.push(o);
+    }
     if(!(state.$meta && state.$meta.isCollapsed)){   //skip generating an initial state if he is collapsed
       var fakeInitialState;
       if(state.initial){

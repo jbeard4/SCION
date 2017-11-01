@@ -48,7 +48,7 @@ export class KGraph {
           "height" : constants.INITIAL_RADIUS
         });
       } else if (node.labels && node.labels.length) {
-        var [width, height] =  this._svgRenderer.getStateMinDimensions(node.labels[0].text);
+        var [width, height] =  this._svgRenderer.getStateMinDimensions(node.labels[0].text, node.$type);
         _.extend(node, { 
           "width" : width,
           "height" : height
@@ -75,7 +75,7 @@ export class KGraph {
     function walk(node){
       if(node.labels && node.labels.length){
         var label = node.labels[0].text;
-        var [minWidth, height] =  this._svgRenderer.getStateMinDimensions(label);
+        var [minWidth, height] =  this._svgRenderer.getStateMinDimensions(label, node.$type);
         if(node.width < minWidth){
           node.width = minWidth; 
         }
@@ -517,7 +517,8 @@ export class KGraphNode implements IKGraphNode {
   $type? : string;
   $meta? : {
     isCollapsed? : boolean; 
-  }
+  };
+  properties? : any
 }
 
 export class KGraphEdge implements IKGraphNode {

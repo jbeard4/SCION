@@ -9,6 +9,7 @@ import _ = require('underscore');
 import Debug = require('debug');
 import classNames = require('classnames');
 import SCHVIZ from './index';
+
 const debug = Debug('GraphNode');
 
 import GraphRoot from './index';
@@ -365,7 +366,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
         opacity={isStateGenerated ? 0 :
                   (this.props.disableAnimation ? 1 : 0)}
         >
-        {this.props.node.$type === 'virtual' ? this.props.node.labels[0].text : this.props.node.id}
+        {(this.props.node.labels[0] && this.props.node.labels[0].text) || this.props.node.id}
         {
           !this.props.disableAnimation && 
             <animate attributeName="opacity" attributeType="XML"
@@ -379,7 +380,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
         }
       </text>
 
-      <g className="childNodes">
+      <g className="childNodes" transform={`translate(0,${this.props.node.$type === 'actionContainer' ? 2 : 0})`}>
         { 
 
             (this.props.node.children && this.props.node.children.map(child => (

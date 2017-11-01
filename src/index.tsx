@@ -145,10 +145,10 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   }
 
 
-  public getStateMinDimensions(labelText){
+  public getStateMinDimensions(labelText, nodeType?:string){
     var bbox = this.measureTextDimensions(labelText);
-    return [ bbox.width + constants.LEAF_NODE_PADDING_W * 2,
-              bbox.height + constants.LEAF_NODE_PADDING_H * 2 ];
+    return [ bbox.width + (nodeType === 'action' ? 0 : constants.LEAF_NODE_PADDING_W * 2),
+              bbox.height + (nodeType === 'action' ? 0 : constants.LEAF_NODE_PADDING_H * 2) ];
   }
 
   componentWillReceiveProps(props : GraphRootProps){
@@ -325,7 +325,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     const options = this.getDefaultLayoutOptions(props.layoutOptions)
     if(!this.props.disableAnimation) this.svgRootElement.pauseAnimations();
     kgraph.updateLayout(options, (err, rootNode) => {
-      //console.log('kgraph rootNode',rootNode);
+      console.log('kgraph rootNode',rootNode);
       if(err) throw err;
       let toZoom = {x : 0, y : 0, width : rootNode.width, height : rootNode.height};
       this.setState({ 
