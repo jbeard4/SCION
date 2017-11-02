@@ -259,12 +259,12 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
       !this.props.node.children ? [] : 
       this.props.node.children.map((child) => 
           this.props.allEdges.
-            filter( (edge) => (child.id === edge.source && !this.props.kgraph.isSourceAncestorOfTarget(edge.source, edge.target)))
+            filter( (edge) => (child.id === edge.$source && !this.props.kgraph.isSourceAncestorOfTarget(edge.$source, edge.$target)))
         ).reduce( ((a,b) => a.concat(b) ), []);
 
     let edgesOriginatingFromThisStateAndTargetingDescendant = 
         this.props.allEdges.
-          filter( (edge) => (this.props.node.id === edge.source && this.props.kgraph.isSourceAncestorOfTarget(edge.source, edge.target) ) )
+          filter( (edge) => (this.props.node.id === edge.$source && this.props.kgraph.isSourceAncestorOfTarget(edge.$source, edge.$target) ) )
 
     myEdges = edgesOriginatingFromThisStateAndTargetingDescendant.concat(
                       edgesOriginatingFromChildStateAndNotTargetingDescendant); 
@@ -276,9 +276,9 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
       //is transition originating from this state targeting stateForDefaultEntry?
       exitInitialState = 
         this.props.allEdges.
-          filter( edge => this.state.to.node.id === edge.source && 
+          filter( edge => this.state.to.node.id === edge.$source && 
                           this.props.statesForDefaultEntry &&
-                          this.props.statesForDefaultEntry.indexOf(edge.target) > -1 ).length;
+                          this.props.statesForDefaultEntry.indexOf(edge.$target) > -1 ).length;
     }
 
     const isStateGenerated = this.props.node.id.match(/^\$generated-/);
@@ -417,9 +417,9 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                     //handle transitions originating from initial states:
                     //the edge targets a state set for default entry
                     this.props.statesForDefaultEntry &&
-                    this.props.statesForDefaultEntry.indexOf(edge.target) > -1 &&
+                    this.props.statesForDefaultEntry.indexOf(edge.$target) > -1 &&
                     //the edge originates from an initial state
-                    this.props.kgraph.getKgraphNodeById(edge.source).$type === 'initial' 
+                    this.props.kgraph.getKgraphNodeById(edge.$source).$type === 'initial' 
                   ) 
                 }
                 />

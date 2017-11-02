@@ -151,31 +151,48 @@ export class KGraph {
                 throw new Error('Unexpected internal transition');
               }
 
-              // pass. do nothing
+              var port = this._addEntryPortToState(targetState);
+              edge.sources = [edge.source];
+              edge.targets = [port.id];
+              edge.$source = edge.source;
+              edge.$target = edge.target;
+              delete edge.source;
+              delete edge.target;
               if(edge.$type === 'hyperlink') delete edge.$type;
             } else if (targetIsAncestorOfSource) {
               if(!isInternal){
                 // 1. A1 -> A, internal = false
                 var ports = this._addPortsToState(targetState);
-                this._edgeToHyperlinkAndTargetPort(edge, ports.exitPort.id);
-                var selfLoopEdge = this._addSelfLoopToState(targetState, edge.target, ports, false);
+                var selfLoopEdge = this._addSelfLoopToState(targetState, edge.target, ports, false, edgesAdded);
                 selfLoopEdge.$hyperlink = edge.id;
+
+                edge.sources = [edge.source];
+                edge.targets = [ports.exitPort.id];
+                edge.$type = 'hyperlink';
+                edge.$source = edge.source;
+                edge.$target = edge.target;
+                delete edge.source;
+                delete edge.target;
               } else {
                 // 2. A1 -> A, internal = true
                 this._resetEdgeType(edge);
+
+                var port = this._addExitPortToState(targetState);
+                edge.sources = [edge.source];
+                edge.targets = [port.id];
+                edge.$source = edge.source;
+                edge.$target = edge.target;
+                delete edge.source;
+                delete edge.target;
               }
             } else if (sourceIsAncestorOfTarget) {
               if(!isInternal){
                 // 3. A -> A1, internal = false
                 
-                var targetPorts = this._addPortsToState(targetState),
-                    sourcePorts = this._addPortsToState(sourceState);
-
-                edge.sourcePort = sourcePorts.entryPort.id ;
-                edge.targetPort = targetPorts.entryPort.id; 
+                var ports = this._addPortsToState(sourceState);
 
                 //TODO: swap out parentState for grandparentNode, see below
-                var selfLoopEdge = this._addSelfLoopToState(parentState, edge.source, sourcePorts, true);
+                var selfLoopEdge = this._addSelfLoopToState(parentState, edge.source, ports, true, edgesAdded);
 
                 //swap labels
                 var tmpLabels = selfLoopEdge.labels;
@@ -183,16 +200,48 @@ export class KGraph {
                 edge.labels = tmpLabels;
 
                 edge.$hyperlink = selfLoopEdge.id;
+
+                var port = this._addExitPortToState(targetState);
+                edge.sources = [ports.entryPort.id];
+                edge.targets = [edge.target];
+                edge.$source = edge.source;
+                edge.$target = edge.target;
+                delete edge.source;
+                delete edge.target;
+
               } else {
                 // 4. A -> A1, internal = true
+                var port = this._addExitPortToState(sourceState);
+                edge.sources = [port.id];
+                edge.targets = [edge.target];
+                edge.$source = edge.source;
+                edge.$target = edge.target;
+                delete edge.source;
+                delete edge.target;
               }
             } else if (isSelfLoop) {
               if(isInternal){
-                // 5. A -> A, internal = false
-                // default behavior is fine
-              }else{
-                // 6. A -> A, internal = true
+                // 5. A -> A, internal = true
                 // FIXME: This case is not currently supported. How do we self loop inside with KlayJS? 
+                //var ports = this._addPortsToState(targetState);
+                //edge.sources = [ports.exitPort.id];
+                //edge.targets = [ports.entryPort.id];
+                //edge.$source = edge.source;
+                //edge.$target = edge.target;
+                //delete edge.source;
+                //delete edge.target;
+                //TODO: figure out how to map this property : 
+                //org.eclipse.elk.insideSelfLoops.yo
+                //http://www.eclipse.org/elk/reference/options/org-eclipse-elk-insideselfloops-yo.html
+              }else{
+                // 6. A -> A, internal = false
+                var ports = this._addPortsToState(targetState);
+                edge.sources = [ports.exitPort.id];
+                edge.targets = [ports.entryPort.id];
+                edge.$source = edge.source;
+                edge.$target = edge.target;
+                delete edge.source;
+                delete edge.target;
               }
             } else if (isTargetless){
               // 7. A (targetless transition)
@@ -201,6 +250,7 @@ export class KGraph {
             } 
           } else {
             // he is a hyperedge
+            // TODO: use elkjs native support for hyperedges
             sourceIsAncestorOfTarget = edge.target.some(function(target){ return this.isSourceAncestorOfTarget(edge.source, target); }, this);
             targetIsAncestorOfSource = edge.target.some(function(target){ return this.isSourceAncestorOfTarget(target, edge.source); }, this);
             sourceState = this._idMap.get(edge.source);
@@ -217,7 +267,7 @@ export class KGraph {
                 // 8. A -> [ A1, A2 ], internal = false
                 
                 //create self loop on A.
-                var selfLoop = this._addSelfLoopToState(grandparentNode, edge.source, ports, true);
+                var selfLoop = this._addSelfLoopToState(grandparentNode, edge.source, ports, true, edgesAdded);
                 selfLoop.labels.push.apply(selfLoop.labels, edge.labels);
               } 
 
@@ -319,21 +369,23 @@ export class KGraph {
     if(edge.$type === 'hyperlink') delete edge.$type;
   }
 
-  _addSelfLoopToState(stateToWhichEdgeShouldBeAdded, stateToAddLoop, ports, isHyperlink){
+  _addSelfLoopToState(stateToWhichEdgeShouldBeAdded, stateToAddLoopId, ports, isHyperlink, edgesAdded){
     //add a self-loop, from exit port to entry port
     var stateExitId = ports.exitPort.id, 
         stateEnterId = ports.entryPort.id;
     stateToWhichEdgeShouldBeAdded.edges = stateToWhichEdgeShouldBeAdded.edges || [];
     var loopEdge = (<KGraphEdge>{
       id : stateExitId + '_' + stateEnterId,
-      source : stateToAddLoop,
-      target : stateToAddLoop,
-      sourcePort : stateExitId,
-      targetPort : stateEnterId,
+      sources : [stateExitId],
+      targets : [stateEnterId],
+      $source : stateToAddLoopId,
+      $target : stateToAddLoopId, 
       labels : []
     });
+    console.log('loopEdge ', loopEdge );
     stateToWhichEdgeShouldBeAdded.edges.push(loopEdge);
     if(isHyperlink) loopEdge.$type = 'hyperlink';
+    edgesAdded.add(loopEdge);
     return loopEdge;
   }
 
@@ -345,22 +397,30 @@ export class KGraph {
 
   }
 
+  _addPortToState(state,enterOrExit){
+    state.ports = state.ports || [];
+    var portCount = state.ports.length,
+        portId = `${state.id}_${enterOrExit}:${portCount}`;
+
+    state.ports = state.ports || [];
+    var port = { id: portId };
+    state.ports.push(port);
+
+    return port;
+  }
+
+  _addEntryPortToState(state){
+    return this._addPortToState(state,'enter');
+  }
+
+  _addExitPortToState(state){
+    return this._addPortToState(state,'exit');
+  }
 
   _addPortsToState(state){
-
-    state.ports = state.ports || [];
-    var portCount = state.ports.length / 2,
-        stateEnterId = state.id + '_enter' + portCount,
-        stateExitId = state.id + '_exit' + portCount;
-
-    state.ports = state.ports || [];
-    var entryPort = { id: stateEnterId },
-        exitPort = { id: stateExitId };
-    state.ports.push( entryPort, exitPort);
-
     return {
-      entryPort : entryPort, 
-      exitPort: exitPort
+      entryPort : this._addEntryPortToState(state), 
+      exitPort: this._addExitPortToState(state)
     };
   }
 
@@ -519,13 +579,17 @@ export class KGraphEdge implements IKGraphNode {
   id : string;
   $type? : string;
   labels : KGraphLabel[];
-  source: string;
-  target: string;
+  source?: string;
+  target?: string;
+  sources?: string[];
+  targets?: string[];
   $hyperlink? : string;
   bendPoints? : Point[];
   sourcePoint? : Point;
   targetPoint? : Point;
   sections? : any[]; //TODO: document this
+  $source? : string;
+  $target? : string;
 }
 
 export class KGraphLabel implements IKGraphNode {

@@ -135,7 +135,7 @@ export default class GraphLabel extends React.PureComponent<GraphLabelProps, Gra
 
   private _normalizeSelfLoopEdgeCoordinates(label : KGraphLabel, edge : KGraphEdge){
     //fix edge label coordinates. Workaround for issue OpenKieler/klayjs#8
-    if(edge.source === edge.target){
+    if(edge.$source === edge.$target){
       edge = edge.sections[0];
       //debugger;
       label.x = edge.bendPoints[1].x;
