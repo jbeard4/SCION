@@ -31,8 +31,8 @@ export interface GraphEdgeAnimation {
 }
 
 export interface PathSegment {
-  sourcePoint: Point;
-  targetPoints: Point[];
+  startPoint: Point;
+  endPoints: Point[];
   fillLength: number;
 }
 
@@ -82,16 +82,16 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
       }).call(this),
       path : (() => {
         var allSegments:PathSegment[] = [];
-        var sourcePoint = animationSegments[0];
+        var startPoint = animationSegments[0];
         allSegments.push({
-          sourcePoint: sourcePoint,
-          targetPoints: [sourcePoint],
+          startPoint: startPoint,
+          endPoints: [startPoint],
           fillLength : animationSegments.length  - 1
         });
         for(var i = 1; i < animationSegments.length; i++){
           allSegments.push({
-            sourcePoint: sourcePoint,
-            targetPoints: animationSegments.slice(1,i+1),
+            startPoint: startPoint,
+            endPoints: animationSegments.slice(1,i+1),
             fillLength : animationSegments.length - 1 
           });
         }
@@ -141,7 +141,7 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
         //take final path of last layout
         //take final path of current layout
         var allSegments:PathSegment[]  = [];
-        var sourcePoint = animationSegments[0];
+        var startPoint = animationSegments[0];
         var fillLength = animationSegments.length - 1; 
         var prevPath = this.state.path[this.state.path.length - 1];
         var maxFillLength = Math.max(prevPath.fillLength, fillLength);
@@ -149,8 +149,8 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
         prevPath.fillLength = maxFillLength;
         allSegments.push(prevPath);
         allSegments.push({
-          sourcePoint: sourcePoint,
-          targetPoints: animationSegments.slice(1),
+          startPoint: startPoint,
+          endPoints: animationSegments.slice(1),
           fillLength : maxFillLength
         });
 
@@ -170,12 +170,12 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
     return point.x.toString() + ',' + point.y.toString();
   }
 
-  private _edgeToD({ sourcePoint , targetPoints, fillLength }){
-    var s = 'M' + this._toPointStr(sourcePoint) + ' '  + (targetPoints.map( (point) => {
+  private _edgeToD({ startPoint , endPoints, fillLength }){
+    var s = 'M' + this._toPointStr(startPoint) + ' '  + (endPoints.map( (point) => {
               return 'L' + this._toPointStr(point);
             })).join(' ');
-    for(var i=0; i <  fillLength - targetPoints.length; i++){
-      s += 'L' + this._toPointStr(targetPoints[targetPoints.length - 1])
+    for(var i=0; i <  fillLength - endPoints.length; i++){
+      s += 'L' + this._toPointStr(endPoints[endPoints.length - 1])
     }
     return s;
   }
@@ -185,48 +185,49 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
   }
 
   private _toAnimationSegments(edge){
+    const section = edge.sections[0];    //TODO: generalize to multiple sections
     //start point
-    var sourcePoint = {
-      x : edge.sourcePoint.x,
-      y : edge.sourcePoint.y
+    var startPoint = {
+      x : section.startPoint.x,
+      y : section.startPoint.y
     };
     var initialFrom;
-    if(edge.bendPoints && edge.bendPoints.length){
-      initialFrom = edge.bendPoints[edge.bendPoints.length - 1];
+    if(section.bendPoints && section.bendPoints.length){
+      initialFrom = section.bendPoints[section.bendPoints.length - 1];
     } else {
-      initialFrom = sourcePoint;
+      initialFrom = startPoint;
     }
-    var lastSegmentDirection = this._getBendpointDirection(initialFrom, edge.targetPoint);
+    var lastSegmentDirection = this._getBendpointDirection(initialFrom, section.endPoint);
     //debug('lastSegmentDirection ',lastSegmentDirection);
     switch(lastSegmentDirection){
       case 'right':
         var markerOffset = this._isHyperlink(edge) ? 0 : constants.ARROW_WIDTH;
-        var x = edge.targetPoint.x - markerOffset;
-        var y = edge.targetPoint.y;
+        var x = section.endPoint.x - markerOffset;
+        var y = section.endPoint.y;
         break;
       case 'left':
         markerOffset = this._isHyperlink(edge) ? 0 : constants.ARROW_WIDTH;
-        x = edge.targetPoint.x + markerOffset;
-        y = edge.targetPoint.y;
+        x = section.endPoint.x + markerOffset;
+        y = section.endPoint.y;
         break;
       case 'down':
         markerOffset = this._isHyperlink(edge) ? 0 : constants.ARROW_WIDTH;
-        x = edge.targetPoint.x;
-        y = edge.targetPoint.y - markerOffset;
+        x = section.endPoint.x;
+        y = section.endPoint.y - markerOffset;
         break;
       case 'up':
         markerOffset = this._isHyperlink(edge) ? 0 : constants.ARROW_WIDTH;
-        x = edge.targetPoint.x;
-        y = edge.targetPoint.y + markerOffset;
+        x = section.endPoint.x;
+        y = section.endPoint.y + markerOffset;
         break;
       default:
         throw new Error('Layout not recognized');
     } 
-    var targetPoint = {
+    var endPoint = {
       x : x,
       y : y
     };
-    return [sourcePoint].concat(edge.bendPoints || []).concat(targetPoint);
+    return [startPoint].concat(section.bendPoints || []).concat(endPoint);
   }
 
   private _getBendpointDirection(from, to){
@@ -324,8 +325,9 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
 
   private _computeEdgeLength(edge){
     var length = 0;
-    var lastPoint = edge.sourcePoint;
-    (edge.bendPoints || []).concat(edge.targetPoint).forEach(function(nextPoint){
+    const section = edge.sections[0];  //TODO: generalize to support hyperedges
+    var lastPoint = section.startPoint;
+    (section.bendPoints || []).concat(section.endPoint).forEach(function(nextPoint){
       length += this._computeDistance(nextPoint, lastPoint);
       lastPoint = nextPoint;
     }, this);
@@ -341,8 +343,8 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
 
   private _getDAtLength(points, length){
 
-    var sourcePoint = points[0];
-    var d = 'M'+ sourcePoint.x + ' ' + sourcePoint.y,
+    var startPoint = points[0];
+    var d = 'M'+ startPoint.x + ' ' + startPoint.y,
         cumulativeLength = 0;
 
     for(var i = 1; i < points.length && cumulativeLength < length; i++){
@@ -378,9 +380,10 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
 
 
   private _edgeToPoints(edge){
-    return [edge.sourcePoint].
+    edge = edge.sections[0];
+    return [edge.startPoint].
             concat(edge.bendPoints || []).
-            concat([edge.targetPoint]);
+            concat([edge.endPoint]);
   }
 
   componentWillUnmount () {

@@ -1,4 +1,4 @@
-import $klay = require('klayjs');
+import ELK from 'elkjs'
 import _ = require('underscore');
 import IdGenerator from './IdGenerator';
 import Debug = require('debug');
@@ -94,20 +94,14 @@ export class KGraph {
     var t1 = Date.now();
     try {
       this._processKGraphPreLayout(kgraph);
-      $klay.layout({
-        graph : kgraph,
-        options : options,
-        success : function(g){ 
-          try {
-            this._processKGraphPostLayout(kgraph);
-            debug('Layout in %sms',Date.now() - t1);
-            debug('kgraph after layout',JSON.stringify(kgraph,null,4));   //TODO: enable debug module
-            cb(null, kgraph);
-          } catch(e){
-            cb(e); 
-          }
-        }.bind(this)
-      });
+      const elk = new ELK()
+      elk.layout(kgraph, options).
+        then( g => {
+          this._processKGraphPostLayout(g);
+          debug('Layout in %sms',Date.now() - t1);
+          debug('kgraph after layout',JSON.stringify(g,null,4));   //TODO: enable debug module
+          cb(null, g);
+        });
     } catch(e){
       cb(e); 
     }
@@ -531,6 +525,7 @@ export class KGraphEdge implements IKGraphNode {
   bendPoints? : Point[];
   sourcePoint? : Point;
   targetPoint? : Point;
+  sections? : any[]; //TODO: document this
 }
 
 export class KGraphLabel implements IKGraphNode {
