@@ -235,27 +235,28 @@ export default class SCJSONToKGraphTransformer {
               target : transition.target,
               labels : []
             });
-            klayNodeToScjsonMap.set(klayEdge, transition);
 
             var event = transition.event;
             var condExpr;
-            if(typeof transition.cond === 'function'){
-                var condMatch = transition.cond.toString().match(/function \$cond_l\d+_c\d+\(_event\){\nreturn (.*);\n}/);
-                if(condMatch){
-                  condExpr = condMatch[1];
-                }
-            } else if (typeof transition.cond === 'object' && typeof transition.cond.expr === 'string'){
+            if (typeof transition.cond === 'object' && typeof transition.cond.expr === 'string'){
               condExpr = transition.cond.expr;
-            } else if (typeof transition.cond === 'string'){
-              condExpr = transition.cond;
-            }
+            } 
             if(event || condExpr){
               var klayLabel = new KGraphLabel();
               _.extend(klayLabel, { 
-                text : `${event || ''}${condExpr ? `[${condExpr}]` : ''}`
+                text : `${event || ''}${condExpr ? `[${condExpr}]` : ''}${transition.onTransition && transition.onTransition.length ? '/' : ''}`
               });
               klayEdge.labels.push(klayLabel);
-              klayNodeToScjsonMap.set(klayEdge, transition);
+            }
+            if(transition.onTransition && transition.onTransition.length){
+              klayEdge.labels.push.apply(klayEdge.labels,
+                transition.onTransition.map( action => {
+                  var klayLabel = new KGraphLabel();
+                  _.extend(klayLabel, { 
+                    text : this._actionToLabel(action)
+                  });
+                  return klayLabel; 
+                }));
             }
             if(transition.type){
               klayEdge.$type = transition.type;

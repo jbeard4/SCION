@@ -57,10 +57,12 @@ export class KGraph {
       if(node.edges && node.edges.length){
         node.edges.forEach( edge => {
           if(edge.labels && edge.labels.length){
-            var {width, height} =  this._svgRenderer.measureTextDimensions(edge.labels[0].text);
-            _.extend(edge.labels[0], { 
-              "width" : width,
-              "height" : height
+            edge.labels.forEach( label => {
+              var {width, height} =  this._svgRenderer.measureTextDimensions(label.text);
+              _.extend(label, { 
+                "width" : width,
+                "height" : height
+              });
             });
           }
         }) 
