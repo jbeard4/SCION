@@ -272,24 +272,31 @@ export default class SCJSONToKGraphTransformer {
     if(state.states){
       stateKlayNode.children = state.states.map(this._scjsonStateToKlayNode.bind(this, klayNodeToScjsonMap, idMap, rootState, parentState));
     }
-    ['onEntry', 'onExit'].forEach( (prop,i) => {
-      if(state[prop] && state[prop].length){
-        stateKlayNode.children = stateKlayNode.children || [];
-        const o = {
-          "id" : `${state.id}:${prop}:${i}`,
-          "$type" : "actionContainer",
-          "labels" : [{text : prop.toLowerCase()}],
-          "properties": { "borderSpacing": 6, "spacing": 0 },
-          "children" : state[prop].reduce(function(a, b){ return a.concat(b); }, []).
-                        map((action, i) => {
-                          return {
-                            "id" : `${state.id}:${prop}:${i}`,
-                            "labels" : [{text : this._actionToLabel(action)}],
-                            "$type" : "action"
-                          };
-                        })
-        };
-        stateKlayNode.children.push(o);
+    ['onEntry', 'onExit', 'datamodel'].forEach( (prop,i) => {
+      var subprop;
+      if(prop === 'datamodel'){
+        subprop = 'declarations';
+      }
+      if(state[prop]){
+        const list = subprop ? state[prop][subprop] : state[prop];
+        if(list.length){
+          stateKlayNode.children = stateKlayNode.children || [];
+          const o = {
+            "id" : `${state.id}:${prop}:${i}`,
+            "$type" : "actionContainer",
+            "labels" : [{text : prop.toLowerCase()}],
+            "properties": { "borderSpacing": 6, "spacing": 0 },
+            "children" : list.reduce(function(a, b){ return a.concat(b); }, []).
+                          map((action, i) => {
+                            return {
+                              "id" : `${state.id}:${prop}:${i}`,
+                              "labels" : [{text : this._actionToLabel(action)}],
+                              "$type" : "action"
+                            };
+                          })
+          };
+          stateKlayNode.children.push(o);
+        }
       }
     })
     if(!(state.$meta && state.$meta.isCollapsed)){   //skip generating an initial state if he is collapsed
@@ -354,6 +361,8 @@ export default class SCJSONToKGraphTransformer {
         return `\u2615 ${action.content.trim()}`;
       case 'assign':
         return `\u21D2 ${action.location.expr} = ${action.expr.expr}`;
+      case 'data':
+        return `\u21D2 ${action.id}${action.expr && action.expr.expr ? ` = ${action.expr.expr}` : ''}`;
       case 'raise':
         break;
       case 'if':
