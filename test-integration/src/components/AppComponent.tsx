@@ -65,7 +65,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
             );
       this.setState({
         allTests : testPairs,
-        pathToSelectedTest : testPairs[6]
+        pathToSelectedTest : testPairs[0]
       }, this.refreshDataStructuresOnChange.bind(this));
     });
   }

@@ -192,8 +192,8 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
       y : edge.sourcePoint.y
     };
     var initialFrom;
-    if(edge.btargetPoints && edge.btargetPoints.length){
-      initialFrom = edge.btargetPoints[edge.btargetPoints.length - 1];
+    if(edge.bendPoints && edge.bendPoints.length){
+      initialFrom = edge.bendPoints[edge.bendPoints.length - 1];
     } else {
       initialFrom = sourcePoint;
     }
@@ -227,7 +227,7 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
       x : x,
       y : y
     };
-    return [sourcePoint].concat(edge.btargetPoints || []).concat(targetPoint);
+    return [sourcePoint].concat(edge.bendPoints || []).concat(targetPoint);
   }
 
   private _getBendpointDirection(from, to){
@@ -326,7 +326,7 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
   private _computeEdgeLength(edge){
     var length = 0;
     var lastPoint = edge.sourcePoint;
-    (edge.btargetPoints || []).concat(edge.targetPoint).forEach(function(nextPoint){
+    (edge.bendPoints || []).concat(edge.targetPoint).forEach(function(nextPoint){
       length += this._computeDistance(nextPoint, lastPoint);
       lastPoint = nextPoint;
     }, this);
@@ -380,7 +380,7 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
 
   private _edgeToPoints(edge){
     return [edge.sourcePoint].
-            concat(edge.btargetPoints || []).
+            concat(edge.bendPoints || []).
             concat([edge.targetPoint]);
   }
 

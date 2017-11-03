@@ -157,35 +157,31 @@ export class KGraph {
                 throw new Error('Unexpected internal transition');
               }
 
-              var exitPort = this._addExitPortToState(sourceState);
-              edge.sourcePort = exitPort.id;
-              var entryPort = this._addEntryPortToState(targetState);
-              edge.targetPort = entryPort.id;
+              // pass. do nothing
               if(edge.$type === 'hyperlink') delete edge.$type;
             } else if (targetIsAncestorOfSource) {
               if(!isInternal){
                 // 1. A1 -> A, internal = false
                 var ports = this._addPortsToState(targetState);
+                this._edgeToHyperlinkAndTargetPort(edge, ports.exitPort.id);
                 var selfLoopEdge = this._addSelfLoopToState(targetState, edge.target, ports, false, edgesAdded);
                 selfLoopEdge.$hyperlink = edge.id;
-
-                edge.targetPort = ports.exitPort.id;
-                edge.$type = 'hyperlink';
               } else {
                 // 2. A1 -> A, internal = true
                 this._resetEdgeType(edge);
-
-                var port = this._addExitPortToState(targetState);
-                edge.targetPort = [port.id];
               }
             } else if (sourceIsAncestorOfTarget) {
               if(!isInternal){
                 // 3. A -> A1, internal = false
                 
-                var ports = this._addPortsToState(sourceState);
+                var targetPorts = this._addPortsToState(targetState),
+                    sourcePorts = this._addPortsToState(sourceState);
+
+                edge.sourcePort = sourcePorts.entryPort.id ;
+                edge.targetPort = targetPorts.entryPort.id; 
 
                 //TODO: swap out parentState for grandparentNode, see below
-                var selfLoopEdge = this._addSelfLoopToState(parentState, edge.source, ports, true, edgesAdded);
+                var selfLoopEdge = this._addSelfLoopToState(parentState, edge.source, sourcePorts, true, edgesAdded);
 
                 //swap labels
                 var tmpLabels = selfLoopEdge.labels;
@@ -193,34 +189,16 @@ export class KGraph {
                 edge.labels = tmpLabels;
 
                 edge.$hyperlink = selfLoopEdge.id;
-
-                var port = this._addExitPortToState(targetState);
-                edge.sourcePort = [ports.entryPort.id];
-
               } else {
                 // 4. A -> A1, internal = true
-                var port = this._addExitPortToState(sourceState);
-                edge.sourcePort = [port.id];
               }
             } else if (isSelfLoop) {
               if(isInternal){
-                // 5. A -> A, internal = true
-                // FIXME: This case is not currently supported. How do we self loop inside with KlayJS? 
-                //var ports = this._addPortsToState(targetState);
-                //edge.sources = [ports.exitPort.id];
-                //edge.targets = [ports.entryPort.id];
-                //edge.$source = edge.source;
-                //edge.$target = edge.target;
-                //delete edge.source;
-                //delete edge.target;
-                //TODO: figure out how to map this property : 
-                //org.eclipse.elk.insideSelfLoops.yo
-                //http://www.eclipse.org/elk/reference/options/org-eclipse-elk-insideselfloops-yo.html
+                // 5. A -> A, internal = false
+                // default behavior is fine
               }else{
-                // 6. A -> A, internal = false
-                var ports = this._addPortsToState(targetState);
-                edge.sourcePort = ports.exitPort.id;
-                edge.targetPort = ports.entryPort.id;
+                // 6. A -> A, internal = true
+                // FIXME: This case is not currently supported. How do we self loop inside with KlayJS? 
               }
             } else if (isTargetless){
               // 7. A (targetless transition)
@@ -229,7 +207,6 @@ export class KGraph {
             } 
           } else {
             // he is a hyperedge
-            // TODO: use elkjs native support for hyperedges
             sourceIsAncestorOfTarget = edge.target.some(function(target){ return this.isSourceAncestorOfTarget(edge.source, target); }, this);
             targetIsAncestorOfSource = edge.target.some(function(target){ return this.isSourceAncestorOfTarget(target, edge.source); }, this);
             sourceState = this._idMap.get(edge.source);
@@ -355,15 +332,15 @@ export class KGraph {
     stateToWhichEdgeShouldBeAdded.edges = stateToWhichEdgeShouldBeAdded.edges || [];
     var loopEdge = (<KGraphEdge>{
       id : stateExitId + '_' + stateEnterId,
-      sourcePort : stateExitId,
-      targetPort : stateEnterId,
       source : stateToAddLoopId,
       target : stateToAddLoopId, 
+      sourcePort : stateExitId,
+      targetPort : stateEnterId,
       labels : []
     });
     stateToWhichEdgeShouldBeAdded.edges.push(loopEdge);
     if(isHyperlink) loopEdge.$type = 'hyperlink';
-    edgesAdded.add(loopEdge);
+    //edgesAdded.add(loopEdge);
     return loopEdge;
   }
 
