@@ -1,4 +1,5 @@
-import ELK from 'elkjs'
+//import ELK from 'elkjs'
+import klayjs = require('klayjs');
 import _ = require('underscore');
 import IdGenerator from './IdGenerator';
 import Debug = require('debug');
@@ -96,14 +97,17 @@ export class KGraph {
     var t1 = Date.now();
     try {
       this._processKGraphPreLayout(kgraph);
-      const elk = new ELK()
-      elk.layout(kgraph, options).
-        then( g => {
+      klayjs.layout({
+        graph : kgraph, 
+        options : options,
+        success : ( g => {
           this._processKGraphPostLayout(g);
           debug('Layout in %sms',Date.now() - t1);
           debug('kgraph after layout',JSON.stringify(g,null,4));   //TODO: enable debug module
           cb(null, g);
-        });
+        }),
+        error : (error) => cb(error)
+      });
     } catch(e){
       cb(e); 
     }
@@ -153,13 +157,10 @@ export class KGraph {
                 throw new Error('Unexpected internal transition');
               }
 
-              var port = this._addEntryPortToState(targetState);
-              edge.sources = [edge.source];
-              edge.targets = [port.id];
-              edge.$source = edge.source;
-              edge.$target = edge.target;
-              delete edge.source;
-              delete edge.target;
+              var exitPort = this._addExitPortToState(sourceState);
+              edge.sourcePort = exitPort.id;
+              var entryPort = this._addEntryPortToState(targetState);
+              edge.targetPort = entryPort.id;
               if(edge.$type === 'hyperlink') delete edge.$type;
             } else if (targetIsAncestorOfSource) {
               if(!isInternal){
@@ -168,24 +169,14 @@ export class KGraph {
                 var selfLoopEdge = this._addSelfLoopToState(targetState, edge.target, ports, false, edgesAdded);
                 selfLoopEdge.$hyperlink = edge.id;
 
-                edge.sources = [edge.source];
-                edge.targets = [ports.exitPort.id];
+                edge.targetPort = ports.exitPort.id;
                 edge.$type = 'hyperlink';
-                edge.$source = edge.source;
-                edge.$target = edge.target;
-                delete edge.source;
-                delete edge.target;
               } else {
                 // 2. A1 -> A, internal = true
                 this._resetEdgeType(edge);
 
                 var port = this._addExitPortToState(targetState);
-                edge.sources = [edge.source];
-                edge.targets = [port.id];
-                edge.$source = edge.source;
-                edge.$target = edge.target;
-                delete edge.source;
-                delete edge.target;
+                edge.targetPort = [port.id];
               }
             } else if (sourceIsAncestorOfTarget) {
               if(!isInternal){
@@ -204,22 +195,12 @@ export class KGraph {
                 edge.$hyperlink = selfLoopEdge.id;
 
                 var port = this._addExitPortToState(targetState);
-                edge.sources = [ports.entryPort.id];
-                edge.targets = [edge.target];
-                edge.$source = edge.source;
-                edge.$target = edge.target;
-                delete edge.source;
-                delete edge.target;
+                edge.sourcePort = [ports.entryPort.id];
 
               } else {
                 // 4. A -> A1, internal = true
                 var port = this._addExitPortToState(sourceState);
-                edge.sources = [port.id];
-                edge.targets = [edge.target];
-                edge.$source = edge.source;
-                edge.$target = edge.target;
-                delete edge.source;
-                delete edge.target;
+                edge.sourcePort = [port.id];
               }
             } else if (isSelfLoop) {
               if(isInternal){
@@ -238,12 +219,8 @@ export class KGraph {
               }else{
                 // 6. A -> A, internal = false
                 var ports = this._addPortsToState(targetState);
-                edge.sources = [ports.exitPort.id];
-                edge.targets = [ports.entryPort.id];
-                edge.$source = edge.source;
-                edge.$target = edge.target;
-                delete edge.source;
-                delete edge.target;
+                edge.sourcePort = ports.exitPort.id;
+                edge.targetPort = ports.entryPort.id;
               }
             } else if (isTargetless){
               // 7. A (targetless transition)
@@ -378,13 +355,12 @@ export class KGraph {
     stateToWhichEdgeShouldBeAdded.edges = stateToWhichEdgeShouldBeAdded.edges || [];
     var loopEdge = (<KGraphEdge>{
       id : stateExitId + '_' + stateEnterId,
-      sources : [stateExitId],
-      targets : [stateEnterId],
-      $source : stateToAddLoopId,
-      $target : stateToAddLoopId, 
+      sourcePort : stateExitId,
+      targetPort : stateEnterId,
+      source : stateToAddLoopId,
+      target : stateToAddLoopId, 
       labels : []
     });
-    console.log('loopEdge ', loopEdge );
     stateToWhichEdgeShouldBeAdded.edges.push(loopEdge);
     if(isHyperlink) loopEdge.$type = 'hyperlink';
     edgesAdded.add(loopEdge);
@@ -581,17 +557,12 @@ export class KGraphEdge implements IKGraphNode {
   id : string;
   $type? : string;
   labels : KGraphLabel[];
-  source?: string;
+  source: string;
   target?: string;
-  sources?: string[];
-  targets?: string[];
   $hyperlink? : string;
   bendPoints? : Point[];
   sourcePoint? : Point;
   targetPoint? : Point;
-  sections? : any[]; //TODO: document this
-  $source? : string;
-  $target? : string;
 }
 
 export class KGraphLabel implements IKGraphNode {
