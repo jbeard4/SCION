@@ -208,7 +208,6 @@ export class KGraph {
           } else {
             // he is a hyperedge
             sourceIsAncestorOfTarget = edge.target.some(function(target){ return this.isSourceAncestorOfTarget(edge.source, target); }, this);
-            targetIsAncestorOfSource = edge.target.some(function(target){ return this.isSourceAncestorOfTarget(target, edge.source); }, this);
             sourceState = this._idMap.get(edge.source);
             var targetStates = edge.target.map(function(target){return this._idMap.get(target);}, this);
 

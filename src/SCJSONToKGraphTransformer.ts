@@ -23,8 +23,9 @@ export default class SCJSONToKGraphTransformer {
     scjson.id = 'root';
     var klayNodeToScjsonMap = new Map();
     var idMap = this._getIdMap(scjson);
-    var transformedScjsonCopy = this._transformScjsonVirtualCollapsedStates(scjson, scjson);
-    var rootNode = this._scjsonStateToKlayNode(klayNodeToScjsonMap, idMap, transformedScjsonCopy, transformedScjsonCopy, transformedScjsonCopy);
+    var transformedScjsonCopy1 = this._normalizeScjsonInitialStates(scjson);
+    var transformedScjsonCopy2 = this._transformScjsonVirtualCollapsedStates(transformedScjsonCopy1);
+    var rootNode = this._scjsonStateToKlayNode(klayNodeToScjsonMap, idMap, transformedScjsonCopy2, transformedScjsonCopy2, transformedScjsonCopy2);
     return [klayNodeToScjsonMap, rootNode];
   }
 
@@ -46,7 +47,61 @@ export default class SCJSONToKGraphTransformer {
     return Array.isArray(transition.target) ? transition.target : transition.target.split(' +');
   }
 
-  _transformScjsonVirtualCollapsedStates(rootState, scjson){
+  _normalizeScjsonInitialStates(scjson){
+    //0. copy
+    var newScjson = JSON.parse(JSON.stringify(scjson));
+    traverse.call(this, newScjson);
+    return newScjson;
+
+    function traverse(state){
+      if(!(state.$meta && state.$meta.isCollapsed)){   //skip generating an initial state if he is collapsed
+        var fakeInitialState;
+        if(state.initial){
+          //initial attribute - create a fake <initial> scjson node 
+          var transition = {
+            target : state.initial
+          };
+          if(transition.target.length === 1){
+            transition.target = transition.target[0];
+          }
+          let $type = 'initial';
+          fakeInitialState = {
+            id : this._idGenerator.generateId(state.id, $type),
+            $type : $type,
+            transitions : [transition] 
+          };
+        }else{
+          if(state.states){
+            //take the first child that has initial type, or first child
+            var initialChildren = state.states.filter(function(child){
+              return child.$type === 'initial';
+            });
+
+            if(!initialChildren.length && state.$type !== 'parallel'){
+              let $type = 'initial';
+              fakeInitialState = {
+                id : this._idGenerator.generateId(state.id, $type),
+                $type : $type,
+                transitions : [{
+                  target : state.states[0].id
+                }] 
+              }
+            } 
+          }
+        } 
+        if(fakeInitialState){
+          state.states = state.states || [];
+          state.states.push(fakeInitialState);
+        }
+      }
+
+      if(state.states){
+        state.states.forEach(traverse.bind(this));
+      }
+    }
+  }
+
+  _transformScjsonVirtualCollapsedStates(scjson){
     //0. copy
     var newScjson = JSON.parse(JSON.stringify(scjson));
     var stateIdMap = new Map<string,SCState>();
@@ -57,7 +112,13 @@ export default class SCJSONToKGraphTransformer {
  
     //1. initialize virtual states
     function walkInitVirtualStates(state){
-      if(state.$meta && state.$meta.isCollapsed && state.states && state.states.length){
+      if(state.$meta && state.$meta.isCollapsed && 
+          (
+            (state.states && state.states.length) ||
+            (state.datamodel && state.datamodel.declarations && state.datamodel.declarations.length) ||
+            (state.onEntry && state.onEntry.length) ||
+            (state.onExit && state.onExit.length)
+          )){
         var substates = state.states;
         var virtualState = {
           id : this._idGenerator.generateId(),    //FIXME: add support back in for virtual states
@@ -149,11 +210,23 @@ export default class SCJSONToKGraphTransformer {
       }
     }
 
+    function walkRemoveActionsFromCollapsedStates(state){
+      
+      if(state.$meta && state.$meta.isCollapsed){
+        ['datamodel','onEntry','onExit'].forEach( prop => delete state[prop] );
+      }
+
+      if(state.states){
+        state.states.forEach(walkRemoveActionsFromCollapsedStates.bind(this));
+      }
+    }
+
     walkInitVirtualStates.call(this,newScjson);
     walkUpdateTransitionGraphToRemoveTransitionsThatOriginateInAndTargetDescendantOfVirtualState.call(this,newScjson);
     walkUpdateTransitionGraphToOriginalteFromVirtualStates.call(this,newScjson);
     walkUpdateTransitionGraphToTargetVirtualStates.call(this,newScjson);
     walkRemoveDescendantsFromVirtualStates.call(this,newScjson);
+    walkRemoveActionsFromCollapsedStates.call(this,newScjson);
 
     return newScjson; 
   }
@@ -299,46 +372,6 @@ export default class SCJSONToKGraphTransformer {
         }
       }
     })
-    if(!(state.$meta && state.$meta.isCollapsed)){   //skip generating an initial state if he is collapsed
-      var fakeInitialState;
-      if(state.initial){
-        //initial attribute - create a fake <initial> scjson node 
-        var transition = {
-          target : state.initial
-        };
-        if(transition.target.length === 1){
-          transition.target = transition.target[0];
-        }
-        let $type = 'initial';
-        fakeInitialState = {
-          id : this._idGenerator.generateId(state.id, $type),
-          $type : $type,
-          transitions : [transition] 
-        };
-      }else{
-        if(state.states){
-          //take the first child that has initial type, or first child
-          var initialChildren = state.states.filter(function(child){
-            return child.$type === 'initial';
-          });
-
-          if(!initialChildren.length && state.$type !== 'parallel'){
-            let $type = 'initial';
-            fakeInitialState = {
-              id : this._idGenerator.generateId(state.id, $type),
-              $type : $type,
-              transitions : [{
-                target : state.states[0].id
-              }] 
-            }
-          } 
-        }
-      } 
-      if(fakeInitialState){
-        stateKlayNode.children = stateKlayNode.children || [];
-        stateKlayNode.children.push(this._scjsonStateToKlayNode(klayNodeToScjsonMap, idMap, rootState, parentState, fakeInitialState));
-      }
-    }
 
     return stateKlayNode;
   }
@@ -358,21 +391,21 @@ export default class SCJSONToKGraphTransformer {
     console.log('action',action);
     switch(action.$type){
       case 'script':
-        return `\u2615 ${action.content.trim()}`;
+        return `\u2615${action.content.trim()}`;
       case 'assign':
-        return `\u21D2 ${action.location.expr} = ${action.expr.expr}`;
+        return `\u21D2${action.location.expr} = ${action.expr.expr}`;
       case 'data':
-        return `\u21D2 ${action.id}${action.expr && action.expr.expr ? ` = ${action.expr.expr}` : ''}`;
+        return `\u21D2${action.id}${action.expr && action.expr.expr ? ` = ${action.expr.expr}` : ''}`;
       case 'raise':
-        return `\u261D ${action.event}`; //☝
+        return `\u261D${action.event}`; //☝
       case 'send':
-        return `\u2709 ${action.event}${action.target ? ` ${action.target}` : ''}`;
+        return `\u2709${action.event}${action.target ? ` ${action.target}` : ''}`;  //TODO: other send properties
       case 'if':
         return `if ${action.expr}`;
       case 'foreach':
-        return `\u21BA ${action.array} ${action.item}${action.index ? ` ${action.index}` : ''}`;
+        return `\u21BA${action.array} ${action.item}${action.index ? ` ${action.index}` : ''}`;
       case 'log':
-        return `\u33D2 ${action.label ? `${action.label} ` : ''}${action.expr.expr}`;
+        return `\u33D2${action.label ? `${action.label} ` : ''}${action.expr.expr}`;
       default:
         break;
     }

@@ -382,7 +382,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   public toggleExpandContractState(nodeId : string){
     //TODO: refactor this so that it only affects KGraph?
     //transform model
-    let state:SCState = findStateById(this.props.scjson, nodeId);
+    let state:SCState = findStateById(this.props.scjson, nodeId);   //TODO: refactor return type. could be action node
     state.$meta = state.$meta || {};
     state.$meta.isCollapsed = !state.$meta.isCollapsed;   //toggle contracted
     this.initSCJson(this.props, false);
