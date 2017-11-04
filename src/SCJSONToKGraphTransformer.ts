@@ -364,23 +364,15 @@ export default class SCJSONToKGraphTransformer {
       case 'data':
         return `\u21D2 ${action.id}${action.expr && action.expr.expr ? ` = ${action.expr.expr}` : ''}`;
       case 'raise':
-        break;
-      case 'if':
-        break;
-      case 'foreach':
-        break;
-      case 'log':
-        break;
-      case 'datamodel':
-        break;
-      case 'data':
-        break;
+        return `\u261D ${action.event}`; //☝
       case 'send':
-        break;
-      case 'cancel':
-        break;
-      case 'invoke':
-        break;
+        return `\u2709 ${action.event}${action.target ? ` ${action.target}` : ''}`;
+      case 'if':
+        return `if ${action.expr}`;
+      case 'foreach':
+        return `\u21BA ${action.array} ${action.item}${action.index ? ` ${action.index}` : ''}`;
+      case 'log':
+        return `\u33D2 ${action.label ? `${action.label} ` : ''}${action.expr.expr}`;
       default:
         break;
     }
