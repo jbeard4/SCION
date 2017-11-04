@@ -185,7 +185,6 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
   }
 
   private _toAnimationSegments(edge){
-    console.log('edge', edge);
     //start point
     var sourcePoint = {
       x : edge.sourcePoint.x,

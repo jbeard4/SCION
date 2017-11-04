@@ -21,12 +21,11 @@ export default class SCJSONToKGraphTransformer {
   transform(scjson){
     this._normalizeStateIds(scjson);
     scjson.id = 'root';
-    var klayNodeToScjsonMap = new Map();
     var idMap = this._getIdMap(scjson);
     var transformedScjsonCopy1 = this._normalizeScjsonInitialStates(scjson);
     var transformedScjsonCopy2 = this._transformScjsonVirtualCollapsedStates(transformedScjsonCopy1);
-    var rootNode = this._scjsonStateToKlayNode(klayNodeToScjsonMap, idMap, transformedScjsonCopy2, transformedScjsonCopy2, transformedScjsonCopy2);
-    return [klayNodeToScjsonMap, rootNode];
+    var rootNode = this._scjsonStateToKlayNode(idMap, transformedScjsonCopy2, transformedScjsonCopy2, transformedScjsonCopy2);
+    return rootNode;
   }
 
   _getIdMap(scjson){
@@ -275,7 +274,7 @@ export default class SCJSONToKGraphTransformer {
     return allDescendants;
   }
 
-  _scjsonStateToKlayNode(klayNodeToScjsonMap, idMap, rootState, parentState, state){
+  _scjsonStateToKlayNode(idMap, rootState, parentState, state){
     let stateKlayNode : KGraphNode;
     if(state.$type === 'initial' || state.$type === 'final'){
       stateKlayNode = {
@@ -294,7 +293,6 @@ export default class SCJSONToKGraphTransformer {
 
     stateKlayNode.$type = state.$type;  //copy in type information
     this._stateToKlayNodeMap.set(state, stateKlayNode);
-    klayNodeToScjsonMap.set(stateKlayNode, state);
     
     if(state.transitions){
       var newEdges = 
@@ -343,9 +341,9 @@ export default class SCJSONToKGraphTransformer {
       parentKlayNode.edges.push.apply(parentKlayNode.edges, newEdges);
     }
     if(state.states){
-      stateKlayNode.children = state.states.map(this._scjsonStateToKlayNode.bind(this, klayNodeToScjsonMap, idMap, rootState, parentState));
+      stateKlayNode.children = state.states.map(this._scjsonStateToKlayNode.bind(this, idMap, rootState, parentState));
     }
-    ['onEntry', 'onExit', 'datamodel'].forEach( (prop,i) => {
+    ['onEntry', 'onExit', 'datamodel'].forEach( (prop) => {
       var subprop;
       if(prop === 'datamodel'){
         subprop = 'declarations';
@@ -355,7 +353,7 @@ export default class SCJSONToKGraphTransformer {
         if(list.length){
           stateKlayNode.children = stateKlayNode.children || [];
           const o = {
-            "id" : `${state.id}:${prop}:${i}`,
+            "id" : `${state.id}:${prop}`,
             "$type" : "actionContainer",
             "labels" : [{text : prop.toLowerCase()}],
             "properties": { "borderSpacing": 6, "spacing": 0 },
@@ -372,6 +370,49 @@ export default class SCJSONToKGraphTransformer {
         }
       }
     })
+    if(state.invokes && state.invokes.length){
+      stateKlayNode.children = stateKlayNode.children || [];
+      const o = {
+        "id" : `${state.id}:invokes`,
+        "$type" : "actionContainer",
+        "labels" : [{text : 'invokes'}],
+        "properties": { "borderSpacing": 6, "spacing": 0 },
+        "children" : state.invokes.
+                      map((invoke, i) => {
+                        var invokeKlay = 
+                          {
+                            "id" : `${state.id}:invokes:${i}`,
+                          };
+                        if(invoke.src){
+                          _.extend(invokeKlay,{
+                            "labels" : [{text : `\u26A1${invoke.src}`}],
+                            "$type" : "invoke"
+                          });
+                        }else if(invoke.content && invoke.content.rootState){
+                          _.extend(invokeKlay,{
+                            "labels" : [{text : `\u26A1`}],
+                            "$type" : "invoke",
+                            children : [this.transform(invoke.content.rootState)]
+                          });
+                        }else if(invoke.content && invoke.content.expr){
+                          _.extend(invokeKlay,{
+                            "labels" : [{text : `\u26A1${invoke.content.expr.expr}`}],
+                            "$type" : "invoke",
+                          });
+                        }else if(invoke.srcexpr){
+                          _.extend(invokeKlay,{
+                            "labels" : [{text : `\u26A1${invoke.srcexpr.expr}`}],
+                            "$type" : "invoke",
+                          });
+                        }else{
+                          //TODO: srcexpr
+                          throw new Error();
+                        }
+                        return invokeKlay;
+                      })
+      };
+      stateKlayNode.children.push(o);
+    }
 
     return stateKlayNode;
   }
@@ -393,7 +434,7 @@ export default class SCJSONToKGraphTransformer {
       case 'script':
         return `\u2615${action.content.trim()}`;
       case 'assign':
-        return `\u21D2${action.location.expr} = ${action.expr.expr}`;
+        return `\u21D2${action.location.expr} = ${action.expr ? action.expr.expr : ''}${action.location ? action.location.expr : ''}`;
       case 'data':
         return `\u21D2${action.id}${action.expr && action.expr.expr ? ` = ${action.expr.expr}` : ''}`;
       case 'raise':
@@ -405,7 +446,7 @@ export default class SCJSONToKGraphTransformer {
       case 'foreach':
         return `\u21BA${action.array} ${action.item}${action.index ? ` ${action.index}` : ''}`;
       case 'log':
-        return `\u33D2${action.label ? `${action.label} ` : ''}${action.expr.expr}`;
+        return `\u33D2 ${action.label ? `${action.label} ` : ''}${action.expr.expr}`;
       default:
         break;
     }

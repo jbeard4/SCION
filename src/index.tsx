@@ -310,7 +310,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       let idGenerator = new IdGenerator();
       let transformer = new SCJSONToKGraphTransformer(idGenerator, this);
       var newKlayToScjsonMap, newKgraphRoot; 
-      [newKlayToScjsonMap, newKgraphRoot] = transformer.transform(augmentedProps.scjson);
+      newKgraphRoot = transformer.transform(augmentedProps.scjson);
       this.initKGraph(augmentedProps, initialRender, idGenerator, newKgraphRoot);
     }
   }
