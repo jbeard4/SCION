@@ -20,7 +20,6 @@ export default class SCJSONToKGraphTransformer {
 
   transform(scjson){
     this._normalizeStateIds(scjson);
-    scjson.id = 'root';
     var idMap = this._getIdMap(scjson);
     var transformedScjsonCopy1 = this._normalizeScjsonInitialStates(scjson);
     var transformedScjsonCopy2 = this._transformScjsonVirtualCollapsedStates(transformedScjsonCopy1);
@@ -279,7 +278,7 @@ export default class SCJSONToKGraphTransformer {
     if(state.$type === 'initial' || state.$type === 'final'){
       stateKlayNode = {
         "id" : state.id,
-        "labels" : [],
+        "labels" : [{text : `\u25C9 ${state.id}`}],
         "edges" : [],
       };
     }else{

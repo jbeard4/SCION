@@ -76,7 +76,8 @@ export class KGraph {
   _processKGraphPostLayout(kgraph){
     //make sure that the width of the state is 
     function walk(node){
-      if(node.labels && node.labels.length){
+      if(node.labels && node.labels.length &&
+          !(node.$type === 'initial' || node.$type === 'final')){
         var label = node.labels[0].text;
         var [minWidth, height] =  this._svgRenderer.getStateMinDimensions(label, node.$type);
         if(node.width < minWidth){

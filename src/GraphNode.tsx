@@ -289,7 +289,12 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                 "node" : true,
                 "leaf" : isLeaf,
                 "compound" : !isLeaf,
-                [`type__${this.state.to.node.$type}`] : this.state.to.node.$type,
+                [`type__${this.props.node.$type}`] : 
+                  this.props.node.$type !== 'final' ||
+                    (
+                      this.props.node.$type === 'final' && 
+                      !( this.props.node.children && this.props.node.children.length && this.props.node.children.filter( childNode => childNode.$type === 'actionContainer' ))
+                    ),
                 "highlighted" : this.props.configuration && this.props.configuration.indexOf(this.state.to.node.id) > -1,
                 "exited" : exitInitialState || (this.props.previousConfiguration && this.props.previousConfiguration.indexOf(this.state.to.node.id) > -1)
               })
