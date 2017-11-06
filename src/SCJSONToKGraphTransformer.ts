@@ -443,9 +443,9 @@ export default class SCJSONToKGraphTransformer {
       case 'send':
         return `\u2709 ${action.event}${action.target ? ` ${action.target}` : ''}`;  //TODO: other send properties
       case 'if':
-        return `if ${action.expr}`;
+        return `if ${action.cond.expr}`;
       case 'foreach':
-        return `\u21BA${action.array} ${action.item}${action.index ? ` ${action.index}` : ''}`;
+        return `\u27F3 ${action.array.expr} ${action.item}${action.index ? ` ${action.index}` : ''}`;
       case 'log':
         return `\u33D2 ${action.label ? `${action.label} ` : ''}${action.expr.expr}`;
       case 'cancel':
