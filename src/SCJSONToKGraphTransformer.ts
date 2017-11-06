@@ -352,21 +352,34 @@ export default class SCJSONToKGraphTransformer {
         const list = subprop ? state[prop][subprop] : state[prop];
         if(list.length){
           stateKlayNode.children = stateKlayNode.children || [];
-          const o = {
+
+          const recursiveMakeActions = (klayContainer, scjsonActionList) => {
+            klayContainer.children = 
+              scjsonActionList.
+                map((action, i) => {
+                  const klayAction = {
+                    "id" : `${klayContainer.id}:${i}`,
+                    "labels" : [{text : this._actionToLabel(action)}],
+                    "$type" : "action",
+                    "properties": { "borderSpacing": 6, "spacing": 0, direction: "RIGHT" },
+                  };
+
+                  if(action.actions && action.actions.length){
+                    recursiveMakeActions(klayAction, action.actions);
+                  }
+                  return klayAction;
+                })
+            return klayContainer;
+          }
+
+          const klayActionContainer = {
             "id" : `${state.id}:${prop}`,
             "$type" : "actionContainer",
             "labels" : [{text : prop.toLowerCase()}],
-            "properties": { "borderSpacing": 6, "spacing": 0 },
-            "children" : list.reduce(function(a, b){ return a.concat(b); }, []).
-                          map((action, i) => {
-                            return {
-                              "id" : `${state.id}:${prop}:${i}`,
-                              "labels" : [{text : this._actionToLabel(action)}],
-                              "$type" : "action"
-                            };
-                          })
+            "properties": { "borderSpacing": 6, "spacing": 0, direction: "RIGHT" }
           };
-          stateKlayNode.children.push(o);
+          
+          stateKlayNode.children.push(recursiveMakeActions(klayActionContainer, list.reduce(function(a, b){ return a.concat(b); }, [])));
         }
       }
     })
@@ -444,6 +457,10 @@ export default class SCJSONToKGraphTransformer {
         return `\u2709 ${action.event}${action.target ? ` ${action.target}` : ''}`;  //TODO: other send properties
       case 'if':
         return `if ${action.cond.expr}`;
+      case 'elseif':
+        return `elseif ${action.cond.expr}`;
+      case 'else':
+        return `else`;
       case 'foreach':
         return `\u27F3 ${action.array.expr} ${action.item}${action.index ? ` ${action.index}` : ''}`;
       case 'log':
@@ -451,9 +468,8 @@ export default class SCJSONToKGraphTransformer {
       case 'cancel':
         return `\u2717 ${action.sendid ? action.sendid : ''}${action.sendidexpr ? `@sendidexpr : ${action.sendidexpr}` : ''}`;
       default:
-        break;
+        throw new Error('Unrecognized action');
     }
-    return '';
   }
 
 }
