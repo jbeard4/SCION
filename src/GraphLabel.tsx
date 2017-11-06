@@ -13,6 +13,7 @@ export interface GraphLabelProps {
   redraw? : boolean;
   disableAnimation? : boolean;
   highlighted? : boolean;
+  index : number;
 }
 
 export interface GraphLabelAnimation {
@@ -134,11 +135,11 @@ export default class GraphLabel extends React.PureComponent<GraphLabelProps, Gra
   }
 
   private _normalizeSelfLoopEdgeCoordinates(label : KGraphLabel, edge : KGraphEdge){
-    //fix edge label coordinates. Workaround for issue OpenKieler/klayjs#8
+    //fix edge label coordinates. Workaround for issue OpenKieler/klayjs#9, eclipse/elk#79
     if(edge.source === edge.target){
       //debugger;
       label.x = edge.bendPoints[1].x;
-      label.y = edge.bendPoints[1].y;
+      label.y = edge.bendPoints[1].y + this.props.index * label.height;
       label.$meta = {};
       label.$meta.textAnchor = 'end';
 

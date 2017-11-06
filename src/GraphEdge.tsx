@@ -311,6 +311,7 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
               label={label}
               redraw={this.props.redraw}
               disableAnimation={this.props.disableAnimation}
+              index={i}
               />
           ))
         }

@@ -433,11 +433,11 @@ export default class SCJSONToKGraphTransformer {
     console.log('action',action);
     switch(action.$type){
       case 'script':
-        return `\u2615${action.content.trim()}`;
+        return `\u2615 ${action.content.trim()}`;
       case 'assign':
-        return `\u21D2${action.location.expr} = ${action.expr ? action.expr.expr : ''}`;
+        return `${action.location.expr} \u21D0 ${action.expr ? action.expr.expr : ''}`;
       case 'data':
-        return `\u21D2${action.id}${action.expr && action.expr.expr ? ` = ${action.expr.expr}` : ''}`;
+        return `${action.id}${action.expr && action.expr.expr ? ` \u21D0 ${action.expr.expr}` : ''}`;
       case 'raise':
         return `\u261D${action.event}`; //☝
       case 'send':
