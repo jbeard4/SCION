@@ -399,7 +399,7 @@ export default class SCJSONToKGraphTransformer {
                         const invokeLabelPrefix = `\u26A1${invoke.id ? ` ${invoke.id} ` : ''}`;
                         if(invoke.src){
                           _.extend(invokeKlay,{
-                            "labels" : [{text : `${invokeLabelPrefix} @src: ${invoke.src}`}],
+                            "labels" : [{text : `${invokeLabelPrefix} src: ${invoke.src}`}],
                             "$type" : "invoke"
                           });
                         }else if(invoke.content && invoke.content.rootState){
@@ -415,7 +415,7 @@ export default class SCJSONToKGraphTransformer {
                           });
                         }else if(invoke.srcexpr){
                           _.extend(invokeKlay,{
-                            "labels" : [{text : `${invokeLabelPrefix} @srcexpr: ${invoke.srcexpr.expr}`}],
+                            "labels" : [{text : `${invokeLabelPrefix} srcexpr: ${invoke.srcexpr.expr}`}],
                             "$type" : "invoke",
                           });
                         }else{
@@ -446,15 +446,28 @@ export default class SCJSONToKGraphTransformer {
     console.log('action',action);
     switch(action.$type){
       case 'script':
-        return `\u2615 ${action.content.trim()}`;
+        return `\u2615 ${action.src ? `src : ${action.src}` : action.content.trim() }`;
       case 'assign':
-        return `${action.location.expr} \u21D0 ${action.expr ? action.expr.expr : ''}`;
+        return `${action.location.expr} \u21D0 ${action.content ? JSON.stringify(action.content.content) : (action.expr ? action.expr.expr : '')}`; //TODO: we probably want to truncate content
       case 'data':
         return `${action.id}${action.expr && action.expr.expr ? ` \u21D0 ${action.expr.expr}` : ''}`;
       case 'raise':
         return `\u261D${action.event}`; //☝
       case 'send':
-        return `\u2709 ${action.event}${action.target ? ` ${action.target}` : ''}`;  //TODO: other send properties
+        return `\u2709 ${
+          [
+            action.event	 ? `event	: ${ action.event}`	 : '',
+            action.eventexp ? `eventexpr : ${action.eventexpr.expr }`: '',
+            action.target	 ? `target	  : ${action.target	 }`: '',
+            action.targetexpr ? `targetexpr : ${action.targetexpr.expr }`: '',
+            //action.type ? `type	  : ${action.type	 }`: '',
+            //action.typeexpr	 ? `typeexpr : ${action.typeexpr.expr	 }`: '',
+            action.id	? `id	  : ${action.id	 }`: '',
+            action.idlocation	 ? `idlocation : ${action.idlocation.expr	 }`: '',
+            action.delay? `delay	  : ${action.delay	 }`: '',
+            action.delayexpr ? `delayexpr : ${action.delayexpr.expr	 }`: '',
+            action.namelist ? `namelist  : ${action.namelist.expr }`: ''
+          ].filter( s => s).join(', ') }`
       case 'if':
         return `if ${action.cond.expr}`;
       case 'elseif':
@@ -464,9 +477,14 @@ export default class SCJSONToKGraphTransformer {
       case 'foreach':
         return `\u27F3 ${action.item}${action.index ? `, ${action.index}` : ''} in ${action.array.expr}`;
       case 'log':
-        return `\u33D2 ${action.label ? `${action.label} ` : ''}${action.expr.expr}`;
+        return `\u33D2 ${
+            [
+              action.label ? `label : ${action.label}` : '',
+              action.expr ? `expr : ${action.expr.expr}` : ''
+            ].filter( s => s ).join(', ')
+          }`;
       case 'cancel':
-        return `\u2717 ${action.sendid ? action.sendid : ''}${action.sendidexpr ? `@sendidexpr : ${action.sendidexpr}` : ''}`;
+        return `\u2717 ${action.sendid ? action.sendid : ''}${action.sendidexpr ? `sendidexpr : ${action.sendidexpr.expr}` : ''}`;
       default:
         throw new Error('Unrecognized action');
     }
