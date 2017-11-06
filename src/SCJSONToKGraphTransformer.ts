@@ -462,7 +462,7 @@ export default class SCJSONToKGraphTransformer {
       case 'else':
         return `else`;
       case 'foreach':
-        return `\u27F3 ${action.array.expr} ${action.item}${action.index ? ` ${action.index}` : ''}`;
+        return `\u27F3 ${action.item}${action.index ? `, ${action.index}` : ''} in ${action.array.expr}`;
       case 'log':
         return `\u33D2 ${action.label ? `${action.label} ` : ''}${action.expr.expr}`;
       case 'cancel':
