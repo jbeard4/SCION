@@ -282,7 +282,8 @@ export default class SCJSONToKGraphTransformer {
         "edges" : [],
       };
     }else{
-      var label = state.$type === 'virtual' ? '...' : state.id;
+      var label = state.$type === 'virtual' ? '...' : 
+        ( !state.$type || state.$type === 'parallel' || state.$type === 'state' ? state.id : '')
       stateKlayNode = {
         "id" : state.id,
         "labels" : [ { text : label || '' } ],
@@ -382,25 +383,26 @@ export default class SCJSONToKGraphTransformer {
                           {
                             "id" : `${state.id}:invokes:${i}`,
                           };
+                        const invokeLabelPrefix = `\u26A1${invoke.id ? ` ${invoke.id} ` : ''}`;
                         if(invoke.src){
                           _.extend(invokeKlay,{
-                            "labels" : [{text : `\u26A1${invoke.src}`}],
+                            "labels" : [{text : `${invokeLabelPrefix} @src: ${invoke.src}`}],
                             "$type" : "invoke"
                           });
                         }else if(invoke.content && invoke.content.rootState){
                           _.extend(invokeKlay,{
-                            "labels" : [{text : `\u26A1`}],
+                            "labels" : [{text : invokeLabelPrefix}],
                             "$type" : "invoke",
                             children : [this.transform(invoke.content.rootState)]
                           });
                         }else if(invoke.content && invoke.content.expr){
                           _.extend(invokeKlay,{
-                            "labels" : [{text : `\u26A1${invoke.content.expr.expr}`}],
+                            "labels" : [{text : `${invokeLabelPrefix} content/@expr: ${invoke.content.expr.expr}`}],
                             "$type" : "invoke",
                           });
                         }else if(invoke.srcexpr){
                           _.extend(invokeKlay,{
-                            "labels" : [{text : `\u26A1${invoke.srcexpr.expr}`}],
+                            "labels" : [{text : `${invokeLabelPrefix} @srcexpr: ${invoke.srcexpr.expr}`}],
                             "$type" : "invoke",
                           });
                         }else{
@@ -433,19 +435,21 @@ export default class SCJSONToKGraphTransformer {
       case 'script':
         return `\u2615${action.content.trim()}`;
       case 'assign':
-        return `\u21D2${action.location.expr} = ${action.expr ? action.expr.expr : ''}${action.location ? action.location.expr : ''}`;
+        return `\u21D2${action.location.expr} = ${action.expr ? action.expr.expr : ''}`;
       case 'data':
         return `\u21D2${action.id}${action.expr && action.expr.expr ? ` = ${action.expr.expr}` : ''}`;
       case 'raise':
         return `\u261D${action.event}`; //☝
       case 'send':
-        return `\u2709${action.event}${action.target ? ` ${action.target}` : ''}`;  //TODO: other send properties
+        return `\u2709 ${action.event}${action.target ? ` ${action.target}` : ''}`;  //TODO: other send properties
       case 'if':
         return `if ${action.expr}`;
       case 'foreach':
         return `\u21BA${action.array} ${action.item}${action.index ? ` ${action.index}` : ''}`;
       case 'log':
         return `\u33D2 ${action.label ? `${action.label} ` : ''}${action.expr.expr}`;
+      case 'cancel':
+        return `\u2717 ${action.sendid ? action.sendid : ''}${action.sendidexpr ? `@sendidexpr : ${action.sendidexpr}` : ''}`;
       default:
         break;
     }
