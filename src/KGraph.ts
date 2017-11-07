@@ -102,10 +102,109 @@ export class KGraph {
         graph : kgraph, 
         options : options,
         success : ( g => {
-          this._processKGraphPostLayout(g);
           debug('Layout in %sms',Date.now() - t1);
           debug('kgraph after layout',JSON.stringify(g,null,4));   //TODO: enable debug module
-          cb(null, g);
+
+          //1. accumulate transition action nodes
+          const transtionActionNodeMatches = (function(){
+            const accumulator = [];
+            function walk(parentNode, node){
+              let m = node.id.match(/^([^:]+):transition:(\d+):onTransition$/)
+              if(m){
+                accumulator.push([node,m[1],parseInt(m[2]),parentNode]);
+              }
+              if(node.children) node.children.forEach(walk.bind(this,parentNode));
+            }
+            walk(g,g);
+            return accumulator;
+          })();
+
+          //if we don't have any transition action nodes, then we are done.
+          if(!transtionActionNodeMatches.length) return cb(null, g);
+
+          //2. otherwise, traverse graph and strip x and y coordinates. we preserve widths and heights
+          (function(){
+            function walk(node){
+              delete node.x;
+              delete node.y;
+              if(node.children && node.$type !== 'actionContainer') node.children.forEach(walk);
+            }
+            walk(g);
+          })();
+
+          //3. remove transition action nodes from graph
+          (function(){
+            const transtionActionNodes = new Set(transtionActionNodeMatches.map( node => node[0] )); 
+            function walk(node){
+              if(node.children) {
+                node.children = node.children.filter( c => !transtionActionNodes.has(c) );
+                node.children.forEach(walk);
+              }
+            }
+            walk(g);
+          })();
+
+          //4. convert transition action nodes to fake transition labels with appropriate widths and heights
+          const fakeLabelToTransitionActionNodeMap = new Map<KGraphLabel, KGraphNode>();
+          (function(){
+            function walk(node){
+              if(node.edges) node.edges.forEach( (edge, i) => {
+                const transitionActionNodeMatch = transtionActionNodeMatches.filter( ([transitionActionNode, transitionSourceStateId, transitionIndex]) => edge.source === transitionSourceStateId && transitionIndex === i )[0]
+                if(transitionActionNodeMatch){
+                  const transitionActionNode = transitionActionNodeMatch[0];
+                  edge.labels = edge.labels || [];
+                  const klayLabel = new KGraphLabel();
+                  _.extend(klayLabel, { 
+                    text : '',
+                    width : transitionActionNode.width,
+                    height : transitionActionNode.height
+                  });
+                  fakeLabelToTransitionActionNodeMap.set(klayLabel, transitionActionNode); 
+                  edge.labels.push(klayLabel);
+                }   
+              })
+              if(node.children) node.children.forEach(walk);
+            }
+            walk(g);
+          })();
+
+          //5. then re-run layout to get x and y coordinates
+          klayjs.layout({
+            graph : g, 
+            options : options,
+            success : ( g2 => {
+
+              //6. then remove fake transition labels from the graph
+              //7. then use the x, y coordinates from fake transition labels to the transition action nodes, and add the transition action nodes back to the graph.
+              (function(){
+                function walk(node){
+                  if(node.edges) node.edges.forEach( (edge, i) => {
+                    const fakeLabels = edge.labels.filter( label => fakeLabelToTransitionActionNodeMap.has(label));
+  
+                    fakeLabels.forEach( label => {
+                      const transitionActionNode = fakeLabelToTransitionActionNodeMap.get(label); 
+                      transitionActionNode.x = label.x;
+                      transitionActionNode.y = label.y;
+
+                      let parentNode = transtionActionNodeMatches.filter( transtionActionNodeMatch => transtionActionNodeMatch[0] === transitionActionNode)[0][3];
+                      parentNode.children = parentNode.children || [];
+                      parentNode.children.push(transitionActionNode);
+                    }); 
+
+                    //filter labels to remove fake labels
+                    edge.labels = edge.labels.filter( label => !fakeLabelToTransitionActionNodeMap.has(label));
+                  })   
+                  if(node.children) node.children.forEach(walk);
+                }
+                walk(g2);
+              })();
+
+              this._processKGraphPostLayout(g2);
+
+              cb(null, g2);
+            })
+          })
+
         }),
         error : (error) => cb(error)
       });

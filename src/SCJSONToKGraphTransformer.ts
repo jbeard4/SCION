@@ -275,6 +275,29 @@ export default class SCJSONToKGraphTransformer {
 
   _scjsonStateToKlayNode(idMap, rootState, parentState, state){
     let stateKlayNode : KGraphNode;
+
+    const ACTIONPROPS = { "borderSpacing": 6, "spacing": 0, direction: "RIGHT" };
+    const parentKlayNode = this._stateToKlayNodeMap.get(parentState);
+
+    const recursiveMakeActions = (klayContainer, scjsonActionList) => {
+      klayContainer.children = 
+        scjsonActionList.
+          map((action, i) => {
+            const klayAction = {
+              "id" : `${klayContainer.id}:${i}`,
+              "labels" : [{text : this._actionToLabel(action)}],
+              "$type" : "action",
+              "properties": { "borderSpacing": 6, "spacing": 0, direction: "RIGHT" },
+            };
+
+            if(action.actions && action.actions.length){
+              recursiveMakeActions(klayAction, action.actions);
+            }
+            return klayAction;
+          })
+      return klayContainer;
+    }
+
     if(state.$type === 'initial' || state.$type === 'final'){
       stateKlayNode = {
         "id" : state.id,
@@ -301,7 +324,7 @@ export default class SCJSONToKGraphTransformer {
             if(!transition.target) return null;   //TODO: also render targetless transitions 
             var klayEdge = new KGraphEdge();
             _.extend(klayEdge, {
-              id : `${state.id}:${idx}`,
+              id : `${state.id}:transition:${idx}`,
               source : state.id,
               target : transition.target,
               labels : []
@@ -320,14 +343,15 @@ export default class SCJSONToKGraphTransformer {
               klayEdge.labels.push(klayLabel);
             }
             if(transition.onTransition && transition.onTransition.length){
-              klayEdge.labels.push.apply(klayEdge.labels,
-                transition.onTransition.map( action => {
-                  var klayLabel = new KGraphLabel();
-                  _.extend(klayLabel, { 
-                    text : this._actionToLabel(action)
-                  });
-                  return klayLabel; 
-                }));
+              parentKlayNode.children = parentKlayNode.children || [];
+              const klayActionContainer = {
+                "id" : `${state.id}:transition:${idx}:onTransition`,
+                "$type" : "actionContainer",
+                "labels" : [{text : 'ontransition'}],
+                "properties": ACTIONPROPS 
+              };
+
+              parentKlayNode.children.push(recursiveMakeActions(klayActionContainer, transition.onTransition));
             }
             if(transition.type){
               klayEdge.$type = transition.type;
@@ -337,11 +361,12 @@ export default class SCJSONToKGraphTransformer {
           }.bind(this))
           .filter(function(klayEdge){return klayEdge}); //filter out the null edges
 
-      var parentKlayNode = this._stateToKlayNodeMap.get(parentState);
       parentKlayNode.edges.push.apply(parentKlayNode.edges, newEdges);
     }
     if(state.states){
-      stateKlayNode.children = state.states.map(this._scjsonStateToKlayNode.bind(this, idMap, rootState, parentState));
+      stateKlayNode.children = stateKlayNode.children || [];
+      stateKlayNode.children.push.apply(stateKlayNode.children, 
+        state.states.map(this._scjsonStateToKlayNode.bind(this, idMap, rootState, parentState)));
     }
     ['onEntry', 'onExit', 'datamodel'].forEach( (prop) => {
       var subprop;
@@ -353,30 +378,11 @@ export default class SCJSONToKGraphTransformer {
         if(list.length){
           stateKlayNode.children = stateKlayNode.children || [];
 
-          const recursiveMakeActions = (klayContainer, scjsonActionList) => {
-            klayContainer.children = 
-              scjsonActionList.
-                map((action, i) => {
-                  const klayAction = {
-                    "id" : `${klayContainer.id}:${i}`,
-                    "labels" : [{text : this._actionToLabel(action)}],
-                    "$type" : "action",
-                    "properties": { "borderSpacing": 6, "spacing": 0, direction: "RIGHT" },
-                  };
-
-                  if(action.actions && action.actions.length){
-                    recursiveMakeActions(klayAction, action.actions);
-                  }
-                  return klayAction;
-                })
-            return klayContainer;
-          }
-
           const klayActionContainer = {
             "id" : `${state.id}:${prop}`,
             "$type" : "actionContainer",
             "labels" : [{text : prop.toLowerCase()}],
-            "properties": { "borderSpacing": 6, "spacing": 0, direction: "RIGHT" }
+            "properties": ACTIONPROPS
           };
           
           stateKlayNode.children.push(recursiveMakeActions(klayActionContainer, list.reduce(function(a, b){ return a.concat(b); }, [])));
@@ -389,7 +395,7 @@ export default class SCJSONToKGraphTransformer {
         "id" : `${state.id}:invokes`,
         "$type" : "actionContainer",
         "labels" : [{text : 'invokes'}],
-        "properties": { "borderSpacing": 6, "spacing": 0 },
+        "properties": ACTIONPROPS,
         "children" : state.invokes.
                       map((invoke, i) => {
                         var invokeKlay = 
@@ -443,7 +449,7 @@ export default class SCJSONToKGraphTransformer {
   }
 
   _actionToLabel(action){
-    console.log('action',action);
+    //console.log('action',action);
     switch(action.$type){
       case 'script':
         return `\u2615 ${action.src ? `src : ${action.src}` : action.content.trim() }`;
