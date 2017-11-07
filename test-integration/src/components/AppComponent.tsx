@@ -9,7 +9,6 @@ interface AppComponentState {
   scxmlDocumentString? : string;
   urlToSCXML? : string;
   scjson? : scxml.scion.SCState;
-  modelFactory : scxml.scion.ModelFactory;
 
   targetAPI : string;
   pathToSelectedTest : string;
@@ -33,7 +32,6 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
     this.state = {
       allTests : [],
       scjson : null,
-      modelFactory : null,
       redraw : false,
       disableAnimation : true,
       interpreter : null,
@@ -45,8 +43,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
   }
 
   private loadData(){
-    const scionCoreBaseUrl= '/test-integration/node_modules/@jbeard/scion-core/test/tests';
-    jQuery.getJSON(`${scionCoreBaseUrl}/tests.json`).then((responseData) => {
+    jQuery.getJSON('/scxml-tests').then((responseData) => {
       let testPairs = 
             [
               '/tests/transition-types/test0.scxml',
@@ -61,7 +58,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
               '/tests/transition-types/test9.scxml',
               '/tests/transition-types/test10.scxml'
             ].concat(
-              responseData.map((testUrl) =>`${scionCoreBaseUrl}/${testUrl}`)
+              responseData.map(pair => pair[0])
             );
       this.setState({
         allTests : testPairs,
@@ -69,13 +66,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
       }, this.refreshDataStructuresOnChange.bind(this));
     });
   }
- 
 
-  componentDidMount(){
-    this.mergeCheckbox.checked = !this.state.redraw;
-    this.animateCheckbox.checked = !this.state.disableAnimation;
-    this.apiRadioButton.checked = true;
-  }
 
   private refreshDataStructuresOnChange(){
     if(this.state.pathToSelectedTest.match(/\.(sc)?xml$/)){
@@ -88,7 +79,6 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
           urlToSCXML : null,
           scxmlDocumentString : null,
           scjson : null,
-          modelFactory : null,
           interpreter : null,
           configuration : null
         }); 
@@ -98,12 +88,12 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
           urlToSCXML : this.state.pathToSelectedTest,
           scxmlDocumentString : null,
           scjson : null,
-          modelFactory : null,
           interpreter : null,
           configuration : null
         }); 
       }
     } 
+
     const jqXHR = jQuery.ajax({
       url : this.state.pathToSelectedTest,
       method : 'GET',
@@ -111,16 +101,6 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
     });
     jqXHR.then((responseData) => {
       let contentType = jqXHR.getResponseHeader('content-type').split(';')[0]; 
-
-      const parseDocStringWithSCION = (cb) => {
-        scxml.documentStringToModel(this.state.pathToSelectedTest, responseData, (err, model : scxml.ModelFactoryFactory) => {
-          if(err) throw err;
-          model.prepare((err, modelFactory : scxml.scion.ModelFactory) => {
-            if(err) throw err;
-            cb(modelFactory);
-          });
-        });
-      }
 
       switch(contentType){
         case 'application/scxml+xml':
@@ -133,36 +113,19 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
                 urlToSCXML : null,
                 scxmlDocumentString : responseData,
                 scjson : null,
-                modelFactory : null,
                 interpreter : null,
                 configuration : null
               }); 
               break;
-            case 'modelFactory':
-              parseDocStringWithSCION( (modelFactory: scxml.scion.ModelFactory) => {
-                this.setState({
-                  pathToSCXML : null,
-                  urlToSCXML : null,
-                  scxmlDocumentString : null,
-                  scjson : null,
-                  modelFactory : modelFactory,
-                  interpreter : null,
-                  configuration : null
-                }); 
-              })
-              break;
             case 'scjson':
-              parseDocStringWithSCION( (modelFactory: scxml.scion.ModelFactory) => {
-                this.setState({
-                  pathToSCXML : null,
-                  urlToSCXML : null,
-                  scxmlDocumentString : null,
-                  scjson : modelFactory(),
-                  modelFactory : null,
-                  interpreter : null,
-                  configuration : null
-                }); 
-              })
+              this.setState({
+                pathToSCXML : null,
+                urlToSCXML : null,
+                scxmlDocumentString : null,
+                scjson : scxml.ext.compilerInternals.scxmlToScjson(responseData),
+                interpreter : null,
+                configuration : null
+              }); 
               break;
             default:
               throw new Error('Unexpected API');
@@ -175,7 +138,6 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
               urlToSCXML : null,
               scxmlDocumentString : null,
               scjson : JSON.parse(responseData),
-              modelFactory : null,
               interpreter : null,
               configuration : null
             }); 
@@ -184,26 +146,15 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
           }
           break;
         case 'application/javascript':
+          //TODO: better support this case
           let modelFactory = eval(responseData.replace(/module.exports *= */,''));
           switch(this.state.targetAPI){
-            case 'modelFactory':
-              this.setState({
-                pathToSCXML : null,
-                urlToSCXML : null,
-                scxmlDocumentString : null,
-                scjson : null,
-                modelFactory : modelFactory,
-                interpreter : null,
-                configuration : null
-              }); 
-              break;
             case 'scjson':
               this.setState({
                 pathToSCXML : null,
                 urlToSCXML : null,
                 scxmlDocumentString : null,
                 scjson : modelFactory(),
-                modelFactory : null,
                 interpreter : null,
                 configuration : null
               }); 
@@ -216,6 +167,13 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
          throw new Error('Unrecognized mime type in response');
       }
     });
+  }
+ 
+
+  componentDidMount(){
+    this.mergeCheckbox.checked = !this.state.redraw;
+    this.animateCheckbox.checked = !this.state.disableAnimation;
+    this.apiRadioButton.checked = true;
   }
 
   private handleAPIChange(event){
@@ -249,6 +207,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
     }
 
     private stopInterpreter(cb? : () => any){
+        this.state.interpreter.off('onBigStepEnd');
         this.setState({
           interpreter : null,
           configuration : null
@@ -272,6 +231,11 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
 
         const handleModelOrModelFactory = (model : scxml.scion.SCState | scxml.scion.ModelFactory) => {
           let interpreter = new scxml.scion.Statechart(model); 
+          interpreter.on('onBigStepEnd',() => {
+            this.setState({
+              configuration : interpreter.getConfiguration() 
+            });
+          })
           interpreter.start();
           let configuration = interpreter.getConfiguration();
           this.setState({
@@ -289,9 +253,6 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
             break;
           case 'scxmlDocumentString':
             scxml.documentStringToModel(null, this.state.scxmlDocumentString, handleModelFactoryFactory);
-            break;
-          case 'modelFactory':
-            handleModelOrModelFactory(this.state.modelFactory);
             break;
           case 'scjson':
             handleModelOrModelFactory(this.state.scjson);
@@ -358,11 +319,6 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
                 </input>
                 <label htmlFor="apiChoice3">scxmlDocumentString</label>
 
-                <input onChange={this.handleAPIChange.bind(this)} type="radio" id="apiChoice4"
-                 name="api" value="modelFactory">
-                </input>
-                <label htmlFor="apiChoice4">modelFactory</label>
-
                 <input onChange={this.handleAPIChange.bind(this)} type="radio" id="apiChoice5"
                  name="api" value="scjson">
                 </input>
@@ -381,14 +337,12 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
                 this.state.pathToSCXML ||
                 this.state.urlToSCXML || 
                 this.state.scxmlDocumentString || 
-                this.state.modelFactory ||
                 this.state.scjson
               ) &&
               <SCHVIZ
                 pathToSCXML={this.state.pathToSCXML}
                 urlToSCXML={this.state.urlToSCXML}
                 scxmlDocumentString={this.state.scxmlDocumentString}
-                modelFactory={this.state.modelFactory}
                 scjson={this.state.scjson}
                 layoutOptions={this.state.layoutOptions}
                 redraw={this.state.redraw}
@@ -398,7 +352,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
             }
           </div>
           <Console  
-            handleSubmit={(e : scxml.scion.Event) => this.setState({configuration : this.state.interpreter.gen(e)})} 
+            handleSubmit={(e : scxml.scion.Event) => this.state.interpreter.gen(e)} 
             isActive={!!this.state.interpreter}/>
         </div>
       </div>;

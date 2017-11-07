@@ -17,7 +17,6 @@ export interface GraphRootProps {
   pathToSCXML? : string;
   urlToSCXML? : string;
   scxmlDocumentString? : string;
-  modelFactory? : scxml.scion.ModelFactory, 
   scjson? : scxml.scion.SCState,  //TODO: refactor this property name to 'scState' 
   kgraphRoot? : KGraphNode,
   layoutOptions? : LayoutOptions,
@@ -163,10 +162,9 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       ) 
     ) this.initSCXML(props, false);
     if(
-      ( props.scjson || props.modelFactory ) &&
+      ( props.scjson ) &&
       (
         props.scjson !== this.props.scjson ||
-        props.modelFactory !== this.props.modelFactory ||
         props.layoutOptions !== this.props.layoutOptions
       ) 
     ) this.initSCJson(props, false);
@@ -281,21 +279,22 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
 
   private initSCXML(props : GraphRootProps , initialRender : boolean){
 
-    const handler = (err, model : scxml.ModelFactoryFactory) => {
-      if(err) throw err;
-      model.prepare((err, modelFactory : scxml.scion.ModelFactory) => {
-        if(err) throw err;
-        let augmentedProps = _.extend({}, props, {modelFactory : modelFactory});
-        this.initSCJson(augmentedProps, initialRender);
-      });
+    const handler = (text) => {
+      let scjson = scxml.ext.compilerInternals.scxmlToScjson(text);
+      let augmentedProps = _.extend({}, props, {scjson : scjson});
+      this.initSCJson(augmentedProps, initialRender);
     }
 
     if(props.pathToSCXML){
-      scxml.pathToModel(props.pathToSCXML, handler);
+      fetch(props.pathToSCXML).then(function(response) {
+        return response.text();
+      }).then(handler);
     }else if(props.urlToSCXML){
-      scxml.urlToModel(props.urlToSCXML, handler);
+      fetch(props.urlToSCXML).then(function(response) {
+        return response.text();
+      }).then(handler);
     }else if(props.scxmlDocumentString){
-      scxml.documentStringToModel(null, props.scxmlDocumentString, handler);
+      handler(props.scxmlDocumentString);
     }else {
       throw new Error('TODO');
     }
@@ -305,13 +304,12 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   private initSCJson(props : GraphRootProps , initialRender : boolean){
     //if scjson is not the same, create a new kgraph
     //TODO: memoize
-    let augmentedProps = props.modelFactory ? _.extend({}, props, {scjson : props.modelFactory()}) : props;
-    if(augmentedProps.scjson){
+    if(props.scjson){
       let idGenerator = new IdGenerator();
       let transformer = new SCJSONToKGraphTransformer(idGenerator, this);
       var newKlayToScjsonMap, newKgraphRoot; 
-      newKgraphRoot = transformer.transform(augmentedProps.scjson);
-      this.initKGraph(augmentedProps, initialRender, idGenerator, newKgraphRoot);
+      newKgraphRoot = transformer.transform(props.scjson);
+      this.initKGraph(props, initialRender, idGenerator, newKgraphRoot);
     }
   }
 
@@ -356,7 +354,6 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       'urlToSCXML',
       'scxmlDocumentString',
       'scjson',
-      'modelFactory',
       'kgraphRoot'
     ]
     let namesInProps = propNames.filter( n => props[n] )
