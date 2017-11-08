@@ -111,7 +111,7 @@ export class KGraph {
             function walk(parentNode, node){
               let m = node.id.match(/^([^:]+):transition:(\d+):onTransition$/)
               if(m){
-                accumulator.push([node,m[1],parseInt(m[2]),parentNode]);
+                accumulator.push([node,m[1],parseInt(m[2])]);
               }
               if(node.children) node.children.forEach(walk.bind(this,node));
             }
@@ -120,14 +120,18 @@ export class KGraph {
           })();
 
           //if we don't have any transition action nodes, then we are done.
-          if(!transtionActionNodeMatches.length) return cb(null, g);
+          if(!transtionActionNodeMatches.length){ 
+            this._processKGraphPostLayout(g);
+            normalizeSelfLoopEdgeCoordinates.call(this, g);
+            return cb(null, g);
+          }
 
           //2. otherwise, traverse graph and strip x and y coordinates. we preserve widths and heights
           (function(){
             function walk(node){
               delete node.x;
               delete node.y;
-              if(node.children && node.$type !== 'actionContainer') node.children.forEach(walk);
+              if(node.children && node.$type !== 'actionContainer' && node.$type !== 'transitionActionContainer') node.children.forEach(walk);
             }
             walk(g);
           })();
@@ -147,9 +151,13 @@ export class KGraph {
           //4. convert transition action nodes to fake transition labels with appropriate widths and heights
           const fakeLabelToTransitionActionNodeMap = new Map<KGraphLabel, KGraphNode>();
           (function(){
+            const re = /^([^:]+):transition:(\d+)$/
             function walk(node){
               if(node.edges) node.edges.forEach( (edge, i) => {
-                const transitionActionNodeMatch = transtionActionNodeMatches.filter( ([transitionActionNode, transitionSourceStateId, transitionIndex]) => edge.source === transitionSourceStateId && transitionIndex === i )[0]
+                const transitionActionNodeMatch = 
+                  transtionActionNodeMatches.filter( ([transitionActionNode, transitionSourceStateId, transitionIndex]) => 
+                    edge.source === transitionSourceStateId && parseInt(edge.id.match(re)[2]) === transitionIndex 
+                  )[0]
                 if(transitionActionNodeMatch){
                   const transitionActionNode = transitionActionNodeMatch[0];
                   edge.labels = edge.labels || [];
@@ -174,8 +182,10 @@ export class KGraph {
             options : options,
             success : ( g2 => {
 
-              //6. then remove fake transition labels from the graph
-              //7. then use the x, y coordinates from fake transition labels to the transition action nodes, and add the transition action nodes back to the graph.
+              normalizeSelfLoopEdgeCoordinates.call(this, g2);
+
+              //7. then remove fake transition labels from the graph
+              //8. then use the x, y coordinates from fake transition labels to the transition action nodes, and add the transition action nodes back to the graph.
               (function(){
                 function walk(node){
                   if(node.edges) node.edges.forEach( (edge, i) => {
@@ -183,10 +193,17 @@ export class KGraph {
   
                     fakeLabels.forEach( label => {
                       const transitionActionNode = fakeLabelToTransitionActionNodeMap.get(label); 
-                      transitionActionNode.x = label.x;
-                      transitionActionNode.y = label.y;
+                      if(edge.source === edge.target){
+                        //manually position transitionActionNode on self loops. 
+                        transitionActionNode.x = edge.labels[0].x;
+                        transitionActionNode.y = edge.labels[0].height + edge.labels[0].y;
+                      } else {
+                        //Use the x/y coordinates on the fakeLabel.
+                        transitionActionNode.x = label.x;
+                        transitionActionNode.y = label.y;
+                      }
 
-                      let parentNode = transtionActionNodeMatches.filter( transtionActionNodeMatch => transtionActionNodeMatch[0] === transitionActionNode)[0][3];
+                      let parentNode = this._idMap.get(this._childToParentMap.get(edge.source));   //look up parent of transition source state
                       parentNode.children = parentNode.children || [];
                       parentNode.children.push(transitionActionNode);
                     }); 
@@ -194,10 +211,10 @@ export class KGraph {
                     //filter labels to remove fake labels
                     edge.labels = edge.labels.filter( label => !fakeLabelToTransitionActionNodeMap.has(label));
                   })   
-                  if(node.children) node.children.forEach(walk);
+                  if(node.children) node.children.forEach(walk.bind(this));
                 }
-                walk(g2);
-              })();
+                walk.call(this,g2);
+              }.bind(this))();
 
               this._processKGraphPostLayout(g2);
 
@@ -212,6 +229,37 @@ export class KGraph {
       cb(e); 
     }
     return kgraph;
+
+
+    //6. normalize self loop edge coordinates
+    function normalizeSelfLoopEdgeCoordinates(rootNode){
+      function walk(node){
+        //fix edge label coordinates. Workaround for issue OpenKieler/klayjs#9, eclipse/elk#79
+        if(node.edges) node.edges.forEach( (edge, i) => {
+          if(edge.source === edge.target){
+            edge.labels.forEach( (label, i) => {
+              label.x = edge.bendPoints[2].x;
+              label.y = edge.bendPoints[2].y + edge.labels.slice(0,i).reduce((a, b) => a + b.height,0)
+              label.$meta = {};
+              label.$meta.textAnchor = 'begin';
+
+              //does the self edge loop up or down?
+              if(edge.bendPoints[0].y < edge.bendPoints[1].y){
+                //line has positive slope
+                //goes below the slope
+                label.$meta.dominantBaseline = 'text-before-edge';
+              }else {
+                //line has negative slope
+                //goes above the slope
+                label.$meta.dominantBaseline = 'text-after-edge';
+              }
+            });
+          }
+        });
+        if(node.children) node.children.forEach(walk.bind(this));
+      }
+      walk.call(this,rootNode);
+    }
   }
 
   _normalizeKgraphTransitionTargets(kgraph){

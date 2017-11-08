@@ -298,6 +298,20 @@ export default class SCJSONToKGraphTransformer {
       return klayContainer;
     }
 
+    const genTransitionLabel = (transition) => {
+
+      var event = transition.event;
+      var condExpr;
+      if (typeof transition.cond === 'object' && typeof transition.cond.expr === 'string'){
+        condExpr = transition.cond.expr;
+      } 
+      if(event || condExpr){
+        return `${event || ''}${condExpr ? `[${condExpr}]` : ''}${transition.onTransition && transition.onTransition.length ? '/' : ''}`
+      } else {
+        return null;
+      }
+    }
+
     if(state.$type === 'initial' || state.$type === 'final'){
       stateKlayNode = {
         "id" : state.id,
@@ -330,15 +344,11 @@ export default class SCJSONToKGraphTransformer {
               labels : []
             });
 
-            var event = transition.event;
-            var condExpr;
-            if (typeof transition.cond === 'object' && typeof transition.cond.expr === 'string'){
-              condExpr = transition.cond.expr;
-            } 
-            if(event || condExpr){
+            const label = genTransitionLabel(transition);
+            if(label){
               var klayLabel = new KGraphLabel();
               _.extend(klayLabel, { 
-                text : `${event || ''}${condExpr ? `[${condExpr}]` : ''}${transition.onTransition && transition.onTransition.length ? '/' : ''}`
+                text : label              
               });
               klayEdge.labels.push(klayLabel);
             }
@@ -356,7 +366,6 @@ export default class SCJSONToKGraphTransformer {
             if(transition.type){
               klayEdge.$type = transition.type;
             }
-            transition._klayEdge = klayEdge;
             return klayEdge;
           }.bind(this))
           .filter(function(klayEdge){return klayEdge}); //filter out the null edges
@@ -367,6 +376,36 @@ export default class SCJSONToKGraphTransformer {
       stateKlayNode.children = stateKlayNode.children || [];
       stateKlayNode.children.push.apply(stateKlayNode.children, 
         state.states.map(this._scjsonStateToKlayNode.bind(this, idMap, rootState, parentState)));
+    }
+    //targetless transitions
+    if(state.transitions && state.transitions.filter((transition) =>  !transition.target ).length){
+      stateKlayNode.children = stateKlayNode.children || [];
+      const klayActionContainer = {
+        "id" : `${state.id}:targetlessTransition`,
+        "$type" : "actionContainer",
+        "labels" : [{text : 'targetless transitions'}],   //Or use harel syntax "SR" for static reaction?
+        "properties": ACTIONPROPS,
+        "children" : []
+      };
+      stateKlayNode.children.push(klayActionContainer);
+
+      state.transitions
+        .forEach(function(transition, idx){
+          if(transition.target) return;
+
+          const label = genTransitionLabel(transition);
+          const klayTargetlessTransitionActionContainer = {
+            "id" : `${klayActionContainer.id}:${idx}:onTransition`,
+            "$type" : "actionContainer",
+            "labels" : [{text : label}],
+            "properties": ACTIONPROPS,
+            "children" : []
+          };
+          if(transition.onTransition && transition.onTransition.length){
+            klayActionContainer.children = klayActionContainer.children || [];
+            klayActionContainer.children.push(recursiveMakeActions(klayTargetlessTransitionActionContainer, transition.onTransition));
+          }
+        });
     }
     ['onEntry', 'onExit', 'datamodel'].forEach( (prop) => {
       var subprop;
