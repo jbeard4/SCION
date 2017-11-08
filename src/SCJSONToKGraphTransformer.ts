@@ -436,39 +436,39 @@ export default class SCJSONToKGraphTransformer {
         "labels" : [{text : 'invokes'}],
         "properties": ACTIONPROPS,
         "children" : state.invokes.
-                      map((invoke, i) => {
-                        var invokeKlay = 
-                          {
-                            "id" : `${state.id}:invokes:${i}`,
-                          };
-                        const invokeLabelPrefix = `\u26A1${invoke.id ? ` ${invoke.id} ` : ''}`;
-                        if(invoke.src){
-                          _.extend(invokeKlay,{
-                            "labels" : [{text : `${invokeLabelPrefix} src: ${invoke.src}`}],
-                            "$type" : "invoke"
-                          });
-                        }else if(invoke.content && invoke.content.rootState){
-                          _.extend(invokeKlay,{
-                            "labels" : [{text : invokeLabelPrefix}],
-                            "$type" : "invoke",
-                            children : [this.transform(invoke.content.rootState)]
-                          });
-                        }else if(invoke.content && invoke.content.expr){
-                          _.extend(invokeKlay,{
-                            "labels" : [{text : `${invokeLabelPrefix} content/@expr: ${invoke.content.expr.expr}`}],
-                            "$type" : "invoke",
-                          });
-                        }else if(invoke.srcexpr){
-                          _.extend(invokeKlay,{
-                            "labels" : [{text : `${invokeLabelPrefix} srcexpr: ${invoke.srcexpr.expr}`}],
-                            "$type" : "invoke",
-                          });
-                        }else{
-                          //TODO: srcexpr
-                          throw new Error();
-                        }
-                        return invokeKlay;
-                      })
+          map((invoke, i) => {
+            var invokeKlay = 
+              {
+                "id" : `${state.id}:invokes:${i}`,
+              };
+            const invokeLabelPrefix = `\u26A1${invoke.id ? ` ${invoke.id} ` : ''}`;
+            if(invoke.src){
+              _.extend(invokeKlay,{
+                "labels" : [{text : `${invokeLabelPrefix} src: ${invoke.src}`}],
+                "$type" : "invoke"
+              });
+            }else if(invoke.content && invoke.content.rootState){
+              _.extend(invokeKlay,{
+                "labels" : [{text : invokeLabelPrefix}],
+                "$type" : "invoke",
+                children : [this.transform(invoke.content.rootState)]
+              });
+            }else if(invoke.content && invoke.content.expr){
+              _.extend(invokeKlay,{
+                "labels" : [{text : `${invokeLabelPrefix} content/@expr: ${invoke.content.expr.expr}`}],
+                "$type" : "invoke",
+              });
+            }else if(invoke.srcexpr){
+              _.extend(invokeKlay,{
+                "labels" : [{text : `${invokeLabelPrefix} srcexpr: ${invoke.srcexpr.expr}`}],
+                "$type" : "invoke",
+              });
+            }else{
+              //TODO: srcexpr
+              throw new Error();
+            }
+            return invokeKlay;
+          })
       };
       stateKlayNode.children.push(o);
     }
