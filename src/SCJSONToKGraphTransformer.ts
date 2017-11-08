@@ -276,7 +276,7 @@ export default class SCJSONToKGraphTransformer {
   _scjsonStateToKlayNode(idMap, rootState, parentState, state){
     let stateKlayNode : KGraphNode;
 
-    const ACTIONPROPS = { "borderSpacing": 6, "spacing": 0, direction: "RIGHT" };
+    const ACTIONPROPS = { "borderSpacing": 4, "spacing": 0, direction: "RIGHT" };
     const parentKlayNode = this._stateToKlayNodeMap.get(parentState);
 
     const recursiveMakeActions = (klayContainer, scjsonActionList) => {
@@ -346,9 +346,9 @@ export default class SCJSONToKGraphTransformer {
               parentKlayNode.children = parentKlayNode.children || [];
               const klayActionContainer = {
                 "id" : `${state.id}:transition:${idx}:onTransition`,
-                "$type" : "actionContainer",
-                "labels" : [{text : 'ontransition'}],
-                "properties": ACTIONPROPS 
+                "$type" : "transitionActionContainer",
+                "labels" : [{text : ''}],
+                "properties": { "borderSpacing": 0, "spacing": 0, direction: "RIGHT" } 
               };
 
               parentKlayNode.children.push(recursiveMakeActions(klayActionContainer, transition.onTransition));

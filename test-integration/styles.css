@@ -75,7 +75,7 @@ g.node.compound > line {
 } 
 
 
-g.node.type__invoke > rect, g.node.type__actionContainer > rect, g.node.type__action > rect {
+g.node.type__invoke > rect, g.node.type__actionContainer > rect, g.node.type__transitionActionContainer > rect, g.node.type__action > rect {
   stroke-width:.1;
 }
 
