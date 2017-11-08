@@ -113,7 +113,7 @@ export class KGraph {
               if(m){
                 accumulator.push([node,m[1],parseInt(m[2]),parentNode]);
               }
-              if(node.children) node.children.forEach(walk.bind(this,parentNode));
+              if(node.children) node.children.forEach(walk.bind(this,node));
             }
             walk(g,g);
             return accumulator;
