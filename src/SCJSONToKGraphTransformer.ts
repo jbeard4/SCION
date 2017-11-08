@@ -280,17 +280,54 @@ export default class SCJSONToKGraphTransformer {
     const TRANSITION_CONTAINER_PROPS = { "borderSpacing": 0, "spacing": 0, direction: "RIGHT" };
     const parentKlayNode = this._stateToKlayNodeMap.get(parentState);
 
+    const makeKLayParams = (parentKlayNode, scjsonContainer) => {
+      if(scjsonContainer.params && scjsonContainer.params.length){
+
+        const klayParams = {
+          "id" : `${parentKlayNode.id}:params`,
+          "labels" : [{text : 'params'}],
+          "$type" : "actionContainer",
+          "properties": ACTIONPROPS,
+          "children" : []
+        };
+
+        parentKlayNode.children = parentKlayNode.children || [];
+        parentKlayNode.children.push(klayParams);
+
+        klayParams.children =  
+          scjsonContainer.params.map( (param, i) => {
+            return {
+              "id" : `${klayParams.id}:${i}`,
+              "labels" : [{text : `${param.name} \u21DA ${param.expr ? param.expr.expr : (param.location ? param.location.expr : '')}` }],
+              "$type" : "action",
+              "properties": ACTIONPROPS
+            };
+          });
+      }
+    }
+
     const recursiveMakeActions = (klayContainer, scjsonActionList) => {
       klayContainer.children = 
         scjsonActionList.
           map((action, i) => {
+            const labelText = this._actionToLabel(action);
             const klayAction = {
               "id" : `${klayContainer.id}:${i}`,
-              "labels" : [{text : this._actionToLabel(action)}],
+              "labels" : [{text : action.params && action.params.length ? labelText[0] : labelText}],
               "$type" : "action",
               "properties": ACTIONPROPS,
+              "children" : []
             };
 
+            if(action.params && action.params.length){
+              klayAction.children.push({
+                "id" : `${klayContainer.id}:${i}:fakeLabel`,
+                "labels" : [{text : labelText.slice(1)}],
+                "$type" : "action",
+                "properties": ACTIONPROPS,
+              }); 
+            }
+            makeKLayParams(klayAction, action);
             if(action.actions && action.actions.length){
               recursiveMakeActions(klayAction, action.actions);
             }
@@ -476,29 +513,7 @@ export default class SCJSONToKGraphTransformer {
             }
 
             //handle params
-            if(invoke.params && invoke.params.length){
-
-              const klayParams = {
-                "id" : `${invokeKlay.id}:params`,
-                "labels" : [{text : 'params'}],
-                "$type" : "actionContainer",
-                "properties": ACTIONPROPS,
-                "children" : []
-              };
-
-              invokeKlay.children = invokeKlay.children || [];
-              invokeKlay.children.push(klayParams);
-
-              klayParams.children =  
-                invoke.params.map( (param, i) => {
-                  return {
-                    "id" : `${klayParams.id}:${i}`,
-                    "labels" : [{text : `${param.name} \u21DA ${param.expr ? param.expr.expr : (param.location ? param.location.expr : '')}` }],
-                    "$type" : "action",
-                    "properties": ACTIONPROPS
-                  };
-                });
-            }
+            makeKLayParams(invokeKlay, invoke);
             return invokeKlay;
           })
       };
