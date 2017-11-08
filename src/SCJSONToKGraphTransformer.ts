@@ -277,6 +277,7 @@ export default class SCJSONToKGraphTransformer {
     let stateKlayNode : KGraphNode;
 
     const ACTIONPROPS = { "borderSpacing": 4, "spacing": 0, direction: "RIGHT" };
+    const TRANSITION_CONTAINER_PROPS = { "borderSpacing": 0, "spacing": 0, direction: "RIGHT" };
     const parentKlayNode = this._stateToKlayNodeMap.get(parentState);
 
     const recursiveMakeActions = (klayContainer, scjsonActionList) => {
@@ -287,7 +288,7 @@ export default class SCJSONToKGraphTransformer {
               "id" : `${klayContainer.id}:${i}`,
               "labels" : [{text : this._actionToLabel(action)}],
               "$type" : "action",
-              "properties": { "borderSpacing": 6, "spacing": 0, direction: "RIGHT" },
+              "properties": ACTIONPROPS,
             };
 
             if(action.actions && action.actions.length){
@@ -358,7 +359,7 @@ export default class SCJSONToKGraphTransformer {
                 "id" : `${state.id}:transition:${idx}:onTransition`,
                 "$type" : "transitionActionContainer",
                 "labels" : [{text : ''}],
-                "properties": { "borderSpacing": 0, "spacing": 0, direction: "RIGHT" } 
+                "properties": TRANSITION_CONTAINER_PROPS 
               };
 
               parentKlayNode.children.push(recursiveMakeActions(klayActionContainer, transition.onTransition));
@@ -437,35 +438,66 @@ export default class SCJSONToKGraphTransformer {
         "properties": ACTIONPROPS,
         "children" : state.invokes.
           map((invoke, i) => {
-            var invokeKlay = 
+            const invokeLabelPrefix = `\u26A1${invoke.id ? ` ${invoke.id} ` : ''}`;
+            const invokeKlay = 
               {
                 "id" : `${state.id}:invokes:${i}`,
+                "labels" : [{text : `${invokeLabelPrefix}`}],
+                "$type" : "invoke",
+                "properties": ACTIONPROPS,
+                "children" : []
               };
-            const invokeLabelPrefix = `\u26A1${invoke.id ? ` ${invoke.id} ` : ''}`;
             if(invoke.src){
-              _.extend(invokeKlay,{
-                "labels" : [{text : `${invokeLabelPrefix} src: ${invoke.src}`}],
-                "$type" : "invoke"
-              });
+              invokeKlay.children.push({
+                "id" : `${state.id}:invokes:src`,
+                "labels" : [{text : `src: ${invoke.src}`}],
+                "$type" : "action",
+                "properties": ACTIONPROPS
+              }); 
             }else if(invoke.content && invoke.content.rootState){
-              _.extend(invokeKlay,{
-                "labels" : [{text : invokeLabelPrefix}],
-                "$type" : "invoke",
-                children : [this.transform(invoke.content.rootState)]
-              });
+              invokeKlay.children.push(this.transform(invoke.content.rootState))
             }else if(invoke.content && invoke.content.expr){
-              _.extend(invokeKlay,{
-                "labels" : [{text : `${invokeLabelPrefix} content/@expr: ${invoke.content.expr.expr}`}],
-                "$type" : "invoke",
-              });
+              invokeKlay.children.push({
+                "id" : `${state.id}:invokes:src`,
+                "labels" : [{text : `content/@expr: ${invoke.content.expr.expr}`}],
+                "$type" : "action",
+                "properties": ACTIONPROPS
+              }); 
+              
             }else if(invoke.srcexpr){
-              _.extend(invokeKlay,{
-                "labels" : [{text : `${invokeLabelPrefix} srcexpr: ${invoke.srcexpr.expr}`}],
-                "$type" : "invoke",
-              });
+              invokeKlay.children.push({
+                "id" : `${state.id}:invokes:src`,
+                "labels" : [{text : `srcexpr: ${invoke.srcexpr.expr}`}],
+                "$type" : "action",
+                "properties": ACTIONPROPS
+              }); 
             }else{
-              //TODO: srcexpr
               throw new Error();
+            }
+
+            //handle params
+            if(invoke.params && invoke.params.length){
+
+              const klayParams = {
+                "id" : `${invokeKlay.id}:params`,
+                "labels" : [{text : 'params'}],
+                "$type" : "actionContainer",
+                "properties": ACTIONPROPS,
+                "children" : []
+              };
+
+              invokeKlay.children = invokeKlay.children || [];
+              invokeKlay.children.push(klayParams);
+
+              klayParams.children =  
+                invoke.params.map( (param, i) => {
+                  return {
+                    "id" : `${klayParams.id}:${i}`,
+                    "labels" : [{text : `${param.name} \u21DA ${param.expr ? param.expr.expr : (param.location ? param.location.expr : '')}` }],
+                    "$type" : "action",
+                    "properties": ACTIONPROPS
+                  };
+                });
             }
             return invokeKlay;
           })

@@ -383,7 +383,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
         }
       </text>
 
-      <g className="childNodes" transform={`translate(0,${this.props.node.$type === 'actionContainer' || this.props.node.$type === 'action' ? 2 : 0})`}>
+      <g className="childNodes" transform={`translate(0,${this.props.node.$type === 'actionContainer' || this.props.node.$type === 'action' || this.props.node.$type === 'invoke' ? 2 : 0})`}>
         { 
 
             (this.props.node.children && this.props.node.children.map(child => (
