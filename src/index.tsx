@@ -134,22 +134,6 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     );
   }
 
-  public measureTextDimensions(text:string){
-    var txt:SVGTextElement = document.createElementNS(constants.SVGNS,'text') as SVGTextElement;
-    txt.textContent = text; 
-    this.svgRootElement.appendChild(txt);
-    var bbox = txt.getBBox();
-    this.svgRootElement.removeChild(txt);
-    return bbox; 
-  }
-
-
-  public getStateMinDimensions(labelText, nodeType?:string){
-    var bbox = this.measureTextDimensions(labelText);
-    return [ bbox.width + (nodeType === 'action' ? 0 : constants.LEAF_NODE_PADDING_W * 2),
-              bbox.height + (nodeType === 'action' ? 0 : constants.LEAF_NODE_PADDING_H * 2) ];
-  }
-
   componentWillReceiveProps(props : GraphRootProps){
     this.checkProps(props);
     if(
@@ -317,7 +301,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   private initKGraph(props : GraphRootProps , initialRender : boolean, idGen?: IdGenerator, kgRoot? : KGraphNode){
     let idGenerator = idGen || new IdGenerator(); 
     let kgraphRoot = props.kgraphRoot || kgRoot;
-    let kgraph = new KGraph(idGenerator, this, kgraphRoot);
+    let kgraph = new KGraph(idGenerator, this.svgRootElement, kgraphRoot);
     let allEdges = kgraph ? this._getAllEdges(kgraph) : [];
     let enabledEdges = this._getEnabledEdges(allEdges, props.transitionsEnabled);
     const options = this.getDefaultLayoutOptions(props.layoutOptions)

@@ -8,7 +8,6 @@ import classNames = require('classnames');
 const debug = Debug('GraphLabel');
 
 export interface GraphLabelProps {
-  edge : KGraphEdge; 
   label : KGraphLabel;
   redraw? : boolean;
   disableAnimation? : boolean;
@@ -26,6 +25,7 @@ export default class GraphLabel extends React.PureComponent<GraphLabelProps, Gra
   animateOpacityElement : SVGAnimationElement;
   animateXElement : SVGAnimationElement;
   animateYElement : SVGAnimationElement;
+  svgTextElement : SVGTextElement;
 
   constructor(props){
     super(props);
@@ -52,14 +52,12 @@ export default class GraphLabel extends React.PureComponent<GraphLabelProps, Gra
   }
 
   componentWillAppear (callback) {
-    debug('componentWillAppear', this.props.edge.id);
     setTimeout(callback,1);
     //TODO: start the animation now? No.... Well maybe. We could set up a listener for the end event before we call the callback, in order to make this asynchronous
     //this might have the effect of buffering animations, which might work well. 
   }
 
   componentWillEnter (callback) {
-    debug('componentWillEnter', this.props.edge.id);
     setTimeout(callback,1);
   }
 
@@ -70,6 +68,7 @@ export default class GraphLabel extends React.PureComponent<GraphLabelProps, Gra
             "highlighted" : this.props.highlighted
           })
         }
+        ref={(e: SVGTextElement) => { this.svgTextElement = e; }}
         textAnchor={this.props.label.$meta && this.props.label.$meta.textAnchor}
         dominantBaseline={(this.props.label.$meta && this.props.label.$meta.dominantBaseline) || 'text-before-edge'}
         x={this.props.disableAnimation ? this.state.to.x : undefined}

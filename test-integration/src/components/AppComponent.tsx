@@ -26,6 +26,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
   mergeCheckbox : HTMLInputElement;
   apiRadioButton : HTMLInputElement;
   animateCheckbox : HTMLInputElement;
+  pathToScxmlSelectElement : HTMLSelectElement;
 
   constructor(props){
     super(props);
@@ -62,8 +63,11 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
             );
       this.setState({
         allTests : testPairs,
-        pathToSelectedTest : testPairs[0]
-      }, this.refreshDataStructuresOnChange.bind(this));
+        pathToSelectedTest : localStorage.pathToSelectedTest || testPairs[0]
+      }, () => {
+        this._setInitialElementState();
+        this.refreshDataStructuresOnChange()
+      });
     });
   }
 
@@ -171,9 +175,15 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
  
 
   componentDidMount(){
+    this._setInitialElementState();
+  }
+
+  _setInitialElementState(){
     this.mergeCheckbox.checked = !this.state.redraw;
     this.animateCheckbox.checked = !this.state.disableAnimation;
     this.apiRadioButton.checked = true;
+    this.pathToScxmlSelectElement.selectedIndex = Array.prototype.slice.call(this.pathToScxmlSelectElement.options).map( o => o.value ).indexOf(this.state.pathToSelectedTest);
+    this.pathToScxmlSelectElement.focus();
   }
 
   private handleAPIChange(event){
@@ -183,6 +193,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
   }
 
   private handleTestChange(event){
+    localStorage.pathToSelectedTest = event.target.value;
     this.setState({
       pathToSelectedTest : event.target.value 
     }, this.refreshDataStructuresOnChange.bind(this));
@@ -272,7 +283,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
             <div className="control-group">
               <label className="control-label">Example</label>
               <div className="controls">
-                <select onChange={this.handleTestChange.bind(this)}>
+                <select ref={(e) => this.pathToScxmlSelectElement = e} onChange={this.handleTestChange.bind(this)}>
                   {
                     this.state.allTests.map( (test, i) => <option key={i}>{test}</option> )
                   }

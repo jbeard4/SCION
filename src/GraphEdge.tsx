@@ -306,7 +306,6 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
           this.props.edge.labels && this.props.edge.labels.map((label, i) => (
             <GraphLabel
               highlighted={this.props.highlighted}
-              edge={this.props.edge}
               key={i}
               label={label}
               redraw={this.props.redraw}

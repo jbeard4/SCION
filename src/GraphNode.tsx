@@ -9,6 +9,7 @@ import _ = require('underscore');
 import Debug = require('debug');
 import classNames = require('classnames');
 import SCHVIZ from './index';
+import GraphNodeLabel from './GraphNodeLabel';
 
 const debug = Debug('GraphNode');
 
@@ -62,7 +63,6 @@ export interface GraphNodeAnimation {
 export default class GraphNode extends React.PureComponent<GraphNodeProps, GraphNodeAnimation> {
 
   initialRender : boolean;
-  svgTextElement : SVGTextElement;
   svgRectElement : SVGRectElement;
   svgGElement : SVGGElement;
   animateTransformElement : SVGAnimationElement;
@@ -70,7 +70,6 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
   animateYElement : SVGAnimationElement;
   animateWidthElement : SVGAnimationElement;
   animateHeightElement : SVGAnimationElement;
-  animateOpacityElement : SVGAnimationElement;
   contextmenu : any;
 
   private getInitialFrom(props){
@@ -245,7 +244,6 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
       this.animateYElement,
       this.animateWidthElement,
       this.animateHeightElement,
-      this.animateOpacityElement 
     ].forEach( animation => animation.beginElement() );
   }
 
@@ -362,27 +360,11 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
             ]
         }
       </rect>
-      <text   
-        ref={(e: SVGTextElement) => { this.svgTextElement = e; }}
-        x={this.props.node.width / 2} 
-        y={isLeaf ? this.props.node.height / 2 : constants.LEAF_NODE_PADDING_H}  
-        visibility={this.props.isRoot ? 'hidden' : 'visible'}
-        opacity={this.props.disableAnimation ? 1 : 0}
-        >
-        {this.props.node.labels[0] && this.props.node.labels[0].text}
-        {
-          !this.props.disableAnimation && 
-            <animate attributeName="opacity" attributeType="XML"
-                     ref={(e: SVGAnimationElement) => { this.animateOpacityElement = e; }}
-                     fill="freeze" 
-                     begin="indefinite"
-                     className={constants.START}
-                     dur={constants.ANIM_DURATION} 
-                     from={this.initialRender ? 1 : 0} 
-                     to="1" />
-        }
-      </text>
-
+      <GraphNodeLabel 
+        node={this.props.node}
+        isRoot={this.props.isRoot}
+        disableAnimation={this.props.disableAnimation}
+        />
       <g className="childNodes" transform={`translate(0,${this.props.node.$type === 'actionContainer' || this.props.node.$type === 'action' || this.props.node.$type === 'invoke' ? 2 : 0})`}>
         { 
 

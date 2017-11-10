@@ -6,6 +6,7 @@ import {SCState} from './SCJSON';
 import GraphRoot from './index'
 import {KGraphNode, KGraphEdge, KGraphLabel} from './KGraph';
 
+const DEFAULTPROPS = { "borderSpacing": 6};
 const ACTIONPROPS = { "borderSpacing": 4, "spacing": 0, direction: "RIGHT" };
 const TRANSITION_CONTAINER_PROPS = { "borderSpacing": 0, "spacing": 0, direction: "RIGHT" };
 
@@ -309,8 +310,8 @@ export default class SCJSONToKGraphTransformer {
         "properties": ACTIONPROPS,
         "children" : [{
           "id" : `${parentKlayNode.id}:content:content`,
-          "labels" : [{text : scjsonContainer.content.content}],
-          "$type" : "actionContainer",
+          "labels" : [{text : scjsonContainer.content.content || scjsonContainer.content}],
+          "$type" : "contentContainer",
           "properties": ACTIONPROPS,
           "children" : []
         }]
@@ -341,7 +342,7 @@ export default class SCJSONToKGraphTransformer {
     klayContainer.children = 
       scjsonActionList.
         map((action, i) => {
-          const hasContentOrParams = ((action.params && action.params.length) || action.content) && action.$type === 'send';
+          const hasContentOrParams = ((action.params && action.params.length) || action.content) && (action.$type === 'send' || action.$type === 'script');
           const labelText = this._actionToLabel(action);
           const klayAction = {
             "id" : `${klayContainer.id}:${i}`,
@@ -352,13 +353,6 @@ export default class SCJSONToKGraphTransformer {
           };
 
           if(hasContentOrParams){
-            klayAction.children.push({
-              "id" : `${klayContainer.id}:${i}:fakeLabel`,
-              "labels" : [{text : labelText.slice(1)}],
-              "$type" : "action",
-              "properties": ACTIONPROPS,
-            }); 
-
             this._makeKLayParams(klayAction, action, true);
           }
           if(action.actions && action.actions.length){
@@ -391,6 +385,7 @@ export default class SCJSONToKGraphTransformer {
         "id" : state.id,
         "labels" : [{text : `\u25C9 ${state.id}`}],
         "edges" : [],
+        "properties" : DEFAULTPROPS 
       };
     }else{
       var label = state.$type === 'virtual' ? '...' : 
@@ -398,7 +393,8 @@ export default class SCJSONToKGraphTransformer {
       stateKlayNode = {
         "id" : state.id,
         "labels" : [ { text : label || '' } ],
-        "edges" : []
+        "edges" : [],
+        "properties" : DEFAULTPROPS 
       };
     }
 

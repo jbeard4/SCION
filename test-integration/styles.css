@@ -75,7 +75,7 @@ g.node.compound > line {
 } 
 
 
-g.node.type__invoke > rect, g.node.type__actionContainer > rect, g.node.type__transitionActionContainer > rect, g.node.type__action > rect {
+g.node.type__invoke > rect, g.node.type__actionContainer > rect, g.node.type__transitionActionContainer > rect, g.node.type__contentContainer > rect, g.node.type__action > rect {
   stroke-width:.1;
 }
 
@@ -164,7 +164,12 @@ g.compound.type__parallel > g > g.node > rect {
   stroke: black;
   stroke-opacity: .6;
   fill: none;
-  transition : stroke .25s ease-out;
+  transition : stroke .25s ease-out, stroke-opacity .25s ease-out;
+}
+
+
+.link:hover {
+  stroke-opacity: 1;
 }
 
 .link.hyperlink {

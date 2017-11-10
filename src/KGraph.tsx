@@ -5,6 +5,10 @@ import IdGenerator from './IdGenerator';
 import Debug = require('debug');
 import GraphRoot from './index'
 const debug = Debug('KGraph');
+import ReactDOM = require('react-dom');
+import GraphNodeLabel from './GraphNodeLabel';
+import GraphLabel from './GraphLabel';
+import * as React from "react";
 
 import {SCState} from './SCJSON';
 import constants from './constants';
@@ -16,11 +20,11 @@ export class KGraph {
   _idMap : Map<string, KGraphNode>;
   _childToParentMap : Map<string, KGraphNode>;
   _idGenerator : IdGenerator; 
-  _svgRenderer : GraphRoot;
+  _svgRootElement : SVGSVGElement;
 
-  constructor(idGenerator: IdGenerator, svgRenderer : GraphRoot, kgraphRoot: KGraphNode){
+  constructor(idGenerator: IdGenerator, svgRootElement : SVGSVGElement, kgraphRoot: KGraphNode){
     this._idGenerator = idGenerator;
-    this._svgRenderer = svgRenderer;
+    this._svgRootElement = svgRootElement;
     this._kgraphRoot = kgraphRoot;
     this._normalize(this._kgraphRoot);
   }
@@ -41,6 +45,9 @@ export class KGraph {
   }
 
   _processKGraphPreLayout(kgraph){
+    const promises = [];
+    var svg:SVGSVGElement = document.createElementNS(constants.SVGNS,'svg') as SVGSVGElement;
+    this._svgRootElement.appendChild(svg);
     //make sure that the width of the state is 
     function walk(node){
       if(node.$type === 'initial' || node.$type === 'final'){
@@ -49,44 +56,65 @@ export class KGraph {
           "height" : constants.INITIAL_RADIUS
         });
       } else if (node.labels && node.labels.length) {
-        var [width, height] =  this._svgRenderer.getStateMinDimensions(node.labels[0].text, node.$type);
-        _.extend(node, { 
-          "width" : width,
-          "height" : height
-        });
+        promises.push(new Promise( (resolve, reject) => {
+          _.extend(node, { 
+            "width" : 0,
+            "height" : 0
+          });
+
+          let graphNodeLabel = ReactDOM.render(
+            <GraphNodeLabel 
+              node={node}
+              isRoot={false}
+              disableAnimation={false}
+              />,
+            svg,
+            resolve
+          ) as GraphNodeLabel;
+
+          const bbox = graphNodeLabel.svgTextElement.getBBox();  
+
+          const isActionNode = node.$type === 'action';
+          _.extend(node, { 
+            "width" : bbox.width + (isActionNode ? 0 : constants.LEAF_NODE_PADDING_W * 2),
+            "height" : bbox.height + (isActionNode ? 0 : constants.LEAF_NODE_PADDING_H * 2)
+          });
+          console.log(node.id, 'bbox ', bbox );
+        }))
       }
       if(node.edges && node.edges.length){
         node.edges.forEach( edge => {
           if(edge.labels && edge.labels.length){
             edge.labels.forEach( label => {
-              var {width, height} =  this._svgRenderer.measureTextDimensions(label.text);
-              _.extend(label, { 
-                "width" : width,
-                "height" : height
-              });
-            });
-          }
-        }) 
-      }
-      if(node.children) node.children.forEach(walk.bind(this));
-    }
-    walk.call(this, kgraph);
-  }
+              promises.push(new Promise( (resolve, reject) => {
+                let graphLabel = ReactDOM.render(
+                  <GraphLabel 
+                    label={label}
+                    redraw={false}
+                    disableAnimation={true}
+                    highlighted={false}
+                    />,
+                  svg,
+                  resolve
+                ) as GraphNodeLabel;
 
-  _processKGraphPostLayout(kgraph){
-    //make sure that the width of the state is 
-    function walk(node){
-      if(node.labels && node.labels.length &&
-          !(node.$type === 'initial' || node.$type === 'final')){
-        var label = node.labels[0].text;
-        var [minWidth, height] =  this._svgRenderer.getStateMinDimensions(label, node.$type);
-        if(node.width < minWidth){
-          node.width = minWidth; 
-        }
+                const bbox = graphLabel.svgTextElement.getBBox();  
+
+                _.extend(label, { 
+                  "width" : bbox.width,
+                  "height" : bbox.height
+                });
+                console.log(edge.id, 'bbox ', bbox );
+              }))
+            })
+          } 
+        })
       }
       if(node.children) node.children.forEach(walk.bind(this));
     }
     walk.call(this, kgraph);
+    Promise.all(promises).then( () => this._svgRootElement.removeChild(svg))
+    return promises;
   }
 
   _updateKgraph(kgraph, options, cb, updateLayout){
@@ -97,7 +125,8 @@ export class KGraph {
     debug('kgraph before layout',JSON.stringify(kgraph,null,4));   //TODO: enable debug module
     var t1 = Date.now();
     try {
-      this._processKGraphPreLayout(kgraph);
+      const promises = this._processKGraphPreLayout(kgraph);
+      Promise.all(promises).then(function(){
       klayjs.layout({
         graph : kgraph, 
         options : options,
@@ -121,7 +150,6 @@ export class KGraph {
 
           //if we don't have any transition action nodes, then we are done.
           if(!transtionActionNodeMatches.length){ 
-            this._processKGraphPostLayout(g);
             normalizeSelfLoopEdgeCoordinates.call(this, g);
             return cb(null, g);
           }
@@ -216,8 +244,6 @@ export class KGraph {
                 walk.call(this,g2);
               }.bind(this))();
 
-              this._processKGraphPostLayout(g2);
-
               cb(null, g2);
             })
           })
@@ -225,6 +251,7 @@ export class KGraph {
         }),
         error : (error) => cb(error)
       });
+      }.bind(this));
     } catch(e){
       cb(e); 
     }
@@ -387,14 +414,14 @@ export class KGraph {
                 var targetPorts = this._addPortsToState(targetState);
 
                 grandparentNode.edges = grandparentNode.edges || [];
-                var innerEdge = (<KGraphEdge>{
+                var innerEdge = ({
                   id : edge.source + '_' + targetState.id,
                   source : edge.source,
                   target : targetState.id,
                   sourcePort : ports.entryPort.id,
                   targetPort : targetPorts.entryPort.id,
                   labels : []
-                });
+                } as KGraphEdge);
                 if(selfLoop) innerEdge.$hyperlink = selfLoop.id;
                 edgesAdded.add(innerEdge);
                 grandparentNode.edges.push(innerEdge);
@@ -477,14 +504,14 @@ export class KGraph {
     var stateExitId = ports.exitPort.id, 
         stateEnterId = ports.entryPort.id;
     stateToWhichEdgeShouldBeAdded.edges = stateToWhichEdgeShouldBeAdded.edges || [];
-    var loopEdge = (<KGraphEdge>{
+    var loopEdge = ({
       id : stateExitId + '_' + stateEnterId,
       source : stateToAddLoopId,
       target : stateToAddLoopId, 
       sourcePort : stateExitId,
       targetPort : stateEnterId,
       labels : []
-    });
+    } as KGraphEdge);
     stateToWhichEdgeShouldBeAdded.edges.push(loopEdge);
     if(isHyperlink) loopEdge.$type = 'hyperlink';
     //edgesAdded.add(loopEdge);
@@ -635,13 +662,13 @@ export class KGraph {
     var pseudoNodeStateId = this._idGenerator.generateId(parentNode.id, $type);
 
     //create a pseudonode with an edge originating for each hyperedge target
-    var pseudonode = <KGraphNode> {
+    var pseudonode = {
       id :  pseudoNodeStateId,
       $type: $type,
       width : 0,
       height : 0,
       edges : []
-    };
+    } as KGraphNode;
 
     parentNode.children.push(pseudonode);
 
