@@ -698,9 +698,6 @@ export class KGraphNode implements IKGraphNode {
   x?:number;
   y?:number;
   $type? : string;
-  $meta? : {
-    isCollapsed? : boolean; 
-  };
   properties? : any
 }
 

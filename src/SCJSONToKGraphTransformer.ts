@@ -57,7 +57,8 @@ export default class SCJSONToKGraphTransformer {
     return newScjson;
 
     function traverse(state){
-      if(!(state.$meta && state.$meta.isCollapsed)){   //skip generating an initial state if he is collapsed
+      
+      if(!(this._svgRenderer.collapsedNodeMap.get(state.id))){   //skip generating an initial state if he is collapsed
         var fakeInitialState;
         if(state.initial){
           //initial attribute - create a fake <initial> scjson node 
@@ -115,12 +116,15 @@ export default class SCJSONToKGraphTransformer {
  
     //1. initialize virtual states
     function walkInitVirtualStates(state){
-      if(state.$meta && state.$meta.isCollapsed && 
+      if(this._svgRenderer.collapsedNodeMap.get(state.id) && 
           (
             (state.states && state.states.length) ||
             (state.datamodel && state.datamodel.declarations && state.datamodel.declarations.length) ||
             (state.onEntry && state.onEntry.length) ||
-            (state.onExit && state.onExit.length)
+            (state.onExit && state.onExit.length) ||
+            (state.donedata) || 
+            (state.invokes && state.invokes.length) || 
+            (state.transitions && state.transitions.filter((transition) =>  !transition.target ).length)
           )){
         var substates = state.states;
         var virtualState = {
@@ -215,8 +219,8 @@ export default class SCJSONToKGraphTransformer {
 
     function walkRemoveActionsFromCollapsedStates(state){
       
-      if(state.$meta && state.$meta.isCollapsed){
-        ['datamodel','onEntry','onExit'].forEach( prop => delete state[prop] );
+      if(this._svgRenderer.collapsedNodeMap.get(state.id)){
+        ['datamodel','onEntry','onExit','invokes','donedata'].forEach( prop => delete state[prop] );
       }
 
       if(state.states){
@@ -279,63 +283,72 @@ export default class SCJSONToKGraphTransformer {
   }
 
   _makeKLayParams(parentKlayNode, scjsonContainer, traverseInContent){
-    if(scjsonContainer.params && scjsonContainer.params.length){
+    return this._conditionallyCollapseNode(parentKlayNode, () => {
+      if(scjsonContainer.params && scjsonContainer.params.length){
 
-      const klayParams = {
-        "id" : `${parentKlayNode.id}:params`,
-        "labels" : [{text : 'params'}],
-        "$type" : "actionContainer",
-        "properties": ACTIONPROPS,
-        "children" : []
-      };
-
-      parentKlayNode.children = parentKlayNode.children || [];
-      parentKlayNode.children.push(klayParams);
-
-      klayParams.children =  
-        scjsonContainer.params.map( (param, i) => {
-          return {
-            "id" : `${klayParams.id}:${i}`,
-            "labels" : [{text : `${param.name} \u21DA ${param.expr ? param.expr.expr : (param.location ? param.location.expr : '')}` }],
-            "$type" : "action",
-            "properties": ACTIONPROPS
-          };
-        });
-    } else if (traverseInContent && scjsonContainer.content){
-      const klayParams = 
-      {
-        "id" : `${parentKlayNode.id}:content`,
-        "labels" : [{text : "content"}],
-        "$type" : "actionContainer",
-        "properties": ACTIONPROPS,
-        "children" : [{
-          "id" : `${parentKlayNode.id}:content:content`,
-          "labels" : [{text : scjsonContainer.content.content || scjsonContainer.content}],
-          "$type" : "contentContainer",
-          "properties": ACTIONPROPS,
-          "children" : []
-        }]
-      };
-      parentKlayNode.children = parentKlayNode.children || [];
-      parentKlayNode.children.push(klayParams);
-    } else if (traverseInContent && scjsonContainer.expr){
-      const klayParams = 
-      {
-        "id" : `${parentKlayNode.id}:content`,
-        "labels" : [{text : "content"}],
-        "$type" : "actionContainer",
-        "properties": ACTIONPROPS,
-        "children" : [{
-          "id" : `${parentKlayNode.id}:content:expr`,
-          "labels" : [{text : `expr : ${scjsonContainer.expr.expr}` }],
+        const klayParams = {
+          "id" : `${parentKlayNode.id}:params`,
+          "labels" : [{text : 'params'}],
           "$type" : "actionContainer",
           "properties": ACTIONPROPS,
           "children" : []
-        }]
-      };
-      parentKlayNode.children = parentKlayNode.children || [];
-      parentKlayNode.children.push(klayParams);
-    }
+        };
+
+        parentKlayNode.children = parentKlayNode.children || [];
+        parentKlayNode.children.push(klayParams);
+
+        this._conditionallyCollapseNode(klayParams, () => {
+          klayParams.children =  
+            scjsonContainer.params.map( (param, i) => {
+              return {
+                "id" : `${klayParams.id}:${i}`,
+                "labels" : [{text : `${param.name} \u21DA ${param.expr ? param.expr.expr : (param.location ? param.location.expr : '')}` }],
+                "$type" : "action",
+                "properties": ACTIONPROPS
+              };
+            });
+        });
+      } else if (traverseInContent && scjsonContainer.content){
+        const klayContent = 
+          {
+            "id" : `${parentKlayNode.id}:content`,
+            "labels" : [{text : "content"}],
+            "$type" : "actionContainer",
+            "properties": ACTIONPROPS,
+            "children" : []
+          };
+        
+        parentKlayNode.children = parentKlayNode.children || [];
+        parentKlayNode.children.push(klayContent);
+        this._conditionallyCollapseNode(klayContent, () => {
+          const klayContentContent = {
+            "id" : `${parentKlayNode.id}:content:content`,
+            "labels" : [{text : scjsonContainer.content.content || scjsonContainer.content}],
+            "$type" : "contentContainer",
+            "properties": ACTIONPROPS,
+            "children" : []
+          };
+          klayContent.children.push(klayContentContent);
+        });
+      } else if (traverseInContent && scjsonContainer.expr){
+        const klayParams = 
+        {
+          "id" : `${parentKlayNode.id}:content`,
+          "labels" : [{text : "content"}],
+          "$type" : "actionContainer",
+          "properties": ACTIONPROPS,
+          "children" : [{
+            "id" : `${parentKlayNode.id}:content:expr`,
+            "labels" : [{text : `expr : ${scjsonContainer.expr.expr}` }],
+            "$type" : "actionContainer",
+            "properties": ACTIONPROPS,
+            "children" : []
+          }]
+        };
+        parentKlayNode.children = parentKlayNode.children || [];
+        parentKlayNode.children.push(klayParams);
+      }
+    })
   }
 
   _recursiveMakeActions(klayContainer, scjsonActionList){
@@ -374,6 +387,21 @@ export default class SCJSONToKGraphTransformer {
       return `${event || ''}${condExpr ? `[${condExpr}]` : ''}${transition.onTransition && transition.onTransition.length ? '/' : ''}`
     } else {
       return null;
+    }
+  }
+
+  _conditionallyCollapseNode(node, next){
+    if(this._svgRenderer.collapsedNodeMap.get(node.id)){
+      var virtualState = {
+        id :  `${node.id}:virtual`,
+        labels : [{text : '...'}],
+        $type : 'virtual',
+        properties : ACTIONPROPS 
+      };
+      node.children.push(virtualState);
+      return virtualState;
+    }else{
+      return next();
     }
   }
 
@@ -460,24 +488,27 @@ export default class SCJSONToKGraphTransformer {
       };
       stateKlayNode.children.push(klayActionContainer);
 
-      state.transitions
-        .forEach(function(transition, idx){
-          if(transition.target) return;
+      this._conditionallyCollapseNode(klayActionContainer, () => {
+        state.transitions
+          .forEach(function(transition, idx){
+            if(transition.target) return;
 
-          const label = this._genTransitionLabel(transition);
-          const klayTargetlessTransitionActionContainer = {
-            "id" : `${klayActionContainer.id}:${idx}:onTransition`,
-            "$type" : "actionContainer",
-            "labels" : [{text : label}],
-            "properties": ACTIONPROPS,
-            "children" : []
-          };
-          if(transition.onTransition && transition.onTransition.length){
-            klayActionContainer.children.push(this._recursiveMakeActions(klayTargetlessTransitionActionContainer, transition.onTransition));
-          } else {
-            klayActionContainer.children.push(klayTargetlessTransitionActionContainer);
-          }
-        }, this);
+            const label = this._genTransitionLabel(transition);
+            const klayTargetlessTransitionActionContainer = {
+              "id" : `${klayActionContainer.id}:${idx}:onTransition`,
+              "$type" : "actionContainer",
+              "labels" : [{text : label}],
+              "properties": ACTIONPROPS,
+              "children" : []
+            };
+            if(transition.onTransition && transition.onTransition.length){
+              klayActionContainer.children.push(this._recursiveMakeActions(klayTargetlessTransitionActionContainer, transition.onTransition));
+            } else {
+              klayActionContainer.children.push(klayTargetlessTransitionActionContainer);
+            }
+          }, this);
+      })
+
     }
     if(state.donedata){
       const klayDonedataActionContainer = {
@@ -507,85 +538,101 @@ export default class SCJSONToKGraphTransformer {
             "id" : `${state.id}:${prop}`,
             "$type" : "actionContainer",
             "labels" : [{text : prop.toLowerCase()}],
-            "properties": ACTIONPROPS
+            "properties": ACTIONPROPS,
+            "children" : []
           };
-          
-          stateKlayNode.children.push(this._recursiveMakeActions(klayActionContainer, list.reduce(function(a, b){ return a.concat(b); }, [])));
+          stateKlayNode.children.push(klayActionContainer);
+
+          this._conditionallyCollapseNode(klayActionContainer,() => {
+            this._recursiveMakeActions(klayActionContainer, list.reduce(function(a, b){ return a.concat(b); }, []));
+          } )
         }
       }
     })
     if(state.invokes && state.invokes.length){
       stateKlayNode.children = stateKlayNode.children || [];
-      const o = {
+      const klayInvoke = {
         "id" : `${state.id}:invokes`,
         "$type" : "actionContainer",
         "labels" : [{text : 'invokes'}],
         "properties": ACTIONPROPS,
-        "children" : state.invokes.
-          map((invoke, i) => {
-            const invokeLabelPrefix = `\u26A1${invoke.id ? ` ${invoke.id} ` : ''}`;
-            const invokeKlay = 
-              {
-                "id" : `${state.id}:invokes:${i}`,
-                "labels" : [{text : `${invokeLabelPrefix}`}],
-                "$type" : "invoke",
-                "properties": ACTIONPROPS,
-                "children" : []
-              };
+        "children" : []
+      }
 
-            if(invoke.finalize){
-              let finalizeKLayNode = {
-                "id" : `${invokeKlay.id}:finalize`,
-                "labels" : [{text : `finalize`}],
-                "$type" : "action",
-                "properties": ACTIONPROPS,
-                "children" : []
-              };
+      stateKlayNode.children.push(klayInvoke);
+      this._conditionallyCollapseNode(klayInvoke, () => {
+        state.invokes.
+            forEach((invoke, i) => {
+              const invokeLabelPrefix = `\u26A1${invoke.id ? ` ${invoke.id} ` : ''}`;
+              const invokeKlay = 
+                {
+                  "id" : `${state.id}:invokes:${i}`,
+                  "labels" : [{text : `${invokeLabelPrefix}`}],
+                  "$type" : "invoke",
+                  "properties": ACTIONPROPS,
+                  "children" : []
+                };
 
-              invokeKlay.children.push(this._recursiveMakeActions(finalizeKLayNode, invoke.finalize.actions));
-            }
-            if(invoke.src){
-              invokeKlay.children.push({
-                "id" : `${invokeKlay.id}:src`,
-                "labels" : [{text : `src: ${invoke.src}`}],
-                "$type" : "action",
-                "properties": ACTIONPROPS
-              }); 
-            }else if(invoke.content && invoke.content.rootState){
-              const contentKlayContainer = {
-                "id" : `${invokeKlay.id}:content`,
-                "labels" : [{text : `content`}],
-                "$type" : "action",
-                "properties": ACTIONPROPS,
-                "children" : []
-              };
-              invokeKlay.children.push(contentKlayContainer); 
-              contentKlayContainer.children.push(this.transform(invoke.content.rootState))
-            }else if(invoke.content && invoke.content.expr){
-              invokeKlay.children.push({
-                "id" : `${invokeKlay.id}:srcexpr`,
-                "labels" : [{text : `content/@expr: ${invoke.content.expr.expr}`}],
-                "$type" : "action",
-                "properties": ACTIONPROPS
-              }); 
-              
-            }else if(invoke.srcexpr){
-              invokeKlay.children.push({
-                "id" : `${state.id}:invokes:src`,
-                "labels" : [{text : `srcexpr: ${invoke.srcexpr.expr}`}],
-                "$type" : "action",
-                "properties": ACTIONPROPS
-              }); 
-            }else{
-              throw new Error();
-            }
+              klayInvoke.children.push(invokeKlay); 
+              this._conditionallyCollapseNode(invokeKlay, () => {
+                if(invoke.finalize){
+                  let finalizeKLayNode = {
+                    "id" : `${invokeKlay.id}:finalize`,
+                    "labels" : [{text : `finalize`}],
+                    "$type" : "action",
+                    "properties": ACTIONPROPS,
+                    "children" : []
+                  };
 
-            //handle params
-            this._makeKLayParams(invokeKlay, invoke, false);
-            return invokeKlay;
-          })
-      };
-      stateKlayNode.children.push(o);
+                  invokeKlay.children.push(finalizeKLayNode); 
+                  this._conditionallyCollapseNode(finalizeKLayNode, () => {
+                    this._recursiveMakeActions(finalizeKLayNode, invoke.finalize.actions);
+                  });
+                }
+                if(invoke.src){
+                  invokeKlay.children.push({
+                    "id" : `${invokeKlay.id}:src`,
+                    "labels" : [{text : `src: ${invoke.src}`}],
+                    "$type" : "action",
+                    "properties": ACTIONPROPS
+                  }); 
+                }else if(invoke.content && invoke.content.rootState){
+                  const contentKlayContainer = {
+                    "id" : `${invokeKlay.id}:content`,
+                    "labels" : [{text : `content`}],
+                    "$type" : "action",
+                    "properties": ACTIONPROPS,
+                    "children" : []
+                  };
+                  invokeKlay.children.push(contentKlayContainer); 
+                  this._conditionallyCollapseNode(contentKlayContainer, () => {
+                    contentKlayContainer.children.push(this.transform(invoke.content.rootState))
+                  });
+                }else if(invoke.content && invoke.content.expr){
+                  invokeKlay.children.push({
+                    "id" : `${invokeKlay.id}:srcexpr`,
+                    "labels" : [{text : `content/@expr: ${invoke.content.expr.expr}`}],
+                    "$type" : "action",
+                    "properties": ACTIONPROPS
+                  }); 
+                  
+                }else if(invoke.srcexpr){
+                  invokeKlay.children.push({
+                    "id" : `${state.id}:invokes:src`,
+                    "labels" : [{text : `srcexpr: ${invoke.srcexpr.expr}`}],
+                    "$type" : "action",
+                    "properties": ACTIONPROPS
+                  }); 
+                }else{
+                  throw new Error();
+                }
+
+                //handle params
+                this._makeKLayParams(invokeKlay, invoke, false);
+                return invokeKlay;
+              });
+            })
+      });
     }
 
     return stateKlayNode;

@@ -46,11 +46,13 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   private svgRootElement : SVGSVGElement;
   private viewBoxAnimation : SVGAnimationElement;
   private defaultRect : SVGRect;
+  public collapsedNodeMap : Map<string, boolean>;
 
   public static layouts = constants.layouts;   //expose layouts
 
   constructor(props:GraphRootProps){
     super(props);
+    this.collapsedNodeMap = new Map<string, boolean>();   //TODO: save in localStorage
     this.state = { 
       allEdges : [],
       enabledEdges : [],
@@ -361,11 +363,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   }
 
   public toggleExpandContractState(nodeId : string){
-    //TODO: refactor this so that it only affects KGraph?
-    //transform model
-    let state:SCState = findStateById(this.props.scjson, nodeId);   //TODO: refactor return type. could be action node
-    state.$meta = state.$meta || {};
-    state.$meta.isCollapsed = !state.$meta.isCollapsed;   //toggle contracted
+    this.collapsedNodeMap.set(nodeId, !this.collapsedNodeMap.get(nodeId)); //toggle contracted
     this.initSCJson(this.props, false);
   }
 
