@@ -19,7 +19,7 @@ var argv = require('optimist')
     .argv;
 
 if(util.IS_INSPECTING || argv.compile === 'module'){ 
-  require('../plugins/sourcemaps/index');  //load the sourcemaps plugin
+  require('@jbeard/scion-sourcemap-plugin')(scxml);  //load the sourcemaps plugin
 }
 
 if(argv.compile === 'scjson' || argv.compile === 'json'){
