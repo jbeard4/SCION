@@ -2,7 +2,7 @@ export type ModelFactory = () => SCState;
 type Configuration = string[];
 type FullConfiguration = string[];
 
-export class BaseInterpreter {
+export class BaseInterpreter extends EventEmitter {
   constructor(model : ModelFactory | SCState, opts? : any);
   start : () => Configuration;
   startAsync : (cb: (Configuration) => void) => void;
@@ -24,6 +24,13 @@ export class Statechart extends BaseInterpreter {
 export interface Event {
   name : string;
   data : any;
+}
+
+export class EventEmitter {
+  on : (type : string, listener : (...args) => void) => void;
+  off : (type : string, listener? : (...args) => void) => void;
+  once : (type : string, listener : (...args) => void) => void;
+  emit : (type : string) => void;
 }
 
 export interface SCState {
