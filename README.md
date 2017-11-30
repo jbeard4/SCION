@@ -133,7 +133,31 @@ Returns a `snapshot` object, of the form :
 ]
 ```
 
-The snapshot object can be serialized as JSON and saved to a database. It can later be passed to the SCXML constructor to restore the state machine: `new scion.Statechart(model, {snapshot : snapshot})`.
+The snapshot object can be serialized as JSON and saved to a database. It can later be passed to the SCXML constructor to restore the state machine: `new scion.Statechart(model, {snapshot : snapshot})`. 
+
+Note that you do not need to call `sc.start()` when restoring the state machine instance. Execution should assume the following pattern:
+
+```javascript
+function handleEvent(snapshot, event){
+  
+  let interpreter
+  if(!snapshot){
+    //instantiate the interpreter
+    interpreter = new scxml.scion.Statechart(fnModel);
+    //start the interpreter
+    interpreter.start();
+  }else{
+    //instantiate the interpreter, and rehydrate the snapshot
+    interpreter = new scxml.scion.Statechart(fnModel, {snapshot : snapshot});
+  }
+
+  //process event
+  interpreter.gen(event); 
+
+  //return new snapshot
+  return interpreter.getSnapshot();
+}
+```
 
 # Statecharts Model Schema
 
