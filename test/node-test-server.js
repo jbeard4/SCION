@@ -6,6 +6,12 @@
 const scxml = require('..'),
       http = require('http');
 
+var argv = require('optimist')
+    .alias('l', 'legacy-semantics')
+    .boolean('l')
+    .argv;
+
+const interpreterConstructor = scxml.scion[argv['legacy-semantics'] ? 'Statechart' : 'SCInterpreter'];
 
 if(process.env.TEST_SOURCEMAPS_PLUGIN){ 
   require('../plugins/sourcemaps/index');  //load the sourcemaps plugin
@@ -46,7 +52,7 @@ http.createServer(function (req, res) {
                                     return;
                                 }
 
-                                var interpreter = new scxml.scion.Statechart(fnModel, { 
+                                var interpreter = new interpreterConstructor(fnModel, { 
                                   sessionid: sessionCounter,
                                   sessionRegistry : sessionRegistry,
                                   sendAsync : TEST_ASYNC 
