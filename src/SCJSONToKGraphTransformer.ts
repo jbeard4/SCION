@@ -497,7 +497,7 @@ export default class SCJSONToKGraphTransformer {
             const klayTargetlessTransitionActionContainer = {
               "id" : `${klayActionContainer.id}:${idx}:onTransition`,
               "$type" : "actionContainer",
-              "labels" : [{text : label}],
+              "labels" : [{text : label || ''}],
               "properties": ACTIONPROPS,
               "children" : []
             };

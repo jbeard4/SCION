@@ -17,7 +17,7 @@ interface AppComponentState {
   layoutOptions? : any;
   redraw? : boolean;
   disableAnimation? : boolean;
-  interpreter : scxml.scion.Statechart;
+  interpreter : scxml.scion.SCInterpreter;
   configuration? : string[];
 }
 
