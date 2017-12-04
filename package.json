@@ -25,7 +25,7 @@
     "babel-polyfill": "^6.23.0",
     "optimist": "^0.6.1",
     "toastr": "^2.1.2",
-    "@jbeard/schviz2": "git+ssh://git@nas:JacobeanRnD/SCHVIZ2.git#549ecccfdb58f956aa45528a9ac0c6128dd54a90"
+    "@jbeard/schviz2": "3.2.3"
   },
   "keywords": [
     "SCXML"

@@ -120,7 +120,7 @@ export default class AppComponent extends React.Component<AppComponentProps, App
             }
 
             //Use the statechart object model to instantiate an instance of the statechart interpreter. Optionally, we can pass to the construct an object to be used as the context object (the 'this' object) in script evaluation. Lots of other parameters are available.
-            var interpreter = new scxml.scion.Statechart(fnModel);
+            var interpreter = new scxml.scion.SCInterpreter(fnModel);
 
             interpreter.start();
 
