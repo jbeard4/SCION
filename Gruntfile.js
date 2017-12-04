@@ -34,7 +34,8 @@ module.exports = function(grunt) {
         "scxml" : {
           options: {
             port : 42000,
-            script: 'test/node-test-server.js'
+            script: 'test/node-test-server.js',
+            args : grunt.option('legacy-semantics') ? ['--legacy-semantics'] : []
           }
         }
       },
@@ -111,13 +112,22 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('scxml-test-client', 'Run scxml tests in node. ', function(){
+    const legacySemantics = grunt.option('legacy-semantics');
+    console.log('legacySemantics',legacySemantics);
+    const scxmlTestFiles = 
+            grunt.file.expand(
+              require(legacySemantics ?
+                './grunt/scxml-tests.legacySemantics.json' : 
+                './grunt/scxml-tests.json'));
+    
     var done = this.async();
     //TODO: convert to submodule. 
     var startTests = require('@jbeard/scxml-test-framework');
     startTests({
       verbose : false,
       report : 'console',
-      scxmlTestFiles : grunt.file.expand(require('./grunt/scxml-tests.json'))
+      legacySemantics : legacySemantics,
+      scxmlTestFiles : scxmlTestFiles 
     }, done);
   });
 

@@ -16,11 +16,15 @@ var argv = require('optimist')
     .boolean('b')
     .alias('e', 'execute')
     .boolean('e')
+    .alias('l', 'legacy-semantics')
+    .boolean('l')
     .argv;
 
 if(util.IS_INSPECTING || argv.compile === 'module'){ 
   require('@jbeard/scion-sourcemap-plugin')(scxml);  //load the sourcemaps plugin
 }
+
+const interpreterConstructor = scxml.scion[argv['legacy-semantics'] ? 'Statechart' : 'SCInterpreter'];
 
 if(argv.compile === 'scjson' || argv.compile === 'json'){
   var scxmlToScjson = require('../lib/compiler/scxml-to-scjson');
@@ -52,7 +56,7 @@ if(argv.compile === 'scjson' || argv.compile === 'json'){
       model.prepare(function(err, fnModel){
         if(err) return console.error(err);
         //just instantiate and start him
-        var interpreter = new scxml.scion.Statechart(fnModel, interpOpts);
+        var interpreter = new interpreterConstructor(fnModel, interpOpts);
         interpreter.registerListener(listeners);
         interpreter.start();
       },{console : console});
@@ -91,7 +95,7 @@ var listeners = {
 
 function startRepl(fnModel){
 
-    var interpreter = new scxml.scion.Statechart(fnModel, interpOpts);
+    var interpreter = new interpreterConstructor(fnModel, interpOpts);
 
 
     interpreter.registerListener(listeners);
@@ -103,9 +107,13 @@ function startRepl(fnModel){
 
     function processEvent(cmd,dontKnow,alsoDontKnow,callback){
         cmd = cmd.trim();
-        interpreter.gen({name : cmd});
-        var conf = interpreter.getConfiguration();
-        callback(null,conf);
+        if(cmd === 'getSnapshot()'){
+          callback(null,interpreter.getSnapshot());
+        }else{
+          interpreter.gen({name : cmd});
+          var conf = interpreter.getConfiguration();
+          callback(null,conf);
+        }
     }
 
     //start
