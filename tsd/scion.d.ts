@@ -14,12 +14,12 @@ export class BaseInterpreter extends EventEmitter {
   unregisterListener : (listener) => void;
   getAllTransitionEvents : () => string[];
   getSnapshot : () => Snapshot;
-}
-
-export class Statechart extends BaseInterpreter {
   gen(evtObjOrName : string | Event, optionalData? : any);
   genAsync(currentEvent : Event, cb : (Configuration) => void);
 }
+
+export class Statechart extends BaseInterpreter {}
+export class SCInterpreter extends BaseInterpreter {}
 
 export interface Event {
   name : string;
