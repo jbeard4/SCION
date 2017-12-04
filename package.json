@@ -1,6 +1,6 @@
 {
   "name": "@jbeard/schviz2",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "SCJSON to KGraph to SVG rendering library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
