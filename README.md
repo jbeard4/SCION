@@ -199,7 +199,7 @@ var model = {
     ]
 };
 
-var sc = new scion.Statechart(model);
+var sc = new scion.SCInterpreter(model);
 sc.start();     //buffer now contains [1]
 sc.gen('t','x');    //buffer now contains [1,2,3,'x']
 ```
@@ -285,8 +285,8 @@ If property `isDeep` had not been set on the history state, then the state machi
 
 The context object ("`this`") of onEntry, onExit, and onTransition functions contains the following methods:
 
-* `send(event)`, which adds an event to the Statechart's outer queue
-* `raise(event)`, which adds an event to the Statechart's inner queue 
+* `send(event)`, which adds an event to the interpreter's outer queue
+* `raise(event)`, which adds an event to the interpreter's inner queue 
 
 
 
@@ -456,7 +456,7 @@ You can then perform the following steps to script web content:
             };
 
             //instantiate the interpreter
-            var interpreter = new scion.Statechart(statechartModel);
+            var interpreter = new scion.SCInterpreter(statechartModel);
 
             //start the interpreter
             interpreter.start();
