@@ -37,7 +37,7 @@ module.exports = function(scion){
             options.doSend = doSend; //add a hook to intercept the event dispatch
           }
 
-          var sc = new scion.Statechart(test.test.sc, options);
+          var sc = new scion.SCInterpreter(test.test.sc, options);
 
           var actualInitialConf = sc.start();
 
