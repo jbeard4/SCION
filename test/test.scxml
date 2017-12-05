@@ -1,0 +1,64 @@
+<scxml 
+  xmlns="http://www.w3.org/2005/07/scxml"
+  version="1.0"
+  name="test">
+  <datamodel>
+    <data id="x" expr="0"/>
+  </datamodel>
+  <state id="foo">
+    <onentry>
+      <assign location="x" expr="x+1"/>
+      <assign location="x" expr="x+2"/>
+    </onentry>
+    <transition event="t" target="bar"
+      cond="x === 3">
+      <assign location="x" expr="x+3"/>
+      <assign location="x" expr="x+4"/>
+    </transition>
+    <onexit>
+      <assign location="x" expr="x+5"/>
+      <assign location="x" expr="x+6"/>
+    </onexit>
+  </state>
+  <state id="bar">
+    <onentry>
+      <assign location="x" expr="x+7"/>
+      <assign location="x" expr="x+8"/>
+    </onentry>
+    <invoke type="http://www.w3.org/TR/scxml/" src="file:testsub1.scxml">
+      <param name="z" expr="x"/>
+    </invoke>
+    <invoke type="scxml">
+      <param name="y" expr="x"/>
+      <content>
+        <scxml initial="sub0" version="1.0" datamodel="ecmascript">
+         <datamodel>
+           <data id="y"/>
+         </datamodel>
+         <state id="sub0">
+           <onentry>
+             <log label="y" expr="y"/>
+             <script>
+                for(var i = 0; i &lt; y; i++){
+                  console.log('y', i);
+                } 
+             </script>
+           </onentry>
+           <transition target="subFinal"/>
+         </state>
+         <final id="subFinal"/>
+        </scxml>
+      </content>
+    </invoke>
+
+    <onentry>
+      <script>
+        for(var i = 0; i &lt; x; i++){
+          console.log('x', i);
+        } 
+      </script>
+      <log label="x" expr="x"/>
+    </onentry>
+  </state>
+  <!-- TODO: test invoke/content, invoke/content/@expr, invoke/@src --> 
+</scxml>
