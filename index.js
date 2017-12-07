@@ -65,51 +65,107 @@ function init(scxml, options){
     return arr;
   }
 
-  function broadcast(interpreter, eventName, event){
+  function broadcast(interpreter, messageName, messageData){
     const url = interpreter._model.docUrl;
     const absPath = path.isAbsolute(url) ? url : path.resolve(url);
     for(let res of responses){
       res.write('id: ' + (messageCount++) + '\n');
-      res.write('event: ' + eventName + '\n');
+      res.write('event: ' + messageName + '\n');
       res.write("data: " + JSON.stringify({
-        name : path.parse(interpreter._model.docUrl).name, 
-        docUrl : absPath,
-        sessionid : interpreter.opts.sessionid,
-        parentSessionIds : getParentSessionIds(interpreter),
-        snapshot : interpreter.getSnapshot(), 
-        event : event
+        meta : {
+          scName : path.parse(interpreter._model.docUrl).name, 
+          docUrl : absPath,
+          sessionid : interpreter.opts.sessionid,
+          parentSessionIds : getParentSessionIds(interpreter),
+          snapshot : interpreter.getSnapshot()
+        },
+        data : messageData
       }) + '\n\n'); // Note the extra newline
     }
   }
 
   function initSession(interpreter){
-    interpreter.on('onError',log.bind(this, interpreter, 'onError'));
-    interpreter.on('onExitInterpreter',function(lastEvent){
-      broadcast(interpreter, 'onExitInterpreter',lastEvent);
-    })
-    interpreter.on('onEntry',log.bind(this, interpreter, 'onEntry'));
-    interpreter.on('onExit',log.bind(this, interpreter, 'onExit'));
+
+    let statesEnteredDuringBigStep,
+        statesEnteredDuringSmallStep,
+        statesExitedDuringBigStep,
+        statesExitedDuringSmallStep,
+        defaultStatesEnteredDuringBigStep,
+        defaultStatesEnteredDuringSmallStep,
+        transitionsTakenDuringBigStep,
+        transitionsTakenDuringSmallStep;
+
     interpreter.on('onBigStepBegin',function(event){
-      broadcast(interpreter, 'onBigStepBegin',event);
-    });
-    interpreter.on('onTransition',function(transitionSourceId, transitionTargetIds, transitionIndex){
-      broadcast(interpreter, 'onTransition', 
-        [transitionSourceId, transitionTargetIds, transitionIndex]
-      );
-    });
-    interpreter.on('onDefaultEntry',function(initialStateId){
-      broadcast(interpreter, 'onDefaultEntry',initialStateId);
+      //reset
+      statesEnteredDuringBigStep = [];
+      statesExitedDuringBigStep = [];
+      defaultStatesEnteredDuringBigStep = [];
+      transitionsTakenDuringBigStep = [];
+
+      broadcast(interpreter, 'onBigStepBegin', event);
     });
 
-    interpreter.on('onBigStepEnd',function(){
-      broadcast(interpreter, 'onBigStepEnd');
-      log(interpreter, 'onBigStepEnd', interpreter.getConfiguration());
-    })
     interpreter.on('onSmallStepBegin',function(event){
-      broadcast(interpreter, 'onSmallStepBegin',event);
+      //reset
+      statesEnteredDuringSmallStep = [];
+      statesExitedDuringSmallStep = [];
+      defaultStatesEnteredDuringSmallStep = [];
+      transitionsTakenDuringSmallStep = [];
+
+      broadcast(interpreter, 'onSmallStepBegin', event);
     });
-    interpreter.on('onSmallStepEnd',function(){
-      broadcast(interpreter, 'onSmallStepEnd');
+
+    interpreter.on('onEntry',function(stateId){
+      statesEnteredDuringBigStep.push(stateId);
+      statesEnteredDuringSmallStep.push(stateId); 
+    });
+
+    interpreter.on('onExit',function(stateId){
+      statesExitedDuringBigStep.push(stateId);
+      statesExitedDuringSmallStep.push(stateId);
+    });
+
+    interpreter.on('onTransition',function(transitionSourceId, transitionTargetIds, transitionIndex){
+      const args = [transitionSourceId, transitionTargetIds, transitionIndex];
+      transitionsTakenDuringBigStep.push(args); 
+      transitionsTakenDuringSmallStep.push(args); 
+    });
+
+    interpreter.on('onDefaultEntry',function(initialStateId){
+      defaultStatesEnteredDuringBigStep.push(initialStateId);
+      defaultStatesEnteredDuringSmallStep.push(initialStateId);
+    });
+
+    interpreter.on('onSmallStepEnd',function(event){
+      broadcast(interpreter, 'onSmallStepEnd', {
+        event : event,
+        statesEntered : statesEnteredDuringSmallStep,
+        statesExited : statesExitedDuringSmallStep,
+        defaultStatesEntered : defaultStatesEnteredDuringSmallStep,
+        transitionsTaken : transitionsTakenDuringSmallStep
+      });
+    });
+
+    interpreter.on('onBigStepEnd',function(event){
+      broadcast(interpreter, 'onBigStepEnd', {
+        event : event,
+        statesEntered : statesEnteredDuringBigStep,
+        statesExited : statesExitedDuringBigStep,
+        defaultStatesEntered : defaultStatesEnteredDuringBigStep,
+        transitionsTaken : transitionsTakenDuringBigStep
+      });
+    });
+
+    interpreter.on('onError',function(error){
+      broadcast(interpreter, 'onError', {
+        name : error.name,
+        message : error.message,
+        stack : error.stack
+      });
+    });
+
+    interpreter.on('onExitInterpreter',function(lastEvent){
+      broadcast(interpreter, 'onExitInterpreter', lastEvent);
     });
 
     //TODO: on done, remove event listeners, to avoid memory leaks
