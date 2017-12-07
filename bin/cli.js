@@ -20,8 +20,19 @@ var argv = require('optimist')
     .boolean('l')
     .argv;
 
+let scionSourcemapPluginLoaded = false;
 if(util.IS_INSPECTING || argv.compile === 'module'){ 
-  require('@jbeard/scion-sourcemap-plugin')(scxml);  //load the sourcemaps plugin
+  try{
+    require('@jbeard/scion-sourcemap-plugin')(scxml);  //load the sourcemaps plugin
+    scionSourcemapPluginLoaded = true;
+  }catch(e){
+    console.warn('Unable to load scion-sourcemap-plugin. You will not be able to inspect SCXML source maps in the console.');
+  }
+  try{
+    require('@jbeard/scion-scxml-debugger-middleware').init(scxml);  //load the debug server plugin
+  }catch(e){
+    console.warn('Unable to load scion-scxml-debugger-middleware.');
+  }
 }
 
 const interpreterConstructor = scxml.scion[argv['legacy-semantics'] ? 'Statechart' : 'SCInterpreter'];
@@ -39,14 +50,18 @@ if(argv.compile === 'scjson' || argv.compile === 'json'){
   scxml.pathToModel(argv.input, function(err, model){
     if(err) return console.error(err);
     if(argv.compile){
-      model.prepareModuleString(function(err, moduleString){
-        if(err) return console.error(err);
-        if(!argv.output || argv.output === '-'){
-          console.log(moduleString);
-        } else {
-          fs.writeFileSync(argv.output, moduleString); 
-        }
-      }, {moduleFormat : 'commonjs'});
+      if(scionSourcemapPluginLoaded){ 
+        model.prepareModuleString(function(err, moduleString){
+          if(err) return console.error(err);
+          if(!argv.output || argv.output === '-'){
+            console.log(moduleString);
+          } else {
+            fs.writeFileSync(argv.output, moduleString); 
+          }
+        }, {moduleFormat : 'commonjs'});
+      } else {
+        console.error('scion-sourcemap-plugin must be loaded in order to generate module string');
+      }
     } else if(argv.repl){
       model.prepare(function(err, fnModel){
         if(err) return console.error(err);
