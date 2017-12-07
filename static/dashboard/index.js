@@ -60,6 +60,37 @@ var grid,
       enableColumnReorder: false
     };
 
+var accordion = $('#accordion').accordion({
+  collapsible: true,
+  heightStyle: "content",
+  beforeActivate: function(event, ui) {
+    // The accordion believes a panel is being opened
+    if (ui.newHeader[0]) {
+        var currHeader  = ui.newHeader;
+        var currContent = currHeader.next('.ui-accordion-content');
+     // The accordion believes a panel is being closed
+    } else {
+        var currHeader  = ui.oldHeader;
+        var currContent = currHeader.next('.ui-accordion-content');
+    }
+     // Since we've changed the default behavior, this detects the actual status
+    var isPanelSelected = currHeader.attr('aria-selected') == 'true';
+
+     // Toggle the panel's header
+    currHeader.toggleClass('ui-corner-all',isPanelSelected).toggleClass('accordion-header-active ui-state-active ui-corner-top',!isPanelSelected).attr('aria-selected',((!isPanelSelected).toString()));
+
+    // Toggle the panel's icon
+    currHeader.children('.ui-icon').toggleClass('ui-icon-triangle-1-e',isPanelSelected).toggleClass('ui-icon-triangle-1-s',!isPanelSelected);
+
+     // Toggle the panel's content
+    currContent.toggleClass('accordion-content-active',!isPanelSelected)    
+    if (isPanelSelected) { currContent.slideUp(); }  else { currContent.slideDown(); }
+
+    return false; // Cancel the default action
+  }
+});
+
+
 // create the eventEditor
 var tabs = $('#tabs').tabs({heightStyle: "fill"});
 
@@ -89,6 +120,13 @@ dataView.onRowCountChanged.subscribe(function (e, args) {
 dataView.onRowsChanged.subscribe(function (e, args) {
   grid.invalidateRows(args.rows);
   grid.render();
+});
+
+$('body').layout({ 
+  applyDefaultStyles: true, 
+  south__size: 200,
+  east__size: 300,
+  south__onresize: (() => grid.resizeCanvas()),
 });
 
 grid = new Slick.Grid("#tableContainer", dataView, columns, options);

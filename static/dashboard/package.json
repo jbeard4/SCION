@@ -7,18 +7,15 @@
     "@jbeard/schviz2": "3.2.3",
     "@jbeard/scxml": "4.3.1",
     "babel-polyfill": "^6.26.0",
+    "jquery": "^3.2.1",
+    "jquery-ui-dist": "^1.12.1",
     "jsondiffpatch": "^0.2.4",
     "jsoneditor": "^5.9.5",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
+    "react-ui-layout": "^1.0.4",
     "slickgrid": "^2.3.3",
     "underscore": "^1.8.3"
-  },
-  "devDependencies": {
-    "browserify": "^14.4.0"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC"
