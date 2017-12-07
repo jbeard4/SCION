@@ -250,7 +250,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     let enabledEdges = allEdges.filter( edge => 
       transitionsEnabled &&
       transitionsEnabled.has(edge.source) && 
-      transitionsEnabled.get(edge.source).has(parseInt(edge.id.split(':')[1])) 
+      transitionsEnabled.get(edge.source).has(parseInt(edge.id.split(':').pop())) 
     );
     let edgeIds = allEdges.map(edge => edge.id);
     let enabledHyperedges = enabledEdges.
