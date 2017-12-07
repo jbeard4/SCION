@@ -3,60 +3,39 @@ const EVENTSOURCE_TIMEOUT = 1000;
 function initEventSource(){
   var source = new EventSource('/api/update-stream');
 
-  let previousConfiguration = [],
-      statesForDefaultEntry = [],
-      currentEvent,
-      transitionsEnabled  = new Map();
-
-  source.addEventListener('onSmallStepBegin', function(e) {
-    let message = JSON.parse(e.data);
-    previousConfiguration = message.snapshot[0];
-    transitionsEnabled  = new Map();
-    statesForDefaultEntry = [];
-    currentEvent = message.event;
-  }, false);
-
-  source.addEventListener('onTransition', function(e) {
-    let message = JSON.parse(e.data);
-    let transitionSourceId, transitionTargetIds, transitionIndex;
-    [transitionSourceId, transitionTargetIds, transitionIndex] = message.event;
-    let enabledTransitionIndexes;
-    if(transitionsEnabled.has(transitionSourceId)){
-      enabledTransitionIndexes = transitionsEnabled.get(transitionSourceId)
-    } else {
-      enabledTransitionIndexes = new Set();
-      transitionsEnabled.set(transitionSourceId, enabledTransitionIndexes);
-    }
-    enabledTransitionIndexes.add(transitionIndex);
-  }, false);
-
-
-  source.addEventListener('onDefaultEntry', function(e) {
-    let message = JSON.parse(e.data);
-    statesForDefaultEntry.push(message.event);
-  });
-
   source.addEventListener('onSmallStepEnd', function(e) {
     let message = JSON.parse(e.data);
 
+    //convert message.data.transitionsTaken to a Map
+    let transitionsTaken  = new Map();
+    message.data.transitionsTaken.forEach( transitionInfo => {
+      let transitionSourceId, transitionTargetIds, transitionIndex;
+      [transitionSourceId, transitionTargetIds, transitionIndex] = transitionInfo;
+      let enabledTransitionIndexes;
+      if(transitionsTaken.has(transitionSourceId)){
+        enabledTransitionIndexes = transitionsTaken.get(transitionSourceId)
+      } else {
+        enabledTransitionIndexes = new Set();
+        transitionsTaken.set(transitionSourceId, enabledTransitionIndexes);
+      }
+      enabledTransitionIndexes.add(transitionIndex);
+    });
+
     dataView.insertItem(0, {
         id : e.lastEventId, 
-        name : message.name,
-        docUrl : message.docUrl,
-        sessionid : message.sessionid,
-        //updateName : updateName,
-        eventName : currentEvent ? currentEvent.name : '<null>',
-        snapshot : message.snapshot,
-        event : currentEvent,
-        parentSessionIds : message.parentSessionIds,
-        transitionsEnabled : transitionsEnabled,
-        previousConfiguration : previousConfiguration,
-        statesForDefaultEntry : statesForDefaultEntry
+        name : message.meta.scName,
+        docUrl : message.meta.docUrl,
+        sessionid : message.meta.sessionid,
+        eventName : message.data.event ? message.data.event.name : '<null>',
+        snapshot : message.meta.snapshot,
+        event : message.data.event,
+        parentSessionIds : message.meta.parentSessionIds,
+        transitionsTaken : transitionsTaken,
+        previousConfiguration : message.data.statesExited,
+        defaultStatesEntered : message.data.defaultStatesEntered
     });
 
     grid.setSelectedRows([0]);
-
-
   }, false);
 
   source.onerror = function(err) {
@@ -74,7 +53,6 @@ var grid,
         { id: "scxmlName", name: "SCXML Name", field: "name", width: 120 },
         //{ id: "docUrl", name: "URL", field: "docUrl", width: 120 },
         { id: "sessionid", name: "Sesssionid", field: "sessionid", width: 120 },
-        //{ id: "updateName", name: "Update", field: "updateName", width: 120 },
         { id: "eventName", name: "Event Name", field: "eventName", width: 120 },
     ],
     options = {
@@ -154,9 +132,9 @@ grid.onSelectedRowsChanged.subscribe(function(){
   lazyRenderSchviz(
       row.docUrl,
       row.snapshot,
-      row.transitionsEnabled,
+      row.transitionsTaken,
       row.previousConfiguration,
-      row.statesForDefaultEntry);
+      row.defaultStatesEntered);
 
   //look up previous datamodel
   if(previousRow){
@@ -183,15 +161,15 @@ grid.onSelectedRowsChanged.subscribe(function(){
 
 let schviz;
 
-function lazyRenderSchviz(docUrl,snapshot,transitionsEnabled,previousConfiguration,statesForDefaultEntry){
+function lazyRenderSchviz(docUrl,snapshot,transitionsTaken,previousConfiguration,defaultStatesEntered){
   $.get(docUrl).then(function(scxmlContents){
     let scjson = scxml.ext.compilerInternals.scxmlToScjson(scxmlContents);
-    schviz = renderSchviz(scjson,snapshot,transitionsEnabled,previousConfiguration,statesForDefaultEntry);
+    schviz = renderSchviz(scjson,snapshot,transitionsTaken,previousConfiguration,defaultStatesEntered);
   });
   
 }
 
-function renderSchviz(scjson,snapshot,transitionsEnabled,previousConfiguration,statesForDefaultEntry){
+function renderSchviz(scjson,snapshot,transitionsTaken,previousConfiguration,defaultStatesEntered){
   //TODO: cache rendering
   var rootElement = 
     React.createElement(
@@ -201,9 +179,9 @@ function renderSchviz(scjson,snapshot,transitionsEnabled,previousConfiguration,s
         layoutOptions:SCHVIZ.default.layouts.right,
         configuration:snapshot[0],
         disableAnimation:true,
-        transitionsEnabled : transitionsEnabled,
+        transitionsEnabled : transitionsTaken,
         previousConfiguration : previousConfiguration,
-        statesForDefaultEntry : statesForDefaultEntry 
+        statesForDefaultEntry : defaultStatesEntered 
       }
     );
 
