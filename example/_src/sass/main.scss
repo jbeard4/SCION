@@ -1,12 +1,7 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,700,700italic,400italic);
-@import "base/reset";
-@import "base/clearfix";
 @import "base/variables";
 @import "base/mixins";
 
-html {
-  font-size: $BASE_FONT_SIZE;
-}
 
 body {
   background-color: $grey;
@@ -14,28 +9,5 @@ body {
   padding-top: 50px;
 }
 
-h1 {
-  color: white;
-  text-align: center;
-  font-size: 30px;
-  margin-bottom: 50px;
-}
-
-h2 {
-  font-weight: 800;
-  text-transform: uppercase;
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-
-strong {
-  font-weight: bold;
-}
-
-#root {
-  max-width: 960px;
-  margin-left: auto;
-  margin-right: auto;
-}
 
 @import "components/Collapsible";

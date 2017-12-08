@@ -6,8 +6,8 @@
 
 //The content within the collaspable area
 .Collapsible__contentInner {
-  padding: 10px;
-  border: 1px solid $lightGrey;
+  padding: 1px;
+  border-bottom: 1px solid $lightGrey;
   border-top: 0;
 
   p {
@@ -29,9 +29,8 @@
   color: $grey;
   position: relative;
   border: 1px solid white;
-  padding: 10px;
-  background: $cyan;
-  color: white;
+  padding: 1px;
+  background: rgba(0,0,0,0.05);
 
 
   &:after {
@@ -39,7 +38,7 @@
     content: '\f107';
     position: absolute;
     right: 10px;
-    top: 10px;
+    top: 1px;
     display: block;
     transition: transform 300ms;
   }
