@@ -5,72 +5,25 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <link rel="shortcut icon" type="image/ico" href="favicon.ico" />
   <title>Event Log</title>
-  <link rel="stylesheet" href="./node_modules/slickgrid/slick.grid.css" type="text/css"/>
-  <link rel="stylesheet" href="./node_modules/slickgrid/slick-default-theme.css" type="text/css"/>
-  <link href="node_modules/@jbeard/schviz2/test-integration/styles.css" rel="stylesheet"/>
-  <link href="node_modules/jsoneditor/dist/jsoneditor.min.css" rel="stylesheet"/>
   <link rel="stylesheet" href="./node_modules/jquery-ui-dist/jquery-ui.css">
-  <link rel="stylesheet" href="./node_modules/react-ui-layout/layout-default-latest.css">
-  <link rel="stylesheet" href="./node_modules/jquery-ui-themes/themes/smoothness/jquery-ui.min.css">
-  <link rel="stylesheet" href="./node_modules/jquery-ui-themes/themes/smoothness/theme.css">
-  <link rel="stylesheet" href="./node_modules/jsondiffpatch/public/formatters-styles/html.css" type="text/css" />
-  <link rel="stylesheet" href="./node_modules/jsondiffpatch/public/formatters-styles/annotated.css" type="text/css" />
   <style>
-    #tableContainer {
-      width:100%;
-      height:100%;
-    }
-
     .ui-layout-pane {
       padding: 0px !important;
+    }
+    html, body, #root {
+      width:100%;
+      height:100%;
+      margin:0; 
+      padding:0;
     }
   </style>
 </head>
 <body>
-<div class="ui-layout-center">
-  <div id="schvizContainer"></div>
-  <h1 id="title"></h1>
-</div>
-<div class="ui-layout-south">
-  <div id="tableContainer"></div>
-</div>
-<div class="ui-layout-east">
-  <div id="infoContainer">
-    <div id="accordion">
-      <h3>Session Hierarchy</h3>
-      <div></div>
-      <h3>Input Event</h3>
-      <div id="events-tab"></div>
-      <h3>Datamodel</h3>
-      <div id="snapshot-tab"></div>
-      <h3>Datamodel Diff</h3>
-      <div id="diff-tab"></div>
-      <h3>Inner Queue</h3>
-      <div id="innerqueue-tab"></div>
-      <h3>Inner Queue Diff</h3>
-      <div id="innerqueue-diff-tab"></div>
-    </div>
+  <div id="root">
   </div>
-</div>
-
-<script src="./node_modules/react/dist/react.js"></script>
-<script src="./node_modules/react-dom/dist/react-dom.js"></script>
-<script src="./node_modules/slickgrid/lib/jquery-1.11.2.min.js"></script>
-<script src="./node_modules/slickgrid/lib/jquery.event.drag-2.3.0.js"></script>
+<script src="./node_modules/jquery/dist/jquery.js"></script>
 <script src="./node_modules/jquery-ui-dist/jquery-ui.js"></script>
-<script src="./node_modules/underscore/underscore-min.js"></script>
 <script src="./node_modules/react-ui-layout/jquery.layout-latest.js"></script>
-
-<script src="./node_modules/babel-polyfill/dist/polyfill.js"></script>
-<script src="./node_modules/@jbeard/scxml/dist/scxml.js"></script>
-<script src="./node_modules/@jbeard/schviz2/dist/schviz.js"></script>
-<script src="./node_modules/slickgrid/slick.core.js"></script>
-<script src="./node_modules/slickgrid/slick.grid.js"></script>
-<script src="./node_modules/slickgrid/slick.dataview.js"></script>
-<script src="./node_modules/slickgrid/plugins/slick.rowselectionmodel.js"></script>
-<script src="./node_modules/jsoneditor/dist/jsoneditor.min.js"></script>
-<script src="./node_modules/jsondiffpatch/public/build/jsondiffpatch.min.js"></script>
-<script src="./node_modules/jsondiffpatch/public/build/jsondiffpatch-formatters.min.js"></script>
-<script src="./index.js"></script>
+<script src="./dist/scion-scxml-dashboard.js"></script>
 </body>
 </html>
