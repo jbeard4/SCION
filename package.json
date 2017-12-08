@@ -1,6 +1,6 @@
 {
   "name": "react-collapsible",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "React component to wrap content in Collapsible element with trigger to open and close.",
   "keywords": [
     "react-component",
@@ -9,7 +9,23 @@
     "collapsible",
     "accordion"
   ],
-  "main": "dist/Collapsible.js",
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ],
+          "plugins": [
+            "transform-class-properties"
+          ]
+        }
+      ],
+      "browserify-css"
+    ]
+  },
+  "main": "src/Collapsible.js",
   "author": "Glenn Flanagan <glenn@arctictiger.co.uk>",
   "license": "MIT",
   "devDependencies": {
@@ -20,6 +36,10 @@
     "babel-loader": "^7.0.0",
     "babel-preset-es2015": "^6.13.2",
     "babel-preset-react": "^6.11.1",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-polyfill": "^6.26.0",
+    "babelify": "^8.0.0",
+    "browserify-css": "^0.14.0",
     "css-loader": "^0.28.5",
     "extract-text-webpack-plugin": "^3.0.0",
     "node-sass": "^4.5.3",
