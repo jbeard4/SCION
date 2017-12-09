@@ -1,8 +1,8 @@
 import { combineReducers, AnyAction } from 'redux';
-import todos from './todos';
+import smallSteps from './smallSteps';
 
 const rootReducer = combineReducers({
-  todos
+  smallSteps
 });
 
 export default rootReducer;

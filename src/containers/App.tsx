@@ -1,15 +1,14 @@
 import * as React from "react";
 import Collapsible from 'react-collapsible';
-import ReactDataGrid = require('react-data-grid/packages/react-data-grid/index.js');
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
+import {SlickgridComponent} from '../components/Slickgrid';
+import EventSourceContainer from '../containers/EventSource';
 import Header from '../components/Header';
 import MainSection from '../components/MainSection';
-import TodoActions from '../actions/todos';
 
 export interface AppProps {
-  todos: Array<any>,
-  actions: any
+  smallSteps: Array<any>,
 };
 
 
@@ -36,7 +35,6 @@ export interface Column {
 class App extends React.Component<AppProps, AppState> {
 
   private rootElement : HTMLDivElement;
-  private reactDataGrid : ReactDataGrid;
 
   constructor() {
     super();
@@ -53,7 +51,6 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   render() {
-    const { todos, actions } = this.props;
 
     const columns = [
         { id: "scxmlName", name: "SCXML Name", key: "name", width: 120, resizable: true },
@@ -71,17 +68,10 @@ class App extends React.Component<AppProps, AppState> {
           <h1 id="title"></h1>
         </div>
         <div className="ui-layout-south">
-          <ReactDataGrid
-            ref={(node) => this.reactDataGrid = node}
-            enableCellSelect={true}
-            columns={columns}
-            rowGetter={this.getRowAt.bind(this)}
-            rowsCount={this.getSize()}
-            minHeight={this.state.minHeight-2}
-            //onGridRowsUpdated={this.handleGridRowsUpdated}
-            />
+          <SlickgridComponent data={this.props.smallSteps}/>
         </div>
         <div className="ui-layout-east">
+          <EventSourceContainer />
           <Collapsible trigger="Session Hierarchy">Session Hierarchy</Collapsible>
           <Collapsible trigger="Input Event">Input Event</Collapsible>
           <Collapsible trigger="Datamodel">Datamodel</Collapsible>
@@ -129,17 +119,10 @@ class App extends React.Component<AppProps, AppState> {
 
 function mapStateToProps(state) {
   return {
-    todos: state.todos
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    actions: bindActionCreators(TodoActions as ActionCreatorsMapObject, dispatch)
+    smallSteps: state.smallSteps
   };
 }
 
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+  mapStateToProps
 )(App);
