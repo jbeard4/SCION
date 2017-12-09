@@ -19,24 +19,39 @@
   "dependencies": {
     "@jbeard/schviz2": "3.2.3",
     "@jbeard/scxml": "4.3.1",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-es3-member-expression-literals": "^6.22.0",
     "babel-polyfill": "^6.26.0",
     "classnames": "^2.1.2",
+    "font-awesome": "^4.7.0",
     "jquery": "1.11.2",
     "jquery-ui": "^1.12.1",
     "jquery-ui-dist": "^1.12.1",
     "jquery-ui-themes": "^1.12.0",
     "react": "^15.6.1",
+    "react-collapsible": "^2.0.5",
+    "react-data-grid": "^2.0.78",
+    "react-data-grid-addons": "2.0.78",
     "react-dom": "^15.6.1",
-    "react-ui-layout": "^1.0.4",
     "react-redux": "^4.0.0",
+    "react-ui-layout": "^1.0.4",
     "redux": "^3.1.5",
     "underscore": "^1.8.3"
   },
   "browserify": {
     "transform": [
       [
-        "browserify-css"
-      ]
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ],
+          "plugins": [
+            "transform-class-properties"
+          ]
+        }
+      ],
+      "browserify-css"
     ]
   },
   "devDependencies": {
@@ -46,13 +61,14 @@
     "@types/react-redux": "4.4.40",
     "@types/redux": "^3.6.0",
     "babel": "^6.23.0",
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.3.15",
     "babel-loader": "^6.2.0",
     "babel-plugin-add-module-exports": "^0.1.1",
     "babel-plugin-react-transform": "^2.0.0-beta1",
     "babel-plugin-transform-decorators-legacy": "^1.2.0",
     "babel-polyfill": "^6.3.14",
-    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.3.13",
     "babel-preset-stage-0": "^6.3.13",
     "babelify": "^7.3.0",
