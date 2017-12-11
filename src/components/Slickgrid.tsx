@@ -4,6 +4,8 @@ import * as React from "react";
 
 export interface SlickgridProps {
   data : Array<any>;
+  selectedRowIndex? : number;
+  onSelectedRowChange: any
 }
 
 export class SlickgridComponent extends React.Component<SlickgridProps, {}> {
@@ -13,6 +15,7 @@ export class SlickgridComponent extends React.Component<SlickgridProps, {}> {
   private grid : any;
   private dataView : any;
   private options : any;
+  private semaphore : boolean;
 
   constructor(){
     super();
@@ -28,6 +31,7 @@ export class SlickgridComponent extends React.Component<SlickgridProps, {}> {
       { id: "sessionid", name: "Sesssionid", field: "sessionid", width: 120 },
       { id: "eventName", name: "Event Name", field: "eventName", width: 120 },
     ];
+    this.semaphore = false;
   }
 
   render(){
@@ -38,7 +42,13 @@ export class SlickgridComponent extends React.Component<SlickgridProps, {}> {
     this.dataView.setItems(nextProps.data);
     //this.dataView.insertItem(0, nextProps.data[0]);
 
-    this.grid.setSelectedRows([0]);
+    this.semaphore = true;
+    if(typeof nextProps.selectedRowIndex !== 'undefined' &&
+        nextProps.selectedRowIndex !== this.props.selectedRowIndex){
+      this.grid.setSelectedRows([nextProps.selectedRowIndex]);
+    }else{
+      this.grid.setSelectedRows([0]);
+    } 
   }
 
   shouldComponentUpdate(){
@@ -59,16 +69,26 @@ export class SlickgridComponent extends React.Component<SlickgridProps, {}> {
       this.grid.render();
     });
 
-
-
     this.grid = new Slick.Grid(this.rootElement, this.dataView, this.columns, this.options);
 
     this.grid.setSelectionModel(new Slick.RowSelectionModel());
 
     this.dataView.setItems(this.props.data);
 
+    this.grid.setSelectedRows([this.props.selectedRowIndex || 0]);
+
     window['jQuery'](window).resize(() => {
       this.grid.resizeCanvas();
+    })
+
+    this.grid.onSelectedRowsChanged.subscribe(() => {
+      if(this.semaphore){
+        return this.semaphore = false;
+      }
+      let rows = this.grid.getSelectedRows();
+      let rowIndex = rows[0];
+      let row = this.dataView.getItem(rowIndex);
+      this.props.onSelectedRowChange(rowIndex);
     })
   }
 

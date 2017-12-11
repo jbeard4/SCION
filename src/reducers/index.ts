@@ -1,8 +1,9 @@
 import { combineReducers, AnyAction } from 'redux';
-import smallSteps from './smallSteps';
+import {smallSteps, selectedSmallStep} from './smallSteps';
 
 const rootReducer = combineReducers({
-  smallSteps
+  smallSteps,
+  selectedSmallStep
 });
 
 export default rootReducer;

@@ -62,7 +62,7 @@ export class EventSourceComponent extends React.Component<EventSourceProps, {}> 
     this.source.addEventListener('onSmallStepEnd', (e:any) => {
 
       let message = JSON.parse(e.data);
-      this.props.onSmallStep(e, message);
+      this.props.onSmallStep(e.lastEventId, message);
       console.log('onSmallStepEnd', e);
     }, false);
 
@@ -94,11 +94,11 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    onSmallStep : (eventsourceEvent, message) => {
+    onSmallStep : (lastEventId, message) => {
       dispatch({
         type : 'SMALL_STEP',
         message, 
-        eventsourceEvent
+        lastEventId
       })
     }
   };

@@ -1,12 +1,14 @@
-const initialState = [];
+const initialState = {
+  selectedSmallStep : null,
+  smallSteps : []
+};
 
-export default function smallSteps(state = initialState, action) {
+export function smallSteps(state = initialState.smallSteps, action) {
   switch (action.type) {
     case 'SMALL_STEP':
       const message = action.message;
-      const e = action.eventsourceEvent;
       return [{
-        id : e.lastEventId, 
+        id : action.lastEventId, 
         name : message.meta.scName,
         docUrl : message.meta.docUrl,
         sessionid : message.meta.sessionid,
@@ -23,3 +25,11 @@ export default function smallSteps(state = initialState, action) {
   }
 }
 
+export function selectedSmallStep(state = initialState.selectedSmallStep, action) {
+  switch (action.type) {
+    case 'SELECT_SMALL_STEP':
+      return action.index;
+    default:
+      return state;
+  }
+}

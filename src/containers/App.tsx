@@ -8,7 +8,9 @@ import Header from '../components/Header';
 import MainSection from '../components/MainSection';
 
 export interface AppProps {
-  smallSteps: Array<any>,
+  smallSteps: Array<any>;
+  onSelectedRowChange: any;
+  selectedRowIndex: number;
 };
 
 
@@ -68,7 +70,10 @@ class App extends React.Component<AppProps, AppState> {
           <h1 id="title"></h1>
         </div>
         <div className="ui-layout-south">
-          <SlickgridComponent data={this.props.smallSteps}/>
+          <SlickgridComponent
+            data={this.props.smallSteps}
+            onSelectedRowChange={this.props.onSelectedRowChange}
+            selectedRowIndex={this.props.selectedRowIndex}/>
         </div>
         <div className="ui-layout-east">
           <EventSourceContainer />
@@ -119,10 +124,23 @@ class App extends React.Component<AppProps, AppState> {
 
 function mapStateToProps(state) {
   return {
-    smallSteps: state.smallSteps
+    smallSteps: state.smallSteps,
+    selectedRowIndex: state.selectedSmallStep
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    onSelectedRowChange : (rowIndex) => {
+      dispatch({
+        type : 'SELECT_SMALL_STEP',
+        index : rowIndex
+      })
+    }
   };
 }
 
 export default connect(
-  mapStateToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(App);
