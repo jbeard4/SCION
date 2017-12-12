@@ -35,6 +35,7 @@
     "react-data-grid": "^2.0.78",
     "react-data-grid-addons": "2.0.78",
     "react-dom": "^15.6.1",
+    "react-inspector": "^2.2.2",
     "react-redux": "^5.0.6",
     "react-ui-layout": "^1.0.4",
     "redux": "^3.1.5",
