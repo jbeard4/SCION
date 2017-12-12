@@ -384,7 +384,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     let to = `${[this.state.toZoom.x, this.state.toZoom.y, this.state.toZoom.width, this.state.toZoom.height].join(' ')}`;
     let viewBoxValues = `${from};${to}`;
     debug('viewBoxValues ', viewBoxValues );
-    return <div style={{width:'100%', height:'100%',position:'absolute'}}>
+    return <div style={{width:'100%', height:'100%',position:'absolute',overflow:'hidden'}}>
         <svg width="100%" height="100%" 
           ref={(e: SVGSVGElement) => { this.svgRootElement = e; }}
           onWheel={this.props.disableZoom ? null : this.handleMouseWheel.bind(this)}
