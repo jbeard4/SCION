@@ -17,7 +17,7 @@
     "harness": "opn http://localhost:3001/test-integration/index.html"
   },
   "dependencies": {
-    "@jbeard/schviz2": "3.2.4",
+    "@jbeard/schviz2": "3.2.5",
     "@jbeard/scxml": "4.3.1",
     "@types/jquery": "^1.10.33",
     "@types/slickgrid": "^2.1.25",

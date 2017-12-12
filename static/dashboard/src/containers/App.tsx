@@ -149,7 +149,7 @@ class App extends React.Component<AppProps, AppState> {
       applyDefaultStyles: true, 
       south__size: this.state.minHeight,
       east__size: 300,
-      south__onresize: (() => { console.log('myLayout.state.size', myLayout.state.south.size); this.setState({minHeight : myLayout.state.south.size })}),
+		  stateManagement__enabled:	true
     });
   }
 }
