@@ -38,15 +38,16 @@ export class SlickgridComponent extends React.Component<SlickgridProps, {}> {
   }
 
   componentWillReceiveProps(nextProps){
-    this.dataView.setItems(nextProps.data);
-    //this.dataView.insertItem(0, nextProps.data[0]);
+    if(nextProps.data !== this.props.data){
+      this.dataView.setItems(nextProps.data);
+      this.grid.setSelectedRows([0]);
+      //this.dataView.insertItem(0, nextProps.data[0]);
+    }
 
     if(typeof nextProps.selectedRowIndex !== 'undefined' &&
         nextProps.selectedRowIndex !== this.props.selectedRowIndex){
       this.semaphore = true;
       this.grid.setSelectedRows([nextProps.selectedRowIndex]);
-    }else{
-      this.grid.setSelectedRows([0]);
     } 
   }
 

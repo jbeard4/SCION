@@ -31,7 +31,7 @@
     "jquery-ui-dist": "^1.12.1",
     "jquery-ui-themes": "^1.12.0",
     "react": "^15.6.1",
-    "react-collapsible": "^2.0.5",
+    "react-collapsible": "^2.0.6",
     "react-data-grid": "^2.0.78",
     "react-data-grid-addons": "2.0.78",
     "react-dom": "^15.6.1",

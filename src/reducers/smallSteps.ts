@@ -1,6 +1,9 @@
+import _ = require('underscore');
+
 const initialState = {
   selectedSmallStep : null,
-  smallSteps : []
+  smallSteps : [],
+  collapsible : {}
 };
 
 export function smallSteps(state = initialState.smallSteps, action) {
@@ -29,6 +32,15 @@ export function selectedSmallStep(state = initialState.selectedSmallStep, action
   switch (action.type) {
     case 'SELECT_SMALL_STEP':
       return action.index;
+    default:
+      return state;
+  }
+}
+
+export function collapsible(state = initialState.collapsible, action) {
+  switch (action.type) {
+    case 'COLLAPSIBLE_TRIGGER_CLICK':
+      return _.extend(JSON.parse(JSON.stringify(state)), {[action.title] : !state[action.title]})
     default:
       return state;
   }
