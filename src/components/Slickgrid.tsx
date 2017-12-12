@@ -42,9 +42,9 @@ export class SlickgridComponent extends React.Component<SlickgridProps, {}> {
     this.dataView.setItems(nextProps.data);
     //this.dataView.insertItem(0, nextProps.data[0]);
 
-    this.semaphore = true;
     if(typeof nextProps.selectedRowIndex !== 'undefined' &&
         nextProps.selectedRowIndex !== this.props.selectedRowIndex){
+      this.semaphore = true;
       this.grid.setSelectedRows([nextProps.selectedRowIndex]);
     }else{
       this.grid.setSelectedRows([0]);

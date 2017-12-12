@@ -16,7 +16,7 @@ export function smallSteps(state = initialState.smallSteps, action) {
         snapshot : message.meta.snapshot,
         event : message.data.event,
         parentSessionIds : message.meta.parentSessionIds,
-        //transitionsTaken : transitionsTaken,
+        transitionsTaken : message.data.transitionsTaken,
         previousConfiguration : message.data.statesExited,
         defaultStatesEntered : message.data.defaultStatesEntered
       }].concat(state);
