@@ -1,8 +1,4 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,700,700italic,400italic);
-body {
-  background-color: #333333;
-  font-family: 'Roboto', sans-serif;
-  padding-top: 50px; }
 
 .Collapsible {
   background-color: white; }

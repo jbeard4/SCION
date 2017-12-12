@@ -63,5 +63,8 @@
     "prop-types": "^15.5.8",
     "react": "~15 || ~16",
     "react-dom": "~15 || ~16"
+  },
+  "dependencies": {
+    "font-awesome": "^4.7.0"
   }
 }

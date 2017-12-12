@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+require('../dist/main.css')
 
 class Collapsible extends Component {
   constructor(props) {
@@ -30,6 +31,16 @@ class Collapsible extends Component {
         hasBeenOpened: false,
         overflow: 'hidden',
         inTransition: false,
+      }
+    }
+  }
+
+  componentWillReceiveProps(nextProps){
+    if (nextProps.open !== this.props.open) {
+      if(nextProps.open === true) {
+        this.openCollapsible();
+      } else {
+        this.closeCollapsible();
       }
     }
   }
