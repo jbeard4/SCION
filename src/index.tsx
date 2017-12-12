@@ -146,21 +146,28 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
        props.scxmlDocumentString !== this.props.scxmlDocumentString ||
        props.layoutOptions !== this.props.layoutOptions
       ) 
-    ) this.initSCXML(props, false);
+    ) return this.initSCXML(props, false);
     if(
       ( props.scjson ) &&
       (
         props.scjson !== this.props.scjson ||
         props.layoutOptions !== this.props.layoutOptions
       ) 
-    ) this.initSCJson(props, false);
+    ) return this.initSCJson(props, false);
     if(
       props.kgraphRoot &&
       (
         props.kgraphRoot !== this.props.kgraphRoot ||
         props.layoutOptions !== this.props.layoutOptions
       )
-    ) this.initKGraph(props, false);
+    ) return this.initKGraph(props, false);
+
+    if(this.state.kgraph && props.transitionsEnabled && 
+        props.transitionsEnabled !== this.props.transitionsEnabled){
+      let allEdges = this._getAllEdges(this.state.kgraph);
+      let enabledEdges = this._getEnabledEdges(allEdges, props.transitionsEnabled);
+      this.setState({enabledEdges});
+    }  
   }
 
   //later, try handleMouseClick
