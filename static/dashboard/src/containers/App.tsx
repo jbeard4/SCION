@@ -7,6 +7,7 @@ import {SlickgridComponent} from '../components/Slickgrid';
 import EventSourceContainer from '../containers/EventSource';
 import Header from '../components/Header';
 import MainSection from '../components/MainSection';
+import {ObjectInspector} from 'react-inspector';
 
 export interface AppProps {
   smallSteps: Array<any>;
@@ -113,7 +114,13 @@ class App extends React.Component<AppProps, AppState> {
           <EventSourceContainer />
           <Collapsible trigger="Session Hierarchy">Session Hierarchy</Collapsible>
           <Collapsible trigger="Input Event">Input Event</Collapsible>
-          <Collapsible trigger="Datamodel">Datamodel</Collapsible>
+          <Collapsible trigger="Datamodel" open={true}>
+            {
+              currentRow ? 
+                <ObjectInspector data={currentRow.snapshot[3]}/> : 
+                null
+            }
+          </Collapsible>
           <Collapsible trigger="Datamodel Diff">Datamodel Diff</Collapsible>
           <Collapsible trigger="Inner Queue">Inner Queue</Collapsible>
           <Collapsible trigger="Inner Queue Diff">Inner Queue</Collapsible>
