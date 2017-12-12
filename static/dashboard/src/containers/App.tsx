@@ -1,5 +1,6 @@
 import * as React from "react";
 import Collapsible from 'react-collapsible';
+import SCHVIZ from '@jbeard/schviz2';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
 import {SlickgridComponent} from '../components/Slickgrid';
@@ -62,12 +63,43 @@ class App extends React.Component<AppProps, AppState> {
         
     ];
 
+    //TODO: move these into reducers, or maybe props
+    const currentRow = 
+            this.props.smallSteps && this.props.smallSteps.length &&
+            typeof this.props.selectedRowIndex === 'number' &&
+            this.props.smallSteps[this.props.selectedRowIndex];
+
+    let transitionsTaken  = new Map<string, Set<number>>();
+    currentRow && currentRow.transitionsTaken && currentRow.transitionsTaken.forEach( transitionInfo => {
+      let transitionSourceId, transitionTargetIds, transitionIndex;
+      [transitionSourceId, transitionTargetIds, transitionIndex] = transitionInfo;
+      let enabledTransitionIndexes;
+      if(transitionsTaken.has(transitionSourceId)){
+        enabledTransitionIndexes = transitionsTaken.get(transitionSourceId)
+      } else {
+        enabledTransitionIndexes = new Set();
+        transitionsTaken.set(transitionSourceId, enabledTransitionIndexes);
+      }
+      enabledTransitionIndexes.add(transitionIndex);
+    });
+
     return (
       <div  style={{width:'100%',height:'100%'}} 
             ref={(e: HTMLDivElement) => { this.rootElement = e; }}>
         <div className="ui-layout-center">
-          <div id="schvizContainer"></div>
-          <h1 id="title"></h1>
+          {
+            currentRow ?
+            <SCHVIZ 
+              disableAnimation={true}
+              urlToSCXML={currentRow.docUrl} 
+              layoutOptions={SCHVIZ.layouts.right} 
+              configuration={currentRow.snapshot[0]}
+              previousConfiguration={currentRow.previousConfiguration}
+              statesForDefaultEntry={currentRow.defaultStatesEntered }
+              transitionsEnabled={transitionsTaken}
+              /> : 
+            null
+          }
         </div>
         <div className="ui-layout-south">
           <SlickgridComponent
