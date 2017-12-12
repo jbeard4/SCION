@@ -43,9 +43,13 @@ export interface EventSourceProps {
   onSmallStep : any;
 }
 
+export interface EventSourceState {
+  readyState : number;
+}
+
 const EVENTSOURCE_TIMEOUT = 1000;
 
-export class EventSourceComponent extends React.Component<EventSourceProps, {}> {
+export class EventSourceComponent extends React.Component<EventSourceProps, EventSourceState> {
 
   private source : EventSource;
 
@@ -60,29 +64,39 @@ export class EventSourceComponent extends React.Component<EventSourceProps, {}> 
     this.source = new EventSource('/api/update-stream');
 
     this.source.addEventListener('onSmallStepEnd', (e:any) => {
-
+      this.setState({readyState : this.source.readyState});
       let message = JSON.parse(e.data);
       this.props.onSmallStep(e.lastEventId, message);
       console.log('onSmallStepEnd', e);
     }, false);
 
+    this.source.onopen = (e) => {
+      this.setState({readyState : this.source.readyState});
+    };
+
     this.source.onerror = (err) => {
       this.source.close();
+      this.setState({readyState : this.source.readyState});
       setTimeout(() => {
         this.initEventSource();    //restart the event source
       }, EVENTSOURCE_TIMEOUT);
     };
+
+    this.state = {readyState : this.source.readyState};
   }
 
   render(){
     return <div> 
       {
-        false ? //this.state.connectionError ?
-          [
-          <span style={{color : "red"}}><i className="fa fa-spinner fa-spin" aria-hidden="true"></i> Connection Error:</span>,
-          <span>Reconnecting. </span> 
-          ] :
-          <span style={{color : "green"}}><i className="fa fa-check" aria-hidden="true"></i> Connected to debug server </span> 
+        (() => {
+          switch(this.state.readyState){
+            case EventSource.OPEN:
+              return <span style={{color : "green"}}><i className="fa fa-check" aria-hidden="true"></i> Connected to debug server </span> 
+            case EventSource.CLOSED:
+            case EventSource.CONNECTING:
+              return <span style={{color : "red"}}><i className="fa fa-spinner fa-spin" aria-hidden="true"></i> Connection Error: Reconnecting</span>
+          } 
+        })()
       }
     </div>
   }
