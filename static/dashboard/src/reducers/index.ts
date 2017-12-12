@@ -1,9 +1,10 @@
 import { combineReducers, AnyAction } from 'redux';
-import {smallSteps, selectedSmallStep} from './smallSteps';
+import {smallSteps, selectedSmallStep, collapsible} from './smallSteps';
 
 const rootReducer = combineReducers({
   smallSteps,
-  selectedSmallStep
+  selectedSmallStep,
+  collapsible
 });
 
 export default rootReducer;

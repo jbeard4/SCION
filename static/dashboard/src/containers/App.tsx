@@ -13,6 +13,8 @@ export interface AppProps {
   smallSteps: Array<any>;
   onSelectedRowChange: any;
   selectedRowIndex: number;
+  onTriggerClick: any;
+  collapsible: any;
 };
 
 
@@ -112,18 +114,17 @@ class App extends React.Component<AppProps, AppState> {
         </div>
         <div className="ui-layout-east">
           <EventSourceContainer />
-          <Collapsible trigger="Session Hierarchy">Session Hierarchy</Collapsible>
-          <Collapsible trigger="Input Event">Input Event</Collapsible>
-          <Collapsible trigger="Datamodel" open={true}>
+          <Collapsible 
+            trigger="Datamodel" 
+            open={this.props.collapsible['datamodel']}
+            handleTriggerClick={this.props.onTriggerClick.bind(this,'datamodel')}
+            >
             {
               currentRow ? 
                 <ObjectInspector data={currentRow.snapshot[3]}/> : 
                 null
             }
           </Collapsible>
-          <Collapsible trigger="Datamodel Diff">Datamodel Diff</Collapsible>
-          <Collapsible trigger="Inner Queue">Inner Queue</Collapsible>
-          <Collapsible trigger="Inner Queue Diff">Inner Queue</Collapsible>
         </div>
       </div>
     );
@@ -168,7 +169,8 @@ class App extends React.Component<AppProps, AppState> {
 function mapStateToProps(state) {
   return {
     smallSteps: state.smallSteps,
-    selectedRowIndex: state.selectedSmallStep
+    selectedRowIndex: state.selectedSmallStep,
+    collapsible : state.collapsible
   };
 }
 
@@ -178,6 +180,12 @@ function mapDispatchToProps(dispatch) {
       dispatch({
         type : 'SELECT_SMALL_STEP',
         index : rowIndex
+      })
+    },
+    onTriggerClick: (title) => {
+      dispatch({
+        type : 'COLLAPSIBLE_TRIGGER_CLICK',
+        title : title
       })
     }
   };
