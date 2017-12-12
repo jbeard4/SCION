@@ -38,6 +38,7 @@ export interface Column {
 class App extends React.Component<AppProps, AppState> {
 
   private rootElement : HTMLDivElement;
+  private slickgridComponent : SlickgridComponent;
 
   constructor() {
     super();
@@ -103,6 +104,7 @@ class App extends React.Component<AppProps, AppState> {
         </div>
         <div className="ui-layout-south">
           <SlickgridComponent
+            ref={(e: SlickgridComponent) => { this.slickgridComponent = e; }}
             data={this.props.smallSteps}
             onSelectedRowChange={this.props.onSelectedRowChange}
             selectedRowIndex={this.props.selectedRowIndex}/>
@@ -145,11 +147,13 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   componentDidMount(){
+    
     let myLayout = window['jQuery'](this.rootElement).layout({ 
       applyDefaultStyles: true, 
-      south__size: this.state.minHeight,
-      east__size: 300,
-		  stateManagement__enabled:	true
+      south__onresize: (() => { 
+        this.slickgridComponent.grid.resizeCanvas()
+      }),
+      stateManagement__enabled:	true
     });
   }
 }

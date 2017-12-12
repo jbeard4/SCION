@@ -12,7 +12,7 @@ export class SlickgridComponent extends React.Component<SlickgridProps, {}> {
 
   private rootElement : HTMLDivElement;
   private columns : any;
-  private grid : any;
+  public grid : any;  // this is a bit ugly
   private dataView : any;
   private options : any;
   private semaphore : boolean;
@@ -22,8 +22,7 @@ export class SlickgridComponent extends React.Component<SlickgridProps, {}> {
     this.options = {
       enableCellNavigation: true,
       enableColumnReorder: false,
-      forceFitColumns : true,
-      autoHeight: true
+      forceFitColumns : true
     };
     this.columns = [
       { id: "scxmlName", name: "SCXML Name", field: "name", width: 120 },
@@ -35,7 +34,7 @@ export class SlickgridComponent extends React.Component<SlickgridProps, {}> {
   }
 
   render(){
-    return <div ref={e => this.rootElement  = e}></div>;
+    return <div style={{width:'100%',height:'100%'}} ref={e => this.rootElement  = e}></div>;
   }
 
   componentWillReceiveProps(nextProps){
@@ -90,6 +89,9 @@ export class SlickgridComponent extends React.Component<SlickgridProps, {}> {
       let row = this.dataView.getItem(rowIndex);
       this.props.onSelectedRowChange(rowIndex);
     })
+
+    setTimeout(() => this.grid.resizeCanvas())  //wait a tick to give layout time to run
+
   }
 
 }
