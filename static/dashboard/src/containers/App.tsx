@@ -96,7 +96,7 @@ class App extends React.Component<AppProps, AppState> {
       "Inner Queue Diff"
     ];
 
-    const sessionHierarchy = [currentRow.sessionid].concat(currentRow.parentSessionIds).reverse();
+    const sessionHierarchy = currentRow ? [currentRow.sessionid].concat(currentRow.parentSessionIds).reverse() : [];
 
     return (
       <div  style={{width:'100%',height:'100%'}} 
@@ -130,13 +130,13 @@ class App extends React.Component<AppProps, AppState> {
             open={this.props.collapsible['sessionHierarchy']}
             handleTriggerClick={this.props.onTriggerClick.bind(this,'sessionHierarchy')}
             >
-            <ul>  
             {
               currentRow ? 
-                sessionHierarchy.map(parentSessionId => <li>{parentSessionId}</li> ) : 
+                <TableInspector 
+                  columns={['sessionid']}
+                  data={sessionHierarchy.map(parentSessionId => ({sessionid : parentSessionId}))}/> : 
                 null
             }
-            </ul>
           </Collapsible>
           <Collapsible 
             trigger="Input Event"
