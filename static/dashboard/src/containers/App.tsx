@@ -4,6 +4,7 @@ import SCHVIZ from '@jbeard/schviz2';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
 import {SlickgridComponent} from '../components/Slickgrid';
+import {DiffComponent} from '../components/Diff';
 import EventSourceContainer from '../containers/EventSource';
 import Header from '../components/Header';
 import MainSection from '../components/MainSection';
@@ -87,15 +88,6 @@ class App extends React.Component<AppProps, AppState> {
       enabledTransitionIndexes.add(transitionIndex);
     });
 
-    const collapsibles = [
-      "Session Hierarchy",
-      "Datamodel",
-      "Input Event",
-      "Datamodel Diff",
-      "Inner Queue",
-      "Inner Queue Diff"
-    ];
-
     const sessionIdList = currentRow ? [currentRow.sessionid].concat(currentRow.parentSessionIds).reverse() : [];
 
     //look up associated scxmlName for each sessionId in the hierarchy
@@ -117,6 +109,20 @@ class App extends React.Component<AppProps, AppState> {
           }
         }
       });
+
+    //look up previous row with same session id 
+    const previousSessionRow = (() => {
+      let idx = this.props.smallSteps.map(smallStep => smallStep.sessionid).indexOf(currentRow.sessionid);
+      if(idx > -1){
+        let lastSmallStepForSessionId = this.props.smallSteps[idx];
+        return lastSmallStepForSessionId;
+      }else{
+        return null;
+      }
+    })();
+
+    const currentRowDatamodel = currentRow ? currentRow.snapshot[3] : null;
+    const previousSessionDatamodel = currentRow  ? previousSessionRow.snapshot[3] : null; 
 
     return (
       <div  style={{width:'100%',height:'100%'}} 
@@ -176,9 +182,16 @@ class App extends React.Component<AppProps, AppState> {
             >
             {
               currentRow ? 
-                <ObjectInspector data={currentRow.snapshot[3]}/> : 
+                <ObjectInspector data={currentRowDatamodel}/> : 
                 null
             }
+          </Collapsible>
+          <Collapsible 
+            trigger="Datamodel Diff"
+            open={this.props.collapsible['datamodelDiff']}
+            handleTriggerClick={this.props.onTriggerClick.bind(this,'datamodelDiff')}
+            >
+            <DiffComponent left={currentRowDatamodel} right={previousSessionDatamodel}/>
           </Collapsible>
           <Collapsible 
             trigger="Inner Queue" 
