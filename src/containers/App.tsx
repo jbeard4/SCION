@@ -160,6 +160,17 @@ class App extends React.Component<AppProps, AppState> {
                 null
             }
           </Collapsible>
+          <Collapsible 
+            trigger="Inner Queue" 
+            open={this.props.collapsible['innerQueue']}
+            handleTriggerClick={this.props.onTriggerClick.bind(this,'innerQueue')}
+            >
+            {
+              currentRow ? 
+                <TableInspector data={currentRow.snapshot[4]}/> : 
+                null
+            }
+          </Collapsible>
         </div>
       </div>
     );
