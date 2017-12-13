@@ -87,6 +87,17 @@ class App extends React.Component<AppProps, AppState> {
       enabledTransitionIndexes.add(transitionIndex);
     });
 
+    const collapsibles = [
+      "Session Hierarchy",
+      "Datamodel",
+      "Input Event",
+      "Datamodel Diff",
+      "Inner Queue",
+      "Inner Queue Diff"
+    ];
+
+    const sessionHierarchy = [currentRow.sessionid].concat(currentRow.parentSessionIds).reverse();
+
     return (
       <div  style={{width:'100%',height:'100%'}} 
             ref={(e: HTMLDivElement) => { this.rootElement = e; }}>
@@ -114,6 +125,19 @@ class App extends React.Component<AppProps, AppState> {
         </div>
         <div className="ui-layout-east">
           <EventSourceContainer />
+          <Collapsible 
+            trigger="Session Hierarchy"
+            open={this.props.collapsible['sessionHierarchy']}
+            handleTriggerClick={this.props.onTriggerClick.bind(this,'sessionHierarchy')}
+            >
+            <ul>  
+            {
+              currentRow ? 
+                sessionHierarchy.map(parentSessionId => <li>{parentSessionId}</li> ) : 
+                null
+            }
+            </ul>
+          </Collapsible>
           <Collapsible 
             trigger="Datamodel" 
             open={this.props.collapsible['datamodel']}
