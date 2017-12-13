@@ -7,7 +7,7 @@ import {SlickgridComponent} from '../components/Slickgrid';
 import EventSourceContainer from '../containers/EventSource';
 import Header from '../components/Header';
 import MainSection from '../components/MainSection';
-import {ObjectInspector} from 'react-inspector';
+import {TableInspector, ObjectInspector} from 'react-inspector';
 
 export interface AppProps {
   smallSteps: Array<any>;
@@ -137,6 +137,17 @@ class App extends React.Component<AppProps, AppState> {
                 null
             }
             </ul>
+          </Collapsible>
+          <Collapsible 
+            trigger="Input Event"
+            open={this.props.collapsible['inputEvent']}
+            handleTriggerClick={this.props.onTriggerClick.bind(this,'inputEvent')}
+            >
+            {
+              currentRow ? 
+                <ObjectInspector data={currentRow.event}/> : 
+                null
+            }
           </Collapsible>
           <Collapsible 
             trigger="Datamodel" 
