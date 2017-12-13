@@ -96,7 +96,27 @@ class App extends React.Component<AppProps, AppState> {
       "Inner Queue Diff"
     ];
 
-    const sessionHierarchy = currentRow ? [currentRow.sessionid].concat(currentRow.parentSessionIds).reverse() : [];
+    const sessionIdList = currentRow ? [currentRow.sessionid].concat(currentRow.parentSessionIds).reverse() : [];
+
+    //look up associated scxmlName for each sessionId in the hierarchy
+    const sessionTable = sessionIdList 
+      .map(parentSessionId => ({sessionid : parentSessionId}))
+      .map(o => {
+        let sessionIds = this.props.smallSteps.map(smallStep => smallStep.sessionid);
+        let idx = sessionIds.indexOf(o.sessionid);
+        if(idx > -1){
+          let lastSmallStepForSessionId = this.props.smallSteps[idx];
+          return {
+            sessionid : lastSmallStepForSessionId.sessionid,
+            name : lastSmallStepForSessionId.name
+          }
+        }else{
+          return {
+            sessionid : null,
+            name : null
+          }
+        }
+      });
 
     return (
       <div  style={{width:'100%',height:'100%'}} 
@@ -133,8 +153,8 @@ class App extends React.Component<AppProps, AppState> {
             {
               currentRow ? 
                 <TableInspector 
-                  columns={['sessionid']}
-                  data={sessionHierarchy.map(parentSessionId => ({sessionid : parentSessionId}))}/> : 
+                  columns={['name', 'sessionid']}
+                  data={sessionTable}/> : 
                 null
             }
           </Collapsible>
