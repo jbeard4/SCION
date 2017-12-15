@@ -39,6 +39,7 @@ export interface GraphRootAnimation {
   toZoom : SVGRect;
   fastZoom? : boolean;
   instantZoom? : boolean;
+  transitionsEnabled? : Map<string, Set<number>>;
 }
 
 export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRootAnimation> {
@@ -138,6 +139,18 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
 
   componentWillReceiveProps(props : GraphRootProps){
     this.checkProps(props);
+
+    //make it so that transitionsEnabled can update at any time
+    if(props.transitionsEnabled && 
+        props.transitionsEnabled !== this.props.transitionsEnabled){
+      let newState = {transitionsEnabled : props.transitionsEnabled};
+      if(this.state.kgraph){
+        let allEdges = this._getAllEdges(this.state.kgraph);
+        let enabledEdges = this._getEnabledEdges(allEdges, props.transitionsEnabled);
+        _.extend(newState,{allEdges, enabledEdges});
+      }
+      this.setState(newState);
+    }  
     if(
       (props.pathToSCXML || props.urlToSCXML || props.scxmlDocumentString) &&
       (
@@ -161,13 +174,6 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
         props.layoutOptions !== this.props.layoutOptions
       )
     ) return this.initKGraph(props, false);
-
-    if(this.state.kgraph && props.transitionsEnabled && 
-        props.transitionsEnabled !== this.props.transitionsEnabled){
-      let allEdges = this._getAllEdges(this.state.kgraph);
-      let enabledEdges = this._getEnabledEdges(allEdges, props.transitionsEnabled);
-      this.setState({enabledEdges});
-    }  
   }
 
   //later, try handleMouseClick
@@ -312,7 +318,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     let kgraphRoot = props.kgraphRoot || kgRoot;
     let kgraph = new KGraph(idGenerator, this.svgRootElement, kgraphRoot);
     let allEdges = kgraph ? this._getAllEdges(kgraph) : [];
-    let enabledEdges = this._getEnabledEdges(allEdges, props.transitionsEnabled);
+    let enabledEdges = this._getEnabledEdges(allEdges, this.state.transitionsEnabled);
     const options = this.getDefaultLayoutOptions(props.layoutOptions)
     if(!this.props.disableAnimation) this.svgRootElement.pauseAnimations();
     kgraph.updateLayout(options, (err, rootNode) => {
