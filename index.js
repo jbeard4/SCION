@@ -3,6 +3,9 @@ const restify = require('restify');
 const util = require('util');
 const path = require('path');
 const log = require('./util').log;
+const os = require('os');
+
+const localConfigurationFile = path.join(os.homedir(),'.scion.conf.json');
 
 function init(scxml, options){
 
@@ -18,7 +21,34 @@ function init(scxml, options){
   }
 
   let responses = new Set();
-  let messageCount = 0;
+  let messageCount;
+
+  //read cached configuration
+  try{
+    messageCount = JSON.parse(fs.readFileSync(localConfigurationFile)).messageCount;
+  }catch(e){
+    messageCount = 0;
+  }
+
+  //cache local configuration on exit
+  function exitHandler(options, err) {
+    if (err) console.log(err.stack);
+    fs.writeFileSync(localConfigurationFile,JSON.stringify({messageCount : messageCount}))
+    process.exit();
+  }
+
+  //do something when app is closing
+  process.on('exit', exitHandler);
+
+  //catches ctrl+c event
+  process.on('SIGINT', exitHandler);
+
+  // catches "kill pid" (for example: nodemon restart)
+  process.on('SIGUSR1', exitHandler);
+  process.on('SIGUSR2', exitHandler);
+
+  //catches uncaught exceptions
+  process.on('uncaughtException', exitHandler);
 
   //serve static files
   //TODO: factor this out
