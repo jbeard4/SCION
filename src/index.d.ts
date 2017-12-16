@@ -1,4 +1,6 @@
-export type Formatter = (delta: Delta, original: any) => string;
+export type Formatter = {
+  format : (delta: Delta, original: any) => string;
+}
 
 export interface Delta {
     [key: string]: any;
@@ -45,12 +47,15 @@ export class DiffPatcher {
     clone: (value: any) => any;
     dateReviver: (key: string, value: any) => any;
     diff: (left: any, right: any) => Delta | undefined;
-    formatters: {
-        annotated: Formatter;
-        console: Formatter;
-        html: Formatter;
-    };
     patch: (left: any, delta: Delta) => any;
     reverse: (delta: Delta) => Delta | undefined;
     unpatch: (right: any, delta: Delta) => any;
 }
+
+type Formatters = {
+  annotated: Formatter;
+  console: Formatter;
+  html: Formatter;
+}
+
+export const formatters:Formatters;
