@@ -59,7 +59,7 @@ function init(scxml, options){
         console.error(err);
         return res.status(500).end();
       }
-      return res.send(200,contents, {"Content-Type" : "application/scxml+xml"});
+      return res.sendRaw(200,contents, {"Content-Type" : "application/scxml+xml"});
     })
   });
 
