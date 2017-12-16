@@ -1,3 +1,5 @@
+const builder = require('botbuilder');
+
 //convert the message to an event
 function textRecognizer(message){
   return { name : message.type, data: {message : message} };

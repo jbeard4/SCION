@@ -4,7 +4,7 @@ const scxml = require('@jbeard/scxml');
 const path = require('path');
 const _ = require('underscore');
 const recognizers = require('./recognizers');
-const scionDiagnostics = require('./scion-diagnostics');
+const scionDiagnostics = require('scion-scxml-debugger-middleware');
 const log = require('./util').log;
 
 function init(srcDir,mainScxmlFile,options){
@@ -112,7 +112,7 @@ function init(srcDir,mainScxmlFile,options){
     },{console : console, util : require('util'), builder : builder, _  : _ });
   });
 
-  scionDiagnostics.init(server,sessionStore,srcDir,options);
+  scionDiagnostics.init(scxml,{server});
 }
 
 module.exports.init = init;

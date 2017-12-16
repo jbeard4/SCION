@@ -15,7 +15,6 @@
   ],
   "main": "./index.js",
   "dependencies": {
-    "@jbeard/scxml": "git+ssh://git@nas:jbeard4/scion#de92de2e4f2e7f993d9731fec14972244ad24c85",
     "botbuilder": "^3.9.1",
     "restify": "^4.3.0",
     "underscore": "^1.8.3"
