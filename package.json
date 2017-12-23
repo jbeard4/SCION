@@ -46,6 +46,7 @@
     "xmlserializer": "^0.6.0"
   },
   "devDependencies": {
+    "@jbeard/scxml-test-framework": "1.1.0",
     "async": "^1.5.2",
     "babel": "^6.23.0",
     "babel-plugin-transform-es2015-modules-umd": "^6.8.0",
@@ -65,11 +66,11 @@
     "grunt-release": "^0.14.0",
     "grunt-run": "^0.6.0",
     "grunt-saucelabs": "^8.6.3",
+    "jsdoc": "^3.5.5",
     "load-grunt-tasks": "^3.5.0",
     "minimist": "^1.2.0",
     "nodeunit": "^0.9.1",
     "request": "^2.74.0",
-    "@jbeard/scxml-test-framework": "1.1.0",
     "uglify-js": "^2.8.21",
     "underscore": "^1.8.3",
     "vm-browserify2": "0.0.6",
