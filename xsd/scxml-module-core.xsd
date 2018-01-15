@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.w3.org/2005/07/scxml"
+    xmlns="http://www.w3.org/2005/07/scxml"
+    elementFormDefault="qualified">
+	<xsd:annotation>
+		<xsd:documentation>
+        This is the XML Schema core module for SCXML
+        * scxml
+        * state 
+        * initial 
+        * onexit
+        * onentry 
+        * transition
+        * parallel
+        * final 
+        * history 
+        * donedata
+        * if
+        * elsif
+        * else
+        * foreach
+        * raise
+        * log
+        The core module defines these elements and the
+        attributes.
+        </xsd:documentation>
+		<xsd:documentation source="scxml-copyright.xsd"/>
+	</xsd:annotation>
+
+	<xsd:include schemaLocation="scxml-datatypes.xsd">
+		<xsd:annotation>
+			<xsd:documentation>
+            Includes common SCXML datatypes
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:include>
+
+	<xsd:include schemaLocation="scxml-attribs.xsd">
+		<xsd:annotation>
+			<xsd:documentation>
+            Includes common SCXML attributes
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:include>
+
+	<xsd:include schemaLocation="scxml-contentmodels.xsd">
+		<xsd:annotation>
+			<xsd:documentation>
+            This module defines Common content model extensions  for SCXML
+            </xsd:documentation>
+		</xsd:annotation>
+	</xsd:include>
+	
+
+	<!-- scxml -->
+	<xsd:attributeGroup name="scxml.scxml.attlist">
+		<xsd:attribute name="initial" type="xsd:IDREFS"/>
+		<xsd:attribute name="name" type="xsd:NMTOKEN"/>
+		<xsd:attribute name="version" type="xsd:decimal" use="required" fixed="1.0"/>
+		<xsd:attribute name="datamodel" type="xsd:NMTOKEN" default="null" use="optional"/>
+		<xsd:attribute name="binding" type="Binding.datatype"/>
+		<xsd:attribute name="exmode" type="Exmode.datatype"/>
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.scxml.mix">
+		<xsd:choice>
+			<xsd:element ref="state" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="parallel" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="final" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="datamodel" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="script" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:group ref="scxml.extra.content" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+	</xsd:group>
+	<xsd:group name="scxml.scxml.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.scxml.mix" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.scxml.type">
+		<xsd:group ref="scxml.scxml.content"/>
+		<xsd:attributeGroup ref="scxml.scxml.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="scxml" type="scxml.scxml.type"/>
+
+	<!-- state -->
+	<xsd:attributeGroup name="scxml.state.attlist">
+		<xsd:attribute name="id" type="xsd:ID"/>
+		<xsd:attribute name="initial" type="xsd:IDREFS"/>
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.state.mix">
+		<xsd:choice>
+			<xsd:element ref="onentry" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="onexit" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="transition" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="initial" minOccurs="0" maxOccurs="1"/>
+			<xsd:element ref="state" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="parallel" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="final" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="history" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="datamodel" minOccurs="0" maxOccurs="1"/>
+			<xsd:element ref="invoke" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:group ref="scxml.extra.content" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+	</xsd:group>
+	<xsd:group name="scxml.state.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.state.mix" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.state.type">
+		<xsd:sequence>
+			<xsd:group ref="scxml.state.content"/>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="scxml.state.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="state" type="scxml.state.type"/>
+
+	<!-- initial -->
+	<xsd:attributeGroup name="scxml.initial.attlist">
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.initial.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.extra.content" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="transition" minOccurs="1" maxOccurs="1"/>
+			<xsd:group ref="scxml.extra.content" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.initial.type">
+		<xsd:group ref="scxml.initial.content"/>
+		<xsd:attributeGroup ref="scxml.initial.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="initial" type="scxml.initial.type"/>
+
+	<!-- onentry -->
+	<xsd:attributeGroup name="scxml.onentry.attlist">
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.onentry.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.core.executablecontent" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.onentry.type">
+		<xsd:group ref="scxml.onentry.content"/>
+		<xsd:attributeGroup ref="scxml.onentry.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="onentry" type="scxml.onentry.type"/>
+
+	<!-- onexit -->
+	<xsd:attributeGroup name="scxml.onexit.attlist">
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.onexit.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.core.executablecontent" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.onexit.type">
+		<xsd:group ref="scxml.onexit.content"/>
+		<xsd:attributeGroup ref="scxml.onexit.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="onexit" type="scxml.onexit.type"/>
+
+	<!-- transition -->
+	<xsd:attributeGroup name="scxml.transition.attlist">
+		<xsd:attribute name="event" type="EventTypes.datatype"/>
+		<xsd:attribute name="cond" type="CondLang.datatype"/>
+		<xsd:attribute name="target" type="xsd:IDREFS"/>
+		<xsd:attribute name="type" type="TransitionType.datatype"/>
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.transition.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.core.executablecontent" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.transition.type">
+		<xsd:group ref="scxml.transition.content"/>
+		<xsd:attributeGroup ref="scxml.transition.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="transition" type="scxml.transition.type"/>
+
+	<!-- parallel -->
+	<xsd:attributeGroup name="scxml.parallel.attlist">
+		<xsd:attribute name="id" type="xsd:ID"/>
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.parallel.mix">
+		<xsd:choice>
+			<xsd:element ref="onentry" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="onexit" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="transition" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="state" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="parallel" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="history" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="datamodel" minOccurs="0" maxOccurs="1"/>
+			<xsd:element ref="invoke" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:group ref="scxml.extra.content" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+	</xsd:group>
+	<xsd:group name="scxml.parallel.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.parallel.mix" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.parallel.type">
+		<xsd:group ref="scxml.parallel.content"/>
+		<xsd:attributeGroup ref="scxml.parallel.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="parallel" type="scxml.parallel.type"/>
+
+	<!-- final -->
+	<xsd:attributeGroup name="scxml.final.attlist">
+		<xsd:attribute name="id" type="xsd:ID"/>
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.final.mix">
+		<xsd:choice>
+			<xsd:element ref="onentry" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="onexit" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="donedata" minOccurs="0" maxOccurs="1"/>
+			<xsd:group ref="scxml.extra.content" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+	</xsd:group>
+	<xsd:group name="scxml.final.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.final.mix" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.final.type">
+		<xsd:group ref="scxml.final.content"/>
+		<xsd:attributeGroup ref="scxml.final.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="final" type="scxml.final.type"/>
+
+	<!-- history -->
+	<xsd:attributeGroup name="scxml.history.attlist">
+		<xsd:attribute name="id" type="xsd:ID"/>
+		<xsd:attribute name="type" type="HistoryType.datatype"/>
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.history.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.extra.content" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="transition" minOccurs="1" maxOccurs="1"/>
+			<xsd:group ref="scxml.extra.content" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.history.type">
+		<xsd:group ref="scxml.history.content"/>
+		<xsd:attributeGroup ref="scxml.history.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="history" type="scxml.history.type"/>
+
+	
+
+	<!-- donedata -->
+	<xsd:attributeGroup name="scxml.donedata.attlist">
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.donedata.content">
+			<xsd:choice>
+			<xsd:element ref="content" minOccurs="0" maxOccurs="1"/>
+			<xsd:element ref="param" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+	</xsd:group>
+	<xsd:complexType name="scxml.donedata.type">
+		<xsd:group ref="scxml.donedata.content"/>
+		<xsd:attributeGroup ref="scxml.donedata.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="donedata" type="scxml.donedata.type"/>
+	
+		<!-- if -->
+	<xsd:attributeGroup name="scxml.if.attlist">
+		<xsd:attribute name="cond" type="CondLang.datatype" use="required"/>
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.if.elseif.mix">
+		<xsd:sequence>
+			<xsd:element ref="elseif" />
+			<xsd:group ref="scxml.core.executablecontent" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:group name="scxml.if.else.mix">
+		<xsd:sequence>
+			<xsd:element ref="else" />
+			<xsd:group ref="scxml.core.executablecontent" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:group name="scxml.if.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.core.executablecontent" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:group ref="scxml.if.elseif.mix" minOccurs="0" maxOccurs="1"/>
+			<xsd:group ref="scxml.if.else.mix" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.if.type">
+		<xsd:group ref="scxml.if.content"/>
+		<xsd:attributeGroup ref="scxml.if.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="if" type="scxml.if.type"/>
+
+	<!-- elseif -->
+	<xsd:attributeGroup name="scxml.elseif.attlist">
+		<xsd:attribute name="cond" type="CondLang.datatype" use="required"/>
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.elseif.mix">
+		<xsd:choice>
+			<!-- No content for this element -->
+		</xsd:choice>
+	</xsd:group>
+	<xsd:group name="scxml.elseif.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.elseif.mix" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.elseif.type">
+		<xsd:group ref="scxml.elseif.content"/>
+		<xsd:attributeGroup ref="scxml.elseif.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="elseif" type="scxml.elseif.type"/>
+
+	<!-- else -->
+	<xsd:attributeGroup name="scxml.else.attlist">
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.else.mix">
+		<xsd:choice>
+			<!-- No content for this element -->
+		</xsd:choice>
+	</xsd:group>
+	<xsd:group name="scxml.else.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.else.mix" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.else.type">
+		<xsd:group ref="scxml.else.content"/>
+		<xsd:attributeGroup ref="scxml.else.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="else" type="scxml.else.type"/>
+
+	<!-- foreach -->
+	<xsd:attributeGroup name="scxml.foreach.attlist">
+		<xsd:attribute name="array" type="ValueLang.datatype" use="required"/>
+		<xsd:attribute name="item" type="xsd:string" use="required"/>
+		<xsd:attribute name="index" type="xsd:string"/>
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.foreach.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.core.executablecontent" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.foreach.type">
+		<xsd:group ref="scxml.foreach.content"/>
+		<xsd:attributeGroup ref="scxml.foreach.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="foreach" type="scxml.foreach.type"/>
+
+	<!-- raise -->
+	<xsd:attributeGroup name="scxml.raise.attlist">
+		<xsd:attribute name="event" type="xsd:NMTOKEN" use="required"/>
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.raise.mix">
+		<xsd:choice>
+				<!-- No content for this element -->
+		</xsd:choice>
+	</xsd:group>
+	<xsd:group name="scxml.raise.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.raise.mix" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.raise.type">
+		<xsd:group ref="scxml.raise.content"/>
+		<xsd:attributeGroup ref="scxml.raise.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="raise" type="scxml.raise.type"/>
+
+	<!-- log -->
+	<xsd:attributeGroup name="scxml.log.attlist">
+		<xsd:attribute name="label" type="xsd:string"/>
+		<xsd:attribute name="expr" type="ValueLang.datatype"/>
+	 <xsd:attributeGroup ref="scxml.extra.attribs"/> 
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.log.content">
+		<xsd:sequence>
+		<xsd:group ref="scxml.extra.content" minOccurs="0" maxOccurs="unbounded"/> 
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.log.type">
+		<xsd:group ref="scxml.log.content"/>
+		<xsd:attributeGroup ref="scxml.log.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="log" type="scxml.log.type"/>
+
+	
+</xsd:schema>

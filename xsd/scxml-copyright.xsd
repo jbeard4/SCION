@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.w3.org/2005/07/scxml"
+    xmlns="http://www.w3.org/2005/07/scxml"
+    elementFormDefault="qualified">
+
+  <xsd:annotation>
+    <xsd:documentation>
+    This is the XML Schema for SCXML 1.0, formulated as a modular XML application
+    Copyright &#169;1998-2007 World Wide Web Consortium
+    (Massachusetts Institute of Technology, European Research Consortium
+     for Informatics and Mathematics, Keio University).
+    All Rights Reserved.
+  
+    Permission to use, copy, modify and distribute the SCXML Schema
+    modules and their accompanying xs:documentation for any purpose
+    and without fee is hereby granted in perpetuity, provided that the above
+    copyright notice and this paragraph appear in all copies.  
+    The copyright holders make no representation about the suitability of
+    these XML Schema modules for any purpose.
+  
+    They are provided "as is" without expressed or implied warranty.
+    </xsd:documentation>
+  </xsd:annotation>
+
+</xsd:schema>

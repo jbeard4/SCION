@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    XML Schema for sending messages to SCXML processors.
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.w3.org/2005/07/scxml"
+    xmlns="http://www.w3.org/2005/07/scxml"
+    elementFormDefault="qualified">
+
+	<xsd:annotation>
+		<xsd:documentation xml:lang="en">
+			XML Schema for sending messages to SCXML processors.
+			Version 1.0
+		</xsd:documentation>
+		<xsd:documentation source="scxml-copyright.xsd" />
+	</xsd:annotation>
+
+	<xsd:attributeGroup name="scxmlmessage.extra.attribs">
+		<xsd:annotation>
+			<xsd:documentation>
+				Group allowing attributes from other namespaces
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:anyAttribute namespace="##other" processContents="lax" />
+	</xsd:attributeGroup>
+
+	<xsd:attributeGroup name="scxmlmessage.message.attlist">
+		<xsd:attribute name="version" type="xsd:string" fixed="1.0" use="required" />
+		<xsd:attribute name="source" type="xsd:anyURI" use="required" />
+		<xsd:attribute name="target" type="xsd:anyURI" use="required" />
+		<xsd:attribute name="sendid" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					Non SCXML senders are not required to specify a sendid
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="name" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					Defaults to "external.event"
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="sourcetype" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					Defaults to "scxml"
+				</xsd:documentation>
+			</xsd:annotation>
+			</xsd:attribute>
+		<xsd:attributeGroup ref="scxmlmessage.extra.attribs" />
+	</xsd:attributeGroup>
+
+	<xsd:group name="scxmlmessage.message.content">
+		<xsd:sequence>
+			<xsd:element ref="payload" minOccurs="1" maxOccurs="1" />
+		</xsd:sequence>
+	</xsd:group>
+
+	<xsd:complexType name="scxmlmessage.message.type">
+		<xsd:group ref="scxmlmessage.message.content" />
+		<xsd:attributeGroup ref="scxmlmessage.message.attlist" />
+	</xsd:complexType>
+
+	<xsd:element name="message" type="scxmlmessage.message.type" />
+
+	<xsd:attributeGroup name="scxmlmessage.payload.attlist">
+		<xsd:attributeGroup ref="scxmlmessage.extra.attribs" />
+		<xsd:attribute name="contenttype" type="xsd:string" use="optional">
+		<xsd:annotation>
+				<xsd:documentation>
+					The mime type of the child content.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+
+	<xsd:group name="scxmlmessage.payload.content">
+		<xsd:choice>
+			<xsd:sequence>
+				<xsd:element ref="property" minOccurs="0"
+					maxOccurs="unbounded" />
+			</xsd:sequence>
+			<xsd:sequence>
+				<xsd:any namespace="##other" minOccurs="1"
+					maxOccurs="unbounded" processContents="lax" />
+			</xsd:sequence>
+		</xsd:choice>
+	</xsd:group>
+
+	<xsd:complexType name="scxmlmessage.payload.type">
+		<xsd:group ref="scxmlmessage.payload.content" />
+		<xsd:attributeGroup ref="scxmlmessage.payload.attlist" />
+	</xsd:complexType>
+
+	<xsd:element name="payload" type="scxmlmessage.payload.type" />
+
+	<xsd:attributeGroup name="scxmlmessage.property.attlist">
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+		<xsd:attributeGroup ref="scxmlmessage.extra.attribs" />
+	</xsd:attributeGroup>
+
+	<xsd:group name="scxmlmessage.property.content">
+		<xsd:sequence>
+			<xsd:element ref="hint" minOccurs="0"
+				maxOccurs="1" />
+			<xsd:any namespace="##other" minOccurs="0"
+				maxOccurs="unbounded" processContents="skip" />
+		</xsd:sequence>
+	</xsd:group>
+
+	<xsd:complexType name="scxmlmessage.property.type" mixed="true">
+		<xsd:group ref="scxmlmessage.property.content" />
+		<xsd:attributeGroup ref="scxmlmessage.property.attlist" />
+	</xsd:complexType>
+
+	<xsd:element name="property" type="scxmlmessage.property.type" />
+
+	<xsd:element name="hint" type="xsd:string" />
+
+</xsd:schema>
