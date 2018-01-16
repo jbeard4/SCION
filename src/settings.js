@@ -2,22 +2,7 @@
 
 const oneLine = require("./utils").oneLine
 
-const defaultHTMLExtensions = [
-  ".erb",
-  ".handlebars",
-  ".hbs",
-  ".htm",
-  ".html",
-  ".mustache",
-  ".nunjucks",
-  ".php",
-  ".tag",
-  ".twig",
-  ".vue",
-  ".we",
-]
-
-const defaultXMLExtensions = [".xhtml", ".xml"]
+const defaultSCXMLExtensions = [".scxml", ".xml"]
 
 function filterOut(array, excludeArray) {
   if (!excludeArray) return array
@@ -42,13 +27,9 @@ function getSetting(settings, name) {
 }
 
 function getSettings(settings) {
-  const htmlExtensions =
-    getSetting(settings, "html-extensions") ||
-    filterOut(defaultHTMLExtensions, getSetting(settings, "xml-extensions"))
-
-  const xmlExtensions =
-    getSetting(settings, "xml-extensions") ||
-    filterOut(defaultXMLExtensions, getSetting(settings, "html-extensions"))
+  const scxmlExtensions =
+    getSetting(settings, "scxml-extensions") ||
+    defaultSCXMLExtensions;
 
   let reportBadIndent
   switch (getSetting(settings, "report-bad-indent")) {
@@ -100,8 +81,7 @@ function getSettings(settings) {
   }
 
   return {
-    htmlExtensions,
-    xmlExtensions,
+    scxmlExtensions,
     indent,
     reportBadIndent,
     isJavaScriptMIMEType,

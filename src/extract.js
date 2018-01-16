@@ -3,7 +3,7 @@
 const htmlparser = require("htmlparser2")
 const TransformableString = require("./TransformableString")
 
-function iterateScripts(code, options, onChunk) {
+function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
   if (!code) return
 
   const xmlMode = options.xmlMode
@@ -22,6 +22,8 @@ function iterateScripts(code, options, onChunk) {
   const parser = new htmlparser.Parser(
     {
       onopentag(name, attrs) {
+        if ( name === "data" ) onDatamodelDeclaration(attrs.id);
+
         // Test if current tag is a valid <script> tag.
         if (name !== "script") {
           return
@@ -91,7 +93,7 @@ function iterateScripts(code, options, onChunk) {
         type: chunks[startChunkIndex].type,
         start: chunks[startChunkIndex].start,
         end: chunks[index - 1].end,
-        cdata,
+        cdata
       })
     }
     let startChunkIndex = 0
@@ -180,6 +182,7 @@ function extract(code, indentDescriptor, xmlMode, isJavaScriptMIMEType) {
   const codeParts = []
   let lineNumber = 1
   let previousHTML = ""
+  let datamodelDeclarations = [];
 
   iterateScripts(code, { xmlMode, isJavaScriptMIMEType }, chunk => {
     const slice = code.slice(chunk.start, chunk.end)
@@ -215,11 +218,12 @@ function extract(code, indentDescriptor, xmlMode, isJavaScriptMIMEType) {
       }
       codeParts.push(transformedCode)
     }
-  })
+  }, id => datamodelDeclarations.push(id) )
 
   return {
     code: codeParts,
     badIndentationLines,
+    datamodelDeclarations
   }
 }
 

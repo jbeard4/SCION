@@ -88,11 +88,9 @@ function patch(Linter) {
     const extension = path.extname(filename || "")
 
     const pluginSettings = getSettings(config.settings || {})
-    const isHTML = pluginSettings.htmlExtensions.indexOf(extension) >= 0
-    const isXML =
-      !isHTML && pluginSettings.xmlExtensions.indexOf(extension) >= 0
+    const isSCXML = pluginSettings.scxmlExtensions.indexOf(extension) >= 0;
 
-    if (typeof textOrSourceCode === "string" && (isHTML || isXML)) {
+    if (typeof textOrSourceCode === "string" && isSCXML) {
       messages = []
 
       const pushMessages = (localMessages, code) => {
@@ -105,7 +103,7 @@ function patch(Linter) {
       const currentInfos = extract(
         textOrSourceCode,
         pluginSettings.indent,
-        isXML,
+        isSCXML,
         pluginSettings.isJavaScriptMIMEType
       )
 
@@ -115,21 +113,14 @@ function patch(Linter) {
             message: "Bad line indentation.",
             line,
             column: 1,
-            ruleId: "(html plugin)",
+            ruleId: "(scxml plugin)",
             severity: pluginSettings.reportBadIndent,
           })
         })
       }
 
-      if (
-        config.parserOptions &&
-        config.parserOptions.sourceType === "module"
-      ) {
-        for (const code of currentInfos.code) {
-          pushMessages(localVerify(String(code)), code)
-        }
-      } else {
-        verifyWithSharedScopes.call(
+      for (const code of currentInfos.code) {
+        verifyWithScxmlScopes.call(
           this,
           localVerify,
           config,
@@ -149,30 +140,28 @@ function patch(Linter) {
   }
 }
 
-function verifyWithSharedScopes(
+function verifyWithScxmlScopes(
   localVerify,
   config,
   currentInfos,
   pushMessages
 ) {
-  // First pass: collect needed globals and declared globals for each script tags.
-  const firstPassValues = []
+
   const originalRules = config.rules
-  config.rules = { [GET_SCOPE_RULE_NAME]: "error" }
+
+  config.rules = Object.assign(
+    { [DECLARE_VARIABLES_RULE_NAME]: "error" },
+    originalRules
+  )
 
   for (const code of currentInfos.code) {
-    this.rules.define(GET_SCOPE_RULE_NAME, context => {
+    this.rules.define(DECLARE_VARIABLES_RULE_NAME, context => {
       return {
         Program() {
-          firstPassValues.push({
-            code,
-            sourceCode: context.getSourceCode(),
-            exportedGlobals: context
-              .getScope()
-              .through.map(node => node.identifier.name),
-            declaredGlobals: context
-              .getScope()
-              .variables.map(variable => variable.name),
+          const scope = context.getScope()
+          scope.through = scope.through.filter(variable => {
+            console.log('here')
+            return currentInfos.datamodelDeclarations.indexOf(variable.identifier.name) === -1
           })
         },
       }
@@ -180,42 +169,6 @@ function verifyWithSharedScopes(
 
     pushMessages(localVerify(String(code)), code)
   }
-
-  config.rules = Object.assign(
-    { [DECLARE_VARIABLES_RULE_NAME]: "error" },
-    originalRules
-  )
-
-  // Second pass: declare variables for each script scope, then run eslint.
-  for (let i = 0; i < firstPassValues.length; i += 1) {
-    this.rules.define(DECLARE_VARIABLES_RULE_NAME, context => {
-      return {
-        Program() {
-          const exportedGlobals = splatSet(
-            firstPassValues
-              .slice(i + 1)
-              .map(nextValues => nextValues.exportedGlobals)
-          )
-          for (const name of exportedGlobals) context.markVariableAsUsed(name)
-
-          const declaredGlobals = splatSet(
-            firstPassValues
-              .slice(0, i)
-              .map(previousValues => previousValues.declaredGlobals)
-          )
-          const scope = context.getScope()
-          scope.through = scope.through.filter(variable => {
-            return !declaredGlobals.has(variable.identifier.name)
-          })
-        },
-      }
-    })
-
-    const values = firstPassValues[i]
-    pushMessages(localVerify(values.sourceCode), values.code)
-  }
-
-  config.rules = originalRules
 }
 
 function remapMessages(messages, hasBOM, code) {
