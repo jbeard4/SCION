@@ -149,26 +149,83 @@ function verifyWithScxmlScopes(
 
   const originalRules = config.rules
 
-  config.rules = Object.assign(
-    { [DECLARE_VARIABLES_RULE_NAME]: "error" },
-    originalRules
-  )
+  // First pass: collect needed globals and declared globals for each root script tags.
+  const firstPassValues = []
+  config.rules = { [GET_SCOPE_RULE_NAME]: "error" }
 
   for (const code of currentInfos.code) {
-    this.rules.define(DECLARE_VARIABLES_RULE_NAME, context => {
+    this.rules.define(GET_SCOPE_RULE_NAME, context => {
       return {
         Program() {
+
           const scope = context.getScope()
           scope.through = scope.through.filter(variable => {
-            console.log('here')
             return currentInfos.datamodelDeclarations.indexOf(variable.identifier.name) === -1
           })
+
+          firstPassValues.push({
+            code,
+            sourceCode: context.getSourceCode(),
+            exportedGlobals: scope.through.map(node => node.identifier.name),
+            declaredGlobals: scope.childScopes[0].variables.filter(variable => variable.name !== 'arguments').map(variable => variable.name),
+            isRootScript : code.isRootScript
+          }) 
         },
       }
     })
 
     pushMessages(localVerify(String(code)), code)
   }
+
+  config.rules = Object.assign(
+    { [DECLARE_VARIABLES_RULE_NAME]: "error" },
+    originalRules
+  )
+
+  for (let i = 0; i < firstPassValues.length; i++) {
+    this.rules.define(DECLARE_VARIABLES_RULE_NAME, context => {
+      return {
+        Program() {
+          const exportedGlobals = splatSet(
+            firstPassValues
+              .slice(i + 1)
+              .map(nextValues => nextValues.exportedGlobals)
+          )
+          console.log('exportedGlobals', exportedGlobals);
+          for (const name of exportedGlobals) {
+            context.markVariableAsUsed(name)
+          }
+
+          const declaredGlobals = splatSet(
+            firstPassValues
+              .slice(0, i)
+              .filter( code => code.isRootScript)
+              .map(previousValues => previousValues.declaredGlobals)
+              .concat(currentInfos.datamodelDeclarations)
+          )
+          console.log('declaredGlobals', declaredGlobals);
+
+          const scope = context.getScope()
+          scope.through = scope.through.filter(variable => {
+            console.log('variable.identifier.name',variable.identifier.name);
+            return !declaredGlobals.has(variable.identifier.name)
+          })
+          console.log(
+            scope.through.map(variable => {
+              return variable.identifier.name;
+            })
+          )
+        }
+      }
+    })
+
+    const values = firstPassValues[i]
+    console.log('values.code',String(values.code));
+    console.log('values.isRootScript',values.isRootScript);
+    pushMessages(localVerify(values.sourceCode), values.code)
+  }
+
+  config.rules = originalRules;
 }
 
 function remapMessages(messages, hasBOM, code) {

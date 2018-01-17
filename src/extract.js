@@ -11,10 +11,11 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
   let index = 0
   let inScript = false
   let cdata = []
+  const tagStack = []
 
   const chunks = []
-  function pushChunk(type, end) {
-    chunks.push({ type, start: index, end, cdata })
+  function pushChunk(type, end, isRootScript) {
+    chunks.push({ type, start: index, end, cdata, isRootScript })
     cdata = []
     index = end
   }
@@ -22,19 +23,14 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
   const parser = new htmlparser.Parser(
     {
       onopentag(name, attrs) {
+        tagStack.push(name); 
         if ( name === "data" ) onDatamodelDeclaration(attrs.id);
 
         // Test if current tag is a valid <script> tag.
-        if (name !== "script") {
-          return
+        if (name === "script"){
+          inScript = true
+          pushChunk("html", parser.endIndex + 1)
         }
-
-        if (attrs.type && !isJavaScriptMIMEType(attrs.type)) {
-          return
-        }
-
-        inScript = true
-        pushChunk("html", parser.endIndex + 1)
       },
 
       oncdatastart() {
@@ -51,6 +47,7 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
       },
 
       onclosetag(name) {
+        tagStack.pop();
         if (name !== "script" || !inScript) {
           return
         }
@@ -63,7 +60,10 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
           return
         }
 
-        pushChunk("script", parser.startIndex)
+        console.log('tagStack[tagStack.length - 1]', tagStack[tagStack.length - 1]);
+        const isRootScript = tagStack[tagStack.length - 1] === 'scxml';
+        pushChunk("script", parser.startIndex, isRootScript)
+
       },
 
       ontext() {
@@ -71,7 +71,9 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
           return
         }
 
-        pushChunk("script", parser.endIndex + 1)
+        console.log('tagStack[tagStack.length - 2]', tagStack[tagStack.length - 2]);
+        const isRootScript = tagStack[tagStack.length - 2] === 'scxml';
+        pushChunk("script", parser.endIndex + 1, isRootScript)
       },
     },
     {
@@ -89,11 +91,13 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
       for (let i = startChunkIndex; i < index; i += 1) {
         cdata.push.apply(cdata, chunks[i].cdata)
       }
+      console.log('chunks[startChunkIndex]',chunks[startChunkIndex])
       onChunk({
         type: chunks[startChunkIndex].type,
         start: chunks[startChunkIndex].start,
         end: chunks[index - 1].end,
-        cdata
+        cdata,
+        isRootScript : chunks[startChunkIndex].isRootScript 
       })
     }
     let startChunkIndex = 0
@@ -191,7 +195,9 @@ function extract(code, indentDescriptor, xmlMode, isJavaScriptMIMEType) {
       if (match) lineNumber += match.length
       previousHTML = slice
     } else if (chunk.type === "script") {
-      const transformedCode = new TransformableString(code)
+      console.log('here2', chunk.isRootScript);
+      debugger;
+      const transformedCode = new TransformableString(code, chunk.isRootScript)
       let indentSlice = slice
       for (const cdata of chunk.cdata) {
         transformedCode.replace(cdata.start, cdata.end, "")

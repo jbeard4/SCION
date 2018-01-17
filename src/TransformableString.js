@@ -39,11 +39,13 @@ function indexToLocation(index, lineStarts) {
 }
 
 module.exports = class TransformableString {
-  constructor(original) {
+  constructor(original, isRootScript) {
     this._original = original
     this._blocks = []
     this._lineStarts = lineStarts(original)
     this._cache = null
+    console.log('TransformableString isRootScript', isRootScript);
+    this.isRootScript = isRootScript;
   }
 
   _compute() {
