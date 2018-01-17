@@ -10,6 +10,8 @@ const getSettings = require("./settings").getSettings
 const BOM = "\uFEFF"
 const GET_SCOPE_RULE_NAME = "__eslint-plugin-html-get-scope"
 const DECLARE_VARIABLES_RULE_NAME = "__eslint-plugin-html-declare-variables"
+const scxmlGlobalPlatformVariables = ['_x','_sessionid','_ioprocessors','In']
+const scxmlLocalPlatformVariables = ['_event']
 
 // Disclaimer:
 //
@@ -199,9 +201,11 @@ function verifyWithScxmlScopes(
           const declaredGlobals = splatSet(
             firstPassValues
               .slice(0, i)
-              .filter( code => code.isRootScript)
+              .filter(code => code.isRootScript)
               .map(previousValues => previousValues.declaredGlobals)
               .concat(currentInfos.datamodelDeclarations)
+              .concat(scxmlGlobalPlatformVariables)
+              .concat(!values.isRootScript ? scxmlLocalPlatformVariables : [])
           )
           console.log('declaredGlobals', declaredGlobals);
 
