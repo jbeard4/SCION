@@ -36,7 +36,7 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
   const parser = _.extend(sax.parser(true,{trim : false, xmlns : true}),
     {
       onopentag(node) {
-        console.log('onopentag',code.slice(0,parser.position));
+        //console.log('onopentag',code.slice(0,parser.position));
         tagStack.push(node.name); 
         if ( node.name === "data" ) onDatamodelDeclaration(node.attributes.id.value);
 
@@ -47,20 +47,8 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
         }
       },
 
-      /*
-      onattributevaluestart() {
-        console.log('onattributevaluestart', parser.attribName, code.slice(0,parser.position));
-        attributeValuePositionCache[parser.attribName] = parser.position;
-      },
-
-      onattributevalueend(){
-        console.log('onattributevalueend', parser.attribName, parser.attribValue, code.slice(0,parser.position));
-        attributeValueEndPositionCache[parser.attribName] = parser.position;
-      },
-      */
-
       onopencdata() {
-        console.log('oncdatastart',code.slice(0,parser.position));
+        //console.log('oncdatastart',code.slice(0,parser.position));
         cdata.push(
           {
             start: parser.position-9,
@@ -70,7 +58,7 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
       },
 
       onclosecdata(){
-        console.log('oncdataend',code.slice(0,parser.position));
+        //console.log('oncdataend',code.slice(0,parser.position));
         cdata.push(
           {
             start: parser.position-3,
@@ -81,7 +69,7 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
       
 
       onclosetag(name) {
-        console.log('onclosetag',code.slice(0,parser.position));
+        //console.log('onclosetag',code.slice(0,parser.position));
         tagStack.pop();
         if (name !== "script" || !inScript) {
           return
@@ -109,7 +97,7 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
       //},
 
       ontext(t) {
-        console.log('ontext',code.slice(0,parser.position));
+        //console.log('ontext',code.slice(0,parser.position));
         if (!inScript) {
           return
         }
@@ -117,6 +105,26 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
         //console.log('tagStack[tagStack.length - 2]', tagStack[tagStack.length - 2]);
         const isRootScript = tagStack[tagStack.length - 2] === 'scxml';
         pushChunk("script", cachedBeginCloseTagPosition-2, isRootScript)
+      },
+
+      onattributevaluestart() {
+        const name = parser.attribName;
+        //console.log('onattributevaluestart', name, code.slice(0,parser.position));
+        if(!(name.match(/^.*expr$/) || EXPRESSION_ATTRS.indexOf(name) > -1)) return;
+
+        inScript = true
+        pushChunk("html", parser.position)
+      },
+
+      onattributevalueend(){
+        //console.log('onattributevalueend', parser.attribName, parser.attribValue, code.slice(0,parser.position));
+
+        if (!inScript) {
+          return
+        }
+
+        inScript = false
+        pushChunk("script", parser.position-1, false)
       },
 
       /*
@@ -136,12 +144,14 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
 
   {
 
+    /*
     for (let i = 0; i < chunks.length; i += 1) {
       let chunk = chunks[i];
       console.log(`[${chunk.type}](${code.slice(chunk.start,chunk.end)})`);
       console.log('cdata', chunk.cdata.map(data => code.slice(data.start, data.end)));
       
     }
+    */
 
     const emitChunk = () => {
       const cdata = []

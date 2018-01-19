@@ -44,7 +44,6 @@ module.exports = class TransformableString {
     this._blocks = []
     this._lineStarts = lineStarts(original)
     this._cache = null
-    console.log('TransformableString isRootScript', isRootScript);
     this.isRootScript = isRootScript;
   }
 
