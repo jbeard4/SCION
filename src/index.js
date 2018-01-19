@@ -193,7 +193,7 @@ function verifyWithScxmlScopes(
               .slice(i + 1)
               .map(nextValues => nextValues.exportedGlobals)
           )
-          console.log('exportedGlobals', exportedGlobals);
+          //console.log('exportedGlobals', exportedGlobals);
           for (const name of exportedGlobals) {
             context.markVariableAsUsed(name)
           }
@@ -207,25 +207,20 @@ function verifyWithScxmlScopes(
               .concat(scxmlGlobalPlatformVariables)
               .concat(!values.isRootScript ? scxmlLocalPlatformVariables : [])
           )
-          console.log('declaredGlobals', declaredGlobals);
+          //console.log('declaredGlobals', declaredGlobals);
 
           const scope = context.getScope()
           scope.through = scope.through.filter(variable => {
-            console.log('variable.identifier.name',variable.identifier.name);
+            //console.log('variable.identifier.name',variable.identifier.name);
             return !declaredGlobals.has(variable.identifier.name)
           })
-          console.log(
-            scope.through.map(variable => {
-              return variable.identifier.name;
-            })
-          )
         }
       }
     })
 
     const values = firstPassValues[i]
-    console.log('values.code',String(values.code));
-    console.log('values.isRootScript',values.isRootScript);
+    //console.log('values.code',String(values.code));
+    //console.log('values.isRootScript',values.isRootScript);
     pushMessages(localVerify(values.sourceCode), values.code)
   }
 

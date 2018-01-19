@@ -1,10 +1,20 @@
 "use strict"
 
-const htmlparser = require("htmlparser2")
+const sax = require("@jbeard/sax")
 const TransformableString = require("./TransformableString")
+const _ = require('underscore');
+
+const EXPRESSION_ATTRS = [ 
+  'cond',
+  'array'
+//  'location',
+//  'namelist',
+//  'idlocation'
+];
 
 function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
   if (!code) return
+
 
   const xmlMode = options.xmlMode
   const isJavaScriptMIMEType = options.isJavaScriptMIMEType || (() => true)
@@ -12,6 +22,9 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
   let inScript = false
   let cdata = []
   const tagStack = []
+  const attributeValuePositionCache = {};
+  const attributeValueEndPositionCache = {};
+  let cachedBeginCloseTagPosition;
 
   const chunks = []
   function pushChunk(type, end, isRootScript) {
@@ -20,33 +33,55 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
     index = end
   }
 
-  const parser = new htmlparser.Parser(
+  const parser = _.extend(sax.parser(true,{trim : false, xmlns : true}),
     {
-      onopentag(name, attrs) {
-        tagStack.push(name); 
-        if ( name === "data" ) onDatamodelDeclaration(attrs.id);
+      onopentag(node) {
+        console.log('onopentag',code.slice(0,parser.position));
+        tagStack.push(node.name); 
+        if ( node.name === "data" ) onDatamodelDeclaration(node.attributes.id.value);
 
         // Test if current tag is a valid <script> tag.
-        if (name === "script"){
+        if (node.name === "script"){
           inScript = true
-          pushChunk("html", parser.endIndex + 1)
+          pushChunk("html", parser.position)
         }
       },
 
-      oncdatastart() {
+      /*
+      onattributevaluestart() {
+        console.log('onattributevaluestart', parser.attribName, code.slice(0,parser.position));
+        attributeValuePositionCache[parser.attribName] = parser.position;
+      },
+
+      onattributevalueend(){
+        console.log('onattributevalueend', parser.attribName, parser.attribValue, code.slice(0,parser.position));
+        attributeValueEndPositionCache[parser.attribName] = parser.position;
+      },
+      */
+
+      onopencdata() {
+        console.log('oncdatastart',code.slice(0,parser.position));
         cdata.push(
           {
-            start: parser.startIndex,
-            end: parser.startIndex + 9,
-          },
-          {
-            start: parser.endIndex - 2,
-            end: parser.endIndex + 1,
+            start: parser.position-9,
+            end: parser.position
           }
         )
       },
 
+      onclosecdata(){
+        console.log('oncdataend',code.slice(0,parser.position));
+        cdata.push(
+          {
+            start: parser.position-3,
+            end: parser.position
+          }
+        )
+      },
+      
+
       onclosetag(name) {
+        console.log('onclosetag',code.slice(0,parser.position));
         tagStack.pop();
         if (name !== "script" || !inScript) {
           return
@@ -54,44 +89,66 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
 
         inScript = false
 
-        if (parser.startIndex < chunks[chunks.length - 1].end) {
+        //if (parser.position < chunks[chunks.length - 1].end) {
           // The parser didn't move its index after the previous chunk emited. It occurs on
           // self-closing tags (xml mode). Just ignore this script.
-          return
-        }
+        //  return
+        //}
 
-        console.log('tagStack[tagStack.length - 1]', tagStack[tagStack.length - 1]);
+        //console.log('tagStack[tagStack.length - 1]', tagStack[tagStack.length - 1]);
         const isRootScript = tagStack[tagStack.length - 1] === 'scxml';
-        pushChunk("script", parser.startIndex, isRootScript)
-
+        pushChunk("script", cachedBeginCloseTagPosition-2, isRootScript)
       },
 
-      ontext() {
+      onbeginclosetag(){
+       cachedBeginCloseTagPosition = parser.position;
+      },
+
+      //onopentagslash (){
+      // cachedBeginCloseTagPosition = parser.position;
+      //},
+
+      ontext(t) {
+        console.log('ontext',code.slice(0,parser.position));
         if (!inScript) {
           return
         }
 
-        console.log('tagStack[tagStack.length - 2]', tagStack[tagStack.length - 2]);
+        //console.log('tagStack[tagStack.length - 2]', tagStack[tagStack.length - 2]);
         const isRootScript = tagStack[tagStack.length - 2] === 'scxml';
-        pushChunk("script", parser.endIndex + 1, isRootScript)
+        pushChunk("script", cachedBeginCloseTagPosition-2, isRootScript)
       },
-    },
-    {
-      xmlMode: xmlMode === true,
+
+      /*
+      onattribute(attr) {
+        console.log('onattribute',code.slice(0,parser.position));
+        if( attr.name.match(/^.*expr$/) || EXPRESSION_ATTRS.indexOf(attr.name) > -1){
+            pushChunk("script", parser.position + 1, false) //TODO: verify that this will work
+        }
+      }
+      */
     }
   )
 
-  parser.parseComplete(code)
+  parser.write(code).close();
 
-  pushChunk("html", parser.endIndex + 1)
+  pushChunk("html", parser.position)
 
   {
+
+    for (let i = 0; i < chunks.length; i += 1) {
+      let chunk = chunks[i];
+      console.log(`[${chunk.type}](${code.slice(chunk.start,chunk.end)})`);
+      console.log('cdata', chunk.cdata.map(data => code.slice(data.start, data.end)));
+      
+    }
+
     const emitChunk = () => {
       const cdata = []
       for (let i = startChunkIndex; i < index; i += 1) {
         cdata.push.apply(cdata, chunks[i].cdata)
       }
-      console.log('chunks[startChunkIndex]',chunks[startChunkIndex])
+      //console.log('chunks[startChunkIndex]',chunks[startChunkIndex])
       onChunk({
         type: chunks[startChunkIndex].type,
         start: chunks[startChunkIndex].start,
@@ -195,8 +252,6 @@ function extract(code, indentDescriptor, xmlMode, isJavaScriptMIMEType) {
       if (match) lineNumber += match.length
       previousHTML = slice
     } else if (chunk.type === "script") {
-      console.log('here2', chunk.isRootScript);
-      debugger;
       const transformedCode = new TransformableString(code, chunk.isRootScript)
       let indentSlice = slice
       for (const cdata of chunk.cdata) {
