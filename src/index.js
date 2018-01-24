@@ -121,15 +121,13 @@ function patch(Linter) {
         })
       }
 
-      for (const code of currentInfos.code) {
-        verifyWithScxmlScopes.call(
-          this,
-          localVerify,
-          config,
-          currentInfos,
-          pushMessages
-        )
-      }
+      verifyWithScxmlScopes.call(
+        this,
+        localVerify,
+        config,
+        currentInfos,
+        pushMessages
+      )
 
       messages.sort((ma, mb) => {
         return ma.line - mb.line || ma.column - mb.column
@@ -176,7 +174,7 @@ function verifyWithScxmlScopes(
       }
     })
 
-    pushMessages(localVerify(String(code)), code)
+    localVerify(String(code));
   }
 
   config.rules = Object.assign(
