@@ -2,9 +2,6 @@ const xmllint = require('xmllint');
 const path = require('path');
 const fs = require('fs');
 
-const scxmlFileName = process.argv[2];
-const xml = fs.readFileSync(scxmlFileName ,'utf8');
-
 const scxmlSchemaFileNames = [
   'xml.xsd',
   'scxml-attribs.xsd',
@@ -46,10 +43,19 @@ const schemas = scxmlSchemaFileNames.map( name => {
   };
 }); 
 
-const o = xmllint.validateXML({
-  xml : xml,
-  schema : schemas.map( s => s.schema )
-  //arguments: ['--xinclude', '--noout', '--schema', pathToSchema, scxmlFileName]
-});
 
-console.log('errors',o.errors);
+module.exports.validateSCXML = function(xml){
+  return xmllint.validateXML({
+    xml : xml,
+    schema : schemas.map( s => s.schema )
+    //arguments: ['--xinclude', '--noout', '--schema', pathToSchema, scxmlFileName]
+  });
+};
+
+if(require.main === module){
+  const scxmlFileName = process.argv[2];
+  const xml = fs.readFileSync(scxmlFileName ,'utf8');
+  const o = module.exports.validateSCXML(xml);
+  console.log(o);
+  process.exit(o.errors === null ? 0 : o.errors.length);
+}
