@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/babel-polyfill/dist/polyfill.js"></script>
+    <script src="/react/dist/react.js"></script>
+    <script src="/react-dom/dist/react-dom.js"></script>
+    <script src="/@jbeard/schviz2/dist/schviz.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/@jbeard/schviz2/test-integration/styles.css">
+    <style type="text/css">
+      body {
+        background : white;
+      }
+      html, body, .app {
+        margin : 0;
+        width : 100%;
+        height : 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+    </div>
+    <script>
+      function render(scxmlString, initialRender){
+        ReactDOM.render(React.createElement(
+          SCHVIZ.default, 
+          {
+            scxmlDocumentString:scxmlString,
+            disableAnimation:initialRender
+          }),
+          document.querySelector('.app')
+        );
+      }
+
+      this.socket = window.io();
+      this.socket.on('connect', () => {
+        // Do nothing
+      });
+      this.socket.on('scxml.update', (value) => {
+        render(value, false);
+      });
+    </script>
+  </body>
+</html>
