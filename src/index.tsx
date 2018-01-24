@@ -120,9 +120,9 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     toZoom.height = toZoom.height > this.state.toNode.height ? this.state.toNode.height : toZoom.height;
 
     if(!this.props.disableAnimation){
-      this.viewBoxAnimation.setAttributeNS(null, 'from', this.svgRectToViewBox(fromZoom));
+      this.viewBoxAnimation.setAttributeNS(null, 'from', this.svgRectToViewBox(toZoom));
       this.viewBoxAnimation.setAttributeNS(null, 'to', this.svgRectToViewBox(toZoom));
-      this.viewBoxAnimation.setAttributeNS(null, 'dur', '250ms');
+      this.viewBoxAnimation.setAttributeNS(null, 'dur', '0ms');
       this.viewBoxAnimation.beginElement();
     } else{
       this.svgRootElement.setAttributeNS(null, 'viewBox', this.svgRectToViewBox(toZoom));
