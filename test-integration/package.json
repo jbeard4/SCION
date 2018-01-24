@@ -23,7 +23,7 @@
     "express": "^4.14.0",
     "opn-cli": "^3.1.0",
     "react-dom": "^15.5.4",
-    "@jbeard/scxml-test-framework": "3.2.1",
+    "@jbeard/scxml-test-framework": "1.1.0",
     "sorcery": "^0.10.0",
     "typescript": "^2.2.2",
     "uglify-js": "^2.8.21",
@@ -55,5 +55,8 @@
   "bugs": {
     "url": "https://github.com/jbeard4/SCHVIZ2/issues"
   },
-  "homepage": "https://github.com/jbeard4/SCHVIZ2#readme"
+  "homepage": "https://github.com/jbeard4/SCHVIZ2#readme",
+  "dependencies": {
+    "whatwg-fetch": "^2.0.3"
+  }
 }

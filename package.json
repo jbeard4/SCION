@@ -15,7 +15,7 @@
     "klayjs": "^0.4.1",
     "pathseg": "^1.0.2",
     "q": "^1.4.1",
-    "react": "15.6.1",
+    "react": "^15.6.1",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
