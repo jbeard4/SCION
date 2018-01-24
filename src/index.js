@@ -6,6 +6,7 @@ const utils = require("./utils")
 const oneLine = utils.oneLine
 const splatSet = utils.splatSet
 const getSettings = require("./settings").getSettings
+const scxmllint = require('scxmllint');
 
 const BOM = "\uFEFF"
 const GET_SCOPE_RULE_NAME = "__eslint-plugin-html-get-scope"
@@ -95,6 +96,40 @@ function patch(Linter) {
     if (typeof textOrSourceCode === "string" && isSCXML) {
       messages = []
 
+      //first, run him through scxmllint
+      const xmllintErrors = scxmllint.validateSCXML(textOrSourceCode);
+      if(xmllintErrors){
+        //example errors:
+        //file_0.xml:24: element script: Schemas validity error : Element \'{http://www.w3.org/2005/07/scxml}script\': This element is not expected.
+        //file_0.xml:25: parser error : Opening and ending tag mismatch: state line 23 and scxml
+        const re = /^file_0.xml:(\d+): (.*)$/
+        const lines = textOrSourceCode.split('\n');
+        const messages = xmllintErrors.map( line => {
+          const match = line.match(re)
+          if(match){
+            const lineNum = parseInt(match[1]);
+            const selectedLine = lines[lineNum];
+            if(selectedLine){
+              const endColumn = selectedLine.length;
+              return {
+                ruleId: 'xml-validation',
+                severity: 2,
+                message: match[2],
+                line: lineNum,
+                column: 0,
+                nodeType: 'XmlFragment',
+                source: selectedLine,
+                endLine: lineNum,
+                endColumn: endColumn
+              };
+            }
+          }
+        }).filter( message => message )
+
+        //transform xmllint errors to eslint messages
+        return messages;
+      }
+
       const pushMessages = (localMessages, code) => {
         messages.push.apply(
           messages,
@@ -169,7 +204,7 @@ function verifyWithScxmlScopes(
             exportedGlobals: scope.through.map(node => node.identifier.name),
             declaredGlobals: scope.childScopes[0].variables.filter(variable => variable.name !== 'arguments').map(variable => variable.name),
             isRootScript : code.isRootScript
-          }) 
+          })
         },
       }
     })
