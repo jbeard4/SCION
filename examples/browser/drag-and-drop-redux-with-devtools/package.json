@@ -12,6 +12,7 @@
     "redux-devtools": "^3.0.1",
     "redux-devtools-dock-monitor": "^1.0.1",
     "redux-devtools-log-monitor": "^1.0.2",
+    "sorcery": "^0.10.0",
     "watchify": "^3.9.0"
   },
   "dependencies": {
@@ -31,7 +32,7 @@
   },
   "main": "src/index.jsx",
   "scripts": {
-    "build": "node ../../../bin/cli.js  -i ./src/reducers/drag-and-drop.scxml --compile -o dist/drag-and-drop.js && (cd dist; browserify -d -t babelify ../src/index.js -o ./index.js; sorcery -i index.js)",
+    "build": "node ../../../bin/cli.js  -i ./src/reducers/drag-and-drop.scxml --compile json -o dist/drag-and-drop.json && node ../../../bin/cli.js  -i ./src/reducers/drag-and-drop.scxml --compile module -o dist/drag-and-drop.js && (cd dist; browserify -d -t babelify ../src/index.js -o ./index.js; sorcery -i index.js)",
     "watch": "cd dist; watchify -d -t babelify -p livereactload ../src/index.js -o 'cat > index.js; sorcery -i index.js' -v"
   }
 }

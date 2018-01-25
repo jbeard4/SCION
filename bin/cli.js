@@ -18,6 +18,8 @@ var argv = require('optimist')
     .boolean('e')
     .alias('l', 'legacy-semantics')
     .boolean('l')
+    .alias('m', 'monitor-server')
+    .boolean('m')
     .argv;
 
 let scionSourcemapPluginLoaded = false;
@@ -28,6 +30,9 @@ if(util.IS_INSPECTING || argv.compile === 'module'){
   }catch(e){
     console.warn('Unable to load scion-sourcemap-plugin. You will not be able to inspect SCXML source maps in the console.');
   }
+}
+
+if(argv['monitor-server']){ 
   try{
     require('@jbeard/scion-scxml-debugger-middleware').init(scxml);  //load the debug server plugin
   }catch(e){
