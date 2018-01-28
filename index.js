@@ -57,6 +57,7 @@ SCJsonRawModule.prototype.prepareModuleString = function(cb, options){
  * @param  {Function} cb  Callback to execute with the prepared module string.
  */
 SCJsonRawModule.prototype.prepare = function(cb, executionContext, hostContext){
+    //TODO: plug in registry and get sandbox globals
     [executionContext, hostContext] = util.initContexts(executionContext, hostContext);
 
     if(util.IS_INSPECTING){

@@ -10,6 +10,10 @@
   "license": "ISC",
   "dependencies": {
     "esprima": "^4.0.0",
-    "source-map": "^0.6.1"
+    "source-map": "^0.6.1",
+    "vm-browserify2": "0.0.6"
+  },
+  "browser": {
+    "vm": "vm-browserify2"
   }
 }
