@@ -138,6 +138,7 @@ class App extends React.Component<AppProps, AppState> {
               previousConfiguration={currentRow.previousConfiguration}
               statesForDefaultEntry={currentRow.defaultStatesEntered }
               transitionsEnabled={transitionsTaken}
+              hideActions={true}
               /> : 
             null
           }

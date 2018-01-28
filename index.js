@@ -7,7 +7,7 @@ const os = require('os');
 
 const localConfigurationFile = path.join(os.homedir(),'.scion.conf.json');
 
-function init(scxml, options){
+function init(options){
 
   options = options || {};
 
@@ -52,15 +52,30 @@ function init(scxml, options){
 
   //serve static files
   //TODO: factor this out
-  server.get(/\/?.*\.scxml/, function(req, res){
-    let p = req.path();
-    fs.readFile(p, function(err, contents){
-      if(err){
-        console.error(err);
-        return res.status(500).end();
-      }
-      return res.sendRaw(200,contents, {"Content-Type" : "application/scxml+xml"});
-    })
+  if(process.argv.indexOf('--serve-scxml-from-root-fs') > -1){
+    server.get(/\/?.*\.scxml/, function(req, res){
+      let p = req.path();
+      fs.readFile(p, function(err, contents){
+        if(err){
+          console.error(err);
+          return res.status(500).end();
+        }
+        return res.sendRaw(200,contents, {"Content-Type" : "application/scxml+xml"});
+      })
+    });
+  }
+
+  server.post(/\/api\/event/, function(req, res){
+    let buffer = '';
+    req.on('data',function(s){
+      buffer += s;
+    });
+
+    req.on('end',function(){
+      res.send('OK');
+      const o = JSON.parse(buffer);
+      broadcast(o.messageName, o.messageData);
+    });
   });
 
   server.get(/\/dashboard.*/, restify.plugins.serveStatic({
@@ -81,128 +96,25 @@ function init(scxml, options){
     });
   });
 
-  scxml.scion.on('new', function(interpreter){
-    initSession(interpreter);
-  });
+  server.get(/\/.*/, restify.plugins.serveStatic({
+    'directory': process.env.PWD,
+    'default': 'index.html'
+  }));
 
-  function getParentSessionIds(interpreter){
-    var arr = [];
-    var parentSession = interpreter.opts.parentSession;
-    while(parentSession){
-      arr.push(parentSession.opts.sessionid);
-      parentSession = parentSession.opts.parentSession;
-    }
-    return arr;
-  }
 
-  function broadcast(interpreter, messageName, messageData){
-    const url = interpreter._model.docUrl;
-    const absPath = path.isAbsolute(url) ? url : path.resolve(url);
+  function broadcast(messageName, messageData){
     for(let res of responses){
       res.write('id: ' + (messageCount++) + '\n');
       res.write('event: ' + messageName + '\n');
-      res.write("data: " + JSON.stringify({
-        meta : {
-          scName : path.parse(interpreter._model.docUrl).name, 
-          docUrl : absPath,
-          sessionid : interpreter.opts.sessionid,
-          parentSessionIds : getParentSessionIds(interpreter),
-          snapshot : interpreter.getSnapshot()
-        },
-        data : messageData
-      }) + '\n\n'); // Note the extra newline
+      res.write("data: " + JSON.stringify(messageData) + '\n\n'); // Note the extra newline
     }
   }
 
-  function initSession(interpreter){
+  return broadcast;
+}
 
-    let statesEnteredDuringBigStep,
-        statesEnteredDuringSmallStep,
-        statesExitedDuringBigStep,
-        statesExitedDuringSmallStep,
-        defaultStatesEnteredDuringBigStep,
-        defaultStatesEnteredDuringSmallStep,
-        transitionsTakenDuringBigStep,
-        transitionsTakenDuringSmallStep;
-
-    interpreter.on('onBigStepBegin',function(event){
-      //reset
-      statesEnteredDuringBigStep = [];
-      statesExitedDuringBigStep = [];
-      defaultStatesEnteredDuringBigStep = [];
-      transitionsTakenDuringBigStep = [];
-
-      broadcast(interpreter, 'onBigStepBegin', event);
-    });
-
-    interpreter.on('onSmallStepBegin',function(event){
-      //reset
-      statesEnteredDuringSmallStep = [];
-      statesExitedDuringSmallStep = [];
-      defaultStatesEnteredDuringSmallStep = [];
-      transitionsTakenDuringSmallStep = [];
-
-      broadcast(interpreter, 'onSmallStepBegin', event);
-    });
-
-    interpreter.on('onEntry',function(stateId){
-      statesEnteredDuringBigStep.push(stateId);
-      statesEnteredDuringSmallStep.push(stateId); 
-    });
-
-    interpreter.on('onExit',function(stateId){
-      statesExitedDuringBigStep.push(stateId);
-      statesExitedDuringSmallStep.push(stateId);
-    });
-
-    interpreter.on('onTransition',function(transitionSourceId, transitionTargetIds, transitionIndex){
-      const args = [transitionSourceId, transitionTargetIds, transitionIndex];
-      transitionsTakenDuringBigStep.push(args); 
-      transitionsTakenDuringSmallStep.push(args); 
-    });
-
-    interpreter.on('onDefaultEntry',function(initialStateId){
-      defaultStatesEnteredDuringBigStep.push(initialStateId);
-      defaultStatesEnteredDuringSmallStep.push(initialStateId);
-    });
-
-    interpreter.on('onSmallStepEnd',function(event){
-      broadcast(interpreter, 'onSmallStepEnd', {
-        event : event,
-        statesEntered : statesEnteredDuringSmallStep,
-        statesExited : statesExitedDuringSmallStep,
-        defaultStatesEntered : defaultStatesEnteredDuringSmallStep,
-        transitionsTaken : transitionsTakenDuringSmallStep
-      });
-    });
-
-    interpreter.on('onBigStepEnd',function(event){
-      broadcast(interpreter, 'onBigStepEnd', {
-        event : event,
-        statesEntered : statesEnteredDuringBigStep,
-        statesExited : statesExitedDuringBigStep,
-        defaultStatesEntered : defaultStatesEnteredDuringBigStep,
-        transitionsTaken : transitionsTakenDuringBigStep
-      });
-    });
-
-    interpreter.on('onError',function(error){
-      broadcast(interpreter, 'onError', {
-        name : error.name,
-        message : error.message,
-        stack : error.stack
-      });
-    });
-
-    interpreter.on('onExitInterpreter',function(lastEvent){
-      broadcast(interpreter, 'onExitInterpreter', lastEvent);
-    });
-
-    //TODO: on done, remove event listeners, to avoid memory leaks
-    //interpreter.on('onInvokedSessionInitialized', function(invokedInterpreter){
-    //  initSession(invokedInterpreter);
-    //});
-  }
+if(require.main === module){
+  init();
 }
 
 
