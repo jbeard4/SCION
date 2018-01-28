@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 Copyright (C) 2011 Jacob Beard
 Released under GNU GPL, read the file 'COPYING' for more information
@@ -7,7 +8,6 @@ Released under GNU GPL, read the file 'COPYING' for more information
 	xmlns="http://www.w3.org/2005/07/scxml" 
 	xmlns:c="http://commons.apache.org/scxml-js"
 	xmlns:vi="urn:vi"
-	profile="ecmascript" 
 	version="1.0" 
 	name="viBehaviour" 
 	initial="initial_default">
@@ -118,7 +118,7 @@ Released under GNU GPL, read the file 'COPYING' for more information
 					</script>
 				</onexit>
 
-				<transition event="esc_keypress" target="normal_mode"/>
+				<transition event="escape_keypress" target="normal_mode"/>
 
 				<state id="visual_or_select_mode" initial="visual_mode">
 
@@ -237,7 +237,7 @@ Released under GNU GPL, read the file 'COPYING' for more information
 					</script>
 				</onentry>
 
-				<transition event="esc_keypress" target="normal_mode">
+				<transition event="escape_keypress" target="normal_mode">
 					<script>
 						controller.moveLeft()
 					</script>
@@ -258,9 +258,9 @@ Released under GNU GPL, read the file 'COPYING' for more information
 
 				<!-- everything else -->
 				<!-- TODO: move to dispatching events. for consistency -->
-				<transition event="*" cond="_event.data.charCode">
+				<transition event="*" cond="_event.data.key &amp;&amp; _event.data.key.length === 1">
 					<script>
-						controller.writeChar(_event.data.charCode)
+						controller.writeChar(_event.data.key)
 					</script>
 				</transition>
 			</state>
@@ -290,7 +290,7 @@ Released under GNU GPL, read the file 'COPYING' for more information
 
 				<transition event="command_executed" target="normal_mode"/>
 
-				<transition event="esc_keypress" target="normal_mode"/>
+				<transition event="escape_keypress" target="normal_mode"/>
 			</state>
 		</state>
 		<state id="dispatching_events" initial="main_dispatching_events">
@@ -539,9 +539,9 @@ Released under GNU GPL, read the file 'COPYING' for more information
 				</state>
 		
 				<state id="after_q_keypress_selecting_register">
-					<transition event="*" cond="_event.data.charCode" target="recording_on">
+					<transition event="*" cond="_event.data.key &amp;&amp; _event.data.key.length === 1" target="recording_on">
 						<script>
-							recordedMacroEventName = String.fromCharCode(_event.data.charCode);
+							recordedMacroEventName = _event.data.key;
 
 							//reset register
 							recordedMacroEventList = [];

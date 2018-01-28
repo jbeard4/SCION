@@ -188,11 +188,11 @@ function SVGEditor(cursor,cmdCursor,modeText,scInstance,rootNode,selectionManage
 			64 : "at"
 		}
 
-		rootNode.addEventListener("keypress",function(e){
+		rootNode.addEventListener("keydown",function(e){
 			console.log(e);
 			e.preventDefault();
 
-			var scEvent = eventMap[e.keyCode] || charCodeEventMap[e.charCode] || String.fromCharCode(e.charCode);
+			var scEvent = e.key.toLowerCase();
 
 			if(!scEvent){
 				console.error("Could not turn keyboard event into statechart event");

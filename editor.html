@@ -8,7 +8,7 @@ Released under GNU GPL, read the file 'COPYING' for more information
   <head>
   </head>
   <body>
-<svg width="200" height="300">
+<svg width="200" height="300" id="root">
   <style type="text/css">
     text,tspan {
       font-family: "Nimbus Mono L", "Courier New", Courier, monospace;
@@ -32,15 +32,15 @@ Released under GNU GPL, read the file 'COPYING' for more information
 <script>
   window.svgNS = "http://www.w3.org/2000/svg";
 </script>
-<script href="editor.js"/>
-<script href="node_modules/babel-polyfill/dist/polyfill.js"/>
-<script href="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"/>
-<script href="node_modules/@jbeard/scxml/dist/scxml.js"/>
+<script src="editor.js"></script>
+<script src="node_modules/babel-polyfill/dist/polyfill.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
+<script src="node_modules/@jbeard/scxml/dist/scxml.debug.js"></script>
 <script>
   function main(){
     //here we pull this out of the document, but, thanks to clean design, 
     //all text nodes and whatnot could be created dynamically to allow instantiation of multiple text editors in a single page
-    var root = document.documentElement;
+    var root = document.getElementById("root");
     var txt = document.getElementById("main")
     var cursorNode = document.getElementById("cursor")
     var modeText = document.getElementById("mode-text")
@@ -53,25 +53,25 @@ Released under GNU GPL, read the file 'COPYING' for more information
     var textExtent;
     var tmptxt = document.createElementNS(svgNS,"text");
     tmptxt.textContent="b";
-    document.documentElement.appendChild(tmptxt)
+    root.appendChild(tmptxt)
     textExtent = tmptxt.getExtentOfChar(0)
-    document.documentElement.removeChild(tmptxt)
+    root.removeChild(tmptxt)
     //console.log("textExtent",textExtent)
 
     //TODO: figure out how to make this dynamic with width="100%"
-    var width = document.documentElement.width.baseVal.value;
-    var height = document.documentElement.height.baseVal.value;
+    var width = root.width.baseVal.value;
+    var height = root.height.baseVal.value;
 
     txt.setAttributeNS(null,"y",-textExtent.height);
     commandText.setAttributeNS(null,"y",height - (textExtent.height*2));
     commandCursorNode.setAttributeNS(null,"y",height - textExtent.height);
 
-    scxml.urlToModel('editor-behaviour.xml',function(err,modelFactoryFactory){
+    scxml.urlToModel('editor-behaviour.scxml',function(err,modelFactoryFactory){
         if(err) throw err;
 
         modelFactoryFactory.prepare(function(err,modelFactory){
           const scInstance = new scxml.scion.Statechart(modelFactory);
-          var editor = SVGEditorFactory.createNewSVGEditorInstance(root,txt,cursorNode,commandCursorNode,modeText,locationText,commandText,selectionParent,textExtent,width,scInstance);
+          var editor = SVGEditorFactory.createNewSVGEditorInstance(document.documentElement,txt,cursorNode,commandCursorNode,modeText,locationText,commandText,selectionParent,textExtent,width,scInstance);
           editor.install(); 
         })
     });
@@ -82,3 +82,4 @@ Released under GNU GPL, read the file 'COPYING' for more information
 </script>
 </body>
 </html>
+
