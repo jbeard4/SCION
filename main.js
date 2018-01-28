@@ -1,4 +1,8 @@
-const optimist = require('optimist')
+const argv = require('optimist')
+    .alias('h', 'hide-actions')
+    .boolean('h')
+    .argv;
+
 const electron = require('electron')
 // Module to control application life.
 const app = electron.app
@@ -27,7 +31,7 @@ function createWindow (scxmlFile) {
   })
 
   // and load the index.html of the app.
-  window.loadURL(`file://${__dirname}/index.html?scxmlFile=${scxmlFile}`)
+  window.loadURL(`file://${__dirname}/index.html?scxmlFile=${scxmlFile}&hideActions=${argv["hide-actions"]}`)
 
   // Open the DevTools.
   //window.webContents.openDevTools()
@@ -47,7 +51,7 @@ function createWindow (scxmlFile) {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', function(){
-  const scxmlFilesToOpen = optimist.argv._; 
+  const scxmlFilesToOpen = argv._; 
   console.log('scxmlFilesToOpen ', scxmlFilesToOpen );
   
   scxmlFilesToOpen.

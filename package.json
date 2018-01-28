@@ -11,7 +11,7 @@
     "preversion": "npm run build",
     "postversion": "git push --follow-tags && npm publish",
     "watch": "tsc -p . --outDir dist/ -w & ( cd dist/; watchify --exclude electron --bare index.js -d -v -o 'cat > scxml-tool.js; sorcery -i scxml-tool.js; npm run minify' -v )",
-    "build": "npm run transpile && npm run bundle && npm run minify",
+    "build": "npm run transpile && npm run bundle",
     "transpile": "tsc -p . --outDir dist/",
     "bundle": "cd dist/; browserify --exclude electron --bare  index.js  -d -v -o scxml-tool.js; sorcery -i scxml-tool.js",
     "minify": "cd dist/; uglifyjs scxml-tool.js --in-source-map scxml-tool.js.map  --source-map scxml-tool.min.js.map  -o scxml-tool.min.js",
@@ -24,8 +24,7 @@
   "dependencies": {
     "babel-polyfill": "^6.23.0",
     "optimist": "^0.6.1",
-    "toastr": "^2.1.2",
-    "@jbeard/schviz2": "3.2.3"
+    "toastr": "^2.1.2"
   },
   "keywords": [
     "SCXML"
@@ -33,8 +32,6 @@
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "CC-BY-NC-SA-4.0",
   "devDependencies": {
-    "@jbeard/console-component": "1.0.3",
-    "@jbeard/scxml": "4.0.2",
     "@types/es6-shim": "0.31.34",
     "@types/jquery": "2.0.41",
     "@types/node": "7.0.12",

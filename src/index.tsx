@@ -5,9 +5,10 @@ import AppComponent from './components/AppComponent';
 
 const params = getQueryParameters(); 
 const pathToScxml = params.scxmlFile;
+const hideActions = params.hideActions === 'true';
 
 let app = ReactDOM.render(
-  <AppComponent scxmlPath={pathToScxml}/>,
+  <AppComponent scxmlPath={pathToScxml} hideActions={hideActions}/>,
   document.querySelector('.app')
 ) as AppComponent;
 

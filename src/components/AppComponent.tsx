@@ -1,8 +1,6 @@
 import * as React from "react";
 import SCHVIZ from '@jbeard/schviz2';
-import Console from '@jbeard/console-component';
 import scxml = require('@jbeard/scxml');
-import RunButton from './RunButton';
 import electron = require('electron');
 import {handleError, clear} from '../handle-errors';
 
@@ -21,6 +19,7 @@ interface AppComponentState {
 
 interface AppComponentProps {
   scxmlPath : string;
+  hideActions : boolean;
   //scxmlString? : string;
   //scxmlUrl? : string;
 }
@@ -146,14 +145,14 @@ export default class AppComponent extends React.Component<AppComponentProps, App
     return <div id="embed_outer" className={this.state.interpreter ? 'simulation-mode' : 'viz-mode'}>
       <div id="embed_inner">
         <div id="scxml-content">
-          <SCHVIZ scjson={this.state.scjson} layoutOptions={this.state.layoutOptions} configuration={this.state.configuration}/>
+          <SCHVIZ
+            scjson={this.state.scjson}
+            layoutOptions={this.state.layoutOptions}
+            configuration={this.state.configuration}
+            hideActions={this.props.hideActions}
+            />
         </div>
       </div>
-      <RunButton running={this.state.interpreter} handleClick={this.handleRunButtonClick.bind(this)}/>
-      <Console 
-        handleSubmit={this.sendEvent.bind(this)}
-        isActive={!!this.state.interpreter}
-        />
     </div>;
   }
 }
