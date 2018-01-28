@@ -26,7 +26,8 @@ export interface GraphRootProps {
   transitionsEnabled? : Map<string, Set<number>>;
   previousConfiguration? : string[];
   statesForDefaultEntry? : string[];
-  disableZoom? : boolean
+  disableZoom? : boolean;
+  hideActions? : boolean;
 }
 
 export interface GraphRootAnimation {
@@ -307,7 +308,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       let idGenerator = new IdGenerator();
       let transformer = new SCJSONToKGraphTransformer(idGenerator, this);
       var newKlayToScjsonMap, newKgraphRoot; 
-      newKgraphRoot = transformer.transform(props.scjson);
+      newKgraphRoot = transformer.transform(props.scjson, {hideActions : props.hideActions});
       this.initKGraph(props, initialRender, idGenerator, newKgraphRoot);
     }
   }
