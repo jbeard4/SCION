@@ -1,0 +1,54 @@
+[submodule "projects/SCION"]
+	path = projects/SCION
+	url = git@nas.nest:jbeard4/SCION.git
+[submodule "projects/SCION-CORE"]
+	path = projects/SCION-CORE
+	url = git@nas.nest:jbeard4/SCION-CORE.git
+[submodule "projects/SCHVIZ2"]
+	path = projects/SCHVIZ2
+	url = git@nas.nest:JacobeanRnD/SCHVIZ2.git
+[submodule "projects/SCION-SCXML-Botbuilder"]
+	path = projects/SCION-SCXML-Botbuilder
+	url = git@nas:jbeard4/SCION-SCXML-Botbuilder.git
+[submodule "projects/scxml-electron-standalone-tool"]
+	path = projects/scxml-electron-standalone-tool
+	url = git@nas.nest:JacobeanRnD/scxml-electron-standalone-tool.git
+[submodule "projects/sax-js"]
+	path = projects/sax-js
+	url = git@nas.nest:jbeard4/sax-js.git
+[submodule "projects/console-component"]
+	path = projects/console-component
+	url = git@nas:jbeard4/console-component.git
+[submodule "projects/eslint-plugin-scxml"]
+	path = projects/eslint-plugin-scxml
+	url = git@nas:JacobeanRnD/eslint-plugin-scxml.git
+[submodule "projects/jsondiffpatch"]
+	path = projects/jsondiffpatch
+	url = git@nas:jbeard4/jsondiffpatch.git
+[submodule "projects/react-collapsible"]
+	path = projects/react-collapsible
+	url = git@nas:jbeard4/react-collapsible.git
+[submodule "projects/scion-scxml-monitor-middleware"]
+	path = projects/scion-scxml-monitor-middleware
+	url = git@nas:jbeard4/scion-scxml-monitor-middleware.git
+[submodule "projects/scion-sourcemap-plugin"]
+	path = projects/scion-sourcemap-plugin
+	url = git@nas:jbeard4/scion-sourcemap-plugin.git
+[submodule "projects/scxml-test-framework"]
+	path = projects/scxml-test-framework
+	url = git@nas.nest:jbeard4/scxml-test-framework.git
+[submodule "projects/scxmllint"]
+	path = projects/scxmllint
+	url = git@nas:JacobeanRnD/scxmllint.git
+[submodule "projects/xmllint"]
+	path = projects/xmllint
+	url = git@nas:JacobeanRnD/xmllint.git
+[submodule "projects/vscode-scxml-preview"]
+	path = projects/vscode-scxml-preview
+	url = git@nas:JacobeanRnD/vscode-scxml-preview.git
+[submodule "projects/scxml.io"]
+	path = projects/scxml.io
+	url = git@nas:jbeard4/scxml.io.git
+[submodule "projects/vi-everywhere"]
+	path = projects/vi-everywhere
+	url = git@nas:JacobeanRnD/vi-everywhere.git
