@@ -34,7 +34,9 @@ if(util.IS_INSPECTING || argv.compile === 'module'){
 
 if(argv['monitor-server']){ 
   try{
-    require('@jbeard/scion-scxml-debugger-middleware').init(scxml);  //load the debug server plugin
+    const broadcast = require('@jbeard/scion-scxml-debugger-middleware').init();  //load the debug server plugin
+    const client = require('@jbeard/scion-scxml-debugger-middleware/client')
+    client.init(scxml,{broadcast})
   }catch(e){
     console.warn('Unable to load scion-scxml-debugger-middleware.');
   }
