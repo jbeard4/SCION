@@ -6,11 +6,11 @@
   "devDependencies": {
     "@jbeard/scion-core": "2.6.0",
     "@jbeard/scxml": "4.3.1",
+    "@jbeard/console-component": "1.0.3",
     "@types/jquery": "^2.0.41",
     "@types/react": "15.6.1",
     "@types/react-dom": "0.14.23",
     "babel-polyfill": "^6.23.0",
-    "console-component": "^1.0.1",
     "debug": "^2.6.3",
     "jquery": "^3.1.1",
     "react": "^15.4.2",

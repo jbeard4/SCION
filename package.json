@@ -55,6 +55,7 @@
     "minify": "cd dist; uglifyjs schviz.js --in-source-map schviz.js.map  --source-map schviz.min.js.map  -o schviz.min.js",
     "clean": "rm -rf dist/*",
     "server": "node grunt/server.js",
+    "start": "npm run server",
     "harness": "opn http://localhost:3001/test-integration/index.html"
   },
   "browserify": {

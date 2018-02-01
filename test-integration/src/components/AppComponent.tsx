@@ -2,7 +2,7 @@ import * as React from "react";
 import scxml = require('@jbeard/scxml');    //TODO: make scxml an es6 module
                                     //TODO: expose SCJSON object type, so we do not need to use "any" type
 import SCHVIZ from '../../..';
-import Console from 'console-component';
+import Console from '@jbeard/console-component';
 
 interface AppComponentState {
   pathToSCXML? : string;
