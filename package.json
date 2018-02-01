@@ -40,7 +40,8 @@
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "compile": "tsc -p ./",
+        "compile": "npm run vscode:prepublish",
+        "build": "npm run compile",
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "node ./node_modules/vscode/bin/test"
     },
@@ -50,6 +51,8 @@
         "url": "https://github.com/EFanZh/Graphviz-Preview"
     },
     "dependencies": {
+        "@jbeard/schviz2": "3.2.5",
+        "scxmllint": "1.0.0",
         "babel-polyfill": "^6.26.0",
         "cors": "^2.8.4",
         "express": "^4.16.2",
