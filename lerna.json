@@ -1,0 +1,30 @@
+{
+  "lerna": "2.8.0",
+  "packages": [
+    "projects/SCHVIZ2",
+    "projects/SCHVIZ2/test-integration",
+    "projects/SCION",
+    "projects/SCION-CORE",
+    "projects/SCION-SCXML-Botbuilder/common/scxml",
+    "projects/SCION-SCXML-Botbuilder/common/server",
+    "projects/SCION-SCXML-Botbuilder/examples/basics-firstRun",
+    "projects/SCION-SCXML-Botbuilder/examples/basics-menus",
+    "projects/SCION-SCXML-Botbuilder/examples/basics-multiTurn",
+    "projects/console-component",
+    "projects/eslint-plugin-scxml",
+    "projects/jsondiffpatch",
+    "projects/react-collapsible",
+    "projects/sax-js",
+    "projects/scion-scxml-monitor-middleware",
+    "projects/scion-scxml-monitor-middleware/static/dashboard",
+    "projects/scion-sourcemap-plugin",
+    "projects/scxml-electron-standalone-tool",
+    "projects/scxml-test-framework",
+    "projects/scxml.io",
+    "projects/scxmllint",
+    "projects/vi-everywhere",
+    "projects/vscode-scxml-preview",
+    "projects/xmllint"
+  ],
+  "version": "independent"
+}
