@@ -17,6 +17,9 @@
   "dependencies": {
     "botbuilder": "^3.9.1",
     "restify": "^4.3.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "@jbeard/scxml" : "4.3.1",
+    "@jbeard/scion-scxml-debugger-middleware" : "1.0.0",
+    "@jbeard/scion-sourcemap-plugin" : "1.0.0"
   }
 }
