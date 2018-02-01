@@ -36,6 +36,8 @@
   "dependencies": {
     "@jbeard/sax": "1.3.1",
     "@jbeard/scion-core": "2.6.0",
+    "@jbeard/scion-scxml-debugger-middleware" : "1.0.0",
+    "@jbeard/scion-sourcemap-plugin" : "1.0.0",
     "defiant": "^1.4.5",
     "escodegen": "^1.8.1",
     "esprima": "2.7.2",
