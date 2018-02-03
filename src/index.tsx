@@ -106,13 +106,10 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     };
     if(toZoom.width < 10 || toZoom.height < 10) return;
 
-    //TODO: restore this maximum zoom width and height
-    //toZoom.x = toZoom.x < 0 ? 0 : toZoom.x;
-    //toZoom.y = toZoom.y < 0 ? 0 : toZoom.y;
-    //toZoom.width = toZoom.width > fromZoom.width ? fromZoom.width : toZoom.width;
-    //toZoom.height = toZoom.height > fromZoom.height ? fromZoom.height : toZoom.height;
-    //console.log('fromZoom',fromZoom.width);
-    //console.log('toZoom',toZoom.width);
+    toZoom.x = toZoom.x < 0 ? 0 : toZoom.x;
+    toZoom.y = toZoom.y < 0 ? 0 : toZoom.y;
+    toZoom.width = toZoom.width > this.state.kgraph.root.width ? this.state.kgraph.root.width : toZoom.width;
+    toZoom.height = toZoom.height > this.state.kgraph.root.height ? this.state.kgraph.root.height : toZoom.height;
 
     this.zoomToViewbox(toZoom);
   }
@@ -214,6 +211,9 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       width : this.virtualViewbox.width,
       height : this.virtualViewbox.height
     };
+
+    toZoom.x = toZoom.x < 0 ? 0 : (toZoom.x + toZoom.width > this.state.kgraph.root.width  ? this.virtualViewbox.x  : toZoom.x);
+    toZoom.y = toZoom.y < 0 ? 0 : (toZoom.y + toZoom.height > this.state.kgraph.root.height  ? this.virtualViewbox.y  : toZoom.y);
     
     this.zoomToViewbox(toZoom);
     this.eventStamp = {clientX : event.clientX, clientY : event.clientY};
