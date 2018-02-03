@@ -112,6 +112,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     toZoom.height = toZoom.height > this.state.kgraph.root.height ? this.state.kgraph.root.height : toZoom.height;
 
     this.zoomToViewbox(toZoom);
+
   }
 
   componentWillReceiveProps(props : GraphRootProps){
