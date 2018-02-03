@@ -345,7 +345,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
           onMouseUp={this.handleMouseUp.bind(this)}
           onMouseMove={this.handleMouseMove.bind(this)}
           viewBox={viewBox}
-          preserveAspectRatio="none"
+          preserveAspectRatio="xMidYMid meet"
         >
         <defs>
           { 
@@ -474,22 +474,74 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
 
   zoomToViewbox(viewbox){
     this.virtualViewbox = viewbox;
-    const svgRootWidth = this.svgRootElement.viewBox.baseVal.width;
-    const svgRootHeight = this.svgRootElement.viewBox.baseVal.height;
-    const scale = svgRootWidth / viewbox.width; 
-    const rect = this.htmlRootElement.getBoundingClientRect();
-    const rWidth = rect.width / svgRootWidth; 
-    const rHeight = rect.height / svgRootHeight; 
-    const x = viewbox.x * rWidth; 
-    const y = viewbox.y * rHeight; 
+    //svg viewport w and h, screen dimensions
+    const svgViewportWidth= this.svgRootElement.viewBox.baseVal.width;
+    const svgViewportHeight = this.svgRootElement.viewBox.baseVal.height;
+    const screenDimensions = this.htmlRootElement.getBoundingClientRect();
+
+    const screenAspectRatio = screenDimensions.width / screenDimensions.height; 
+    const svgViewportAspectRatio = svgViewportWidth / svgViewportHeight; 
+
+    let svgScreenWidth, 
+        svgScreenHeight, 
+        svgScreenOffsetX, 
+        svgScreenOffsetY,
+        aspectRatioScaleFactor;
+    if(screenAspectRatio < svgViewportAspectRatio){
+      //fit to the screen width
+      //we will have a y offset
+      svgScreenHeight = screenDimensions.width / svgViewportAspectRatio; 
+      svgScreenWidth = screenDimensions.width;
+      svgScreenOffsetX = 0;
+      svgScreenOffsetY = (screenDimensions.height - svgScreenHeight) / 2; 
+      aspectRatioScaleFactor = screenDimensions.height / svgScreenHeight;
+    } else if (screenAspectRatio > svgViewportAspectRatio){
+      //fit to the screen height
+      //we will have an x offset
+      svgScreenHeight = screenDimensions.height;
+      svgScreenWidth = screenDimensions.height * svgViewportAspectRatio; 
+      svgScreenOffsetX = (screenDimensions.width - svgScreenWidth) / 2; 
+      svgScreenOffsetY = 0;
+      aspectRatioScaleFactor = screenDimensions.width / svgScreenWidth;
+    } else {
+      //aspect ratio is the same!
+      //aspect ratio scaling will be 1
+      //x and y offsets will be 0
+      svgScreenHeight = screenDimensions.height; 
+      svgScreenWidth = screenDimensions.width;
+      svgScreenOffsetX = 0;
+      svgScreenOffsetY = 0;
+      aspectRatioScaleFactor = 1;
+    }
+
+    /*
+    console.log('svgScreenHeight',svgScreenHeight);  
+    console.log('svgScreenWidth',svgScreenWidth); 
+    console.log('svgScreenOffsetX',svgScreenOffsetX);  
+    console.log('svgScreenOffsetY',svgScreenOffsetY);
+    */
+
+    //these appear correct. now how do we incorporate them into the point projection?
+
+    //compute scale transform as ratio of svg viewport w or h, and svg viewport w or h 
+    //take into account the aspect ratio scaling.
+    const scale = svgViewportWidth/viewbox.width * aspectRatioScaleFactor; 
+
+    //compute translate transform as: ratio of viewport width/height to screen width/height. 
+    //project (multiply) points in space by this ratio.
+    //same thing here, take into account aspect ratio scale and translate transforms.
+    const ratioOfScreenWidthToViewportWidth = (screenDimensions.width / svgViewportWidth) / aspectRatioScaleFactor; 
+    const ratioOfScreenHeightToViewportHeight = (screenDimensions.height / svgViewportHeight); 
+    const x = svgScreenOffsetX + viewbox.x * ratioOfScreenWidthToViewportWidth;
+    const y = svgScreenOffsetY + viewbox.y * ratioOfScreenHeightToViewportHeight; 
 
     /*
     console.log('viewbox', viewbox);
-    console.log('svgRootWidth',svgRootWidth); 
+    console.log('svgRootWidth',svgViewportWidth); 
     console.log('scale',scale); 
-    console.log('rect',rect);
-    console.log('rWidth',rWidth); 
-    console.log('rHeight',rHeight); 
+    console.log('screenDimensions',screenDimensions);
+    console.log('ratioOfScreenWidthToViewportWidth',ratioOfScreenWidthToViewportWidth); 
+    console.log('ratioOfScreenHeightToViewportHeight',ratioOfScreenHeightToViewportHeight); 
     console.log('x',x); 
     console.log('y',y); 
     */
