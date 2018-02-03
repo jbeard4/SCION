@@ -34,11 +34,6 @@ export interface GraphRootAnimation {
   allEdges : KGraphEdge[];
   enabledEdges : KGraphEdge[];
   kgraph : KGraph;
-  fromNode : KGraphNode;
-  toNode : KGraphNode;
-  fromZoom : SVGRect;
-  toZoom : SVGRect;
-  fastZoom? : boolean;
   instantZoom? : boolean;
   transitionsEnabled? : Map<string, Set<number>>;
 }
@@ -46,8 +41,8 @@ export interface GraphRootAnimation {
 export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRootAnimation> {
 
   private svgRootElement : SVGSVGElement;
-  private viewBoxAnimation : SVGAnimationElement;
-  private defaultRect : SVGRect;
+  private htmlRootElement : HTMLDivElement;
+  private virtualViewbox : SVGRect;
   public collapsedNodeMap : Map<string, boolean>;
 
   public static layouts = constants.layouts;   //expose layouts
@@ -59,10 +54,6 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       allEdges : [],
       enabledEdges : [],
       kgraph : null,
-      fromZoom : {x : 0, y : 0, width : 0, height : 0},
-      toZoom : {x : 0, y : 0, width : 0, height : 0},
-      fromNode : null,
-      toNode : null
     };
   }
 
@@ -79,16 +70,16 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   }
 
   handleMouseWheel(event){
-    debug('handleMouseWheel', event.clientX, event.clientY, event);
+    //debug('handleMouseWheel', event.clientX, event.clientY, event);
     event.preventDefault();
     event.stopPropagation();
 
     //let n = event.deltaY > 0 ? 1 : -1;
     //const offset = .1 * n;
-    let offset = .05;
+    let offset = .025;
     offset = event.deltaY > 0 ? 1-offset : 1+offset;
-    
-    let fromZoom = this.svgRootElement.viewBox.animVal;
+
+    let fromZoom = this.virtualViewbox;
     let pt2 = this.toViewportCoordinates(event);
 
     let eastLength = (fromZoom.x + fromZoom.width) - pt2.x;
@@ -115,27 +106,15 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     };
     if(toZoom.width < 10 || toZoom.height < 10) return;
 
-    toZoom.x = toZoom.x < 0 ? 0 : toZoom.x;
-    toZoom.y = toZoom.y < 0 ? 0 : toZoom.y;
-    toZoom.width = toZoom.width > this.state.toNode.width ? this.state.toNode.width : toZoom.width;
-    toZoom.height = toZoom.height > this.state.toNode.height ? this.state.toNode.height : toZoom.height;
+    //TODO: restore this maximum zoom width and height
+    //toZoom.x = toZoom.x < 0 ? 0 : toZoom.x;
+    //toZoom.y = toZoom.y < 0 ? 0 : toZoom.y;
+    //toZoom.width = toZoom.width > fromZoom.width ? fromZoom.width : toZoom.width;
+    //toZoom.height = toZoom.height > fromZoom.height ? fromZoom.height : toZoom.height;
+    //console.log('fromZoom',fromZoom.width);
+    //console.log('toZoom',toZoom.width);
 
-    if(!this.props.disableAnimation){
-      this.viewBoxAnimation.setAttributeNS(null, 'from', this.svgRectToViewBox(toZoom));
-      this.viewBoxAnimation.setAttributeNS(null, 'to', this.svgRectToViewBox(toZoom));
-      this.viewBoxAnimation.setAttributeNS(null, 'dur', '0ms');
-      this.viewBoxAnimation.beginElement();
-    } else{
-      this.svgRootElement.setAttributeNS(null, 'viewBox', this.svgRectToViewBox(toZoom));
-    }
-
-    _.extend(
-      this.state,
-      {
-        toZoom : toZoom,
-        fromZoom : toZoom
-      }
-    );
+    this.zoomToViewbox(toZoom);
   }
 
   componentWillReceiveProps(props : GraphRootProps){
@@ -182,20 +161,16 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     debug('handleClick', event);
   }
 
-  eventStamp : SVGPoint;
+  eventStamp : {clientX : number, clientY : number};
   eventBuffer : Array<SVGPoint>;
   deltaBuffer : Array<SVGPoint>;
-  initialZoom : SVGRect;
 
   handleMouseDown(event){
-    debug('handleMouseDown', event);
+    debug('handleMouseDown', event.clientX, event.clientY);
     if(event.button !== 0) return;
     this.eventBuffer = [];
     this.deltaBuffer = [];
-    this.eventStamp = this.svgRootElement.createSVGPoint();
-    this.eventStamp.x = event.clientX;
-    this.eventStamp.y = event.clientY;
-    this.initialZoom = this.state.toZoom;
+    this.eventStamp = {clientX : event.clientX, clientY : event.clientY};
   }
 
   handleMouseUp(event){
@@ -203,61 +178,45 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     this.eventStamp = null;
     this.eventBuffer = null;
     this.deltaBuffer = null;
-    this.initialZoom = null;
   }
 
   handleMouseMove(event){
     if(!this.eventStamp) return;
 
-    debug('handleMouseMove', event.clientX, event.clientY);
-    let pt1 = this.eventStamp;
-    let pt2 = this.svgRootElement.createSVGPoint();
-    pt2.x = event.clientX;
-    pt2.y = event.clientY;
+    debug('handleMouseMove', this.eventStamp.clientX, this.eventStamp.clientY, event.clientX, event.clientY);
+    const pt1 = this.toViewportCoordinates(this.eventStamp)
+    const pt2 = this.toViewportCoordinates(event)
 
     //if(pt1.x !== pt2.x || pt1.y !== pt2.y) debugger;
 
     var tdelta = this.svgRootElement.createSVGPoint();
-    tdelta.x = pt2.x - pt1.x ; 
+    tdelta.x = pt2.x - pt1.x; 
     tdelta.y = pt2.y - pt1.y;
 
-    let ctm = this.svgRootElement.getScreenCTM()
-    tdelta.x /= ctm.a;
-    tdelta.y /= ctm.d;
-
     //compute delta
-    debug('tdelta', tdelta.x, tdelta.y);
 
     //compute toZoom viewBox coordinates
     //first compute height
-    let x = this.initialZoom.x - tdelta.x;
-    let y = this.initialZoom.y - tdelta.y;
+    let x = this.virtualViewbox.x - tdelta.x;
+    let y = this.virtualViewbox.y - tdelta.y;
+
+    /*
+    console.log('pt1', pt1.x, pt1.y);
+    console.log('pt2', pt2.x, pt2.y);
+    console.log('tdelta', tdelta.x, tdelta.y);
+    console.log('x', x);
+    console.log('y', y);
+    */
 
     let toZoom = {
       x : x,
       y : y,
-      width : this.initialZoom.width,
-      height : this.initialZoom.height
+      width : this.virtualViewbox.width,
+      height : this.virtualViewbox.height
     };
     
-    let viewBox = `${toZoom.x} ${toZoom.y} ${toZoom.width} ${toZoom.height}`;
-
-    if(!this.props.disableAnimation){
-      this.viewBoxAnimation.setAttributeNS(null, 'from', viewBox);
-      this.viewBoxAnimation.setAttributeNS(null, 'to', viewBox);
-      this.viewBoxAnimation.setAttributeNS(null, 'dur', '0ms');
-      this.viewBoxAnimation.beginElement();
-    } else{
-      this.svgRootElement.setAttributeNS(null, 'viewBox', viewBox);
-    }
-
-    _.extend(
-      this.state,
-      {
-        toZoom : toZoom,
-        fromZoom : toZoom
-      }
-    );
+    this.zoomToViewbox(toZoom);
+    this.eventStamp = {clientX : event.clientX, clientY : event.clientY};
   }
 
   private _getEnabledEdges(allEdges, transitionsEnabled){
@@ -325,15 +284,11 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     kgraph.updateLayout(options, (err, rootNode) => {
       console.log('kgraph rootNode',rootNode);
       if(err) throw err;
-      let toZoom = {x : 0, y : 0, width : rootNode.width, height : rootNode.height};
+      this.virtualViewbox = {x : 0, y : 0, width : kgraph.root.width, height : kgraph.root.height};
       this.setState({ 
         allEdges : allEdges,   //TODO: this is likely to be a hotspot. we probably want to move this search logic inside of the kgraph data structure
         enabledEdges : enabledEdges,
-        kgraph : kgraph,
-        fromZoom : initialRender || props.redraw ? toZoom : this.svgRootElement.viewBox.animVal,
-        toZoom : toZoom,
-        fromNode : this.state.toNode,
-        toNode : rootNode
+        kgraph : kgraph
       }, () => {
         //add a timeout to let the thread settle before starting animations
         //without this, on large models, we lose the first few animation frames
@@ -342,10 +297,6 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
         })
       });
     })  
-  }
-
-  componentDidUpdate(){
-    this.animate();
   }
 
   private checkProps(props){
@@ -373,7 +324,6 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       this.initKGraph(this.props, true);
     } 
 
-    this.animate();
   }
 
   public toggleExpandContractState(nodeId : string){
@@ -381,36 +331,22 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     this.initSCJson(this.props, false);
   }
 
-  private animate(){
-    if(!this.props.disableAnimation) this.viewBoxAnimation.beginElement();  //reset animation
-  }
-
   render(){
-    //modify transitionsEnabled to support hyperlinks
-    let from = `${[this.state.fromZoom.x, this.state.fromZoom.y, this.state.fromZoom.width,this.state.fromZoom.height].join(' ')}`;
-    let to = `${[this.state.toZoom.x, this.state.toZoom.y, this.state.toZoom.width, this.state.toZoom.height].join(' ')}`;
-    let viewBoxValues = `${from};${to}`;
-    debug('viewBoxValues ', viewBoxValues );
-    return <div style={{width:'100%', height:'100%',position:'absolute',overflow:'hidden'}}>
+    const viewBox = this.svgRectToViewBox(this.state.kgraph ? 
+                        {x : 0, y : 0, width : this.state.kgraph.root.width, height : this.state.kgraph.root.height} : 
+                        {x : 0, y : 0, width : 0, height : 0});
+    return <div style={{width:'100%', height:'100%',position:'absolute',overflow:'hidden'}} ref={(e: HTMLDivElement) => { this.htmlRootElement = e; }}>
         <svg width="100%" height="100%" 
+          style={{transformOrigin : '0 0', transition : 'transform .1s linear'}}
           ref={(e: SVGSVGElement) => { this.svgRootElement = e; }}
           onWheel={this.props.disableZoom ? null : this.handleMouseWheel.bind(this)}
           onClick={this.handleClick.bind(this)}
           onMouseDown={this.handleMouseDown.bind(this)}
           onMouseUp={this.handleMouseUp.bind(this)}
           onMouseMove={this.handleMouseMove.bind(this)}
-          viewBox={this.props.disableAnimation ? to : undefined}
+          viewBox={viewBox}
+          preserveAspectRatio="none"
         >
-        {
-          !this.props.disableAnimation && 
-            <animate 
-              className={constants.START}
-              ref={(e: SVGAnimationElement) => { this.viewBoxAnimation = e; }}
-              attributeName="viewBox" fill="freeze" begin="indefinite"
-              dur={this.state.instantZoom ? '0ms' : ( this.state.fastZoom ? '250ms' : constants.ANIM_DURATION ) } 
-              from={from}
-              to={to}/>
-        }
         <defs>
           { 
             ['','Highlighted'].map( (s) => (
@@ -480,44 +416,86 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   }
 
   zoomToState(stateId){
-    let e = (document.getElementById(stateId)) as any as SVGGElement;
-    let bbox:SVGRect = e.getBBox();
-    let m0:SVGMatrix = this.svgRootElement.getCTM();
-    let m1:SVGMatrix = e.getCTM();
-    let m = m0.inverse().multiply(m1);
-    let x = m.e,
-        y = m.f,
-        width = bbox.width,
-        height = bbox.height;
+    const e = (document.querySelector(`g#${stateId} > rect`)) as any as SVGGElement;
 
-    let toZoom = {
-      x : m.e,
-      y : m.f,
-      width : bbox.width,
-      height : bbox.height
-    };
+    //get bbox in canvas coordinates
+    const bbox = getBoundingBoxInCanvasCoordinates(e)
 
-    let fromZoom = this.svgRootElement.viewBox.animVal;
+    this.zoomToViewbox(bbox);
 
-    let fromViewBox = this.svgRectToViewBox(fromZoom);
-    let toViewBox = this.svgRectToViewBox(toZoom);
+    function getBoundingBoxInArbitrarySpace(element,mat){
+        var svgRoot = element.ownerSVGElement;
+        var bbox = element.getBBox();
 
-    if(!this.props.disableAnimation){
-      this.viewBoxAnimation.setAttributeNS(null, 'from', fromViewBox);
-      this.viewBoxAnimation.setAttributeNS(null, 'to', toViewBox);
-      this.viewBoxAnimation.setAttributeNS(null, 'dur', '250ms');
-      this.viewBoxAnimation.beginElement();
-    } else{
-      this.svgRootElement.setAttributeNS(null, 'viewBox', toViewBox);
+        var xs = [];
+        var ys = [];
+
+        function calc(){
+            var cPtTr = cPt.matrixTransform(mat);
+            xs.push(cPtTr.x);
+            ys.push(cPtTr.y);
+        }
+
+        var cPt =  svgRoot.createSVGPoint();
+        cPt.x = bbox.x;
+        cPt.y = bbox.y;
+        calc();
+            
+        cPt.x += bbox.width;
+        calc();
+
+        cPt.y += bbox.height;
+        calc();
+
+        cPt.x -= bbox.width;
+        calc();
+        
+        var minX=Math.min.apply(this,xs);
+        var minY=Math.min.apply(this,ys);
+        var maxX=Math.max.apply(this,xs);
+        var maxY=Math.max.apply(this,ys);
+
+        return {
+            "x":minX,
+            "y":minY,
+            "width":maxX-minX,
+            "height":maxY-minY
+        };
     }
 
-    _.extend(
-      this.state,
-      {
-        toZoom : toZoom,
-        fromZoom : toZoom
-      }
-    );
+    function getBoundingBoxInCanvasCoordinates (rawNode){
+        return getBoundingBoxInArbitrarySpace(rawNode,getTransformToElement(rawNode, rawNode.ownerSVGElement));
+    }
+
+    function getTransformToElement(fromElement, toElement) {
+      return toElement.getScreenCTM().inverse().multiply(fromElement.getScreenCTM());  
+    }
+  }
+
+  zoomToViewbox(viewbox){
+    this.virtualViewbox = viewbox;
+    const svgRootWidth = this.svgRootElement.viewBox.baseVal.width;
+    const svgRootHeight = this.svgRootElement.viewBox.baseVal.height;
+    const scale = svgRootWidth / viewbox.width; 
+    const rect = this.htmlRootElement.getBoundingClientRect();
+    const rWidth = rect.width / svgRootWidth; 
+    const rHeight = rect.height / svgRootHeight; 
+    const x = viewbox.x * rWidth; 
+    const y = viewbox.y * rHeight; 
+
+    /*
+    console.log('viewbox', viewbox);
+    console.log('svgRootWidth',svgRootWidth); 
+    console.log('scale',scale); 
+    console.log('rect',rect);
+    console.log('rWidth',rWidth); 
+    console.log('rHeight',rHeight); 
+    console.log('x',x); 
+    console.log('y',y); 
+    */
+    
+    const transform = `translate(${-1 * x * scale}px,${-1 * y * scale}px) scale(${scale})`;
+    this.svgRootElement.style.transform = transform;
   }
 
   private svgRectToViewBox(rect : SVGRect){
