@@ -484,7 +484,10 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
         svgScreenHeight, 
         svgScreenOffsetX, 
         svgScreenOffsetY,
-        aspectRatioScaleFactor;
+        aspectRatioScaleFactor,
+        aspectRatioTransform,
+        ratioOfScreenWidthToViewportWidth,
+        ratioOfScreenHeightToViewportHeight;
     if(screenAspectRatio < svgViewportAspectRatio){
       //fit to the screen width
       //we will have a y offset
@@ -493,6 +496,9 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       svgScreenOffsetX = 0;
       svgScreenOffsetY = (screenDimensions.height - svgScreenHeight) / 2; 
       aspectRatioScaleFactor = screenDimensions.height / svgScreenHeight;
+      aspectRatioTransform = `scaleY(${1/aspectRatioScaleFactor})`
+      ratioOfScreenWidthToViewportWidth = (screenDimensions.width / svgViewportWidth); 
+      ratioOfScreenHeightToViewportHeight = (screenDimensions.height / svgViewportHeight) / aspectRatioScaleFactor; 
     } else if (screenAspectRatio > svgViewportAspectRatio){
       //fit to the screen height
       //we will have an x offset
@@ -501,6 +507,9 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       svgScreenOffsetX = (screenDimensions.width - svgScreenWidth) / 2; 
       svgScreenOffsetY = 0;
       aspectRatioScaleFactor = screenDimensions.width / svgScreenWidth;
+      aspectRatioTransform = `scaleX(${1/aspectRatioScaleFactor})`
+      ratioOfScreenWidthToViewportWidth = (screenDimensions.width / svgViewportWidth) / aspectRatioScaleFactor; 
+      ratioOfScreenHeightToViewportHeight = (screenDimensions.height / svgViewportHeight); 
     } else {
       //aspect ratio is the same!
       //aspect ratio scaling will be 1
@@ -510,6 +519,9 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       svgScreenOffsetX = 0;
       svgScreenOffsetY = 0;
       aspectRatioScaleFactor = 1;
+      aspectRatioTransform = ''
+      ratioOfScreenWidthToViewportWidth = (screenDimensions.width / svgViewportWidth); 
+      ratioOfScreenHeightToViewportHeight = (screenDimensions.height / svgViewportHeight); 
     }
 
     /*
@@ -528,8 +540,6 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     //compute translate transform as: ratio of viewport width/height to screen width/height. 
     //project (multiply) points in space by this ratio.
     //same thing here, take into account aspect ratio scale and translate transforms.
-    const ratioOfScreenWidthToViewportWidth = (screenDimensions.width / svgViewportWidth) / aspectRatioScaleFactor; 
-    const ratioOfScreenHeightToViewportHeight = screenDimensions.height / svgViewportHeight; 
     const x = viewbox.x * ratioOfScreenWidthToViewportWidth;
     const y = viewbox.y * ratioOfScreenHeightToViewportHeight; 
 
@@ -544,7 +554,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     console.log('y',y); 
     */
     
-    return `translate(${svgScreenOffsetX}px,${svgScreenOffsetY}px) translate(${-1 * x * scale}px,${-1 * y * scale}px) scale(${scale}) scaleX(${1/aspectRatioScaleFactor})`;
+    return `translate(${svgScreenOffsetX}px,${svgScreenOffsetY}px) translate(${-1 * x * scale}px,${-1 * y * scale}px) scale(${scale}) ${aspectRatioTransform}`;
   }
 
   zoomToViewbox(viewbox){
