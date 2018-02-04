@@ -333,20 +333,21 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   }
 
   render(){
-    const viewBox = this.svgRectToViewBox(this.state.kgraph ? 
+    const viewBox = this.state.kgraph ? 
                         {x : 0, y : 0, width : this.state.kgraph.root.width, height : this.state.kgraph.root.height} : 
-                        {x : 0, y : 0, width : 0, height : 0});
+                        {x : 0, y : 0, width : 0, height : 0}
+    const transform = this.getTransformString(viewBox, viewBox, this.htmlRootElement ? this.htmlRootElement.getBoundingClientRect() : {x : 0, y : 0, width : 0, height : 0})
     return <div style={{width:'100%', height:'100%',position:'absolute',overflow:'hidden'}} ref={(e: HTMLDivElement) => { this.htmlRootElement = e; }}>
         <svg width="100%" height="100%" 
-          style={{transformOrigin : '0 0', transition : 'transform .1s linear'}}
+          style={{transformOrigin : '0 0', transition : 'transform .1s linear', transform }}
           ref={(e: SVGSVGElement) => { this.svgRootElement = e; }}
           onWheel={this.props.disableZoom ? null : this.handleMouseWheel.bind(this)}
           onClick={this.handleClick.bind(this)}
           onMouseDown={this.handleMouseDown.bind(this)}
           onMouseUp={this.handleMouseUp.bind(this)}
           onMouseMove={this.handleMouseMove.bind(this)}
-          viewBox={viewBox}
-          preserveAspectRatio="xMidYMid meet"
+          viewBox={this.svgRectToViewBox(viewBox)}
+          preserveAspectRatio="none"
         >
         <defs>
           { 
@@ -473,13 +474,9 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     }
   }
 
-  zoomToViewbox(viewbox){
-    this.virtualViewbox = viewbox;
-    //svg viewport w and h, screen dimensions
-    const svgViewportWidth= this.svgRootElement.viewBox.baseVal.width;
-    const svgViewportHeight = this.svgRootElement.viewBox.baseVal.height;
-    const screenDimensions = this.htmlRootElement.getBoundingClientRect();
-
+  getTransformString(viewbox, svgViewportDimensions, screenDimensions){
+    const svgViewportWidth = svgViewportDimensions.width, 
+          svgViewportHeight = svgViewportDimensions.height;
     const screenAspectRatio = screenDimensions.width / screenDimensions.height; 
     const svgViewportAspectRatio = svgViewportWidth / svgViewportHeight; 
 
@@ -526,15 +523,15 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
 
     //compute scale transform as ratio of svg viewport w or h, and svg viewport w or h 
     //take into account the aspect ratio scaling.
-    const scale = svgViewportWidth/viewbox.width * aspectRatioScaleFactor; 
+    const scale = svgViewportWidth/viewbox.width; 
 
     //compute translate transform as: ratio of viewport width/height to screen width/height. 
     //project (multiply) points in space by this ratio.
     //same thing here, take into account aspect ratio scale and translate transforms.
     const ratioOfScreenWidthToViewportWidth = (screenDimensions.width / svgViewportWidth) / aspectRatioScaleFactor; 
-    const ratioOfScreenHeightToViewportHeight = (screenDimensions.height / svgViewportHeight); 
-    const x = svgScreenOffsetX + viewbox.x * ratioOfScreenWidthToViewportWidth;
-    const y = svgScreenOffsetY + viewbox.y * ratioOfScreenHeightToViewportHeight; 
+    const ratioOfScreenHeightToViewportHeight = screenDimensions.height / svgViewportHeight; 
+    const x = viewbox.x * ratioOfScreenWidthToViewportWidth;
+    const y = viewbox.y * ratioOfScreenHeightToViewportHeight; 
 
     /*
     console.log('viewbox', viewbox);
@@ -547,7 +544,13 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     console.log('y',y); 
     */
     
-    const transform = `translate(${-1 * x * scale}px,${-1 * y * scale}px) scale(${scale})`;
+    return `translate(${svgScreenOffsetX}px,${svgScreenOffsetY}px) translate(${-1 * x * scale}px,${-1 * y * scale}px) scale(${scale}) scaleX(${1/aspectRatioScaleFactor})`;
+  }
+
+  zoomToViewbox(viewbox){
+    this.virtualViewbox = viewbox;
+    const transform = this.getTransformString(viewbox, this.svgRootElement.viewBox.baseVal, this.htmlRootElement.getBoundingClientRect());
+
     this.svgRootElement.style.transform = transform;
   }
 
