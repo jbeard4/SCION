@@ -358,7 +358,12 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     //select first child
     //TODO: maybe select the initial state, if he has one?
     if(kgraphNode.children && kgraphNode.children.length){
-      this.setState({selectedNodeId : kgraphNode.children[0].id});
+      const initialStateIdx = kgraphNode.children.map( c => c.$type).indexOf('initial');
+      this.setState({selectedNodeId : 
+        initialStateIdx > -1 ? 
+        kgraphNode.children[initialStateIdx].id :
+        kgraphNode.children[0].id
+      });
     }
   }
 
@@ -372,7 +377,9 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       this.state.kgraph.getKgraphNodeById(this.state.kgraph._childToParentMap.get(this.state.selectedNodeId)); 
 
     const idx = parentKgraphNode.children.map( child => child.id ).indexOf(this.state.selectedNodeId)
-    const nextChild = parentKgraphNode.children[(idx+(next ? 1 : -1)) % parentKgraphNode.children.length];
+    const tmp = (idx+(next ? 1 : -1)) 
+    const nextIdx = tmp >= 0 ? tmp % parentKgraphNode.children.length : parentKgraphNode.children.length + tmp;
+    const nextChild = parentKgraphNode.children[nextIdx];
     if(nextChild) this.setState({selectedNodeId : nextChild.id});
   }
 
@@ -581,7 +588,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   }
 
   zoomToState(stateId){
-    const e = (document.querySelector(`g#${stateId} > rect`)) as any as SVGGElement;
+    const e = (document.querySelector(`g#${stateId.replace(/:/g,'\\:')} > rect`)) as any as SVGGElement;
 
     //get bbox in canvas coordinates
     const bbox = getBoundingBoxInCanvasCoordinates(e)
