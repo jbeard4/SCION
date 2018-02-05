@@ -18,7 +18,7 @@ export class KGraph {
 
   _kgraphRoot : KGraphNode;
   _idMap : Map<string, KGraphNode>;
-  _childToParentMap : Map<string, KGraphNode>;
+  _childToParentMap : Map<string, string>;
   _idGenerator : IdGenerator; 
   _svgRootElement : SVGSVGElement;
 
@@ -79,7 +79,7 @@ export class KGraph {
             "width" : bbox.width + (isActionNode ? 0 : constants.LEAF_NODE_PADDING_W * 2),
             "height" : bbox.height + (isActionNode ? 0 : constants.LEAF_NODE_PADDING_H * 2)
           });
-          console.log(node.id, 'bbox ', bbox );
+          //console.log(node.id, 'bbox ', bbox );
         }))
       }
       if(node.edges && node.edges.length){
@@ -104,7 +104,7 @@ export class KGraph {
                   "width" : bbox.width,
                   "height" : bbox.height
                 });
-                console.log(edge.id, 'bbox ', bbox );
+                //console.log(edge.id, 'bbox ', bbox );
               }))
             })
           } 
@@ -609,7 +609,7 @@ export class KGraph {
 
   _populateChildToParentMap(graphRoot){
 
-    this._childToParentMap = new Map<string, KGraphNode>();
+    this._childToParentMap = new Map<string, string>();
     var walk = (function(parentGraphNode, graphNode){
       if(parentGraphNode) this._childToParentMap.set(graphNode.id, parentGraphNode.id);
       if(graphNode.children) graphNode.children.forEach(walk.bind(this,graphNode));

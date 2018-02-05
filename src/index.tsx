@@ -38,6 +38,8 @@ export interface GraphRootAnimation {
   instantZoom? : boolean;
   transitionsEnabled? : Map<string, Set<number>>;
   progress : string[];
+  selectedNodeId: string;
+  selectedEdge: KGraphEdge;
 }
 
 export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRootAnimation> {
@@ -45,6 +47,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   private svgRootElement : SVGSVGElement;
   private htmlRootElement : HTMLDivElement;
   private virtualViewbox : SVGRect;
+  private previousVirtualViewbox : SVGRect;
   public collapsedNodeMap : Map<string, boolean>;
 
   public static layouts = constants.layouts;   //expose layouts
@@ -56,7 +59,9 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       allEdges : [],
       enabledEdges : [],
       kgraph : null,
-      progress  : []
+      progress  : [],
+      selectedNodeId : null,
+      selectedEdge : null
     };
   }
 
@@ -302,7 +307,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
         kgraph.updateLayout(options, (err, rootNode) => {
           console.log('kgraph rootNode',rootNode);
           if(err) throw err;
-          this.virtualViewbox = {x : 0, y : 0, width : kgraph.root.width, height : kgraph.root.height};
+          this.virtualViewbox = this.getOriginalViewbox(kgraph);
           this.setState({ 
             allEdges : allEdges,   //TODO: this is likely to be a hotspot. we probably want to move this search logic inside of the kgraph data structure
             enabledEdges : enabledEdges,
@@ -333,10 +338,117 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     return true;
   }
 
+  selectChildNode(kgraphNodeId : string){
+    const kgraphNode : KGraphNode = this.state.kgraph.getKgraphNodeById(kgraphNodeId); 
+    //select first child
+    //TODO: maybe select the initial state, if he has one?
+    if(kgraphNode.children && kgraphNode.children.length){
+      this.setState({selectedNodeId : kgraphNode.children[0].id});
+    }
+  }
+
+  selectParentNode(kgraphNodeId : string){
+    //select first child
+    this.setState({selectedNodeId : this.state.kgraph._childToParentMap.get(kgraphNodeId) });
+  }
+
+  selectNextOrPrevState(next:boolean){
+    const parentKgraphNode : KGraphNode = 
+      this.state.kgraph.getKgraphNodeById(this.state.kgraph._childToParentMap.get(this.state.selectedNodeId)); 
+
+    const idx = parentKgraphNode.children.map( child => child.id ).indexOf(this.state.selectedNodeId)
+    const nextChild = parentKgraphNode.children[(idx+(next ? 1 : -1)) % parentKgraphNode.children.length];
+    this.setState({selectedNodeId : nextChild.id});
+  }
+
+  handleKeypress(event){
+    console.log(event.key, event);
+    switch(event.key){
+      case ' ':
+        //toggle expand/collapse
+        if(this.state.selectedNodeId) this.toggleExpandContractState(this.state.selectedNodeId);
+        break;
+      case 'h':
+        //TODO: navigate to transition
+        break;
+      case 'j':
+        if(this.state.selectedNodeId === null && this.state.selectedEdge === null){
+          //do nothing
+        }else if (this.state.selectedNodeId){  
+          //go to next state
+          this.selectNextOrPrevState(true);
+        }else if(this.state.selectedEdge){
+          //TODO go to next transition of source state
+        }
+        break;
+      case 'k':
+        if(this.state.selectedNodeId === null && this.state.selectedEdge === null){
+          //do nothing
+        }else if (this.state.selectedNodeId){  
+          //go to previous state
+          this.selectNextOrPrevState(false);
+        }else if(this.state.selectedEdge){
+          //TODO go to previous transition of source state
+        }
+        break;
+      case 'l':
+        //TODO: navigate to transition
+        break;
+      case 'o':
+        if(this.state.selectedNodeId === null && this.state.selectedEdge === null){
+          //go down level in the hierarchy. 
+          this.selectChildNode(this.state.kgraph.root.id);
+        }else if (this.state.selectedNodeId){  
+          this.selectChildNode(this.state.selectedNodeId);
+        }else if(this.state.selectedEdge){
+          //get source state,
+          //go down in hierarchy
+          this.selectChildNode( this.state.selectedEdge.source);
+        }
+        break;
+      case 'O':
+        if(this.state.selectedNodeId === null && this.state.selectedEdge === null){
+          //do nothing
+        }else if (this.state.selectedNodeId){  
+          //get parent  
+          this.selectParentNode(this.state.selectedNodeId);
+        }else if(this.state.selectedEdge){
+          this.selectParentNode( this.state.selectedEdge.source);
+        }
+        break;
+      case 'z':
+        if(this.state.selectedNodeId === null && this.state.selectedEdge === null){
+          //do nothing
+        }else if (this.state.selectedNodeId){  
+          //get parent  
+          if(event.ctrlKey){
+            
+            this.zoomToViewbox(this.previousVirtualViewbox);
+          }else{
+            this.zoomToState(this.state.selectedNodeId);
+          }
+        }else if(this.state.selectedEdge){
+          this.selectParentNode( this.state.selectedEdge.source);
+        }
+        break;
+      case 'Z':
+        this.zoomToViewbox(this.getOriginalViewbox(this.state.kgraph));
+        break;
+      default:
+        break;
+    }
+  }
+
+  getOriginalViewbox(kgraph){
+    return {x : 0, y : 0, width : kgraph.root.width, height : kgraph.root.height}
+  }
+
   componentDidMount(){
     $(window).on('resize', () => {
       this.zoomToViewbox(this.virtualViewbox);
     })
+
+    $(window).on('keypress', this.handleKeypress.bind(this));
 
     this.checkProps(this.props);
     if( this.props.pathToSCXML ||
@@ -357,8 +469,9 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   }
 
   render(){
+    console.log('this.state.selectedNodeId', this.state.selectedNodeId);
     const viewBox = this.state.kgraph ? 
-                        {x : 0, y : 0, width : this.state.kgraph.root.width, height : this.state.kgraph.root.height} : 
+                        this.getOriginalViewbox(this.state.kgraph) : 
                         {x : 0, y : 0, width : 0, height : 0}
     const transform = this.getTransformString(viewBox, viewBox, this.htmlRootElement ? this.htmlRootElement.getBoundingClientRect() : {x : 0, y : 0, width : 0, height : 0})
     return <div style={{width:'100%', height:'100%',position:'absolute',overflow:'hidden'}} ref={(e: HTMLDivElement) => { this.htmlRootElement = e; }}>
@@ -412,6 +525,8 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
                 enabledEdges={this.state.enabledEdges}
                 previousConfiguration={this.props.previousConfiguration}
                 statesForDefaultEntry={this.props.statesForDefaultEntry}
+                selectedNodeId={this.state.selectedNodeId}
+                selectedEdge={this.state.selectedEdge}
                 />
           }
         </g>
@@ -590,6 +705,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   }
 
   zoomToViewbox(viewbox){
+    this.previousVirtualViewbox = this.virtualViewbox;
     this.virtualViewbox = viewbox;
     const transform = this.getTransformString(viewbox, this.svgRootElement.viewBox.baseVal, this.htmlRootElement.getBoundingClientRect());
 

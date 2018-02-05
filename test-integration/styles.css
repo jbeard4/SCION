@@ -156,8 +156,8 @@ g.compound.type__parallel > g > g.node > rect {
 }
 
 
-.node.selected > rect {
-  stroke : blue;
+.node.selected > rect, .link.selected {
+  stroke : green;
 }
 
 .link {

@@ -43,6 +43,8 @@ export interface GraphNodeProps {
   enabledEdges : KGraphEdge[];
   previousConfiguration? : string[];
   statesForDefaultEntry : string[];
+  selectedNodeId:string;
+  selectedEdge: KGraphEdge;
 }
 
 export interface KGraphNodeAnimation {
@@ -185,6 +187,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
 
   shouldComponentUpdate(nextProps: GraphNodeProps, nextState: GraphNodeAnimation){
     let x = 
+        nextProps.selectedNodeId !== this.props.selectedNodeId ||
         nextProps.node !== this.props.node || 
         nextProps.isRoot  !== this.props.isRoot || 
         nextProps.graphRoot  !== this.props.graphRoot || 
@@ -279,7 +282,6 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                           this.props.statesForDefaultEntry.indexOf(edge.target) > -1 ).length;
     }
 
-
     let toReturn = <g id={this.state.to.node.id} 
             className={
               classNames({
@@ -293,7 +295,8 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                       !( this.props.node.children && this.props.node.children.length && this.props.node.children.filter( childNode => childNode.$type === 'actionContainer' ))
                     ),
                 "highlighted" : this.props.configuration && this.props.configuration.indexOf(this.state.to.node.id) > -1,
-                "exited" : exitInitialState || (this.props.previousConfiguration && this.props.previousConfiguration.indexOf(this.state.to.node.id) > -1)
+                "exited" : exitInitialState || (this.props.previousConfiguration && this.props.previousConfiguration.indexOf(this.state.to.node.id) > -1),
+                "selected" : this.props.node.id === this.props.selectedNodeId
               })
             }
             ref={(e: SVGGElement) => { this.svgGElement = e; }}
@@ -383,6 +386,8 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                 enabledEdges={this.props.enabledEdges}
                 previousConfiguration={this.props.previousConfiguration}
                 statesForDefaultEntry={this.props.statesForDefaultEntry}
+                selectedNodeId={this.props.selectedNodeId}
+                selectedEdge={this.props.selectedEdge}
                 />
           )))
         }
