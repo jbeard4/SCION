@@ -12,6 +12,7 @@ import _ = require('underscore');
 import {LayoutOptions} from './IKGraphRenderBackend';
 import {SCState, SCTransition, findStateById} from './SCJSON';
 import SCJSONToKGraphTransformer from './SCJSONToKGraphTransformer';
+import $ = require('jquery');
 
 export interface GraphRootProps {
   pathToSCXML? : string;
@@ -333,6 +334,10 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   }
 
   componentDidMount(){
+    $(window).on('resize', () => {
+      this.zoomToViewbox(this.virtualViewbox);
+    })
+
     this.checkProps(this.props);
     if( this.props.pathToSCXML ||
           this.props.urlToSCXML ||
