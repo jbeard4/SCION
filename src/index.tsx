@@ -54,10 +54,6 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
 
   constructor(props:GraphRootProps){
     super(props);
-    this.collapsedNodeMap = 
-      window.localStorage && window.localStorage.collapsedNodeMap ? 
-        JSON.parse(window.localStorage.collapsedNodeMap) : 
-        {};
     this.state = { 
       allEdges : [],
       enabledEdges : [],
@@ -276,12 +272,28 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     })
   }
 
+  private initCollapsedNodeMap(scjson){
+      function traverse(state, depth, accumulator){
+        if(depth >= 1) accumulator[state.id] = true;
+        if(state.states){
+          state.states.forEach( child => traverse(child, depth+1, accumulator));
+        }
+        return accumulator;
+      }
+
+      return window.localStorage && window.localStorage.collapsedNodeMap ? 
+        JSON.parse(window.localStorage.collapsedNodeMap) : 
+        traverse(scjson, 0, {});
+  }
+
   private initSCJson(props : GraphRootProps , initialRender : boolean){
     //if scjson is not the same, create a new kgraph
     //TODO: memoize
     if(props.scjson){
       const tic = new Date() as any;
       this.setState({progress : this.state.progress.concat('Compiling SCJSON to KLay JSON...' )}, () => {
+        //init collapsedNodeMap
+        this.collapsedNodeMap = this.initCollapsedNodeMap(props.scjson);
         let idGenerator = new IdGenerator();
         let transformer = new SCJSONToKGraphTransformer(idGenerator, this);
         var newKlayToScjsonMap, newKgraphRoot; 
@@ -361,7 +373,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
 
     const idx = parentKgraphNode.children.map( child => child.id ).indexOf(this.state.selectedNodeId)
     const nextChild = parentKgraphNode.children[(idx+(next ? 1 : -1)) % parentKgraphNode.children.length];
-    this.setState({selectedNodeId : nextChild.id});
+    if(nextChild) this.setState({selectedNodeId : nextChild.id});
   }
 
   handleKeypress(event){
