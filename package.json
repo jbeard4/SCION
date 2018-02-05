@@ -15,7 +15,6 @@
     "klayjs": "^0.4.1",
     "pathseg": "^1.0.2",
     "q": "^1.4.1",
-    "react": "^15.6.1",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
@@ -37,7 +36,6 @@
     "express": "^4.14.0",
     "opn-cli": "^3.1.0",
     "pathseg": "^1.0.2",
-    "react-dom": "^15.5.4",
     "sorcery": "^0.10.0",
     "tsify": "^2.0.8",
     "typescript": "2.3.3",

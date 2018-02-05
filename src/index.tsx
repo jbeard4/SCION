@@ -166,33 +166,57 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     ) return this.initKGraph(props, false);
   }
 
-  //later, try handleMouseClick
-  handleClick(event){
-    debug('handleClick', event);
-  }
-
   eventStamp : {clientX : number, clientY : number};
-  eventBuffer : Array<SVGPoint>;
-  deltaBuffer : Array<SVGPoint>;
+  cachedClickEventTarget : SVGElement;
+  didMove : boolean;
 
   handleMouseDown(event){
-    debug('handleMouseDown', event.clientX, event.clientY);
+    console.log('handleMouseDown', event, event.clientX, event.clientY);
     if(event.button !== 0) return;
-    this.eventBuffer = [];
-    this.deltaBuffer = [];
     this.eventStamp = {clientX : event.clientX, clientY : event.clientY};
+    this.cachedClickEventTarget = event.target;
+    this.didMove = false;
   }
 
   handleMouseUp(event){
     debug('handleMouseUp', event);
     this.eventStamp = null;
-    this.eventBuffer = null;
-    this.deltaBuffer = null;
+    if(!this.didMove){
+      this.handleClick();
+    }
+  }
+
+  handleClick(){
+    //get first ancestor with an id
+    let currentTarget = this.cachedClickEventTarget;
+    while(currentTarget &&
+        !currentTarget.id && 
+        !(
+          Array.from(currentTarget.classList).indexOf('node') > -1 ||   
+          Array.from(currentTarget.classList).indexOf('link') > -1 
+        )
+    ){
+      currentTarget = currentTarget.parentNode as SVGElement; 
+    }
+    
+    if(currentTarget){
+      if(Array.from(currentTarget.classList).indexOf('node') > -1){
+        this.setState({
+          selectedNodeId: currentTarget.id, 
+          selectedEdgeId: null
+        });
+      } else if(Array.from(currentTarget.classList).indexOf('link') > -1 ) {
+        this.setState({
+          selectedNodeId: null,
+          selectedEdgeId: currentTarget.id
+        });
+      }
+    }
   }
 
   handleMouseMove(event){
     if(!this.eventStamp) return;
-
+    this.didMove = true;
     debug('handleMouseMove', this.eventStamp.clientX, this.eventStamp.clientY, event.clientX, event.clientY);
     const pt1 = this.toViewportCoordinates(this.eventStamp)
     const pt2 = this.toViewportCoordinates(event)
@@ -589,7 +613,6 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
           style={{transformOrigin : '0 0', transition : 'transform .1s linear', transform }}
           ref={(e: SVGSVGElement) => { this.svgRootElement = e; }}
           onWheel={this.props.disableZoom ? null : this.handleMouseWheel.bind(this)}
-          onClick={this.handleClick.bind(this)}
           onMouseDown={this.handleMouseDown.bind(this)}
           onMouseUp={this.handleMouseUp.bind(this)}
           onMouseMove={this.handleMouseMove.bind(this)}
