@@ -1,5 +1,5 @@
 import * as React from "react";
-import Collapsible from 'react-collapsible';
+import Collapsible from '@jbeard/react-collapsible';
 import SCHVIZ from '@jbeard/schviz2';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
@@ -43,6 +43,7 @@ class App extends React.Component<AppProps, AppState> {
 
   private rootElement : HTMLDivElement;
   private slickgridComponent : SlickgridComponent;
+  private schvizComponent : SCHVIZ;
 
   constructor() {
     super();
@@ -131,6 +132,8 @@ class App extends React.Component<AppProps, AppState> {
           {
             currentRow ?
             <SCHVIZ 
+              ref={(e: SCHVIZ) => { this.schvizComponent = e; }}
+              expandAllStatesByDefault={true}
               disableAnimation={true}
               urlToSCXML={currentRow.docUrl} 
               layoutOptions={SCHVIZ.layouts.right} 
@@ -240,6 +243,11 @@ class App extends React.Component<AppProps, AppState> {
       applyDefaultStyles: true, 
       south__onresize: (() => { 
         this.slickgridComponent.grid.resizeCanvas()
+      }),
+      center__onresize:	(() => { 
+        setTimeout( () => {
+          this.schvizComponent.refreshViewbox();
+        })
       }),
       stateManagement__enabled:	true
     });

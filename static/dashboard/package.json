@@ -17,6 +17,8 @@
     "harness": "opn http://localhost:3001/test-integration/index.html"
   },
   "dependencies": {
+    "@jbeard/jsondiffpatch": "^0.2.5",
+    "@jbeard/react-collapsible": "^2.0.6",
     "@jbeard/schviz2": "3.2.5",
     "@jbeard/scxml": "4.3.1",
     "@types/jquery": "^1.10.33",
@@ -30,9 +32,6 @@
     "jquery-ui": "^1.12.1",
     "jquery-ui-dist": "^1.12.1",
     "jquery-ui-themes": "^1.12.0",
-    "jsondiffpatch": "^0.2.5",
-    "react": "^15.6.1",
-    "react-collapsible": "^2.0.6",
     "react-inspector": "^2.2.2",
     "react-redux": "^5.0.6",
     "react-ui-layout": "^1.0.4",
@@ -88,7 +87,6 @@
     "pathseg": "^1.0.2",
     "raw-loader": "^0.5.1",
     "react-addons-test-utils": "^0.14.0",
-    "react-dom": "^15.6.1",
     "react-transform-hmr": "^1.0.0",
     "sorcery": "^0.10.0",
     "style-loader": "^0.12.3",

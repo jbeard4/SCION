@@ -52,7 +52,7 @@ function init(options){
 
   //serve static files
   //TODO: factor this out
-  if(process.argv.indexOf('--serve-scxml-from-root-fs') > -1){
+  if(options['serve-scxml-from-root-fs'] || process.argv.indexOf('--serve-scxml-from-root-fs') > -1){
     server.get(/\/?.*\.scxml/, function(req, res){
       let p = req.path();
       fs.readFile(p, function(err, contents){
