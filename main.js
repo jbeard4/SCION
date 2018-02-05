@@ -42,6 +42,7 @@ function createWindow (scxmlFile) {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     scxmlWindows[scxmlFile] = null;
+    if(Object.keys(scxmlWindows).every(k => scxmlWindows[k] === null)) app.quit()    //close app if all windows are closed.
   })
 
   scxmlWindows[scxmlFile] = window;
@@ -52,7 +53,6 @@ function createWindow (scxmlFile) {
 // Some APIs can only be used after this event occurs.
 app.on('ready', function(){
   const scxmlFilesToOpen = argv._; 
-  console.log('scxmlFilesToOpen ', scxmlFilesToOpen );
   
   scxmlFilesToOpen.
     filter( (file) => !scxmlWindows[file] ).

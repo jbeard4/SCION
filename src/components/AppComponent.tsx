@@ -40,9 +40,13 @@ export default class AppComponent extends React.Component<AppComponentProps, App
 
     //if he is SCXML, convert him to scjson
     const initialLayout = 'right';
+    const tic = new Date() as any;
+    const scjson = scxml.ext.compilerInternals.scxmlToScjson(scxmlContents);
+    const toc = new Date() as any;
+    console.log('SCXML -> SCJSON duration', toc - tic)
     this.state ={ 
       interpreter : null,
-      scjson : scxml.ext.compilerInternals.scxmlToScjson(scxmlContents),
+      scjson : scjson,
       layoutName : initialLayout,
       layoutOptions : SCHVIZ.layouts[initialLayout] 
     };
@@ -53,10 +57,14 @@ export default class AppComponent extends React.Component<AppComponentProps, App
     fs.watchFile(props.scxmlPath, {persistent: true, interval : 100}, (cur, prev) => {
       clear();
       let scxmlContents = fs.readFileSync(props.scxmlPath,'utf8');
+      const tic = new Date() as any;
+      const scjson = scxml.ext.compilerInternals.scxmlToScjson(scxmlContents);
+      const toc = new Date() as any;
+      console.log('SCXML -> SCJSON duration', toc - tic)
       //if he is SCXML, convert him to scjson
       this.setState({ 
         interpreter : null,
-        scjson : scxml.ext.compilerInternals.scxmlToScjson(scxmlContents)
+        scjson : scjson 
       });
     });
   }
