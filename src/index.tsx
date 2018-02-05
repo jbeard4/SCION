@@ -13,6 +13,8 @@ import {LayoutOptions} from './IKGraphRenderBackend';
 import {SCState, SCTransition, findStateById} from './SCJSON';
 import SCJSONToKGraphTransformer from './SCJSONToKGraphTransformer';
 import $ = require('jquery');
+require('../bower_components/load-awesome/css/line-spin-fade-rotating.css')
+
 
 export interface GraphRootProps {
   pathToSCXML? : string;
@@ -38,6 +40,7 @@ export interface GraphRootAnimation {
   instantZoom? : boolean;
   transitionsEnabled? : Map<string, Set<number>>;
   progress : string[];
+  loading : boolean;
   selectedNodeId: string;
   selectedEdgeId: string;
 }
@@ -61,7 +64,8 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       kgraph : null,
       progress  : [],
       selectedNodeId : null,
-      selectedEdgeId : null
+      selectedEdgeId : null,
+      loading : false
     };
   }
 
@@ -256,7 +260,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     }
 
     const tic = new Date() as any;
-    this.setState({progress : this.state.progress.concat('Compiling SCXML to SCJSON...' )}, () => {
+    this.setState({loading : true, progress : this.state.progress.concat('Compiling SCXML to SCJSON...' )}, () => {
       if(props.pathToSCXML){
         fetch(props.pathToSCXML).then(function(response) {
           return response.text();
@@ -292,7 +296,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     //TODO: memoize
     if(props.scjson){
       const tic = new Date() as any;
-      this.setState({progress : this.state.progress.concat('Compiling SCJSON to KLay JSON...' )}, () => {
+      this.setState({loading : true, progress : this.state.progress.concat('Compiling SCJSON to KLay JSON...' )}, () => {
         //init collapsedNodeMap
         this.collapsedNodeMap = this.initCollapsedNodeMap(props.scjson);
         let idGenerator = new IdGenerator();
@@ -309,7 +313,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
 
   private initKGraph(props : GraphRootProps , initialRender : boolean, idGen?: IdGenerator, kgRoot? : KGraphNode){
     const tic = new Date() as any;
-    this.setState({progress : this.state.progress.concat('Layouting KLay JSON...' )}, () => {
+    this.setState({loading : true, progress : this.state.progress.concat('Layouting KLay JSON...' )}, () => {
       let idGenerator = idGen || new IdGenerator(); 
       let kgraphRoot = props.kgraphRoot || kgRoot;
       let kgraph = new KGraph(idGenerator, this.svgRootElement, kgraphRoot);
@@ -328,7 +332,8 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
             allEdges : allEdges,   //TODO: this is likely to be a hotspot. we probably want to move this search logic inside of the kgraph data structure
             enabledEdges : enabledEdges,
             kgraph : kgraph,
-            progress : this.state.progress.slice(0,-1).concat(this.state.progress[this.state.progress.length-1] + ` Done (${(new Date() as any) - tic}ms)`)
+            progress : this.state.progress.slice(0,-1).concat(this.state.progress[this.state.progress.length-1] + ` Done (${(new Date() as any) - tic}ms)`),
+            loading : false
           }, () => {
             //add a timeout to let the thread settle before starting animations
             //without this, on large models, we lose the first few animation frames
@@ -557,7 +562,23 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     const transform = this.getTransformString(viewBox, viewBox, this.htmlRootElement ? this.htmlRootElement.getBoundingClientRect() : {x : 0, y : 0, width : 0, height : 0})
     return <div style={{width:'100%', height:'100%',position:'absolute',overflow:'hidden'}} ref={(e: HTMLDivElement) => { this.htmlRootElement = e; }}>
         {  
-            <div style={{position:'absolute', display : this.state.kgraph ? 'none' : 'block' }}>
+          this.state.loading && 
+            <div style={{position:'absolute'}}>
+              <div className="la-line-spin-fade-rotating la-dark">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+              </div>
+            </div>
+
+        }
+        {  
+            <div style={{position:'absolute', display : 'none' }}>
               <div>Loading:</div>
               <ul>
                 {this.state.progress.map( (progressText,i) => <li key={i}>{progressText}</li>)}

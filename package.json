@@ -56,7 +56,8 @@
     "clean": "rm -rf dist/*",
     "server": "node grunt/server.js",
     "start": "npm run server",
-    "harness": "opn http://localhost:3001/test-integration/index.html"
+    "harness": "opn http://localhost:3001/test-integration/index.html",
+    "postinstall" : "bower install load-awesome"
   },
   "browserify": {
     "transform": [
