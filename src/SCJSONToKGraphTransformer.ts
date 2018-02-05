@@ -61,7 +61,7 @@ export default class SCJSONToKGraphTransformer {
 
     function traverse(state){
       
-      if(!(this._svgRenderer.collapsedNodeMap.get(state.id))){   //skip generating an initial state if he is collapsed
+      if(!(this._svgRenderer.collapsedNodeMap[state.id])){   //skip generating an initial state if he is collapsed
         var fakeInitialState;
         if(state.initial){
           //initial attribute - create a fake <initial> scjson node 
@@ -119,7 +119,7 @@ export default class SCJSONToKGraphTransformer {
  
     //1. initialize virtual states
     function walkInitVirtualStates(state){
-      if(this._svgRenderer.collapsedNodeMap.get(state.id) && 
+      if(this._svgRenderer.collapsedNodeMap[state.id] && 
           (
             (state.states && state.states.length) ||
             (state.datamodel && state.datamodel.declarations && state.datamodel.declarations.length) ||
@@ -222,7 +222,7 @@ export default class SCJSONToKGraphTransformer {
 
     function walkRemoveActionsFromCollapsedStates(state){
       
-      if(this._svgRenderer.collapsedNodeMap.get(state.id)){
+      if(this._svgRenderer.collapsedNodeMap[state.id]){
         ['datamodel','onEntry','onExit','invokes','donedata'].forEach( prop => delete state[prop] );
       }
 
@@ -394,7 +394,7 @@ export default class SCJSONToKGraphTransformer {
   }
 
   _conditionallyCollapseNode(node, next){
-    if(this._svgRenderer.collapsedNodeMap.get(node.id)){
+    if(this._svgRenderer.collapsedNodeMap[node.id]){
       var virtualState = {
         id :  `${node.id}:virtual`,
         labels : [{text : '...'}],

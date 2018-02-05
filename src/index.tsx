@@ -48,13 +48,16 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   private htmlRootElement : HTMLDivElement;
   private virtualViewbox : SVGRect;
   private previousVirtualViewbox : SVGRect;
-  public collapsedNodeMap : Map<string, boolean>;
+  public collapsedNodeMap : any;
 
   public static layouts = constants.layouts;   //expose layouts
 
   constructor(props:GraphRootProps){
     super(props);
-    this.collapsedNodeMap = new Map<string, boolean>();   //TODO: save in localStorage
+    this.collapsedNodeMap = 
+      window.localStorage && window.localStorage.collapsedNodeMap ? 
+        JSON.parse(window.localStorage.collapsedNodeMap) : 
+        {};
     this.state = { 
       allEdges : [],
       enabledEdges : [],
@@ -464,7 +467,8 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   }
 
   public toggleExpandContractState(nodeId : string){
-    this.collapsedNodeMap.set(nodeId, !this.collapsedNodeMap.get(nodeId)); //toggle contracted
+    this.collapsedNodeMap[nodeId] = !this.collapsedNodeMap[nodeId]; //toggle contracted
+    window.localStorage.collapsedNodeMap = JSON.stringify(this.collapsedNodeMap);
     this.initSCJson(this.props, false);
   }
 
