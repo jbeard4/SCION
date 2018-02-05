@@ -120,5 +120,7 @@
       ]
     }
   ],
-  "bin": "bin/cli.js"
+  "bin": {
+    "scxml" : "bin/cli.js"
+  }
 }
