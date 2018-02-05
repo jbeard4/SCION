@@ -34,7 +34,7 @@ if(util.IS_INSPECTING || argv.compile === 'module'){
 
 if(argv['monitor-server']){ 
   try{
-    const broadcast = require('@jbeard/scion-scxml-debugger-middleware').init();  //load the debug server plugin
+    const broadcast = require('@jbeard/scion-scxml-debugger-middleware').init({'serve-scxml-from-root-fs':true});  //load the debug server plugin
     const client = require('@jbeard/scion-scxml-debugger-middleware/client')
     client.init(scxml,{broadcast})
   }catch(e){
