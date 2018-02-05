@@ -508,7 +508,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
             this.zoomToState(this.state.selectedNodeId);
           }
         }else if(this.state.selectedEdgeId){
-          //TODO: zoom to edge
+          this.zoomToEdge(this.state.selectedEdgeId);
         }
         break;
       case 'Z':
@@ -645,62 +645,92 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     return toReturn;
   }
 
+  zoomToEdge(edgeId){
+    const edge = this.state.allEdges.filter( edge => edge.id === edgeId)[0]
+
+    //zoom to source state, target state, and the edge itself
+    const e1 = (document.querySelector(`#${edge.source.replace(/:/g,'\\:')} > rect`)) as any as SVGGElement;
+    const e2 = (document.querySelector(`#${edge.target.replace(/:/g,'\\:')} > rect`)) as any as SVGGElement;
+    const e3 = (document.querySelector(`#${edge.id.replace(/:/g,'\\:')}.link`)) as any as SVGGElement;
+
+    //get bbox in canvas coordinates
+    const bbox1 = this.getBoundingBoxInCanvasCoordinates(e1)
+    const bbox2 = this.getBoundingBoxInCanvasCoordinates(e2)
+    const bbox3 = this.getBoundingBoxInCanvasCoordinates(e3)
+
+    //compute the aggregate bbox
+    const xmin = Math.min( bbox1.x, bbox2.x, bbox3.x);
+    const ymin = Math.min(bbox1.y, bbox2.y, bbox3.y); 
+    const xmax = Math.max(bbox1.x + bbox1.width, bbox2.x + bbox2.width, bbox3.x + bbox3.width);
+    const ymax = Math.max(bbox1.y + bbox1.height, bbox2.y + bbox2.height, bbox3.y + bbox3.height);
+
+    const viewbox = {
+      x : xmin,
+      y : ymin,
+      width : xmax - xmin,   
+      height : ymax - ymin
+    };
+
+    this.zoomToViewbox(viewbox);
+  }
+
   zoomToState(stateId){
     const e = (document.querySelector(`g#${stateId.replace(/:/g,'\\:')} > rect`)) as any as SVGGElement;
 
     //get bbox in canvas coordinates
-    const bbox = getBoundingBoxInCanvasCoordinates(e)
+    const bbox = this.getBoundingBoxInCanvasCoordinates(e)
 
     this.zoomToViewbox(bbox);
-
-    function getBoundingBoxInArbitrarySpace(element,mat){
-        var svgRoot = element.ownerSVGElement;
-        var bbox = element.getBBox();
-
-        var xs = [];
-        var ys = [];
-
-        function calc(){
-            var cPtTr = cPt.matrixTransform(mat);
-            xs.push(cPtTr.x);
-            ys.push(cPtTr.y);
-        }
-
-        var cPt =  svgRoot.createSVGPoint();
-        cPt.x = bbox.x;
-        cPt.y = bbox.y;
-        calc();
-            
-        cPt.x += bbox.width;
-        calc();
-
-        cPt.y += bbox.height;
-        calc();
-
-        cPt.x -= bbox.width;
-        calc();
-        
-        var minX=Math.min.apply(this,xs);
-        var minY=Math.min.apply(this,ys);
-        var maxX=Math.max.apply(this,xs);
-        var maxY=Math.max.apply(this,ys);
-
-        return {
-            "x":minX,
-            "y":minY,
-            "width":maxX-minX,
-            "height":maxY-minY
-        };
-    }
-
-    function getBoundingBoxInCanvasCoordinates (rawNode){
-        return getBoundingBoxInArbitrarySpace(rawNode,getTransformToElement(rawNode, rawNode.ownerSVGElement));
-    }
-
-    function getTransformToElement(fromElement, toElement) {
-      return toElement.getScreenCTM().inverse().multiply(fromElement.getScreenCTM());  
-    }
   }
+
+  getBoundingBoxInArbitrarySpace(element,mat){
+      var svgRoot = element.ownerSVGElement;
+      var bbox = element.getBBox();
+
+      var xs = [];
+      var ys = [];
+
+      function calc(){
+          var cPtTr = cPt.matrixTransform(mat);
+          xs.push(cPtTr.x);
+          ys.push(cPtTr.y);
+      }
+
+      var cPt =  svgRoot.createSVGPoint();
+      cPt.x = bbox.x;
+      cPt.y = bbox.y;
+      calc();
+          
+      cPt.x += bbox.width;
+      calc();
+
+      cPt.y += bbox.height;
+      calc();
+
+      cPt.x -= bbox.width;
+      calc();
+      
+      var minX=Math.min.apply(this,xs);
+      var minY=Math.min.apply(this,ys);
+      var maxX=Math.max.apply(this,xs);
+      var maxY=Math.max.apply(this,ys);
+
+      return {
+          "x":minX,
+          "y":minY,
+          "width":maxX-minX,
+          "height":maxY-minY
+      };
+  }
+
+  getBoundingBoxInCanvasCoordinates (rawNode){
+      return this.getBoundingBoxInArbitrarySpace(rawNode,this.getTransformToElement(rawNode, rawNode.ownerSVGElement));
+  }
+
+  getTransformToElement(fromElement, toElement) {
+    return toElement.getScreenCTM().inverse().multiply(fromElement.getScreenCTM());  
+  }
+
 
   getTransformString(viewbox, svgViewportDimensions, screenDimensions){
     const svgViewportWidth = svgViewportDimensions.width, 
