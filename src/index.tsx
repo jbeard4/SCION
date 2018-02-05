@@ -666,13 +666,25 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     return toReturn;
   }
 
+  fetchEdgeDOMElement(edgeId){
+    return document.querySelector(`path#${this.escapeIdStringForQuerySelector(edgeId)}.link`) as SVGPathElement;
+  }
+
+  fetchNodeDOMElement(nodeId){
+    return document.querySelector(`g#${this.escapeIdStringForQuerySelector(nodeId)} > rect`) as SVGGElement;
+  }
+
+  escapeIdStringForQuerySelector(nodeOrEdgeId){
+    return nodeOrEdgeId.replace(/([:$])/g,'\\$1')
+  }
+
   zoomToEdge(edgeId){
     const edge = this.state.allEdges.filter( edge => edge.id === edgeId)[0]
 
     //zoom to source state, target state, and the edge itself
-    const e1 = (document.querySelector(`#${edge.source.replace(/:/g,'\\:')} > rect`)) as any as SVGGElement;
-    const e2 = (document.querySelector(`#${edge.target.replace(/:/g,'\\:')} > rect`)) as any as SVGGElement;
-    const e3 = (document.querySelector(`#${edge.id.replace(/:/g,'\\:')}.link`)) as any as SVGGElement;
+    const e1 = this.fetchNodeDOMElement(edge.source);
+    const e2 = this.fetchNodeDOMElement(edge.target);
+    const e3 = this.fetchEdgeDOMElement(edgeId);
 
     //get bbox in canvas coordinates
     const bbox1 = this.getBoundingBoxInCanvasCoordinates(e1)
@@ -696,7 +708,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   }
 
   zoomToState(stateId){
-    const e = (document.querySelector(`g#${stateId.replace(/:/g,'\\:')} > rect`)) as any as SVGGElement;
+    const e = this.fetchNodeDOMElement(stateId);
 
     //get bbox in canvas coordinates
     const bbox = this.getBoundingBoxInCanvasCoordinates(e)
