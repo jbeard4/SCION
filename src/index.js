@@ -6,7 +6,7 @@ const utils = require("./utils")
 const oneLine = utils.oneLine
 const splatSet = utils.splatSet
 const getSettings = require("./settings").getSettings
-const scxmllint = require('scxmllint');
+const scxmllint = require('@jbeard/scxmllint');
 
 const BOM = "\uFEFF"
 const GET_SCOPE_RULE_NAME = "__eslint-plugin-html-get-scope"
@@ -97,7 +97,7 @@ function patch(Linter) {
       messages = []
 
       //first, run him through scxmllint
-      const xmllintErrors = scxmllint.validateSCXML(textOrSourceCode);
+      const xmllintErrors = scxmllint.validateSCXML(textOrSourceCode).errors;
       if(xmllintErrors){
         //example errors:
         //file_0.xml:24: element script: Schemas validity error : Element \'{http://www.w3.org/2005/07/scxml}script\': This element is not expected.
