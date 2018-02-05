@@ -31,6 +31,7 @@ export interface GraphRootProps {
   statesForDefaultEntry? : string[];
   disableZoom? : boolean;
   hideActions? : boolean;
+  expandAllStatesByDefault? : boolean;
 }
 
 export interface GraphRootAnimation {
@@ -53,6 +54,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   private previousVirtualViewbox : SVGRect;
   public collapsedNodeMap : any;
   private lastTransitionId : string;
+  private cachedLastScjson : scxml.scion.SCState;
 
   public static layouts = constants.layouts;   //expose layouts
 
@@ -277,6 +279,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
 
     const handler = (text) => {
       let scjson = scxml.ext.compilerInternals.scxmlToScjson(text);
+      this.cachedLastScjson = scjson; 
       let augmentedProps = _.extend({}, props, {scjson : scjson});
       this.setState({progress : this.state.progress.slice(0,-1).concat(this.state.progress[this.state.progress.length-1] + ` Done (${(new Date() as any) - tic}ms)`)}, () => {
         this.initSCJson(augmentedProps, initialRender);
@@ -312,7 +315,9 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
 
       return window.localStorage && window.localStorage.collapsedNodeMap ? 
         JSON.parse(window.localStorage.collapsedNodeMap) : 
-        traverse(scjson, 0, {});
+        (!this.props.expandAllStatesByDefault  ?
+          traverse(scjson, 0, {}) : 
+          {});
   }
 
   private initSCJson(props : GraphRootProps , initialRender : boolean){
@@ -552,9 +557,13 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     return {x : 0, y : 0, width : kgraph.root.width, height : kgraph.root.height}
   }
 
+  public refreshViewbox(){
+    this.zoomToViewbox(this.virtualViewbox);
+  }
+
   componentDidMount(){
     $(window).on('resize', () => {
-      this.zoomToViewbox(this.virtualViewbox);
+      this.refreshViewbox();
     })
 
     $(window).on('keypress', this.handleKeypress.bind(this));
@@ -575,7 +584,11 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   public toggleExpandContractState(nodeId : string){
     this.collapsedNodeMap[nodeId] = !this.collapsedNodeMap[nodeId]; //toggle contracted
     window.localStorage.collapsedNodeMap = JSON.stringify(this.collapsedNodeMap);
-    this.initSCJson(this.props, false);
+    let props = this.props;
+    if(this.cachedLastScjson){
+      props = _.extend({}, props, {scjson : this.cachedLastScjson});
+    }
+    this.initSCJson(props, false);
   }
 
   render(){
