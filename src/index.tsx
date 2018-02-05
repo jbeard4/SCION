@@ -36,6 +36,7 @@ export interface GraphRootAnimation {
   kgraph : KGraph;
   instantZoom? : boolean;
   transitionsEnabled? : Map<string, Set<number>>;
+  progress : string[];
 }
 
 export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRootAnimation> {
@@ -54,6 +55,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       allEdges : [],
       enabledEdges : [],
       kgraph : null,
+      progress  : []
     };
   }
 
@@ -242,62 +244,79 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     const handler = (text) => {
       let scjson = scxml.ext.compilerInternals.scxmlToScjson(text);
       let augmentedProps = _.extend({}, props, {scjson : scjson});
-      this.initSCJson(augmentedProps, initialRender);
+      this.setState({progress : this.state.progress.slice(0,-1).concat(this.state.progress[this.state.progress.length-1] + ` Done (${(new Date() as any) - tic}ms)`)}, () => {
+        this.initSCJson(augmentedProps, initialRender);
+      });
     }
 
-    if(props.pathToSCXML){
-      fetch(props.pathToSCXML).then(function(response) {
-        return response.text();
-      }).then(handler);
-    }else if(props.urlToSCXML){
-      fetch(props.urlToSCXML).then(function(response) {
-        return response.text();
-      }).then(handler);
-    }else if(props.scxmlDocumentString){
-      handler(props.scxmlDocumentString);
-    }else {
-      throw new Error('TODO');
-    }
-
+    const tic = new Date() as any;
+    this.setState({progress : this.state.progress.concat('Compiling SCXML to SCJSON...' )}, () => {
+      if(props.pathToSCXML){
+        fetch(props.pathToSCXML).then(function(response) {
+          return response.text();
+        }).then(handler);
+      }else if(props.urlToSCXML){
+        fetch(props.urlToSCXML).then(function(response) {
+          return response.text();
+        }).then(handler);
+      }else if(props.scxmlDocumentString){
+        handler(props.scxmlDocumentString);
+      }else {
+        throw new Error('TODO');
+      }
+    })
   }
 
   private initSCJson(props : GraphRootProps , initialRender : boolean){
     //if scjson is not the same, create a new kgraph
     //TODO: memoize
     if(props.scjson){
-      let idGenerator = new IdGenerator();
-      let transformer = new SCJSONToKGraphTransformer(idGenerator, this);
-      var newKlayToScjsonMap, newKgraphRoot; 
-      newKgraphRoot = transformer.transform(props.scjson, {hideActions : props.hideActions});
-      this.initKGraph(props, initialRender, idGenerator, newKgraphRoot);
+      const tic = new Date() as any;
+      this.setState({progress : this.state.progress.concat('Compiling SCJSON to KLay JSON...' )}, () => {
+        let idGenerator = new IdGenerator();
+        let transformer = new SCJSONToKGraphTransformer(idGenerator, this);
+        var newKlayToScjsonMap, newKgraphRoot; 
+        newKgraphRoot = transformer.transform(props.scjson, {hideActions : props.hideActions});
+        this.setState({progress : this.state.progress.slice(0,-1).concat(this.state.progress[this.state.progress.length-1] + ` Done (${(new Date() as any) - tic}ms)`)}, () => {
+          this.initKGraph(props, initialRender, idGenerator, newKgraphRoot);
+        });
+      })
     }
   }
 
 
   private initKGraph(props : GraphRootProps , initialRender : boolean, idGen?: IdGenerator, kgRoot? : KGraphNode){
-    let idGenerator = idGen || new IdGenerator(); 
-    let kgraphRoot = props.kgraphRoot || kgRoot;
-    let kgraph = new KGraph(idGenerator, this.svgRootElement, kgraphRoot);
-    let allEdges = kgraph ? this._getAllEdges(kgraph) : [];
-    let enabledEdges = this._getEnabledEdges(allEdges, this.state.transitionsEnabled);
-    const options = this.getDefaultLayoutOptions(props.layoutOptions)
-    if(!this.props.disableAnimation) this.svgRootElement.pauseAnimations();
-    kgraph.updateLayout(options, (err, rootNode) => {
-      console.log('kgraph rootNode',rootNode);
-      if(err) throw err;
-      this.virtualViewbox = {x : 0, y : 0, width : kgraph.root.width, height : kgraph.root.height};
-      this.setState({ 
-        allEdges : allEdges,   //TODO: this is likely to be a hotspot. we probably want to move this search logic inside of the kgraph data structure
-        enabledEdges : enabledEdges,
-        kgraph : kgraph
-      }, () => {
-        //add a timeout to let the thread settle before starting animations
-        //without this, on large models, we lose the first few animation frames
-        if(!this.props.disableAnimation) setTimeout( () => {
-          this.svgRootElement.unpauseAnimations();
-        })
+    const tic = new Date() as any;
+    this.setState({progress : this.state.progress.concat('Layouting KLay JSON...' )}, () => {
+      let idGenerator = idGen || new IdGenerator(); 
+      let kgraphRoot = props.kgraphRoot || kgRoot;
+      let kgraph = new KGraph(idGenerator, this.svgRootElement, kgraphRoot);
+      let allEdges = kgraph ? this._getAllEdges(kgraph) : [];
+      let enabledEdges = this._getEnabledEdges(allEdges, this.state.transitionsEnabled);
+      const options = this.getDefaultLayoutOptions(props.layoutOptions)
+      if(!this.props.disableAnimation) this.svgRootElement.pauseAnimations();
+      //wait a tick here to give him time to render.
+      //TODO: would be better to fix this by performing layout in a webworker thread.
+      setTimeout( () => {
+        kgraph.updateLayout(options, (err, rootNode) => {
+          console.log('kgraph rootNode',rootNode);
+          if(err) throw err;
+          this.virtualViewbox = {x : 0, y : 0, width : kgraph.root.width, height : kgraph.root.height};
+          this.setState({ 
+            allEdges : allEdges,   //TODO: this is likely to be a hotspot. we probably want to move this search logic inside of the kgraph data structure
+            enabledEdges : enabledEdges,
+            kgraph : kgraph,
+            progress : this.state.progress.slice(0,-1).concat(this.state.progress[this.state.progress.length-1] + ` Done (${(new Date() as any) - tic}ms)`)
+          }, () => {
+            //add a timeout to let the thread settle before starting animations
+            //without this, on large models, we lose the first few animation frames
+            if(!this.props.disableAnimation) setTimeout( () => {
+              this.svgRootElement.unpauseAnimations();
+            })
+          });
+        })  
       });
-    })  
+    })
   }
 
   private checkProps(props){
@@ -338,6 +357,14 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
                         {x : 0, y : 0, width : 0, height : 0}
     const transform = this.getTransformString(viewBox, viewBox, this.htmlRootElement ? this.htmlRootElement.getBoundingClientRect() : {x : 0, y : 0, width : 0, height : 0})
     return <div style={{width:'100%', height:'100%',position:'absolute',overflow:'hidden'}} ref={(e: HTMLDivElement) => { this.htmlRootElement = e; }}>
+        {  
+            <div style={{position:'absolute', display : this.state.kgraph ? 'none' : 'block' }}>
+              <div>Loading:</div>
+              <ul>
+                {this.state.progress.map( (progressText,i) => <li key={i}>{progressText}</li>)}
+              </ul>
+            </div>
+        }
         <svg width="100%" height="100%" 
           style={{transformOrigin : '0 0', transition : 'transform .1s linear', transform }}
           ref={(e: SVGSVGElement) => { this.svgRootElement = e; }}
