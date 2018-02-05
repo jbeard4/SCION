@@ -1,5 +1,5 @@
 {
-  "name": "react-collapsible",
+  "name": "@jbeard/react-collapsible",
   "version": "2.0.6",
   "description": "React component to wrap content in Collapsible element with trigger to open and close.",
   "keywords": [
@@ -47,9 +47,7 @@
     "sass-loader": "^6.0.6",
     "webpack": "^3.5.5",
     "webpack-dev-server": "^2.7.1",
-    "prop-types": "^15.5.8",
-    "react": "15.6.1",
-    "react-dom": "15.6.1"
+    "prop-types": "^15.5.8"
   },
   "repository": {
     "type": "git",
