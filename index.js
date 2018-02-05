@@ -1,4 +1,6 @@
-const xmllint = require('xmllint');
+#!/usr/bin/env node
+
+const xmllint = require('@jbeard/xmllint');
 const path = require('path');
 const fs = require('fs');
 

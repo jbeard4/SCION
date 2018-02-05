@@ -1,5 +1,5 @@
 {
-  "name": "scxmllint",
+  "name": "@jbeard/scxmllint",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,6 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "xml2js": "^0.4.19",
-    "xmllint": "^0.1.1"
+    "@jbeard/xmllint": "^0.1.1"
+  },
+  "bin" : {
+    "scxmllint" : "index.js"
   }
 }
