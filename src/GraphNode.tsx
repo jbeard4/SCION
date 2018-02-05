@@ -44,7 +44,7 @@ export interface GraphNodeProps {
   previousConfiguration? : string[];
   statesForDefaultEntry : string[];
   selectedNodeId:string;
-  selectedEdge: KGraphEdge;
+  selectedEdgeId:string;
 }
 
 export interface KGraphNodeAnimation {
@@ -188,6 +188,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
   shouldComponentUpdate(nextProps: GraphNodeProps, nextState: GraphNodeAnimation){
     let x = 
         nextProps.selectedNodeId !== this.props.selectedNodeId ||
+        nextProps.selectedEdgeId !== this.props.selectedEdgeId ||
         nextProps.node !== this.props.node || 
         nextProps.isRoot  !== this.props.isRoot || 
         nextProps.graphRoot  !== this.props.graphRoot || 
@@ -387,7 +388,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                 previousConfiguration={this.props.previousConfiguration}
                 statesForDefaultEntry={this.props.statesForDefaultEntry}
                 selectedNodeId={this.props.selectedNodeId}
-                selectedEdge={this.props.selectedEdge}
+                selectedEdgeId={this.props.selectedEdgeId}
                 />
           )))
         }
@@ -398,6 +399,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
               <GraphEdge edge={edge} key={`${this.props.node.id}_${idx}`} 
                 redraw={this.props.redraw}
                 disableAnimation={this.props.disableAnimation}
+                selected={edge.id === this.props.selectedEdgeId}
                 highlighted={ 
                   (
                     //the transition has been explicitly enabled

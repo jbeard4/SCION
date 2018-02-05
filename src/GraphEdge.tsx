@@ -15,6 +15,7 @@ export interface GraphEdgeProps {
   redraw? : boolean;
   disableAnimation? : boolean;
   highlighted : boolean;
+  selected : boolean;
 }
 
 export interface GraphEdgeAnimation {
@@ -257,7 +258,8 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
         className={
           classNames({
             "link" : true,
-            "highlighted" : this.props.highlighted
+            "highlighted" : this.props.highlighted,
+            "selected" : this.props.selected
           })
         }
         id={edgeId}

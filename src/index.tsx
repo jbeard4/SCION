@@ -39,7 +39,7 @@ export interface GraphRootAnimation {
   transitionsEnabled? : Map<string, Set<number>>;
   progress : string[];
   selectedNodeId: string;
-  selectedEdge: KGraphEdge;
+  selectedEdgeId: string;
 }
 
 export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRootAnimation> {
@@ -49,6 +49,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   private virtualViewbox : SVGRect;
   private previousVirtualViewbox : SVGRect;
   public collapsedNodeMap : any;
+  private lastTransitionId : string;
 
   public static layouts = constants.layouts;   //expose layouts
 
@@ -60,7 +61,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       kgraph : null,
       progress  : [],
       selectedNodeId : null,
-      selectedEdge : null
+      selectedEdgeId : null
     };
   }
 
@@ -359,17 +360,22 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     //TODO: maybe select the initial state, if he has one?
     if(kgraphNode.children && kgraphNode.children.length){
       const initialStateIdx = kgraphNode.children.map( c => c.$type).indexOf('initial');
-      this.setState({selectedNodeId : 
-        initialStateIdx > -1 ? 
-        kgraphNode.children[initialStateIdx].id :
-        kgraphNode.children[0].id
+      this.setState({
+        selectedEdgeId : null,
+        selectedNodeId : 
+          initialStateIdx > -1 ? 
+          kgraphNode.children[initialStateIdx].id :
+          kgraphNode.children[0].id
       });
     }
   }
 
   selectParentNode(kgraphNodeId : string){
     //select first child
-    this.setState({selectedNodeId : this.state.kgraph._childToParentMap.get(kgraphNodeId) });
+    this.setState({
+      selectedEdgeId : null,
+      selectedNodeId : this.state.kgraph._childToParentMap.get(kgraphNodeId) 
+    });
   }
 
   selectNextOrPrevState(next:boolean){
@@ -380,7 +386,23 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     const tmp = (idx+(next ? 1 : -1)) 
     const nextIdx = tmp >= 0 ? tmp % parentKgraphNode.children.length : parentKgraphNode.children.length + tmp;
     const nextChild = parentKgraphNode.children[nextIdx];
-    if(nextChild) this.setState({selectedNodeId : nextChild.id});
+    this.setState({
+      selectedEdgeId : null,
+      selectedNodeId : nextChild.id
+    });
+  }
+
+  selectNextOrPrevTransition(next : boolean){
+    const sourceId = this.state.kgraph.getKgraphEdgeById(this.state.selectedEdgeId).source
+    const edges = this.state.allEdges.filter( edge => edge.source === sourceId)
+    const idx = edges.map( edge => edge.id ).indexOf(this.state.selectedEdgeId)
+    const tmp = (idx+(next ? 1 : -1)) 
+    const nextIdx = tmp >= 0 ? tmp % edges.length : edges.length + tmp;
+    const nextEdge = edges[nextIdx];
+    this.setState({
+      selectedEdgeId : nextEdge.id,
+      selectedNodeId : null
+    });
   }
 
   handleKeypress(event){
@@ -391,66 +413,102 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
         if(this.state.selectedNodeId) this.toggleExpandContractState(this.state.selectedNodeId);
         break;
       case 'h':
-        //TODO: navigate to transition
+        if(this.state.selectedNodeId === null && this.state.selectedEdgeId === null){
+          //do nothing
+        }else if (this.state.selectedNodeId){  
+          //TODO: remember last transition that we used to enter this state. if it's populated, then return to that transition
+          //navigate to first transition targeting this state
+          const edges = this.state.allEdges.filter( edge => edge.target === this.state.selectedNodeId)
+          if(edges.length){
+            this.setState({
+              selectedNodeId: null,
+              selectedEdgeId: edges[0].id
+            });
+          }
+        }else if(this.state.selectedEdgeId){
+          //go to source state
+          this.setState({
+            selectedNodeId: this.state.kgraph.getKgraphEdgeById(this.state.selectedEdgeId).source,
+            selectedEdgeId: null
+          });
+        }
         break;
       case 'j':
-        if(this.state.selectedNodeId === null && this.state.selectedEdge === null){
+        if(this.state.selectedNodeId === null && this.state.selectedEdgeId === null){
           //do nothing
         }else if (this.state.selectedNodeId){  
           //go to next state
           this.selectNextOrPrevState(true);
-        }else if(this.state.selectedEdge){
-          //TODO go to next transition of source state
+        }else if(this.state.selectedEdgeId){
+          //go to next transition of source state
+          this.selectNextOrPrevTransition(true);
         }
         break;
       case 'k':
-        if(this.state.selectedNodeId === null && this.state.selectedEdge === null){
+        if(this.state.selectedNodeId === null && this.state.selectedEdgeId === null){
           //do nothing
         }else if (this.state.selectedNodeId){  
           //go to previous state
           this.selectNextOrPrevState(false);
-        }else if(this.state.selectedEdge){
-          //TODO go to previous transition of source state
+        }else if(this.state.selectedEdgeId){
+          //go to previous transition of source state
+          this.selectNextOrPrevTransition(false);
         }
         break;
       case 'l':
-        //TODO: navigate to transition
+        if(this.state.selectedNodeId === null && this.state.selectedEdgeId === null){
+          //do nothing
+        }else if (this.state.selectedNodeId){  
+          //navigate to first transition
+          const edges = this.state.allEdges.filter( edge => edge.source === this.state.selectedNodeId)
+          if(edges && edges.length){
+            this.setState({
+              selectedNodeId: null,
+              selectedEdgeId: edges[0].id
+            });
+          }
+        }else if(this.state.selectedEdgeId){
+          //go to target state
+          this.setState({
+            selectedNodeId: this.state.kgraph.getKgraphEdgeById(this.state.selectedEdgeId).target,
+            selectedEdgeId: null
+          });
+        }
         break;
       case 'o':
-        if(this.state.selectedNodeId === null && this.state.selectedEdge === null){
+        if(this.state.selectedNodeId === null && this.state.selectedEdgeId === null){
           //go down level in the hierarchy. 
           this.selectChildNode(this.state.kgraph.root.id);
         }else if (this.state.selectedNodeId){  
           this.selectChildNode(this.state.selectedNodeId);
-        }else if(this.state.selectedEdge){
+        }else if(this.state.selectedEdgeId){
           //get source state,
           //go down in hierarchy
-          this.selectChildNode( this.state.selectedEdge.source);
+          this.selectChildNode(this.state.kgraph.getKgraphEdgeById(this.state.selectedEdgeId).source);
         }
         break;
       case 'O':
-        if(this.state.selectedNodeId === null && this.state.selectedEdge === null){
+        if(this.state.selectedNodeId === null && this.state.selectedEdgeId === null){
           //do nothing
         }else if (this.state.selectedNodeId){  
           //get parent  
           this.selectParentNode(this.state.selectedNodeId);
-        }else if(this.state.selectedEdge){
-          this.selectParentNode( this.state.selectedEdge.source);
+        }else if(this.state.selectedEdgeId){
+          this.selectParentNode(this.state.kgraph.getKgraphEdgeById(this.state.selectedEdgeId).source);
         }
         break;
       case 'z':
-        if(this.state.selectedNodeId === null && this.state.selectedEdge === null){
+        if(this.state.selectedNodeId === null && this.state.selectedEdgeId === null){
           //do nothing
         }else if (this.state.selectedNodeId){  
           //get parent  
           if(event.ctrlKey){
-            
             this.zoomToViewbox(this.previousVirtualViewbox);
           }else{
             this.zoomToState(this.state.selectedNodeId);
           }
-        }else if(this.state.selectedEdge){
-          this.selectParentNode( this.state.selectedEdge.source);
+        }else if(this.state.selectedEdgeId){
+          //TODO: zoom to edge
         }
         break;
       case 'Z':
@@ -549,7 +607,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
                 previousConfiguration={this.props.previousConfiguration}
                 statesForDefaultEntry={this.props.statesForDefaultEntry}
                 selectedNodeId={this.state.selectedNodeId}
-                selectedEdge={this.state.selectedEdge}
+                selectedEdgeId={this.state.selectedEdgeId}
                 />
           }
         </g>

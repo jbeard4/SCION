@@ -18,6 +18,7 @@ export class KGraph {
 
   _kgraphRoot : KGraphNode;
   _idMap : Map<string, KGraphNode>;
+  _edgeIdMap : Map<string, KGraphEdge>;
   _childToParentMap : Map<string, string>;
   _idGenerator : IdGenerator; 
   _svgRootElement : SVGSVGElement;
@@ -38,6 +39,7 @@ export class KGraph {
     this._populateChildToParentMap(kgraph);
 
     this._normalizeKgraphTransitionTargets(kgraph);
+    this._populateEdgeIdMap(kgraph);
   }
 
   updateLayout(options, cb){
@@ -593,12 +595,32 @@ export class KGraph {
     return this._idMap.get(kgraphNodeId);
   }
 
+  public getKgraphEdgeById(kgraphEdgeId){
+    return this._edgeIdMap.get(kgraphEdgeId);
+  }
 
   _populateIdMap(graphRoot){
 
     this._idMap = new Map<string, KGraphNode>();
     var walk = (function(graphNode){
       this._idMap.set(graphNode.id, graphNode);
+      if(graphNode.children) graphNode.children.forEach(walk);
+    }.bind(this));
+
+    walk(graphRoot);
+    
+  }
+
+  _populateEdgeIdMap(graphRoot){
+
+    this._edgeIdMap = new Map<string, KGraphEdge>();
+    var walk = (function(graphNode){
+      
+      if(graphNode.edges && graphNode.edges.length){
+        graphNode.edges.forEach( edge => {
+          this._edgeIdMap.set(edge.id, edge);
+        })
+      }
       if(graphNode.children) graphNode.children.forEach(walk);
     }.bind(this));
 
