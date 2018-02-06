@@ -30,6 +30,7 @@ export interface GraphRootProps {
   previousConfiguration? : string[];
   statesForDefaultEntry? : string[];
   disableZoom? : boolean;
+  disableZoomAnimation? : boolean;
   hideActions? : boolean;
   expandAllStatesByDefault? : boolean;
 }
@@ -623,7 +624,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
             </div>
         }
         <svg width="100%" height="100%" 
-          style={{transformOrigin : '0 0', transition : 'transform .1s linear', transform }}
+          style={{transformOrigin : '0 0', transition : this.props.disableZoomAnimation ? undefined : 'transform .1s linear', transform }}
           ref={(e: SVGSVGElement) => { this.svgRootElement = e; }}
           onWheel={this.props.disableZoom ? null : this.handleMouseWheel.bind(this)}
           onMouseDown={this.handleMouseDown.bind(this)}
