@@ -42,7 +42,9 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
   componentHasRendered : boolean;
   svgPathAnimation : SVGAnimationElement;
   svgMarkerAnimation : SVGAnimationElement;
+  svgVisibilityAnimation : SVGAnimationElement;
   svgPathElement : SVGPathElement;
+  svgMarkerElement : SVGMarkerElement;
 
   constructor(props){
     super(props);
@@ -66,19 +68,12 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
       marker : (() => {
         var arr = [];
         var from, to;
-        function add(type){
-          arr.push(`url(#${type})`); 
-        }
         for(var i = 1; i < points.length; i++){
           [from, to] = points.slice(i-1, i+1);
           if(!to) continue;
-          add(this._getBendpointDirection(from, to));
+          arr.push(this._getBendpointDirection(from, to));
         }
-        if(this._isHyperlink(props.edge)){ 
-          arr.push('none');
-        } else {
-          arr.push(arr[arr.length - 1]);
-        }
+        arr.push(arr[arr.length - 1]);
         return arr;
       }).call(this),
       path : (() => {
@@ -127,15 +122,10 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
       marker : (() => {
         //get the last segment and find out what direction he's facing
         var markers = [];
-        if(props.edge.$type === 'hyperlink'){
-          markers.push('none','none');  //SMIL will override the CSS class, believe it or not
-        } else {
-          var from, to;
-          [from, to] = points.slice(points.length-2);
-          var type = this._getBendpointDirection(from, to);
-          var markerUrl = `url(#${type})`;
-          markers.push(markerUrl, markerUrl);
-        }
+        var from, to;
+        [from, to] = points.slice(points.length-2);
+        var angle = this._getBendpointDirection(from, to);
+        markers.push(angle, angle);
         return markers;
       })(),   
       path : (() => {
@@ -200,25 +190,25 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
     var lastSegmentDirection = this._getBendpointDirection(initialFrom, edge.targetPoint);
     //debug('lastSegmentDirection ',lastSegmentDirection);
     switch(lastSegmentDirection){
-      case 'right':
+      case 0:
         var markerOffset = this._isHyperlink(edge) ? 0 : constants.ARROW_WIDTH;
         var x = edge.targetPoint.x - markerOffset;
         var y = edge.targetPoint.y;
         break;
-      case 'left':
+      case -180:
         markerOffset = this._isHyperlink(edge) ? 0 : constants.ARROW_WIDTH;
         x = edge.targetPoint.x + markerOffset;
         y = edge.targetPoint.y;
         break;
-      case 'down':
-        markerOffset = this._isHyperlink(edge) ? 0 : constants.ARROW_WIDTH;
-        x = edge.targetPoint.x;
-        y = edge.targetPoint.y - markerOffset;
-        break;
-      case 'up':
+      case -90:
         markerOffset = this._isHyperlink(edge) ? 0 : constants.ARROW_WIDTH;
         x = edge.targetPoint.x;
         y = edge.targetPoint.y + markerOffset;
+        break;
+      case -270:
+        markerOffset = this._isHyperlink(edge) ? 0 : constants.ARROW_WIDTH;
+        x = edge.targetPoint.x;
+        y = edge.targetPoint.y - markerOffset;
         break;
       default:
         throw new Error('Layout not recognized');
@@ -233,15 +223,15 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
   private _getBendpointDirection(from, to){
     var toReturn;
     if(from.x <= to.x && from.y.toPrecision(PRECISION) == to.y.toPrecision(PRECISION)){
-      toReturn = 'right';
+      toReturn = 0;
     } else if(from.x >= to.x && from.y.toPrecision(PRECISION) == to.y.toPrecision(PRECISION)){
-      toReturn = 'left';
+      toReturn = -180;
     } else if(from.x.toPrecision(PRECISION) == to.x.toPrecision(PRECISION) && from.y <= to.y){
-      toReturn = 'down';
+      toReturn = -270;
     } else if(from.x.toPrecision(PRECISION) == to.x.toPrecision(PRECISION) && from.y >= to.y){
-      toReturn = 'up';
+      toReturn = -90;
     } else {
-      toReturn = 'right';
+      toReturn = 0;
     }
     return toReturn;
   }
@@ -254,6 +244,36 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
     var edgeId = this.props.edge.id;
     var markerId = `${edgeId}:marker`;
     let toReturn = <g>
+      <marker viewBox="0 -5 10 10" refX="0" refY="0" markerWidth="3" markerHeight="5"
+          id={markerId} 
+          ref={(e: SVGMarkerElement) => { this.svgMarkerElement = e; }}
+          orient={this.props.disableAnimation ? this.state.marker[this.state.marker.length - 1] : undefined}
+          >
+        <path d="M0,-5L10,0L0,5"/>
+        {
+          !this.props.disableAnimation && 
+            [
+              <animate 
+                key="1"
+                attributeName="orient" attributeType="XML" fill="freeze" calcMode="discrete"
+                ref={(e: SVGAnimationElement) => { this.svgMarkerAnimation = e; }}
+                dur={constants.ANIM_DURATION}
+                keyTimes={ this.state.keyTimes }
+                begin={ this.state.begin.marker }
+                values={this.state.marker.join(';')}
+                />,
+              <animate 
+                key="2"
+                attributeName="visibility" attributeType="XML" fill="freeze" calcMode="discrete"
+                ref={(e: SVGAnimationElement) => { this.svgVisibilityAnimation = e; }}
+                dur={constants.ANIM_DURATION}
+                keyTimes={ '0;1' }
+                begin={ this.state.begin.marker }
+                values={ `visible; ${this._isHyperlink(this.props.edge) ? 'hidden' : 'visible'}` }
+                />
+            ]
+        }
+      </marker>
       <path 
         className={
           classNames({
@@ -265,19 +285,9 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
         id={edgeId}
         ref={(e: SVGPathElement) => { this.svgPathElement = e; }}
         strokeDasharray={this.state.pathLength.toString()}
-        markerEnd={this.props.disableAnimation ? this.state.marker[this.state.marker.length - 1] : undefined}
+        markerEnd={`url(#${markerId})`}
         d={this.props.disableAnimation ? this._edgeToD(this.state.path[this.state.path.length - 1]) : undefined}
         >
-          {
-            !this.props.disableAnimation && 
-               <animate attributeName="marker-end" attributeType="CSS" fill="freeze" 
-                  ref={(e: SVGAnimationElement) => { this.svgMarkerAnimation = e; }}
-                  dur={constants.ANIM_DURATION}
-                  keyTimes={ this.state.keyTimes }
-                  values={ this.state.marker.join(';') }
-                  begin={ this.state.begin.marker }
-                  /> 
-          }
           {
             !this.props.disableAnimation && 
               <animate attributeName="d" attributeType="XML" fill="freeze" 
@@ -423,6 +433,9 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
       this.svgPathAnimation.setAttributeNS(null, 'begin', 'indefinite');
     }
 
+    //force update id of marker element to workaround bug where marker element would disappear
+    this.svgMarkerElement.setAttributeNS(null, "id", this.svgMarkerElement.getAttributeNS(null, "id")); 
+
     this.animate();
   }
 
@@ -436,7 +449,8 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
     if(this.state.begin.path === 'indefinite'){
       if(!this.props.disableAnimation) [
         this.svgPathAnimation,
-        this.svgMarkerAnimation
+        this.svgMarkerAnimation,
+        this.svgVisibilityAnimation 
       ].forEach(e => e.beginElement());
     }
   }
