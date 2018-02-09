@@ -4,45 +4,104 @@ const xmllint = require('@jbeard/xmllint');
 const path = require('path');
 const fs = require('fs');
 
-const scxmlSchemaFileNames = [
-  'xml.xsd',
-  'scxml-attribs.xsd',
-  'scxml-contentmodels.xsd',
-  'scxml-copyright.xsd',
-  'scxml-core-strict.xsd',
-  'scxml-data-strict.xsd',
-  'scxml-datatypes.xsd',
-  'scxml-external-strict.xsd',
-  'scxml-message.xsd',
-  'scxml-messages.xsd',
-  'scxml-module-anchor.xsd',
-  'scxml-module-core.xsd',
-  'scxml-module-data.xsd',
-  'scxml-module-external.xsd',
-  'scxml-module-script.xsd',
-  'scxml-profile-basic.xsd',
-  'scxml-profile-ecma.xsd',
-  'scxml-profile-minimum.xsd',
-  'scxml-profile-xpath.xsd',
-  'scxml-strict.xsd',
-  'scxml.xsd'
+const schemas = [
+  {
+    name : 'xml.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','xml.xsd'),'utf8')
+  },
+  {
+    name : 'scxml-attribs.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml-attribs.xsd'),'utf8')
+  },
+  {
+    name : 'scxml-contentmodels.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml-contentmodels.xsd'),'utf8')
+  },
+  {
+    name : 'scxml-copyright.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml-copyright.xsd'),'utf8')
+  },
+  {
+    name : 'scxml-core-strict.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml-core-strict.xsd'),'utf8')
+  },
+  {
+    name : 'scxml-data-strict.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml-data-strict.xsd'),'utf8')
+  },
+  {
+    name : 'scxml-datatypes.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml-datatypes.xsd'),'utf8')
+  },
+  {
+    name : 'scxml-external-strict.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml-external-strict.xsd'),'utf8')
+  },
+  {
+    name : 'scxml-message.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml-message.xsd'),'utf8')
+  },
+  {
+    name : 'scxml-messages.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml-messages.xsd'),'utf8')
+  },
+  {
+    name : 'scxml-module-anchor.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml-module-anchor.xsd'),'utf8')
+  },
+  {
+    name : 'scxml-module-core.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml-module-core.xsd'),'utf8')
+  },
+  {
+    name : 'scxml-module-data.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml-module-data.xsd'),'utf8')
+  },
+  {
+    name : 'scxml-module-external.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml-module-external.xsd'),'utf8')
+  },
+  {
+    name : 'scxml-module-script.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml-module-script.xsd'),'utf8')
+  },
+  {
+    name : 'scxml-profile-basic.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml-profile-basic.xsd'),'utf8')
+  },
+  {
+    name : 'scxml-profile-ecma.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml-profile-ecma.xsd'),'utf8')
+  },
+  {
+    name : 'scxml-profile-minimum.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml-profile-minimum.xsd'),'utf8')
+  },
+  {
+    name : 'scxml-profile-xpath.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml-profile-xpath.xsd'),'utf8')
+  },
+  {
+    name : 'scxml-strict.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml-strict.xsd'),'utf8')
+  },
+  {
+    name : 'scxml.xsd' , 
+    schema : fs.readFileSync(path.join(__dirname, 'xsd','scxml.xsd'),'utf8')
+  }
 ];
 
-
-const schemas = scxmlSchemaFileNames.map( name => {
-  let s = fs.readFileSync(path.join(__dirname, 'xsd', name),'utf8');
-
-  scxmlSchemaFileNames.forEach( (schemaName,i) => {
+schemas.forEach( schemaObj => {
+  let schemaStr = schemaObj.schema;
+  schemas.forEach( (schemaObj2,i) => {
+    schemaName = schemaObj2.name;
     let stringToReplace = 
       schemaName === 'xml.xsd' ? 
       'http://www.w3.org/2001/xml.xsd' : 
       schemaName;
-    s = s.replace(stringToReplace, `file_${i}.xsd`)
+    schemaStr = schemaStr.replace(stringToReplace, `file_${i}.xsd`)
   }); 
-  return {
-    name : name,
-    schema : s
-  };
+  schemaObj.schema = schemaStr; 
 }); 
 
 

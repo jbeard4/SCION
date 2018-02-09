@@ -12,7 +12,17 @@
     "xml2js": "^0.4.19",
     "@jbeard/xmllint": "^0.1.1"
   },
-  "bin" : {
-    "scxmllint" : "index.js"
+  "bin": {
+    "scxmllint": "index.js"
+  },
+  "devDependencies": {
+    "brfs": "^1.4.4"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "brfs"
+      ]
+    ]
   }
 }
