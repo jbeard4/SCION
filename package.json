@@ -1,6 +1,6 @@
 {
   "name": "eslint",
-  "version": "4.17.0",
+  "version": "4.17.1",
   "author": "Nicholas C. Zakas <nicholas+npm@nczconsulting.com>",
   "description": "An AST-based pattern checker for JavaScript.",
   "bin": {
@@ -119,6 +119,10 @@
     "ecmascript",
     "espree"
   ],
+  "browser": {
+    "./lib/api.js" : "./lib/api-browserify.js", 
+    "./lib/load-rules.js" : "./lib/load-rules-browserify.js" 
+  },
   "license": "MIT",
   "engines": {
     "node": ">=4"
