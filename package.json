@@ -1,5 +1,5 @@
 {
-  "name": "eslint",
+  "name": "@jbeard/eslint",
   "version": "4.17.1",
   "author": "Nicholas C. Zakas <nicholas+npm@nczconsulting.com>",
   "description": "An AST-based pattern checker for JavaScript.",
