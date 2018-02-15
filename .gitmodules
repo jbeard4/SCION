@@ -52,3 +52,18 @@
 [submodule "projects/vi-everywhere"]
 	path = projects/vi-everywhere
 	url = git@nas:JacobeanRnD/vi-everywhere.git
+[submodule "projects/CodeMirror"]
+	path = projects/CodeMirror
+	url = https://github.com/codemirror/CodeMirror.git
+[submodule "projects/eslint"]
+	path = projects/eslint
+	url = git@nas:JacobeanRnD/eslint.git
+[submodule "projects/react-codemirror"]
+	path = projects/react-codemirror
+	url = git@nas:JacobeanRnD/react-codemirror.git
+[submodule "projects/scion-scxml-studio-web"]
+	path = projects/scion-scxml-studio-web
+	url = git@nas:JacobeanRnD/scion-scxml-studio-web.git
+[submodule "projects/universal-morse-input-output"]
+	path = projects/universal-morse-input-output
+	url = git@nas:JacobeanRnD/universal-morse-input-output.git

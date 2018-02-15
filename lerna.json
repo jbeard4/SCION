@@ -24,7 +24,12 @@
     "projects/scxmllint",
     "projects/vi-everywhere",
     "projects/vscode-scxml-preview",
-    "projects/xmllint"
+    "projects/xmllint",
+    "projects/CodeMirror",
+    "projects/eslint",
+    "projects/react-codemirror",
+    "projects/scion-scxml-studio-web",
+    "projects/universal-morse-input-output"
   ],
   "version": "independent"
 }
