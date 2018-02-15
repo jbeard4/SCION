@@ -10,13 +10,6 @@
         <data id="dash_duration" expr="dit_duration * 3"/>
       </datamodel>
       <state id="released">
-        <onentry>
-          <script>
-            //turn off the buzzer
-            //hardware.buzzer.write(0);
-          </script>
-          <send event="button.release"/>
-        </onentry>
         <state id="initial">
           <onentry>
             <send id="short_pause_timeout" event="short_pause_timeout" delayexpr="dash_duration + 'ms'"/>
@@ -48,13 +41,6 @@
         </state>
       </state>
       <state id="pressed">
-        <onentry>
-          <script>
-            //trigger the buzzer
-            //hardware.buzzer.write(1);
-          </script>
-          <send event="button.press"/>
-        </onentry>
         <state id="sending_dot">
           <onentry>
             <send id="dash-timeout" event="dash-timeout" delayexpr="dash_duration + 'ms'"/>

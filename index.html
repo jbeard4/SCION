@@ -252,8 +252,8 @@
   ")": "-.--.-"
 }
 </pre>
-<script src="/node_modules/babel-polyfill/dist/polyfill.js"></script>
-<script src="/node_modules/@jbeard/scxml/dist/scxml.debug.js"></script>
+<script src="./node_modules/babel-polyfill/dist/polyfill.js"></script>
+<script src="./node_modules/@jbeard/scxml/dist/scxml.debug.js"></script>
 <script>
   function main(){
     //here we pull this out of the document, but, thanks to clean design, 
@@ -265,7 +265,7 @@
 
 
       
-    scxml.urlToModel('/build/morse.scxml',function(err,modelFactoryFactory){
+    scxml.urlToModel('./build/morse.scxml',function(err,modelFactoryFactory){
         if(err) throw err;
 
         modelFactoryFactory.prepare(function(err,modelFactory){
