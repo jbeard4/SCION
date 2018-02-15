@@ -120,8 +120,8 @@
     "espree"
   ],
   "browser": {
-    "./lib/api.js" : "./lib/api-browserify.js", 
-    "./lib/load-rules.js" : "./lib/load-rules-browserify.js" 
+    "./lib/api.js": "./lib/api-browserify.js",
+    "./lib/load-rules.js": "./lib/load-rules-browserify.js"
   },
   "license": "MIT",
   "engines": {
