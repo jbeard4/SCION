@@ -6,8 +6,8 @@ const _ = require('underscore');
 
 const EXPRESSION_ATTRS = [ 
   'cond',
-  'array'
-//  'location',
+  'array',
+  'location'
 //  'namelist',
 //  'idlocation'
 ];

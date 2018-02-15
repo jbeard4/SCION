@@ -29,7 +29,7 @@ const needle = path.join("lib", "linter.js")
 iterateESLintModules(patch)
 
 function getModuleFromRequire() {
-  return require("eslint/lib/linter")
+  return require("eslint/lib/linter") //TODO: find a better solution to this
 }
 
 function getModuleFromCache(key) {
@@ -109,7 +109,7 @@ function patch(Linter) {
           if(match){
             const lineNum = parseInt(match[1]);
             const selectedLine = lines[lineNum];
-            if(selectedLine){
+            if(typeof selectedLine !== 'undefined'){
               const endColumn = selectedLine.length;
               return {
                 ruleId: 'xml-validation',
@@ -174,6 +174,8 @@ function patch(Linter) {
     return messages
   }
 }
+
+module.exports = patch;
 
 function verifyWithScxmlScopes(
   localVerify,
