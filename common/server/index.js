@@ -114,7 +114,7 @@ function init(srcDir,mainScxmlFile,options){
     },{console : console, util : require('util'), builder : builder, _  : _ });
   });
 
-  const broadcast = scionDiagnostics.init({server});
+  const broadcast = scionDiagnostics.init({server, "serve-scxml-from-root-fs" : true});
   diagnosticsClient.init(scxml,{broadcast});
 }
 
