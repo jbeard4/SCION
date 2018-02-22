@@ -25,8 +25,10 @@
     "@jbeard/schviz2": "3.2.5",
     "@jbeard/scxml": "4.3.1",
     "babel-polyfill": "^6.23.0",
+    "jquery-ui-dist": "^1.12.1",
     "optimist": "^0.6.1",
-    "toastr": "^2.1.2"
+    "toastr": "^2.1.2",
+    "ui-contextmenu": "^1.18.1"
   },
   "keywords": [
     "SCXML"
@@ -46,7 +48,7 @@
     "electron": "^1.4.1",
     "electron-packager": "^8.6.0",
     "exorcist": "^0.4.0",
-    "jquery": "^3.2.1",
+    "jquery": "^3.3.1",
     "scxml-test-framework": "^1.0.2",
     "sorcery": "^0.10.0",
     "tsify": "^3.0.1",

@@ -51,8 +51,6 @@ export default class AppComponent extends React.Component<AppComponentProps, App
       layoutOptions : SCHVIZ.layouts[initialLayout] 
     };
 
-    this.initContextMenu();
-
     //if everything worked, then watch the file for changes
     fs.watchFile(props.scxmlPath, {persistent: true, interval : 100}, (cur, prev) => {
       clear();
@@ -68,32 +66,6 @@ export default class AppComponent extends React.Component<AppComponentProps, App
       });
     });
   }
-
-  private initContextMenu(){
-    const menu = new Menu()
-    let items = Object.keys(SCHVIZ.layouts).map((layoutName) => {
-      let item = new MenuItem({ 
-        label: layoutName, 
-        type: 'checkbox', 
-        checked: this.state.layoutName === layoutName,
-        click : () => {
-          items.forEach( i => i.checked = i === item );
-          this.setState({
-            layoutName : layoutName,
-            layoutOptions : SCHVIZ.layouts[layoutName]
-          });
-        }
-      });
-
-      menu.append(item);
-      return item;
-    })
-    window.addEventListener('contextmenu', (e) => {
-      e.preventDefault()
-      menu.popup(remote.getCurrentWindow())
-    }, false)
-  }
-
 
   handleRunButtonClick(event){
     //create a new scxml instance
