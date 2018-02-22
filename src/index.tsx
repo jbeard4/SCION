@@ -12,7 +12,6 @@ import _ = require('underscore');
 import {LayoutOptions} from './IKGraphRenderBackend';
 import {SCState, SCTransition, findStateById} from './SCJSON';
 import SCJSONToKGraphTransformer from './SCJSONToKGraphTransformer';
-import $ = require('jquery');
 require('../bower_components/load-awesome/css/line-spin-fade-rotating.css')
 
 
@@ -47,7 +46,99 @@ export interface GraphRootAnimation {
   selectedEdgeId: string;
 }
 
-export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRootAnimation> {
+export interface SchvizState {
+  layoutOptions? : LayoutOptions;
+}
+
+
+function getDefaultLayoutOptions(layoutOptions){
+  return _.extend({}, constants.layouts.right, layoutOptions);
+}
+
+export default class SCHVIZ extends React.PureComponent<GraphRootProps, SchvizState> {
+
+  private htmlRootElement : HTMLDivElement;
+  public graphRoot : GraphRoot;
+
+  public static layouts = constants.layouts;   //expose layouts
+
+  componentDidMount(){
+    const jquery = window['jQuery'] as any;
+    const self = this;
+    $(document).contextmenu({
+      delegate: ".schviz",
+      autoFocus: true,
+      preventContextMenuForPopup: true,
+      preventSelect: true,
+      taphold: true,
+      menu: [
+        {
+          title : 'Layout',
+          children: Object.keys(constants.layouts).map((layoutName) => ({
+            title : layoutName,
+            cmd : 'setLayout'
+          }))
+        },
+        {title: "----"},
+        {
+          title : 'Zoom to state',
+          cmd : 'zoomToState'
+        },
+        {
+          title : 'Expand/contract',
+          cmd : 'toggleExpandNode'
+        }
+      ],
+      beforeOpen: function(event, ui) {
+        var $menu = ui.menu,
+            $target = ui.target,
+            extraData = ui.extraData; // optionally passed when menu was opened by call to open()
+
+        const node = $target.closest('.node');
+        const tagName = $target.prop('tagName');
+        if(tagName === 'svg' || tagName === 'DIV'){
+          jquery(document).contextmenu('showEntry', "zoomToState", false);
+          jquery(document).contextmenu('showEntry', "toggleExpandNode", false);
+        }else{
+          const id = node.attr('id');
+          extraData.nodeId = id; 
+          jquery(document).contextmenu('showEntry', "zoomToState");
+          jquery(document).contextmenu('showEntry', "toggleExpandNode");
+        }
+      },
+      select: function(event, ui) {
+        var $target = ui.target;
+        switch(ui.cmd){
+          case "setLayout":
+            self.setState({layoutOptions : getDefaultLayoutOptions(constants.layouts[ui.item.text()])}); 
+            break;
+          case 'zoomToState':
+            self.graphRoot.zoomToState(ui.extraData.nodeId);
+            break;
+          case 'toggleExpandNode':
+            self.graphRoot.toggleExpandContractState(ui.extraData.nodeId);
+            break;
+        }
+      }
+    } as any);
+
+  }
+
+  componentWillReceiveProps(props : GraphRootProps){
+    if(props.layoutOptions !== this.props.layoutOptions){
+      this.setState({layoutOptions : props.layoutOptions});
+    }
+  }
+
+  render(){
+    const props = _.extend({},this.props,this.state);
+    return <div className="schviz" style={{width:'100%', height:'100%',position:'absolute',overflow:'hidden'}} ref={(e: HTMLDivElement) => { this.htmlRootElement = e; }}>
+      <GraphRoot ref={e => this.graphRoot = e} {...props}/>
+    </div>
+  }
+}
+
+export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnimation> {
 
   private svgRootElement : SVGSVGElement;
   private htmlRootElement : HTMLDivElement;
@@ -56,8 +147,6 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   public collapsedNodeMap : any;
   private lastTransitionId : string;
   private cachedLastScjson : scxml.scion.SCState;
-
-  public static layouts = constants.layouts;   //expose layouts
 
   constructor(props:GraphRootProps){
     super(props);
@@ -70,10 +159,6 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       selectedEdgeId : null,
       loading : false
     };
-  }
-
-  private getDefaultLayoutOptions(layoutOptions){
-    return _.extend({}, constants.layouts.right, layoutOptions);
   }
 
   toViewportCoordinates(event){
@@ -349,7 +434,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
       let kgraph = new KGraph(idGenerator, this.svgRootElement, kgraphRoot);
       let allEdges = kgraph ? this._getAllEdges(kgraph) : [];
       let enabledEdges = this._getEnabledEdges(allEdges, this.state.transitionsEnabled);
-      const options = this.getDefaultLayoutOptions(props.layoutOptions)
+      const options = getDefaultLayoutOptions(props.layoutOptions)
       if(!this.props.disableAnimation) this.svgRootElement.pauseAnimations();
       //wait a tick here to give him time to render.
       //TODO: would be better to fix this by performing layout in a webworker thread.
@@ -563,6 +648,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   }
 
   componentDidMount(){
+    const $ = window['jQuery'] as any;
     $(window).on('resize', () => {
       this.refreshViewbox();
     })
@@ -579,7 +665,6 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
     } else if (this.props.kgraphRoot ){
       this.initKGraph(this.props, true);
     } 
-
   }
 
   public toggleExpandContractState(nodeId : string){
@@ -593,12 +678,11 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, GraphRoo
   }
 
   render(){
-    console.log('this.state.selectedNodeId', this.state.selectedNodeId);
     const viewBox = this.state.kgraph ? 
                         this.getOriginalViewbox(this.state.kgraph) : 
                         {x : 0, y : 0, width : 0, height : 0}
     const transform = this.getTransformString(viewBox, viewBox, this.htmlRootElement ? this.htmlRootElement.getBoundingClientRect() : {x : 0, y : 0, width : 0, height : 0})
-    return <div style={{width:'100%', height:'100%',position:'absolute',overflow:'hidden'}} ref={(e: HTMLDivElement) => { this.htmlRootElement = e; }}>
+    return <div style={{width:'100%', height:'100%'}} ref={(e: HTMLDivElement) => { this.htmlRootElement = e; }}>
         {  
           this.state.loading && 
             <div style={{position:'absolute'}}>

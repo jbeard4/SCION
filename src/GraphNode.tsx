@@ -8,30 +8,21 @@ import EventEmitter = require('events');
 import _ = require('underscore');
 import Debug = require('debug');
 import classNames = require('classnames');
-import SCHVIZ from './index';
+import {GraphRoot} from './index';
 import GraphNodeLabel from './GraphNodeLabel';
 
 const debug = Debug('GraphNode');
 
-import GraphRoot from './index';
-
 let electron;
-let Menu, MenuItem;
-let remote;
 try {
   electron = require('electron');
-  remote = electron.remote;
-  if(remote){ 
-    Menu = remote.Menu;
-    MenuItem = remote.MenuItem;
-  }
 } catch(e){
   //not in electron
 }
 
 
 export interface GraphNodeProps {
-  schviz : SCHVIZ;
+  schviz : GraphRoot;
   node : KGraphNode;
   isRoot : boolean;
   graphRoot : GraphRoot;
@@ -95,8 +86,6 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
   constructor(props){
     super(props);
 
-    if(Menu) this.initContextMenu();
-
     this.state = {
       from : this.getInitialFrom(props),
       to : this._toNode(this.props.node)
@@ -119,34 +108,6 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
 
   componentWillMount(){
     debug('componentWillMount', this.props.node.id);
-  }
-
-  private initContextMenu(){
-    const menu = new Menu()
-    let items = [
-      new MenuItem({
-        label: 'Zoom to state', 
-        click : () => {
-          this.props.graphRoot.zoomToState(this.props.node.id);
-        }
-      }),
-      new MenuItem({
-        label: 'Expand/contract', 
-        click : () => {
-          console.log('Expand state/contract state');
-          this.props.schviz.toggleExpandContractState(this.props.node.id);
-        }
-      })
-    ];
-    items.forEach( item => menu.append(item) );
-
-    this.contextmenu = menu;
-  }
-
-  handleContextMenu(e){
-    e.preventDefault()
-    e.stopPropagation();
-    this.contextmenu.popup(remote.getCurrentWindow())
   }
 
   _toNode(node){
@@ -238,7 +199,6 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
 
   componentDidMount(){
     this.animate();
-    this.svgGElement.addEventListener('contextmenu', this.handleContextMenu.bind(this))
   }
 
   private animate(){

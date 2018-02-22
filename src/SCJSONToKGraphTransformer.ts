@@ -3,7 +3,7 @@ import events from './events';
 import IdGenerator from './IdGenerator';
 import _ = require('underscore');
 import {SCState} from './SCJSON';
-import GraphRoot from './index'
+import {GraphRoot} from './index'
 import {KGraphNode, KGraphEdge, KGraphLabel} from './KGraph';
 
 const DEFAULTPROPS = { "borderSpacing": 6};

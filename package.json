@@ -11,11 +11,15 @@
     "classnames": "^2.2.5",
     "debug": "^2.6.3",
     "grunt": "^1.0.1",
-    "jquery": "^3.1.1",
     "klayjs": "^0.4.1",
     "pathseg": "^1.0.2",
     "q": "^1.4.1",
     "underscore": "^1.8.3"
+  },
+  "peerDependencies" : {
+    "jquery": "^3.1.1",
+    "jquery-ui-dist": "^1.12.1",
+    "ui-contextmenu": "^1.18.1"
   },
   "devDependencies": {
     "@types/es6-shim": "0.31.33",
@@ -55,7 +59,7 @@
     "server": "node grunt/server.js",
     "start": "npm run server",
     "harness": "opn http://localhost:3001/test-integration/index.html",
-    "postinstall" : "bower install load-awesome"
+    "postinstall": "bower install load-awesome"
   },
   "browserify": {
     "transform": [
