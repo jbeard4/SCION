@@ -248,6 +248,7 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
           id={markerId} 
           ref={(e: SVGMarkerElement) => { this.svgMarkerElement = e; }}
           orient={this.props.disableAnimation ? this.state.marker[this.state.marker.length - 1] : undefined}
+          visibility={this.props.disableAnimation && this._isHyperlink(this.props.edge) ? 'hidden' : undefined}
           >
         <path d="M0,-5L10,0L0,5"/>
         {
