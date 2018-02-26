@@ -8,7 +8,7 @@ import EventEmitter = require('events');
 import _ = require('underscore');
 import Debug = require('debug');
 import classNames = require('classnames');
-import {GraphRoot} from './index';
+import {GraphRoot} from './GraphRoot';
 import GraphNodeLabel from './GraphNodeLabel';
 
 const debug = Debug('GraphNode');
