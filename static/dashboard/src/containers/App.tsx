@@ -246,7 +246,7 @@ class App extends React.Component<AppProps, AppState> {
       }),
       center__onresize:	(() => { 
         setTimeout( () => {
-          this.schvizComponent.refreshViewbox();
+          this.schvizComponent.graphRoot.refreshViewbox();
         })
       }),
       stateManagement__enabled:	true

@@ -61,6 +61,7 @@ export class EventSourceComponent extends React.Component<EventSourceProps, Even
   initEventSource(){
 
     //TODO: break this out into an action creator
+    //TODO: parameterize this so that we can receive events from an EventEmitter
     this.source = new EventSource('/api/update-stream');
 
     this.source.addEventListener('onSmallStepEnd', (e:any) => {
