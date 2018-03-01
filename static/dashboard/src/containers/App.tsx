@@ -9,6 +9,7 @@ import EventSourceContainer from '../containers/EventSource';
 import Header from '../components/Header';
 import MainSection from '../components/MainSection';
 import {TableInspector, ObjectInspector} from 'react-inspector';
+import events = require('events');
 
 export interface AppProps {
   smallSteps: Array<any>;
@@ -16,6 +17,9 @@ export interface AppProps {
   selectedRowIndex: number;
   onTriggerClick: any;
   collapsible: any;
+  inputEventEmitter? : events.EventEmitter;
+  baseUrl? : string;
+  onSmallStep : any;
 };
 
 
@@ -44,9 +48,11 @@ class App extends React.Component<AppProps, AppState> {
   private rootElement : HTMLDivElement;
   private slickgridComponent : SlickgridComponent;
   private schvizComponent : SCHVIZ;
+  private lastEventId;
 
   constructor() {
     super();
+    this.lastEventId = 1;
     this.state = {
       minHeight : 200,
       rows : [
@@ -135,7 +141,7 @@ class App extends React.Component<AppProps, AppState> {
               ref={(e: SCHVIZ) => { this.schvizComponent = e; }}
               expandAllStatesByDefault={true}
               disableAnimation={true}
-              urlToSCXML={currentRow.docUrl} 
+              urlToSCXML={`${this.props.baseUrl || ''}${currentRow.docUrl}`} 
               layoutOptions={SCHVIZ.layouts.right} 
               configuration={currentRow.snapshot[0]}
               previousConfiguration={currentRow.previousConfiguration}
@@ -154,7 +160,9 @@ class App extends React.Component<AppProps, AppState> {
             selectedRowIndex={this.props.selectedRowIndex}/>
         </div>
         <div className="ui-layout-east">
-          <EventSourceContainer />
+          {
+            !this.props.inputEventEmitter && <EventSourceContainer />
+          }
           <Collapsible 
             trigger="Session Hierarchy"
             open={this.props.collapsible['sessionHierarchy']}
@@ -251,23 +259,47 @@ class App extends React.Component<AppProps, AppState> {
       }),
       stateManagement__enabled:	true
     });
+
+    if(this.props.inputEventEmitter){
+      this.props.inputEventEmitter.on('onSmallStepEnd',this.smallStepHandler.bind(this));
+    }
+  }
+
+  smallStepHandler(message){
+    this.props.onSmallStep(
+      this.lastEventId++,
+      message
+    )
+  }
+
+  componentWillUnmount(){
+    this.props.inputEventEmitter.off('onSmallStepEnd',this.smallStepHandler);
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, ownProps) {
   return {
     smallSteps: state.smallSteps,
     selectedRowIndex: state.selectedSmallStep,
-    collapsible : state.collapsible
+    collapsible : state.collapsible,
+    inputEventEmitter : ownProps.inputEventEmitter,
+    baseUrl : ownProps.baseUrl
   };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch, ownProps) {
   return {
     onSelectedRowChange : (rowIndex) => {
       dispatch({
         type : 'SELECT_SMALL_STEP',
         index : rowIndex
+      })
+    },
+    onSmallStep : (lastEventId, message) => {
+      dispatch({
+        type : 'SMALL_STEP',
+        message, 
+        lastEventId
       })
     },
     onTriggerClick: (title) => {

@@ -1,8 +1,8 @@
 {
-  "name": "scion-scxml-dashboard",
+  "name": "@jbeard/scion-scxml-dashboard",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/main.js",
+  "main": "./dist/containers/App",
   "scripts": {
     "start": "electron .",
     "watch": "tsc -p . --outDir dist/ -w & ( cd dist; watchify --exclude electron index.js -d  -o 'cat > scion-scxml-dashboard.js; sorcery -i scion-scxml-dashboard.js' -v )",
