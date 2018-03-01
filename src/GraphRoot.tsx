@@ -246,12 +246,14 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
 
     const tic = new Date() as any;
     this.setState({loading : true, progress : this.state.progress.concat('Compiling SCXML to SCJSON...' )}, () => {
-      if(props.pathToSCXML){
-        fetch(props.pathToSCXML).then(function(response) {
-          return response.text();
-        }).then(handler);
-      }else if(props.urlToSCXML){
-        fetch(props.urlToSCXML).then(function(response) {
+      const fetchableUrl = props.urlToSCXML || props.pathToSCXML;
+      if(fetchableUrl){
+        fetch(fetchableUrl, {
+          method: "GET",
+          headers: [],
+          credentials: "same-origin",
+          mode:"cors"
+        }).then(function(response) {
           return response.text();
         }).then(handler);
       }else if(props.scxmlDocumentString){
