@@ -67,3 +67,9 @@
 [submodule "projects/universal-morse-input-output"]
 	path = projects/universal-morse-input-output
 	url = git@nas:JacobeanRnD/universal-morse-input-output.git
+[submodule "projects/node.couchapp.js"]
+	path = projects/node.couchapp.js
+	url = git@github.com:JacobeanRnD/node.couchapp.js.git
+[submodule "projects/SlickGrid"]
+	path = projects/SlickGrid
+	url = https://github.com/6pac/SlickGrid.git
