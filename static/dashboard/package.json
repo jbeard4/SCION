@@ -36,7 +36,7 @@
     "react-redux": "^5.0.6",
     "react-ui-layout": "^1.0.4",
     "redux": "^3.1.5",
-    "slickgrid": "^2.3.10",
+    "slickgrid": "^2.3.15",
     "underscore": "^1.8.3"
   },
   "browserify": {

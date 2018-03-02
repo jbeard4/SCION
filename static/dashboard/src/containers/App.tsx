@@ -20,6 +20,7 @@ export interface AppProps {
   inputEventEmitter? : events.EventEmitter;
   baseUrl? : string;
   onSmallStep : any;
+  glContainer? : any;
 };
 
 
@@ -49,10 +50,10 @@ class App extends React.Component<AppProps, AppState> {
   private slickgridComponent : SlickgridComponent;
   private schvizComponent : SCHVIZ;
   private lastEventId;
+  private smallStepHandler: any;
 
   constructor() {
     super();
-    this.lastEventId = 1;
     this.state = {
       minHeight : 200,
       rows : [
@@ -63,6 +64,14 @@ class App extends React.Component<AppProps, AppState> {
         }
       ]
     };
+
+    this.smallStepHandler = (message) => {
+      this.props.onSmallStep(
+        null,
+        message
+      )
+    }
+
   }
 
   render() {
@@ -130,7 +139,7 @@ class App extends React.Component<AppProps, AppState> {
 
     const currentRowDatamodel = currentRow ? currentRow.snapshot[3] : null;
     const previousSessionDatamodel = currentRow  ? previousSessionRow.snapshot[3] : null; 
-
+    const urlToSCXML = `${this.props.baseUrl || ''}${currentRow.docUrl}`;
     return (
       <div  style={{width:'100%',height:'100%'}} 
             ref={(e: HTMLDivElement) => { this.rootElement = e; }}>
@@ -141,13 +150,14 @@ class App extends React.Component<AppProps, AppState> {
               ref={(e: SCHVIZ) => { this.schvizComponent = e; }}
               expandAllStatesByDefault={true}
               disableAnimation={true}
-              urlToSCXML={`${this.props.baseUrl || ''}${currentRow.docUrl}`} 
+              urlToSCXML={urlToSCXML} 
               layoutOptions={SCHVIZ.layouts.right} 
               configuration={currentRow.snapshot[0]}
               previousConfiguration={currentRow.previousConfiguration}
               statesForDefaultEntry={currentRow.defaultStatesEntered }
               transitionsEnabled={transitionsTaken}
               hideActions={true}
+              glContainer={this.props.glContainer}
               /> : 
             null
           }
@@ -246,34 +256,68 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   componentDidMount(){
-    
-    let myLayout = window['jQuery'](this.rootElement).layout({ 
-      applyDefaultStyles: true, 
-      south__onresize: (() => { 
-        this.slickgridComponent.grid.resizeCanvas()
-      }),
-      center__onresize:	(() => { 
-        setTimeout( () => {
-          this.schvizComponent.graphRoot.refreshViewbox();
-        })
-      }),
-      stateManagement__enabled:	true
-    });
 
-    if(this.props.inputEventEmitter){
-      this.props.inputEventEmitter.on('onSmallStepEnd',this.smallStepHandler.bind(this));
+    //if this is being instantiated in golden layout component, we might not be
+    //attached to document, even after componentDidMount is called
+    //so we check: https://stackoverflow.com/a/850995/366856
+    function isInDOMTree(node) {
+       // If the farthest-back ancestor of our node has a "body"
+       // property (that node would be the document itself), 
+       // we assume it is in the page's DOM tree.
+       return !!(findUltimateAncestor(node).body);
+    }
+    function findUltimateAncestor(node) {
+       // Walk up the DOM tree until we are at the top (parentNode 
+       // will return null at that point).
+       // NOTE: this will return the same node that was passed in 
+       // if it has no ancestors.
+       var ancestor = node;
+       while(ancestor.parentNode) {
+          ancestor = ancestor.parentNode;
+       }
+       return ancestor;
+    }
+
+    const finishInit = () => {
+      let myLayout = window['jQuery'](this.rootElement).layout({ 
+        applyDefaultStyles: true, 
+        south__onresize: (() => { 
+          this.slickgridComponent && this.slickgridComponent.grid.resizeCanvas()
+        }),
+        center__onresize:	(() => { 
+          setTimeout( () => {
+            this.schvizComponent && this.schvizComponent.graphRoot.refreshViewbox();
+          })
+        }),
+        stateManagement__enabled:	true
+      });
+
+      if(this.props.glContainer){
+        this.props.glContainer.on('resize',() => {
+          myLayout.resizeAll();
+          setTimeout(()=>{
+            this.slickgridComponent && this.slickgridComponent.grid.resizeCanvas();
+            this.schvizComponent && this.schvizComponent.graphRoot.refreshViewbox();
+          })
+        });
+      }
+
+      if(this.props.inputEventEmitter){
+        this.props.inputEventEmitter.on('onSmallStepEnd',this.smallStepHandler);
+      }
+    }
+
+    if(isInDOMTree(this.rootElement)){
+      finishInit();
+    }else{
+      setTimeout(finishInit);
     }
   }
 
-  smallStepHandler(message){
-    this.props.onSmallStep(
-      this.lastEventId++,
-      message
-    )
-  }
-
   componentWillUnmount(){
-    this.props.inputEventEmitter.off('onSmallStepEnd',this.smallStepHandler);
+    if(this.props.inputEventEmitter){
+      this.props.inputEventEmitter.off('onSmallStepEnd',this.smallStepHandler);
+    }
   }
 }
 
