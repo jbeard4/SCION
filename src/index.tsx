@@ -39,6 +39,7 @@ export interface GraphRootProps {
   hideActions? : boolean;
   expandAllStatesByDefault? : boolean;
   tabIndex? : number;
+  glContainer? : any;
 }
 
 export interface GraphRootAnimation {

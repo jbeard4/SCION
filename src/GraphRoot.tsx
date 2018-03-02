@@ -19,9 +19,15 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
   public collapsedNodeMap : any;
   private lastTransitionId : string;
   private cachedLastScjson : scxml.scion.SCState;
+  private handleResize : any;
 
   constructor(props:GraphRootProps){
     super(props);
+
+    this.handleResize = () => {
+      this.refreshViewbox();
+    }
+
     this.state = { 
       allEdges : [],
       enabledEdges : [],
@@ -262,6 +268,10 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
         throw new Error('TODO');
       }
     })
+  }
+
+  componentWillUnmount(){
+    $(window).off('resize', this.handleResize)
   }
 
   private initCollapsedNodeMap(scjson){
@@ -524,9 +534,7 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
 
   componentDidMount(){
     const $ = window['jQuery'] as any;
-    $(window).on('resize', () => {
-      this.refreshViewbox();
-    })
+    $(window).on('resize', this.handleResize)
 
     $(document).on('keypress', this.handleKeypress.bind(this));
 
