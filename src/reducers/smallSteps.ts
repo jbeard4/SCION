@@ -11,7 +11,7 @@ export function smallSteps(state = initialState.smallSteps, action) {
     case 'SMALL_STEP':
       const message = action.message;
       return [{
-        id : action.lastEventId, 
+        id : action.lastEventId || (state.length ? state[0].id + 1 : 1), 
         name : message.meta.scName,
         docUrl : message.meta.docUrl,
         sessionid : message.meta.sessionid,
