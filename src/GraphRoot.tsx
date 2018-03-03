@@ -770,6 +770,7 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
 
 
   getTransformString(viewbox, svgViewportDimensions, screenDimensions){
+    if(!viewbox || !svgViewportDimensions || !screenDimensions.width) return `translate(0px,0px) scale(1)`;
     const svgViewportWidth = svgViewportDimensions.width, 
           svgViewportHeight = svgViewportDimensions.height;
     const screenAspectRatio = screenDimensions.width / screenDimensions.height; 
