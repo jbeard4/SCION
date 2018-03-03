@@ -11,7 +11,6 @@ export class DiffComponent extends React.Component<DiffProps, {}> {
   private rootElement : HTMLDivElement;
 
   render(){
-    console.log('formatters',formatters);
     const diffPatcher = new DiffPatcher();
     const delta = diffPatcher.diff(this.props.left, this.props.right);
 
