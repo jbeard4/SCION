@@ -4,7 +4,7 @@
   "description": "Morse code parser implemented in SCXML, designed to work with the microexpresscion SCXML orchestration server.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node node_modules/microexpresscion/bin/www -s _singleton build/morse.scxml"
+    "publish" : "bash ./scripts/copy-scripts.sh; couchapp push node.couchapp.js http://jakec:foo@localhost:5984/scxml_jakec_2f7ac4eb-a91f-4f32-9aec-d1fc6ee236e1"
   },
   "repository": {
     "type": "git",
