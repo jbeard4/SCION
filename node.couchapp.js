@@ -3,9 +3,6 @@
 
   ddoc = {
       _id: 'morse'
-    , views: {}
-    , lists: {}
-    , shows: {} 
   }
 
   module.exports = ddoc;
