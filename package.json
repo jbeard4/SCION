@@ -34,6 +34,7 @@
   ],
   "dependencies": {
     "esprima": "2.7.2",
+    "opencollective": "^1.0.3",
     "optimist": "0.6.1",
     "sax": "1.2.1",
     "scion-core": "1.5.4",
@@ -79,7 +80,8 @@
   },
   "main": "./lib/runtime/facade",
   "scripts": {
-    "test": "grunt build test"
+    "test": "grunt build test",
+    "postinstall": "opencollective postinstall"
   },
   "filename": "scxml.min.js",
   "npmName": "scion",
@@ -91,5 +93,9 @@
         "scxml.min.js"
       ]
     }
-  ]
+  ],
+  "collective": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/SCION"
+  }
 }
