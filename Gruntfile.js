@@ -21,7 +21,7 @@ module.exports = function(grunt) {
           },
           dist: {
               files: {
-                  'dist/scion.js' : 'lib/scion.js'
+                  'dist/scion.js' : 'dist/scion.js'
               }
           }
       },
@@ -33,11 +33,11 @@ module.exports = function(grunt) {
           options: {
             debug : true,
             browserifyOptions : {
-              standalone: 'scion_tests'
+              standalone: 'scion'
             }
           },
-          src: ['test/harness/common/setup-nodeunit-tests.js'],
-          dest: 'test/harness/browser/build/nodeunit-tests-bundle.js'
+          src: ['lib/Statechart.js'],
+          dest: 'dist/scion.js'
         }
       },
       express: {
@@ -104,17 +104,6 @@ module.exports = function(grunt) {
       }
   });
 
-  grunt.registerTask('replace-reserved-words', 'String replace reserved words in built JavaScript.', function() {
-    var fs = require('fs');
-    var fileContents = fs.readFileSync('dist/scion.js','utf8');
-    ['return','delete'].forEach(function(s){
-      fileContents = fileContents.replace(new RegExp('\\.\\b' + s + '\\b','g'), '["' + s + '"]'); 
-    });
-    fs.writeFileSync('dist/scion.js', fileContents);
-  });
-
-  //TODO: copy babel-polyfill and nodeunit-browser into test/harness/browser/lib. I wish these were published via bower. 
-
   grunt.registerTask('build-tests', ['browserify:dev']);
   grunt.registerTask('test', ['run-tests']);
   grunt.registerTask('run-tests', ['nodeunit']);
@@ -122,6 +111,6 @@ module.exports = function(grunt) {
   grunt.registerTask('run-browser-tests-dev', ['express:dev', 'saucelabs-custom', 'express:dev:stop' ]);
   grunt.registerTask('run-browser-tests-prod', ['express:prod', 'saucelabs-custom', 'express:prod:stop' ]);
   grunt.registerTask('run-browser-tests-prod-require', ['express:prod-require', 'saucelabs-custom','express:prod-require:stop' ]);
-  grunt.registerTask('build', ['browserify', 'babel', 'replace-reserved-words', 'uglify']);
+  grunt.registerTask('build', ['browserify', 'babel', 'uglify']);
   grunt.registerTask('default', ['build']);
 };
