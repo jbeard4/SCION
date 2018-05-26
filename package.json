@@ -48,7 +48,7 @@
   "engines": {
     "node": ">=4.2.2"
   },
-  "types": "tsd/scion.d.ts",
+  "types": "tsd/scion-core-legacy.d.ts",
   "main": "./lib/Statechart.js",
   "browserify": {
     "transform": [
@@ -67,6 +67,6 @@
     "test": "grunt test",
     "build": "grunt build && npm run docs",
     "watch": "watchify -d lib/scion.js -o dist/scion.js -s scion",
-    "docs": "jsdoc -d docs/ lib/Statechart.js"
+    "docs": "typedoc --module commonjs  --includeDeclarations --out docs/ ./tsd/scion-core-legacy.d.ts"
   }
 }
