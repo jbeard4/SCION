@@ -18,9 +18,6 @@ export class BaseInterpreter extends EventEmitter {
   genAsync(currentEvent : Event, cb : (Configuration) => void);
 }
 
-export class Statechart extends BaseInterpreter {}
-export class SCInterpreter extends BaseInterpreter {}
-
 export interface Event {
   name : string;
   data : any;
