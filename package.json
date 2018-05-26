@@ -1,7 +1,7 @@
 {
-  "name": "@jbeard/scion-core",
+  "name": "scion-core-legacy",
   "version": "2.6.0",
-  "description": "StateCharts Interpretation and Optimization eNgine (SCION) CORE is an implementation of Statecharts in JavaScript.",
+  "description": "Legacy semantics for SCION Statecharts",
   "keywords": [
     "scxml",
     "statecharts",
@@ -11,11 +11,11 @@
   "maintainers": [
     {
       "name": "Jacob Beard",
-      "email": "jbeard4@cs.mcgill.ca"
+      "email": "jake@jacobeanrnd.com"
     }
   ],
   "bugs": {
-    "email": "jbeard4@cs.mcgill.ca",
+    "email": "jake@jacobeanrnd.com",
     "url": "https://github.com/jbeard4/SCION-CORE/issues"
   },
   "license": "Apache-2.0",
@@ -24,18 +24,12 @@
     "url": "https://github.com/jbeard4/SCION-CORE.git"
   },
   "devDependencies": {
-    "async": "^1.5.2",
     "babel-plugin-transform-es2015-modules-umd": "^6.8.0",
     "babel-polyfill": "^6.9.1",
     "babel-preset-es2015": "^6.9.0",
     "babelify": "^7.3.0",
-    "browserify": "^14.4.0",
     "ejs": "^2.4.2",
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.12.0",
     "express": "^4.14.0",
-    "google-closure-compiler": "^20170910.0.0",
     "grunt": "^1.0.1",
     "grunt-babel": "^6.0.0",
     "grunt-browserify": "^5.0.0",
@@ -47,9 +41,7 @@
     "grunt-saucelabs": "9.0.0",
     "jsdoc": "^3.5.5",
     "load-grunt-tasks": "^3.5.0",
-    "minimist": "^1.2.0",
     "nodeunit": "^0.9.1",
-    "tape": "^4.6.0",
     "underscore": "^1.8.3",
     "watchify": "^3.9.0"
   },
@@ -57,7 +49,7 @@
     "node": ">=4.2.2"
   },
   "types": "tsd/scion.d.ts",
-  "main": "./lib/SCInterpreter.js",
+  "main": "./lib/Statechart.js",
   "browserify": {
     "transform": [
       [
@@ -73,13 +65,8 @@
   "scripts": {
     "postversion": "git push --follow-tags && npm publish",
     "test": "grunt test",
-    "bundle": "browserify -d lib/scion.js -o dist/scion.js -s scion",
-    "uglify": "uglifyjs dist/scion.js -o dist/scion.min.js",
-    "build": "npm run bundle && npm run uglify && npm run docs",
+    "build": "grunt build && npm run docs",
     "watch": "watchify -d lib/scion.js -o dist/scion.js -s scion",
-    "docs": "jsdoc -d docs/ lib/scion.js"
-  },
-  "dependencies": {
-    "tiny-events": "^1.0.1"
+    "docs": "jsdoc -d docs/ lib/Statechart.js"
   }
 }

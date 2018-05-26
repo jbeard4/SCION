@@ -1,10 +1,11 @@
+var path    = require('path');
 var express = require('express');
 var app     = module.exports = express();
 var env     = process.env.NODE_ENV || 'development';
 
 app.set('port', process.env.PORT || 3000);
 app.set('view engine', 'ejs');
-var browserHarness = __dirname + '/../test/harness/browser';
+var browserHarness = path.join(path.dirname(require.resolve('scion-core-test-framework')), '/../browser');
 app.set('views', browserHarness + '/views');
 
 app.get('/', function(req, res) {
