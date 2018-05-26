@@ -1,7 +1,23 @@
-
 # Overview
 
-SCION-CORE is a small implementation of Statecharts in ECMAScript (JavaScript). SCION-CORE lets you program with Statecharts using a simple JavaScript/JSON API. 
+scion-core is a small implementation of Statecharts in JavaScript. scion-core
+lets you program with Statecharts using a simple JavaScript/JSON API. 
+
+# Semantics 
+
+There are many different semantics for Statecharts family of lanugages. See
+(Big-Step Semantics)[] by Nancy Day, et.  al. for good overview of various
+Statechart semantics. scion-core implements the semantics described in Appendix
+D of the SCXML specification. 
+
+Versions of scion-core before 2.x implemented a slightly different semantics,
+described (here)[] and (here)[]. A comparison of differences between these two
+semantics can be found (here)[].  These semantics have now been deprecated in favor
+of the official SCXML semantics described in Appendix D of the specification.
+However, if you require support for scion-core semantics before 2.x, the
+scion-core-legacy module provides an interpreter that implements these legacy
+semantics. The scion-core-legacy module is a drop-in replacement for the
+scion-core module.
 
 # Installation
 
@@ -18,9 +34,9 @@ Add to your page:
 
 `<script src="bower_components/scion-core/dist/scion.min.js"></script>`
 
-SCION-CORE is then available as the global variable `scion`.
+scion-core is then available as the global variable `scion`.
 
-Alternatively, load SCION-CORE via RequireJS:
+Alternatively, load scion-core via RequireJS:
 
 ```html
   <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js"></script>
@@ -32,23 +48,23 @@ Alternatively, load SCION-CORE via RequireJS:
 
 ## Node.js
 
-Install SCION-CORE via npm:
+Install scion-core via npm:
 
     npm install scion-core
 
 # API
 
-See generated API docs [here](http://jbeard4.github.io/SCION-CORE/).
+See generated API docs [here](http://jbeard4.github.io/scion-core/).
 
 # Statecharts Model Schema
 
-SCION-CORE is designed to allow you to specify the Statecharts model declaratively as a single JavaScript object literal, or as JSON. This section is intended to describe the schema of the Statecharts object model accepted by SCION-CORE. 
+scion-core is designed to allow you to specify the Statecharts model declaratively as a single JavaScript object literal, or as JSON. This section is intended to describe the schema of the Statecharts object model accepted by scion-core. 
 
-As of version 3.0, SCION-CORE implements the semantics defined in Appendix D of the SCXML specification, ["Algorithm for SCXML Interpretation"](https://www.w3.org/TR/scxml/#AlgorithmforSCXMLInterpretation).
+As of version 2, scion-core implements the semantics defined in Appendix D of the SCXML specification, ["Algorithm for SCXML Interpretation"](https://www.w3.org/TR/scxml/#AlgorithmforSCXMLInterpretation).
 
 ## States
 
-A SCION-CORE model is made up of states. States can have id's, which are optional. Here is a SCION-CORE model which is a single state:
+A scion-core model is made up of states. States can have id's, which are optional. Here is a scion-core model which is a single state:
 
 ```
 {
@@ -97,7 +113,7 @@ In this example, if the state machine is in state 'foo', then the state machine 
 
 ## Transitions
 
-States are associated with **transitions**, which target other states. Transitions are optionally associated with an **event name**. A SCION-CORE event is an object with "name" and "data" properties. When an event is sent to the state machine, the interpreter will inspect the current configuration, and select the set of transitions that matches event name.
+States are associated with **transitions**, which target other states. Transitions are optionally associated with an **event name**. A scion-core event is an object with "name" and "data" properties. When an event is sent to the state machine, the interpreter will inspect the current configuration, and select the set of transitions that matches event name.
 
 
 ```javascript
@@ -300,7 +316,7 @@ This natural-language description of behaviour can be described using the follow
 
 ![Drag and Drop](http://jbeard4.github.com/SCION/img/drag_and_drop.png)
 
-This state machine could be written in SCION-CORE's JSON syntax as follows:
+This state machine could be written in scion-core's JSON syntax as follows:
 
 ```javascript
 {
@@ -479,5 +495,5 @@ You can then perform the following steps to script web content:
 
 # Build Status
 
-[![Build status](https://travis-ci.org/jbeard4/SCION-CORE.svg?branch=master)](https://travis-ci.org/jbeard4/SCION-CORE)
+[![Build status](https://travis-ci.org/jbeard4/scion-core.svg?branch=master)](https://travis-ci.org/jbeard4/scion-core)
 

@@ -1,5 +1,5 @@
 {
-  "name": "@jbeard/scion-core",
+  "name": "scion-core",
   "version": "2.6.0",
   "description": "StateCharts Interpretation and Optimization eNgine (SCION) CORE is an implementation of Statecharts in JavaScript.",
   "keywords": [
@@ -11,11 +11,11 @@
   "maintainers": [
     {
       "name": "Jacob Beard",
-      "email": "jbeard4@cs.mcgill.ca"
+      "email": "jake@jacobeanrnd.com"
     }
   ],
   "bugs": {
-    "email": "jbeard4@cs.mcgill.ca",
+    "email": "jake@jacobeanrnd.com",
     "url": "https://github.com/jbeard4/SCION-CORE/issues"
   },
   "license": "Apache-2.0",
@@ -73,6 +73,7 @@
     "docs": "jsdoc -d docs/ lib/Statechart.js"
   },
   "dependencies": {
-    "tiny-events": "^1.0.1"
+    "scion-core-base": "1.0.0",
+    "scion-core-test-framework": "1.0.0"
   }
 }
