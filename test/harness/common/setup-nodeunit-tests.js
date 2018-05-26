@@ -21,7 +21,7 @@ testSerializations.forEach(function(testSerialization){
   });
 })
 
-module.exports = function(scion){
+module.exports = function(Statechart){
 
   var fixtures = {};
 
@@ -37,7 +37,7 @@ module.exports = function(scion){
             options.doSend = doSend; //add a hook to intercept the event dispatch
           }
 
-          var sc = new scion.SCInterpreter(test.test.sc, options);
+          var sc = new Statechart(test.test.sc, options);
 
           var actualInitialConf = sc.start();
 
@@ -55,7 +55,7 @@ module.exports = function(scion){
 
                   if(test.testSerialization && mostRecentSnapshot){
                     //load up state machine state
-                    sc = new scion.Statechart(test.test.sc,_.extend({snapshot : JSON.parse(mostRecentSnapshot)},options));
+                    sc = new Statechart(test.test.sc,_.extend({snapshot : JSON.parse(mostRecentSnapshot)},options));
                   }
 
                   //console.log('sending event',nextEvent.event);
@@ -105,7 +105,7 @@ module.exports = function(scion){
           //this is a hook to handle tests with options serialization and async
           function doSend(session, event){
             if(test.testSerialization && mostRecentSnapshot){
-              sc = new scion.Statechart(test.test.sc,_.extend({
+              sc = new Statechart(test.test.sc,_.extend({
                 sessionid : session.opts.sessionid,   //reuse existing sessionid
                 snapshot : JSON.parse(mostRecentSnapshot)
               }, options));
