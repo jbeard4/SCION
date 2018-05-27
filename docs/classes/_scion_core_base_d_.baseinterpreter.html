@@ -38,8 +38,6 @@
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-							<input type="checkbox" id="tsd-filter-externals" checked />
-							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
 							<input type="checkbox" id="tsd-filter-only-exported" />
 							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
@@ -127,13 +125,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Base<wbr>Interpreter<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><a href="../modules/_scion_core_base_d_.html#modelfactory" class="tsd-signature-type">ModelFactory</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_scion_core_base_d_.scstate.html" class="tsd-signature-type">SCState</a>, opts<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_scion_core_base_d_.baseinterpreter.html" class="tsd-signature-type">BaseInterpreter</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Base<wbr>Interpreter<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><a href="../modules/_scion_core_base_d_.html#modelfactory" class="tsd-signature-type">ModelFactory</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_scion_core_base_d_.scstate.html" class="tsd-signature-type">SCState</a>, opts<span class="tsd-signature-symbol">?: </span><a href="../interfaces/_scion_core_base_d_.interpreteropts.html" class="tsd-signature-type">InterpreterOpts</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_scion_core_base_d_.baseinterpreter.html" class="tsd-signature-type">BaseInterpreter</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in scion-core-base.d.ts:5</li>
+									<li>Defined in scion-core-base.d.ts:42</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -142,7 +140,7 @@
 									<h5>model: <a href="../modules/_scion_core_base_d_.html#modelfactory" class="tsd-signature-type">ModelFactory</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_scion_core_base_d_.scstate.html" class="tsd-signature-type">SCState</a></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> opts: <span class="tsd-signature-type">any</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> opts: <a href="../interfaces/_scion_core_base_d_.interpreteropts.html" class="tsd-signature-type">InterpreterOpts</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="_scion_core_base_d_.baseinterpreter.html" class="tsd-signature-type">BaseInterpreter</a></h4>
@@ -159,7 +157,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="_scion_core_base_d_.eventemitter.html">EventEmitter</a>.<a href="_scion_core_base_d_.eventemitter.html#emit">emit</a></p>
 						<ul>
-							<li>Defined in scion-core-base.d.ts:30</li>
+							<li>Defined in scion-core-base.d.ts:67</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -190,7 +188,7 @@
 					<div class="tsd-signature tsd-kind-icon">get<wbr>All<wbr>Transition<wbr>Events<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in scion-core-base.d.ts:15</li>
+							<li>Defined in scion-core-base.d.ts:52</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -215,7 +213,7 @@
 					<div class="tsd-signature tsd-kind-icon">get<wbr>Configuration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in scion-core-base.d.ts:9</li>
+							<li>Defined in scion-core-base.d.ts:46</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -240,7 +238,7 @@
 					<div class="tsd-signature tsd-kind-icon">get<wbr>Full<wbr>Configuration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in scion-core-base.d.ts:10</li>
+							<li>Defined in scion-core-base.d.ts:47</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -265,7 +263,7 @@
 					<div class="tsd-signature tsd-kind-icon">get<wbr>Snapshot<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in scion-core-base.d.ts:16</li>
+							<li>Defined in scion-core-base.d.ts:53</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -290,7 +288,7 @@
 					<div class="tsd-signature tsd-kind-icon">is<wbr>Final<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in scion-core-base.d.ts:12</li>
+							<li>Defined in scion-core-base.d.ts:49</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -315,7 +313,7 @@
 					<div class="tsd-signature tsd-kind-icon">is<wbr>In<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in scion-core-base.d.ts:11</li>
+							<li>Defined in scion-core-base.d.ts:48</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -347,7 +345,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="_scion_core_base_d_.eventemitter.html">EventEmitter</a>.<a href="_scion_core_base_d_.eventemitter.html#off">off</a></p>
 						<ul>
-							<li>Defined in scion-core-base.d.ts:28</li>
+							<li>Defined in scion-core-base.d.ts:65</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -400,7 +398,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="_scion_core_base_d_.eventemitter.html">EventEmitter</a>.<a href="_scion_core_base_d_.eventemitter.html#on">on</a></p>
 						<ul>
-							<li>Defined in scion-core-base.d.ts:27</li>
+							<li>Defined in scion-core-base.d.ts:64</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -453,7 +451,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="_scion_core_base_d_.eventemitter.html">EventEmitter</a>.<a href="_scion_core_base_d_.eventemitter.html#once">once</a></p>
 						<ul>
-							<li>Defined in scion-core-base.d.ts:29</li>
+							<li>Defined in scion-core-base.d.ts:66</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -505,7 +503,7 @@
 					<div class="tsd-signature tsd-kind-icon">register<wbr>Listener<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in scion-core-base.d.ts:13</li>
+							<li>Defined in scion-core-base.d.ts:50</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -536,7 +534,7 @@
 					<div class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in scion-core-base.d.ts:7</li>
+							<li>Defined in scion-core-base.d.ts:44</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -561,7 +559,7 @@
 					<div class="tsd-signature tsd-kind-icon">start<wbr>Async<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in scion-core-base.d.ts:8</li>
+							<li>Defined in scion-core-base.d.ts:45</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -610,7 +608,7 @@
 					<div class="tsd-signature tsd-kind-icon">unregister<wbr>Listener<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in scion-core-base.d.ts:14</li>
+							<li>Defined in scion-core-base.d.ts:51</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -648,7 +646,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in scion-core-base.d.ts:17</li>
+									<li>Defined in scion-core-base.d.ts:54</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -674,7 +672,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in scion-core-base.d.ts:18</li>
+									<li>Defined in scion-core-base.d.ts:55</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -788,6 +786,9 @@
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
 						<a href="../interfaces/_scion_core_base_d_.event.html" class="tsd-kind-icon">Event</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="../interfaces/_scion_core_base_d_.interpreteropts.html" class="tsd-kind-icon">Interpreter<wbr>Opts</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-not-exported">
 						<a href="../interfaces/_scion_core_base_d_.listener.html" class="tsd-kind-icon">Listener</a>

@@ -12,8 +12,8 @@
   "dependencies": {
     "tiny-events": "^1.0.1"
   },
-  "types": "tsd/scion-core-base.d.ts",
+  "types": "./tsd/scion-core-base.d.ts",
   "scripts": {
-    "docs": "typedoc --module commonjs  --includeDeclarations --out docs/ ./tsd/scion-core-base.d.ts"
+    "docs": "typedoc --excludeExternals --module commonjs  --includeDeclarations --out docs/ ./tsd/scion-core-base.d.ts"
   }
 }
