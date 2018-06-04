@@ -8,7 +8,8 @@
     "browserify": "^14.3.0",
     "enzyme": "^2.4.1",
     "react-addons-test-utils": "^15.3.0",
-    "react-scripts": "^0.9.3"
+    "react-scripts": "^0.9.3",
+    "redux-devtools-chart-monitor": "^1.7.0"
   },
   "dependencies": {
     "babel-preset-react": "^6.24.1",
