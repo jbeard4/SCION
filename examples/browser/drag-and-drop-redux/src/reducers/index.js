@@ -1,5 +1,4 @@
 const scxml = require('../../../../..');
-const viz = document.getElementById("viz");
 import fnModel from '../../dist/drag-and-drop'
 
 const handleAction = (state, action) => {
