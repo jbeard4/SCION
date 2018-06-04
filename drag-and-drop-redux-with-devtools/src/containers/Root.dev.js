@@ -15,9 +15,6 @@ export default class Root extends Component {
               <DraggableRect/>
             </svg>
           </div>
-          <div id="viz">
-            <InteractiveSCHVIZ />
-          </div>
           <DevTools />
         </div>
       </Provider>
