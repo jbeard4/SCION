@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { mouseevent } from '../actions'
 import Rect from '../components/Rect';
 
-const mapStateToProps = ([configuration, history, isInFinalState, datamodel], ownProps) => {
+const mapStateToProps = ({ snapshot: [configuration, history, isInFinalState, datamodel] }, ownProps) => {
   return {
     x : datamodel.rectX,
     y : datamodel.rectY
