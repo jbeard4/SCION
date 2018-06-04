@@ -1,13 +1,11 @@
 import { connect } from 'react-redux'
-import SCHVIZ from 'schviz2';
-import fnModel from '../../dist/drag-and-drop'
-
-const scjson = fnModel()
+import SCHVIZ from '@jbeard/schviz2';
+import scjson from '../../dist/drag-and-drop.json'
 
 const mapStateToProps = ([configuration, history, isInFinalState, datamodel], ownProps) => {
   return {
-    configuration : configuration,
-    scjson : scjson 
+    configuration,
+    scjson
   }
 }
 
