@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>scion-core-base</title>
+	<title>typescript</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">scion-core-base</a>
+					<a href="index.html" class="title">typescript</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -56,7 +56,7 @@
 					<a href="globals.html">Globals</a>
 				</li>
 			</ul>
-			<h1> scion-core-base</h1>
+			<h1> typescript</h1>
 		</div>
 	</div>
 </header>
@@ -65,10 +65,424 @@
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
 				<h1 id="overview">Overview</h1>
-				<p>This module provides an abstract class BaseInterpreter, which can be extended
-				to provide interpreters that implement custom Statecharts semantics. </p>
-				<p>Currently, BaseInterpreter is extended into two concrete realizations,
-				scion-core and scion-core-legacy.</p>
+				<p>scion-core is a small implementation of Statecharts in JavaScript. scion-core
+				lets you program with Statecharts using a simple JavaScript/JSON API. </p>
+				<h1 id="semantics">Semantics</h1>
+				<p>There are many different semantics for Statecharts family of languages (for a
+					good overview of various Statechart semantics, see <a href="https://cs.uwaterloo.ca/~nday/pdf/techreps/2009-05-EsDa-tr.pdf">&quot;Big-Step
+					Semantics&quot;</a> by
+					Shahram Esmaeilsabzali, Nancy A. Day, Joanne M. Atlee, and Jianwei Niu).
+					scion-core implements the semantics described in <a href="https://www.w3.org/TR/scxml/">Appendix D of the SCXML
+				specification</a>.</p>
+				<p>Versions of <a href="mailto:scion-core@1.x">scion-core@1.x</a> implemented a slightly different semantics,
+					described
+					<a href="https://github.com/jbeard4/SCION/wiki/SCION-vs.-SCXML-Comparison">here</a>,
+					<a href="https://github.com/jbeard4/SCION/wiki/Scion-Semantics">here</a>, and
+					<a href="http://digitool.library.mcgill.ca/R/-?func=dbin-jump-full&amp;object_id=116899&amp;silo_library=GEN01">here</a>.
+					A comparison of differences between these two semantics can be found <a href="">here</a>.
+					The semantics of <a href="mailto:scion-core@1.x">scion-core@1.x</a> have been deprecated in <a href="mailto:scion-core@2.x">scion-core@2.x</a> in favor
+				of the SCXML semantics described in Appendix D of the specification. </p>
+				<p>If you are upgrading an existing application, and you require support for
+					<a href="mailto:scion-core@1.x">scion-core@1.x</a> semantics, the scion-core-backwards-compat module provides a
+					backwards-compatible, drop-in replacement module for <a href="mailto:scion-core@1.5.5">scion-core@1.5.5</a> Please
+				email <a href="mailto:jake@jacobeanrnd.com">jake@jacobeanrnd.com</a> to request access to this module.</p>
+				<h1 id="installation">Installation</h1>
+				<h2 id="browser">Browser</h2>
+				<p>Install via bower:</p>
+				<pre><code>npm <span class="hljs-keyword">install </span>-g <span class="hljs-keyword">bower
+</span><span class="hljs-keyword">bower </span><span class="hljs-keyword">install </span><span class="hljs-keyword">scion-core</span>
+</code></pre><p>Add to your page:</p>
+				<p><code>&lt;script src=&quot;bower_components/scion-core/dist/scion.min.js&quot;&gt;&lt;/script&gt;</code></p>
+				<p>scion-core is then available as the global variable <code>scion</code>.</p>
+				<p>Alternatively, load scion-core via RequireJS:</p>
+				<pre><code class="lang-html">  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">
+    <span class="hljs-built_in">require</span>([<span class="hljs-string">'/bower_components/scion-core/dist/scion.min.js'</span>], <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+    }); 
+  </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</code></pre>
+				<h2 id="node-js">Node.js</h2>
+				<p>Install scion-core via npm:</p>
+				<pre><code>npm <span class="hljs-keyword">install</span> scion-core
+</code></pre><h1 id="api">API</h1>
+				<p>See generated API docs <a href="http://jbeard4.github.io/scion-core/">here</a>.</p>
+				<h1 id="statecharts-model-schema">Statecharts Model Schema</h1>
+				<p>scion-core is designed to allow you to specify the Statecharts model declaratively as a single JavaScript object literal, or as JSON. This section is intended to describe the schema of the Statecharts object model accepted by scion-core. </p>
+				<p>As of version 2, scion-core implements the semantics defined in Appendix D of the SCXML specification, <a href="https://www.w3.org/TR/scxml/#AlgorithmforSCXMLInterpretation">&quot;Algorithm for SCXML Interpretation&quot;</a>.</p>
+				<h2 id="states">States</h2>
+				<p>A scion-core model is made up of states. States can have id&#39;s, which are optional. Here is a scion-core model which is a single state:</p>
+				<pre><code>{
+    <span class="hljs-attribute">id </span>: <span class="hljs-string">'foo'</span>
+}
+</code></pre><p>States can contain other states hierarchically:</p>
+				<pre><code class="lang-javascript">{
+    <span class="hljs-attr">id</span> : <span class="hljs-string">'foo'</span>
+    states : [
+        {
+            <span class="hljs-attr">id</span> : <span class="hljs-string">'bar'</span>
+        },
+        {
+            <span class="hljs-attr">id</span> : <span class="hljs-string">'bat'</span>
+        }
+    ]
+}
+</code></pre>
+				<p>By default, a parent state will be an &quot;OR&quot; state, which means it defines an XOR relationship between its children (if the state machine is in &#39;foo&#39;, then the state machine will either be in state &#39;bar&#39; or &#39;bat&#39;, but will never be in both &#39;bar&#39; and &#39;bat&#39; simultaneously). </p>
+				<p>By default, when entering a parent state, the first state in the parent&#39;s state array will be entered. So, for example, when the state machine is started with the above model, its <strong>configuration</strong> (the set of states the state machine is currently in) will be <code>[&#39;foo&#39;,&#39;bar&#39;]</code>;</p>
+				<p>There are other types of states, however, including &quot;parallel&quot; states, which defines an &quot;AND&quot; relationship between substates.</p>
+				<pre><code class="lang-javascript">{
+    <span class="hljs-attr">id</span> : <span class="hljs-string">'foo'</span>
+    $type : <span class="hljs-string">'parallel'</span>
+    states : [
+        {
+            <span class="hljs-attr">id</span> : <span class="hljs-string">'bar'</span>
+        },
+        {
+            <span class="hljs-attr">id</span> : <span class="hljs-string">'bat'</span>
+        }
+    ]
+}
+</code></pre>
+				<p>In this example, if the state machine is in state &#39;foo&#39;, then the state machine will also be in state &#39;bar&#39; and state &#39;bat&#39; simultaneously. So when the state machine is started with the above model, its configuration will be <code>[&#39;foo&#39;,&#39;bar&#39;,&#39;bat&#39;]</code>.</p>
+				<h2 id="transitions">Transitions</h2>
+				<p>States are associated with <strong>transitions</strong>, which target other states. Transitions are optionally associated with an <strong>event name</strong>. A scion-core event is an object with &quot;name&quot; and &quot;data&quot; properties. When an event is sent to the state machine, the interpreter will inspect the current configuration, and select the set of transitions that matches event name.</p>
+				<pre><code class="lang-javascript">{
+    <span class="hljs-attr">id</span> : <span class="hljs-string">'foo'</span>
+    states : [
+        {
+            <span class="hljs-attr">id</span> : <span class="hljs-string">'bar'</span>,
+            <span class="hljs-attr">transitions</span> : [
+                {
+                    <span class="hljs-attr">target</span> : <span class="hljs-string">'bat'</span>,
+                    <span class="hljs-attr">event</span> : <span class="hljs-string">'t'</span>
+                }
+            ]
+        },
+        {
+            <span class="hljs-attr">id</span> : <span class="hljs-string">'bat'</span>
+        }
+    ]
+}
+</code></pre>
+				<p>In this case, the state machine would start in configuration <code>[&#39;foo&#39;,&#39;bar&#39;]</code>. When event <code>{ name : &#39;t&#39; }</code> is sent to the state machine, then the state machine would transition to state &#39;bat&#39;, and the resulting configuration would be <code>[&#39;foo&#39;,&#39;bat&#39;]</code>.</p>
+				<p>If the transition does not have an event property, then it is known as a &quot;default transition&quot;, and it will be selected regardless of the event&#39;s &quot;name&quot; property.</p>
+				<p>A transition can also be associated with a <strong>condition</strong>, which is an arbitrary JavaScript function that accepts an event as input, and returns a boolean value as output. Boolean true means the transition can be selected, while boolean false means the transition will not be selected.</p>
+				<pre><code class="lang-javascript">{
+    <span class="hljs-attr">id</span> : <span class="hljs-string">'foo'</span>
+    states : [
+        {
+            <span class="hljs-attr">id</span> : <span class="hljs-string">'bar'</span>,
+            <span class="hljs-attr">transitions</span> : [
+                {
+                    <span class="hljs-attr">target</span> : <span class="hljs-string">'bat'</span>,
+                    <span class="hljs-attr">event</span> : <span class="hljs-string">'t'</span>,
+                    <span class="hljs-attr">cond</span> : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>)</span>{
+                        <span class="hljs-keyword">return</span> event.data % <span class="hljs-number">2</span>;
+                    }
+                }
+            ]
+        },
+        {
+            <span class="hljs-attr">id</span> : <span class="hljs-string">'bat'</span>
+        }
+    ]
+}
+</code></pre>
+				<p>For example, the above model will only transition from &#39;bar&#39; to &#39;bat&#39;, when <code>event.data</code> contains an odd number.</p>
+				<h2 id="entry-exit-and-transition-actions">Entry, Exit, and Transition Actions</h2>
+				<p>States can be associated with <strong>entry</strong> and <strong>exit</strong> actions. These are JavaScript functions which are executed when the state is entered or exited.</p>
+				<p>Transitions can also be associated with actions.</p>
+				<p>Actions are executed in the following order: </p>
+				<ul>
+					<li>State exit actions, ordered first by hierarchy (inner states first), and then by the order in which they appear in the document.</li>
+					<li>Transition actions, based on document order.</li>
+					<li>State entry actions, ordered first by hierarchy (outer states first), and then by the order in which they appear in the document.</li>
+				</ul>
+				<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> buffer;
+
+<span class="hljs-keyword">var</span> model = {
+    <span class="hljs-attr">id</span> : <span class="hljs-string">'foo'</span>
+    onEntry : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>)</span>{
+        buffer = [];      <span class="hljs-comment">//initialize array</span>
+    },
+    <span class="hljs-attr">states</span> : [
+        {
+            <span class="hljs-attr">id</span> : <span class="hljs-string">'bar'</span>,
+            <span class="hljs-attr">onEntry</span> : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>)</span>{
+                buffer.push(<span class="hljs-number">1</span>);
+            },
+            <span class="hljs-attr">onExit</span> : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>)</span>{
+                buffer.push(<span class="hljs-number">2</span>);
+            },
+            <span class="hljs-attr">transitions</span> : [
+                {
+                    <span class="hljs-attr">target</span> : <span class="hljs-string">'bat'</span>,
+                    <span class="hljs-attr">event</span> : <span class="hljs-string">'t'</span>,
+                    <span class="hljs-attr">onTransition</span> : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>)</span>{
+                        buffer.push(<span class="hljs-number">3</span>);
+                    }
+                }
+            ]
+        },
+        {
+            <span class="hljs-attr">id</span> : <span class="hljs-string">'bat'</span>,
+            <span class="hljs-attr">onEntry</span> : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>)</span>{
+                buffer.push(event.data);
+            }
+        }
+    ]
+};
+
+<span class="hljs-keyword">var</span> sc = <span class="hljs-keyword">new</span> scion.SCInterpreter(model);
+sc.start();     <span class="hljs-comment">//buffer now contains [1]</span>
+sc.gen(<span class="hljs-string">'t'</span>,<span class="hljs-string">'x'</span>);    <span class="hljs-comment">//buffer now contains [1,2,3,'x']</span>
+</code></pre>
+				<p>For the above model, when the state machine is started, &#39;foo&#39; would be entered, thus initializing variable <code>buffer</code> with a new array; and then state &#39;bar&#39; would be entered, pushing <code>1</code> to the buffer. After the invocation to <code>sc.start</code>, the buffer would then container <code>[1]</code>.</p>
+				<p>During the call to <code>sc.gen</code>, the exit action of state &#39;bar&#39; would be executed, pushing <code>2</code> to the buffer, followed by transition action, pushing <code>3</code> to the buffer, followed by the entry action of <code>bat</code>, pushing the event data, string <code>&quot;x&quot;</code>, to the buffer. After the call to <code>sc.gen</code> completes, the buffer would contain [1,2,3,&#39;x&#39;].</p>
+				<h2 id="history">History</h2>
+				<p>A <strong>history</strong> state is a special pseudo-state that allows the state machine to &quot;remember&quot; what substate it was in last time it was in a particular parent state. There are two types of history states: &quot;deep&quot; and &quot;shallow&quot;.</p>
+				<p>The syntax for specifying history states is as follows:</p>
+				<pre><code class="lang-javascript">{
+    <span class="hljs-attr">states</span> : [
+        {
+            <span class="hljs-attr">id</span> : <span class="hljs-string">'foo'</span>,
+            <span class="hljs-attr">transitions</span> : [
+                { 
+                    <span class="hljs-attr">event</span> : <span class="hljs-string">'t2'</span>
+                    target : <span class="hljs-string">'bif'</span>
+                }
+            ],
+            <span class="hljs-attr">states</span> : [
+                {
+                    <span class="hljs-attr">id</span> : <span class="hljs-string">'h'</span>,
+                    <span class="hljs-attr">$type</span> : <span class="hljs-string">'history'</span>,
+                    <span class="hljs-attr">isDeep</span> : <span class="hljs-literal">true</span>
+                    transitions : [
+                        {
+                            <span class="hljs-attr">target</span> : <span class="hljs-string">'bar'</span>
+                        }
+                    ]
+                },
+                {
+                    <span class="hljs-attr">id</span> : <span class="hljs-string">'bar'</span>,
+                    <span class="hljs-attr">transitions</span> : [
+                        { 
+                            <span class="hljs-attr">event</span> : <span class="hljs-string">'t1'</span>
+                            target : <span class="hljs-string">'bat2'</span>
+                        }
+                    ]
+                },
+                {
+                    <span class="hljs-attr">id</span> : <span class="hljs-string">'bat'</span>,
+                    <span class="hljs-attr">substates</span> : [
+                        {
+                            <span class="hljs-attr">id</span> : <span class="hljs-string">'bat1'</span>
+                        },
+                        {
+                            <span class="hljs-attr">id</span> : <span class="hljs-string">'bat2'</span>
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            <span class="hljs-attr">id</span> : <span class="hljs-string">'bif'</span>,
+            <span class="hljs-attr">transitions</span> : [
+                {
+                    <span class="hljs-attr">target</span> : <span class="hljs-string">'h'</span>,
+                    <span class="hljs-attr">event</span> : <span class="hljs-string">'t3'</span>
+                }
+            ]
+        }
+    ]
+}
+</code></pre>
+				<p>The first time the state machine enters &#39;h&#39;, it it will transition to state &#39;bar&#39;. After the call to sc.start(), the state machine will reside in [&#39;foo&#39;,&#39;bar&#39;].</p>
+				<p>After the state machine sends event <code>t1</code>, the state machine will transition to &#39;bat2&#39;, and will reside in configuration <code>[&#39;foo&#39;,&#39;bat&#39;,&#39;bat2&#39;]</code>.</p>
+				<p>After the state machine sends event <code>t2</code>, the state machine will transition to &#39;bif&#39;, and will reside in configuration <code>[&#39;bif&#39;]</code>.</p>
+				<p>Finally, after the state machine sends event <code>t3</code>, the state machine will transition to back to the history state &#39;h&#39;, which will &quot;remember&quot;, the configuration the state machine was in last time it was in &#39;foo&#39;, and the state machine will complete in configuration <code>[&#39;foo&#39;,&#39;bat&#39;,&#39;bat2&#39;]</code>.</p>
+				<p>If property <code>isDeep</code> had not been set on the history state, then the state machine would only have remembered the child substates of <code>foo</code>, and the state machine would have completed in configuration <code>[&#39;foo&#39;,&#39;bat&#39;,&#39;bat1&#39;]</code>.</p>
+				<h2 id="communications">Communications</h2>
+				<p>The context object (&quot;<code>this</code>&quot;) of onEntry, onExit, and onTransition functions contains the following methods:</p>
+				<ul>
+					<li><code>send(event)</code>, which adds an event to the interpreter&#39;s outer queue</li>
+					<li><code>raise(event)</code>, which adds an event to the interpreter&#39;s inner queue </li>
+				</ul>
+				<h1 id="quickstart-and-simple-use-case">Quickstart and Simple Use Case</h1>
+				<p>Let&#39;s start with the simple example of drag-and-drop behaviour in the browser. You can run this demo live on jsfiddle <a href="http://jsfiddle.net/jbeard4/MDkLe/11/">here</a>.</p>
+				<p>An entity that can be dragged has two states: idle and dragging. If the entity is in an idle state, and it receives a mousedown event, then it starts dragging. While dragging, if it receives a mousemove event, then it changes its position. Also while dragging, when it receives a mouseup event, it returns to the idle state.</p>
+				<p>This natural-language description of behaviour can be described using the following simple state machine:</p>
+				<p><img src="http://jbeard4.github.com/SCION/img/drag_and_drop.png" alt="Drag and Drop"></p>
+				<p>This state machine could be written in scion-core&#39;s JSON syntax as follows:</p>
+				<pre><code class="lang-javascript">{
+    <span class="hljs-string">"states"</span> : [
+        {
+            <span class="hljs-string">"id"</span> : <span class="hljs-string">"idle"</span>,
+            <span class="hljs-string">"transitions"</span> : [
+                {
+                    <span class="hljs-string">"event"</span> : <span class="hljs-string">"mousedown"</span>,
+                    <span class="hljs-string">"target"</span> : <span class="hljs-string">"dragging"</span>,
+                }
+            ]
+        },
+        {
+            <span class="hljs-string">"id"</span> : <span class="hljs-string">"dragging"</span>,
+            <span class="hljs-string">"transitions"</span> : [
+                {
+                    <span class="hljs-string">"event"</span> : <span class="hljs-string">"mouseup"</span>,
+                    <span class="hljs-string">"target"</span> : <span class="hljs-string">"idle"</span>,
+                },
+                {
+                    <span class="hljs-string">"event"</span> : <span class="hljs-string">"mousemove"</span>,
+                    <span class="hljs-string">"target"</span> : <span class="hljs-string">"dragging"</span>
+                }
+            ]
+        }
+    ]
+}
+</code></pre>
+				<p>One can add action code in order to script an HTML DOM element, so as to change its position on mousemove events:</p>
+				<pre><code class="lang-javascript"><span class="hljs-comment">//declare the your statechart model, same as before</span>
+<span class="hljs-keyword">var</span> firstEvent,
+    eventStamp,
+    rectNode = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'rect'</span>),
+    rectX = <span class="hljs-number">0</span>,
+    rectY = <span class="hljs-number">0</span>;
+
+<span class="hljs-keyword">var</span> statechartModel = {
+    <span class="hljs-attr">states</span> : [
+        {
+            <span class="hljs-attr">id</span> : <span class="hljs-string">'idle'</span>,
+            <span class="hljs-attr">onEntry</span> : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+                rectNode.textContent=<span class="hljs-string">'idle'</span>;
+            },
+            <span class="hljs-attr">transitions</span> : [
+                {
+                    <span class="hljs-attr">event</span> : <span class="hljs-string">'mousedown'</span>,
+                    <span class="hljs-attr">target</span> : <span class="hljs-string">'dragging'</span>,
+                    <span class="hljs-attr">onTransition</span> : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>)</span>{
+                        eventStamp = firstEvent = event.data;
+                    }
+                }
+            ]
+        },
+        {
+            <span class="hljs-attr">id</span> : <span class="hljs-string">'dragging'</span>,
+            <span class="hljs-attr">onEntry</span> : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+                rectNode.textContent=<span class="hljs-string">'dragging'</span>;
+            },
+            <span class="hljs-attr">transitions</span> : [
+                {
+                    <span class="hljs-attr">event</span> : <span class="hljs-string">'mouseup'</span>,
+                    <span class="hljs-attr">target</span> : <span class="hljs-string">'idle'</span>
+                },
+                {
+                    <span class="hljs-attr">event</span> : <span class="hljs-string">'mousemove'</span>,
+                    <span class="hljs-attr">target</span> : <span class="hljs-string">'dragging'</span>,
+                    <span class="hljs-attr">onTransition</span> : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>)</span>{
+                        <span class="hljs-keyword">var</span> dx = eventStamp.clientX - event.data.clientX;
+                        <span class="hljs-keyword">var</span> dy = eventStamp.clientY - event.data.clientY;
+
+                        rectNode.style.left = (rectX -= dx) + <span class="hljs-string">'px'</span>;
+                        rectNode.style.top = (rectY -= dy) + <span class="hljs-string">'px'</span>;
+
+                        eventStamp = event.data;
+                    }
+                }
+            ]
+        }
+    ]
+};
+</code></pre>
+				<p>You can then perform the following steps to script web content:</p>
+				<ol>
+					<li>Use the statecharts model object to instantiate the SCXML interpreter.</li>
+					<li>Connect relevant event listeners to the SCXML interpreter.</li>
+					<li>Call the <code>start</code> method on the SCXML interpreter to start execution of the statechart.</li>
+				</ol>
+				<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"bower_components/scion-core/dist/scion.min.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"rect"</span>/&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">
+            <span class="hljs-comment">//declare the your statechart model, same as before</span>
+            <span class="hljs-keyword">var</span> firstEvent,
+                eventStamp,
+                rectNode = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'rect'</span>),
+                rectX = <span class="hljs-number">0</span>,
+                rectY = <span class="hljs-number">0</span>;
+
+            <span class="hljs-keyword">var</span> statechartModel = {
+                <span class="hljs-attr">states</span> : [
+                    {
+                        <span class="hljs-attr">id</span> : <span class="hljs-string">'idle'</span>,
+                        <span class="hljs-attr">onEntry</span> : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+                            rectNode.textContent=<span class="hljs-string">'idle'</span>;
+                        },
+                        <span class="hljs-attr">transitions</span> : [
+                            {
+                                <span class="hljs-attr">event</span> : <span class="hljs-string">'mousedown'</span>,
+                                <span class="hljs-attr">target</span> : <span class="hljs-string">'dragging'</span>,
+                                <span class="hljs-attr">onTransition</span> : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>)</span>{
+                                    eventStamp = firstEvent = event.data;
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        <span class="hljs-attr">id</span> : <span class="hljs-string">'dragging'</span>,
+                        <span class="hljs-attr">onEntry</span> : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+                            rectNode.textContent=<span class="hljs-string">'dragging'</span>;
+                        },
+                        <span class="hljs-attr">transitions</span> : [
+                            {
+                                <span class="hljs-attr">event</span> : <span class="hljs-string">'mouseup'</span>,
+                                <span class="hljs-attr">target</span> : <span class="hljs-string">'idle'</span>
+                            },
+                            {
+                                <span class="hljs-attr">event</span> : <span class="hljs-string">'mousemove'</span>,
+                                <span class="hljs-attr">target</span> : <span class="hljs-string">'dragging'</span>,
+                                <span class="hljs-attr">onTransition</span> : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>)</span>{
+                                    <span class="hljs-keyword">var</span> dx = eventStamp.clientX - event.data.clientX;
+                                    <span class="hljs-keyword">var</span> dy = eventStamp.clientY - event.data.clientY;
+
+                                    rectNode.style.left = (rectX -= dx) + <span class="hljs-string">'px'</span>;
+                                    rectNode.style.top = (rectY -= dy) + <span class="hljs-string">'px'</span>;
+
+                                    eventStamp = event.data;
+                                }
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            <span class="hljs-comment">//instantiate the interpreter</span>
+            <span class="hljs-keyword">var</span> interpreter = <span class="hljs-keyword">new</span> scion.SCInterpreter(statechartModel);
+
+            <span class="hljs-comment">//start the interpreter</span>
+            interpreter.start();
+
+            <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handleEvent</span>(<span class="hljs-params">e</span>)</span>{
+                e.preventDefault();
+                interpreter.gen({<span class="hljs-attr">name</span> : e.type,<span class="hljs-attr">data</span>: e});
+            }
+
+            <span class="hljs-comment">//connect all relevant event listeners</span>
+            rectNode.addEventListener(<span class="hljs-string">'mousedown'</span>,handleEvent,<span class="hljs-literal">true</span>);
+            <span class="hljs-built_in">document</span>.documentElement.addEventListener(<span class="hljs-string">'mouseup'</span>,handleEvent,<span class="hljs-literal">true</span>);
+            <span class="hljs-built_in">document</span>.documentElement.addEventListener(<span class="hljs-string">'mousemove'</span>,handleEvent,<span class="hljs-literal">true</span>);
+
+
+        </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre>
+				<h1 id="build-status">Build Status</h1>
+				<p><a href="https://travis-ci.org/jbeard4/scion-core"><img src="https://travis-ci.org/jbeard4/scion-core.svg?branch=master" alt="Build status"></a></p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -81,13 +495,46 @@
 						<span>Internals</span>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_tsd_scion_core_d_.html">"tsd/scion-<wbr>core.d"</a>
+						<a href="modules/_workspace_scion_scxml_platform_projects_scion_core_tsd_scion_core_d_.html">"workspace/scion-<wbr>scxml-<wbr>platform/projects/SCION-<wbr>CORE/tsd/scion-<wbr>core.d"</a>
 					</li>
 					<li class="label tsd-is-external">
 						<span>Externals</span>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="modules/_node_modules_scion_core_base_tsd_scion_core_base_d_.html">"node_<wbr>modules/scion-<wbr>core-<wbr>base/tsd/scion-<wbr>core-<wbr>base.d"</a>
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_collection_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.collection.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_core_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.core.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_generator_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.generator.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_iterable_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.iterable.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_promise_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.promise.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_proxy_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.proxy.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_reflect_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.reflect.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_symbol_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.symbol.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_symbol_wellknown_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.symbol.wellknown.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es5_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es5.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/_workspace_scion_scxml_platform_projects_scion_core_node_modules_scion_core_base_tsd_scion_core_base_d_.html">"workspace/scion-<wbr>scxml-<wbr>platform/projects/SCION-<wbr>CORE/node_<wbr>modules/scion-<wbr>core-<wbr>base/tsd/scion-<wbr>core-<wbr>base.d"</a>
 					</li>
 				</ul>
 			</nav>

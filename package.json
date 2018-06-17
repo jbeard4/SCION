@@ -71,7 +71,7 @@
     "test": "grunt test",
     "build": "grunt build && npm run docs",
     "watch": "watchify -d lib/scion.js -o dist/scion.js -s scion",
-    "docs": "typedoc --module commonjs  --includeDeclarations --out docs/ ./tsd/scion-core.d.ts"
+    "docs": "typedoc --module commonjs  --includeDeclarations --out docs/ ./tsd/scion-core.d.ts --readme README.md"
   },
   "dependencies": {
     "scion-core-base": "1.0.0",

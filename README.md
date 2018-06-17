@@ -5,19 +5,27 @@ lets you program with Statecharts using a simple JavaScript/JSON API.
 
 # Semantics 
 
-There are many different semantics for Statecharts family of lanugages. See
-(Big-Step Semantics)[] by Nancy Day, et.  al. for good overview of various
-Statechart semantics. scion-core implements the semantics described in Appendix
-D of the SCXML specification. 
+There are many different semantics for Statecharts family of languages (for a
+good overview of various Statechart semantics, see ["Big-Step
+Semantics"](https://cs.uwaterloo.ca/~nday/pdf/techreps/2009-05-EsDa-tr.pdf) by
+Shahram Esmaeilsabzali, Nancy A. Day, Joanne M. Atlee, and Jianwei Niu).
+scion-core implements the semantics described in [Appendix D of the SCXML
+specification](https://www.w3.org/TR/scxml/).
 
-Versions of scion-core before 2.x implemented a slightly different semantics,
-described (here)[] and (here)[]. A comparison of differences between these two
-semantics can be found (here)[].  These semantics have now been deprecated in favor
-of the official SCXML semantics described in Appendix D of the specification.
-However, if you require support for scion-core semantics before 2.x, the
-scion-core-legacy module provides an interpreter that implements these legacy
-semantics. The scion-core-legacy module is a drop-in replacement for the
-scion-core module.
+
+Versions of scion-core@1.x implemented a slightly different semantics,
+described
+[here](https://github.com/jbeard4/SCION/wiki/SCION-vs.-SCXML-Comparison),
+[here](https://github.com/jbeard4/SCION/wiki/Scion-Semantics), and 
+[here](http://digitool.library.mcgill.ca/R/-?func=dbin-jump-full&object_id=116899&silo_library=GEN01). 
+A comparison of differences between these two semantics can be found [here]().
+The semantics of scion-core@1.x have been deprecated in scion-core@2.x in favor
+of the SCXML semantics described in Appendix D of the specification. 
+
+If you are upgrading an existing application, and you require support for
+scion-core@1.x semantics, the scion-core-backwards-compat module provides a
+backwards-compatible, drop-in replacement module for scion-core@1.5.5 Please
+email jake@jacobeanrnd.com to request access to this module.
 
 # Installation
 
