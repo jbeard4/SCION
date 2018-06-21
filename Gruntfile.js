@@ -122,7 +122,7 @@ module.exports = function(grunt) {
     
     var done = this.async();
     //TODO: convert to submodule. 
-    var startTests = require('@jbeard/scxml-test-framework');
+    var startTests = require('scxml-test-framework');
     startTests({
       verbose : false,
       report : 'console',

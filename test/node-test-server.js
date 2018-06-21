@@ -11,7 +11,9 @@ var argv = require('optimist')
     .boolean('l')
     .argv;
 
-const interpreterConstructor = scxml.scion[argv['legacy-semantics'] ? 'Statechart' : 'SCInterpreter'];
+const interpreterConstructor = argv['legacy-semantics'] ?
+      require('scion-core-legacy').Statechart :
+      scxml.scion.Statechart;
 
 if(process.env.TEST_SOURCEMAPS_PLUGIN){ 
   require('../plugins/sourcemaps/index');  //load the sourcemaps plugin
