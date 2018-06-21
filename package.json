@@ -1,6 +1,6 @@
 {
   "name": "scion-core-legacy",
-  "version": "2.6.0",
+  "version": "1.0.0",
   "description": "Legacy semantics for SCION Statecharts",
   "keywords": [
     "scxml",
@@ -22,6 +22,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/jbeard4/SCION-CORE.git"
+  },
+  "dependencies": {
+    "scion-core-base": "1.0.0"
   },
   "devDependencies": {
     "babel-plugin-transform-es2015-modules-umd": "^6.8.0",
