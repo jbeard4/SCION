@@ -13,7 +13,26 @@
     "tiny-events": "^1.0.1"
   },
   "types": "./tsd/scion-core-base.d.ts",
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ]
+        }
+      ]
+    ]
+  },
   "scripts": {
-    "docs": "typedoc --excludeExternals --module commonjs  --includeDeclarations --out docs/ ./tsd/scion-core-base.d.ts"
+    "docs": "typedoc --excludeExternals --module commonjs  --includeDeclarations --out docs/ ./tsd/scion-core-base.d.ts --readme README.md"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babelify": "^8.0.0",
+    "babel-plugin-transform-es2015-modules-umd": "^6.8.0",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-es2015": "^6.9.0"
   }
 }

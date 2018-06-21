@@ -55,16 +55,88 @@ export class BaseInterpreter extends EventEmitter {
   genAsync(currentEvent : Event, cb : (Configuration) => void);
 }
 
+export type onEntryListener = (stateId: string) => void;
+export type onExitListener = (stateId: string) => void;
+export type onTransitionListener = (sourceStateId: string, targetStateIds: string[], transitionIndex: number) => void;
+export type onDefaultEntryListener = (initialStateId: string) => void;
+export type onErrorListener = (errorEvent: ErrorEvent) => void;
+export type onBigStepBeginListener = () => void;
+export type onBigStepSuspendListener = () => void;
+export type onBigStepResumeListener = () => void;
+export type onSmallStepBeginListener = (currentSmallStepEvent: Event) => void;
+export type onSmallStepEndListener = (currentSmallStepEvent: Event) => void;
+export type onBigStepEndListener = (currentBigStepEvent: Event) => void;
+export type onExitInterpreterListener = (doneEvent: Event) => void;
+
+export class EventEmitter {
+  on(type: 'onEntry', listener: onEntryListener): void;
+  on(type: 'onExit', listener: onExitListener): void;
+  on(type: 'onTransition', listener: onTransitionListener): void;
+  on(type: 'onDefaultEntry', listener: onDefaultEntryListener): void;
+  on(type: 'onError', listener: onErrorListener): void;
+  on(type: 'onBigStepBegin', listener: onBigStepBeginListener): void;
+  on(type: 'onBigStepSuspend', listener: onBigStepSuspendListener): void;
+  on(type: 'onBigStepResume', listener: onBigStepResumeListener): void;
+  on(type: 'onSmallStepBegin', listener: onSmallStepBeginListener): void;
+  on(type: 'onSmallStepEnd', listener: onSmallStepEndListener): void;
+  on(type: 'onBigStepEnd', listener: onBigStepEndListener): void;
+  on(type: 'onExitInterpreter', listener: onExitInterpreterListener): void;
+
+  off(type: 'onEntry', listener?: onEntryListener): void;
+  off(type: 'onExit', listener?: onExitListener): void;
+  off(type: 'onTransition', listener?: onTransitionListener): void;
+  off(type: 'onDefaultEntry', listener?: onDefaultEntryListener): void;
+  off(type: 'onError', listener?: onErrorListener): void;
+  off(type: 'onBigStepBegin', listener?: onBigStepBeginListener): void;
+  off(type: 'onBigStepSuspend', listener?: onBigStepSuspendListener): void;
+  off(type: 'onBigStepResume', listener?: onBigStepResumeListener): void;
+  off(type: 'onSmallStepBegin', listener?: onSmallStepBeginListener): void;
+  off(type: 'onSmallStepEnd', listener?: onSmallStepEndListener): void;
+  off(type: 'onBigStepEnd', listener?: onBigStepEndListener): void;
+  off(type: 'onExitInterpreter', listener?: onExitInterpreterListener): void;
+
+  once(type: 'onEntry', listener: onEntryListener): void;
+  once(type: 'onExit', listener: onExitListener): void;
+  once(type: 'onTransition', listener: onTransitionListener): void;
+  once(type: 'onDefaultEntry', listener: onDefaultEntryListener): void;
+  once(type: 'onError', listener: onErrorListener): void;
+  once(type: 'onBigStepBegin', listener: onBigStepBeginListener): void;
+  once(type: 'onBigStepSuspend', listener: onBigStepSuspendListener): void;
+  once(type: 'onBigStepResume', listener: onBigStepResumeListener): void;
+  once(type: 'onSmallStepBegin', listener: onSmallStepBeginListener): void;
+  once(type: 'onSmallStepEnd', listener: onSmallStepEndListener): void;
+  once(type: 'onBigStepEnd', listener: onBigStepEndListener): void;
+  once(type: 'onExitInterpreter', listener: onExitInterpreterListener): void;
+
+  emit(type: 'onEntry', stateId: string) : void;
+  emit(type: 'onExit', stateId: string) : void;
+  emit(type: 'onTransition', sourceStateId: string, targetStateIds: string[], transitionIndex: number) : void;
+  emit(type: 'onDefaultEntry', initialStateId: string) : void;
+  emit(type: 'onError', errorEvent: ErrorEvent) : void;
+  emit(type: 'onBigStepBegin') : void;
+  emit(type: 'onBigStepSuspend') : void;
+  emit(type: 'onBigStepResume') : void;
+  emit(type: 'onSmallStepBegin', currentSmallStepEvent: Event) : void;
+  emit(type: 'onSmallStepEnd', currentSmallStepEvent: Event) : void;
+  emit(type: 'onBigStepEnd', currentBigStepEvent: Event) : void;
+  emit(type: 'onExitInterpreter', doneEvent: Event) : void;
+}
+
+export interface ErrorEvent {
+  name:'error.execution';
+  data : {
+    tagname: string,
+    line: number,
+    column: number,
+    reason: 'string'
+  };
+  type : 'platform'
+}
+
+
 export interface Event {
   name : string;
   data : any;
-}
-
-export class EventEmitter {
-  on : (type : string, listener : (...args) => void) => void;
-  off : (type : string, listener? : (...args) => void) => void;
-  once : (type : string, listener : (...args) => void) => void;
-  emit : (type : string) => void;
 }
 
 export interface SCState {
