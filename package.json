@@ -46,7 +46,8 @@
     "load-grunt-tasks": "^3.5.0",
     "nodeunit": "^0.9.1",
     "underscore": "^1.8.3",
-    "watchify": "^3.9.0"
+    "watchify": "^3.9.0",
+    "scion-core-test-framework": "1.0.0"
   },
   "engines": {
     "node": ">=4.2.2"
