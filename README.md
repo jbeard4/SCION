@@ -23,9 +23,10 @@ The semantics of scion-core@1.x have been deprecated in scion-core@2.x in favor
 of the SCXML semantics described in Appendix D of the specification. 
 
 If you are upgrading an existing application, and you require support for
-scion-core@1.x semantics, the scion-core-backwards-compat module provides a
-backwards-compatible, drop-in replacement module for scion-core@1.5.5 Please
-email jake@jacobeanrnd.com to request access to this module.
+scion-core@1.x semantics, the
+[scion-core-legacy](https://github.com/jbeard4/scion-core-legac://github.com/jbeard4/scion-core-legacy)
+module provides a backwards-compatible, drop-in replacement module for
+scion-core@1.5.5. 
 
 # Installation
 
