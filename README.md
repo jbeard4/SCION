@@ -3,31 +3,6 @@
 scion-core is a small implementation of Statecharts in JavaScript. scion-core
 lets you program with Statecharts using a simple JavaScript/JSON API. 
 
-# Semantics 
-
-There are many different semantics for Statecharts family of languages (for a
-good overview of various Statechart semantics, see ["Big-Step
-Semantics"](https://cs.uwaterloo.ca/~nday/pdf/techreps/2009-05-EsDa-tr.pdf) by
-Shahram Esmaeilsabzali, Nancy A. Day, Joanne M. Atlee, and Jianwei Niu).
-scion-core implements the semantics described in [Appendix D of the SCXML
-specification](https://www.w3.org/TR/scxml/).
-
-
-Versions of scion-core@1.x implemented a slightly different semantics,
-described
-[here](https://github.com/jbeard4/SCION/wiki/SCION-vs.-SCXML-Comparison),
-[here](https://github.com/jbeard4/SCION/wiki/Scion-Semantics), and 
-[here](http://digitool.library.mcgill.ca/R/-?func=dbin-jump-full&object_id=116899&silo_library=GEN01). 
-A comparison of differences between these two semantics can be found [here]().
-The semantics of scion-core@1.x have been deprecated in scion-core@2.x in favor
-of the SCXML semantics described in Appendix D of the specification. 
-
-If you are upgrading an existing application, and you require support for
-scion-core@1.x semantics, the
-[scion-core-legacy](https://github.com/jbeard4/scion-core-legac://github.com/jbeard4/scion-core-legacy)
-module provides a backwards-compatible, drop-in replacement module for
-scion-core@1.5.5. 
-
 # Installation
 
 ## Browser
@@ -60,6 +35,27 @@ Alternatively, load scion-core via RequireJS:
 Install scion-core via npm:
 
     npm install scion-core
+
+# Backwards-compatibility (semantics)
+
+There are many different semantics for Statecharts family of languages (for a
+good overview of various Statechart semantics, see ["Big-Step Semantics"](https://cs.uwaterloo.ca/~nday/pdf/techreps/2009-05-EsDa-tr.pdf) by
+Shahram Esmaeilsabzali, Nancy A. Day, Joanne M. Atlee, and Jianwei Niu).
+scion-core implements the semantics described in [Appendix D of the SCXML specification](https://www.w3.org/TR/scxml/).
+
+Versions of scion-core@1.x implemented a slightly different semantics,
+described
+[here](https://github.com/jbeard4/SCION/wiki/SCION-vs.-SCXML-Comparison),
+[here](https://github.com/jbeard4/SCION/wiki/Scion-Semantics), and 
+[here](http://digitool.library.mcgill.ca/R/-?func=dbin-jump-full&object_id=116899&silo_library=GEN01). 
+The semantics of scion-core@1.x have been deprecated in scion-core@2.x in favor
+of the SCXML semantics described in Appendix D of the specification. 
+
+If you are upgrading an existing application, and you require support for
+scion-core@1.x semantics, the
+[scion-core-legacy](https://github.com/jbeard4/scion-core-legac://github.com/jbeard4/scion-core-legacy)
+module provides a backwards-compatible, drop-in replacement module for
+scion-core@1.5.5. 
 
 # API
 
