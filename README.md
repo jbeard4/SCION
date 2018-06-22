@@ -59,7 +59,7 @@ scion-core@1.5.5.
 
 # API
 
-See generated API docs [here](http://jbeard4.github.io/scion-core/).
+See generated API docs [here](http://jbeard4.github.io/SCION-CORE/).
 
 # Statecharts Model Schema
 
