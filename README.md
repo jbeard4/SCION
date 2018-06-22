@@ -43,7 +43,7 @@ good overview of various Statechart semantics, see ["Big-Step Semantics"](https:
 Shahram Esmaeilsabzali, Nancy A. Day, Joanne M. Atlee, and Jianwei Niu).
 scion-core implements the semantics described in [Appendix D of the SCXML specification](https://www.w3.org/TR/scxml/).
 
-Versions of scion-core@1.x implemented a slightly different semantics,
+Versions of scion-core@1.x implements a slightly different semantics,
 described
 [here](https://github.com/jbeard4/SCION/wiki/SCION-vs.-SCXML-Comparison),
 [here](https://github.com/jbeard4/SCION/wiki/Scion-Semantics), and 
