@@ -2,6 +2,11 @@ import { ModelFactory, SCState } from 'scion-core';
 import _scion = require('scion-core');
 
 export interface ModelFactoryFactory {
+  /**
+    Prepare the model by recursively downloading external scripts referenced by
+    script/@src, and SCXML documents references by invoke/@src, then constructing a
+    host execution context for the SCXML datamodel.
+  **/
   prepare : (cb : (err : Error, modelFactory : ModelFactory) => any, executionContext? : any, hostContext? : any) => void;
 }
 
