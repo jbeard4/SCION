@@ -12,12 +12,12 @@
   "maintainers": [
     {
       "name": "Jacob Beard",
-      "email": "jbeard4@cs.mcgill.ca",
-      "url": "http://echo-flow.com"
+      "email": "jake@minnow.io",
+      "url": "http://minnow.io"
     }
   ],
   "bugs": {
-    "email": "jbeard4@cs.mcgill.ca",
+    "email": "jake@minnow.io",
     "url": "https://github.com/jbeard4/SCION/issues"
   },
   "licenses": [
