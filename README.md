@@ -500,5 +500,5 @@ You can then perform the following steps to script web content:
 
 # Build Status
 
-[![Build status](https://travis-ci.org/jbeard4/scion-core.svg?branch=master)](https://travis-ci.org/jbeard4/scion-core)
+[![Build status](https://travis-ci.org/jbeard4/scion-core.svg?branch=master)](https://travis-ci.org/jbeard4/SCION-CORE)
 
