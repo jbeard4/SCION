@@ -1,0 +1,41 @@
+{
+  "name": "drag-and-drop-redux",
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-polyfill": "^6.23.0",
+    "browserify": "^14.3.0",
+    "enzyme": "^2.4.1",
+    "livereactload": "^4.0.0-beta.2",
+    "react-addons-test-utils": "^15.3.0",
+    "redux-devtools": "^3.0.1",
+    "redux-devtools-chart-monitor": "^1.7.0",
+    "redux-devtools-dock-monitor": "^1.0.1",
+    "redux-devtools-log-monitor": "^1.0.2",
+    "redux-slider-monitor": "^2.0.0-1",
+    "sorcery": "^0.10.0",
+    "watchify": "^3.9.0"
+  },
+  "dependencies": {
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babelify": "^7.3.0",
+    "jquery": "^3.3.1",
+    "prop-types": "^15.5.8",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "react-hot-loader": "^3.0.0-beta.7",
+    "react-redux": "^4.4.8",
+    "redux": "^3.6.0",
+    "redux-thunk": "^1.0.3"
+  },
+  "browser": {
+    "vm": "vm-browserify2"
+  },
+  "main": "src/index.jsx",
+  "scripts": {
+    "build": "node ../../../bin/cli.js  -i ./src/reducers/drag-and-drop.scxml --compile json -o dist/drag-and-drop.json && node ../../../bin/cli.js  -i ./src/reducers/drag-and-drop.scxml --compile module -o dist/drag-and-drop.js && (cd dist; browserify -d -t babelify ../src/index.js -o ./index.js; sorcery -i index.js)",
+    "watch": "cd dist; watchify -d -t babelify -p livereactload ../src/index.js -o 'cat > index.js; sorcery -i index.js' -v"
+  }
+}

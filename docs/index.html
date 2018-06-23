@@ -1,0 +1,247 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>typescript</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">typescript</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> typescript</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<h1 id="overview">Overview</h1>
+				<p>SCION is an industrial-strength implementation of <a href="http://www.w3.org/TR/scxml/">W3C SCXML</a> in JavaScript. </p>
+				<p>SCXML provides a declarative markup for Statecharts, a powerful modelling language for developing <strong>complex, timed, event-driven, state-based systems</strong>. </p>
+				<h1 id="installation">Installation</h1>
+				<h2 id="node-js">node.js</h2>
+				<p><code>npm install scxml</code></p>
+				<h2 id="browser">browser</h2>
+				<h3 id="script-tag-with-cdnjs">Script tag with cdnjs</h3>
+				<p>Add the following script tags to your HTML:</p>
+				<pre><code><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.23.0/polyfill.min.js"</span>&gt;</span><span class="handlebars"><span class="xml">
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://cdnjs.cloudflare.com/ajax/libs/scion/4.3.1/scxml.min.js"</span>&gt;</span><span class="undefined"></span></span></span>
+</code></pre><p>Then SCION API available as global singleton object <code>scxml</code>.</p>
+				<h3 id="npm-and-browserify">npm and browserify</h3>
+				<p>Install babel-polyfill and scxml with npm:</p>
+				<p><code>npm install --save scxml babel-polyfill</code></p>
+				<p>Then add to your application entry point:</p>
+				<pre><code class="lang-js"><span class="hljs-built_in">require</span>(<span class="hljs-string">'babel-polyfill'</span>);
+<span class="hljs-keyword">let</span> scxml = <span class="hljs-built_in">require</span>(<span class="hljs-string">'scxml'</span>);
+</code></pre>
+				<h1 id="quickstart">Quickstart</h1>
+				<pre><code class="lang-javascript">scxml.urlToModel(<span class="hljs-string">"drag-and-drop.xml"</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err,model</span>)</span>{
+
+  <span class="hljs-keyword">if</span>(err) <span class="hljs-keyword">throw</span> err;
+
+  model.prepare(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err, fnModel</span>) </span>{
+
+    <span class="hljs-keyword">if</span>(err) <span class="hljs-keyword">throw</span> err;
+
+    <span class="hljs-comment">//instantiate the interpreter</span>
+    <span class="hljs-keyword">var</span> sc = <span class="hljs-keyword">new</span> scxml.scion.Statechart(fnModel);
+
+    <span class="hljs-comment">//start the interpreter</span>
+    sc.start();
+
+    <span class="hljs-comment">//send the init event</span>
+    sc.gen({<span class="hljs-attr">name</span>:<span class="hljs-string">"init"</span>,<span class="hljs-attr">data</span>:rect});
+
+  });
+})
+</code></pre>
+				<h1 id="api">API</h1>
+				<p>See the API docs <a href="http://jbeard4.github.io/SCION/modules/_workspace_scion_scxml_platform_projects_scion_tsd_index_d_.html">here</a>.</p>
+				<h1 id="backwards-compatibility-with-scion-3-x">Backwards-compatibility with <a href="mailto:SCION@3.x">SCION@3.x</a></h1>
+				<p>See the note <a href="https://github.com/jbeard4/SCION-CORE#backwards-compatibility-semantics">here</a>.</p>
+				<h1 id="build-status">Build Status</h1>
+				<p><a href="https://travis-ci.org/jbeard4/SCION"><img src="https://travis-ci.org/jbeard4/SCION.svg" alt="Build status"></a></p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class="label tsd-is-external">
+						<span>Internals</span>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_workspace_scion_scxml_platform_projects_scion_tsd_index_d_.html">"workspace/scion-<wbr>scxml-<wbr>platform/projects/SCION/tsd/index.d"</a>
+					</li>
+					<li class="label tsd-is-external">
+						<span>Externals</span>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_collection_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.collection.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_core_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.core.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_generator_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.generator.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_iterable_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.iterable.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_promise_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.promise.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_proxy_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.proxy.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_reflect_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.reflect.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_symbol_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.symbol.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es2015_symbol_wellknown_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es2015.symbol.wellknown.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/__nvm_versions_v8_4_0_lib_node_modules_typedoc_node_modules_typescript_lib_lib_es5_d_.html">".nvm/versions/v8.4.0/lib/node_<wbr>modules/typedoc/node_<wbr>modules/typescript/lib/lib.es5.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/_workspace_scion_scxml_platform_projects_scion_node_modules__types_node_index_d_.html">"workspace/scion-<wbr>scxml-<wbr>platform/projects/SCION/node_<wbr>modules/@types/node/index.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/_workspace_scion_scxml_platform_projects_scion_node_modules_scion_core_node_modules_scion_core_base_tsd_scion_core_base_d_.html">"workspace/scion-<wbr>scxml-<wbr>platform/projects/SCION/node_<wbr>modules/scion-<wbr>core/node_<wbr>modules/scion-<wbr>core-<wbr>base/tsd/scion-<wbr>core-<wbr>base.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/_workspace_scion_scxml_platform_projects_scion_node_modules_scion_core_tsd_scion_core_d_.html">"workspace/scion-<wbr>scxml-<wbr>platform/projects/SCION/node_<wbr>modules/scion-<wbr>core/tsd/scion-<wbr>core.d"</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>

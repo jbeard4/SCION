@@ -18,7 +18,7 @@ Add the following script tags to your HTML:
 
 ```
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.23.0/polyfill.min.js">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/scion/3.0.2/scxml.min.js">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/scion/4.3.1/scxml.min.js">
 ```
 
 Then SCION API available as global singleton object `scxml`.
@@ -62,36 +62,12 @@ scxml.urlToModel("drag-and-drop.xml",function(err,model){
 
 # API
 
-## Instantiation
+See the API docs [here](http://jbeard4.github.io/SCION/modules/_workspace_scion_scxml_platform_projects_scion_tsd_index_d_.html).
 
-### scxml.urlToModel(url,function(err, model){} [, context])
-### scxml.pathToModel(path,function(err, model){} [, context])
-### scxml.documentStringToModel(url,scxmlDocString,function(err, model){} [, context])
-### scxml.documentToModel(scxmlDocument,function(err, model){} [, context])
+# Backwards-compatibility with SCION@3.x
 
-Compile SCXML to JavaScript object "model".
-
-### model.prepare(function(err, fnModel) {}, executionContext, hostContext)
-
-Prepare the model by downloading source scripts and constructing a host execution context for the SCXML datamodel.
-
-### new scxml.scion.Statechart(fnModel, options)
-
-
-The Statechart constructor creates an interpreter instance from a model object.
-
-```javascript
-    //same model can be used to create multiple interpreter instances
-    var sc1 = new scxml.scion.Statechart(fnModel),
-        sc2 = new scxml.scion.Statechart(fnModel);
-```
-
-## Statechart Interpreter API
-
-See [SCION-CORE API](https://github.com/jbeard4/SCION-CORE#api). 
-
+See the note [here](https://github.com/jbeard4/SCION-CORE#backwards-compatibility-semantics).
 
 # Build Status
 
 [![Build status](https://travis-ci.org/jbeard4/SCION.svg)](https://travis-ci.org/jbeard4/SCION)
-

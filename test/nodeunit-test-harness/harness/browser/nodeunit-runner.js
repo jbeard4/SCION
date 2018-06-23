@@ -1,80 +1,83 @@
 var testSerialization = false;
 
 //prepare test fixtures
-var fixtures = {};
-testPairs.forEach(function(pair){
-  var scxmlTest = pair[0],
-      jsonTest = pair[1];
+function prepareTestFixtures(scxml){
+  var fixtures = {};
+  testPairs.forEach(function(pair){
+    var scxmlTest = pair[0],
+        jsonTest = pair[1];
 
-  //console.log('scxmlTest', scxmlTest);
-  fixtures[scxmlTest] = function(t){
+    //console.log('scxmlTest', scxmlTest);
+    fixtures[scxmlTest] = function(t){
 
-    console.log('Parsing model');
-    scxml.urlToModel(scxmlTest,function(err, model){
-      if(err) throw err;
-      console.log('Preparing model');
-      model.prepare(function(err, fnModel) {
-        //console.log('fnModel', fnModel.toString());
+      console.log('Parsing model');
+      scxml.urlToModel(scxmlTest,function(err, model){
         if(err) throw err;
-        console.log('Instantiating machine');
-        var sc = new scxml.scion.Statechart(fnModel, {sessionid : scxmlTest});
-        console.log('Starting machine');
+        console.log('Preparing model');
+        model.prepare(function(err, fnModel) {
+          //console.log('fnModel', fnModel.toString());
+          if(err) throw err;
+          console.log('Instantiating machine');
+          var sc = new scxml.scion.Statechart(fnModel, {sessionid : scxmlTest});
+          console.log('Starting machine');
 
-        var actualInitialConf = sc.start();
-        console.log('initialConfiguration', actualInitialConf); 
+          var actualInitialConf = sc.start();
+          console.log('initialConfiguration', actualInitialConf); 
 
-        t.deepEqual(actualInitialConf.sort(),jsonTest.initialConfiguration.sort(),'initial configuration');
+          t.deepEqual(actualInitialConf.sort(),jsonTest.initialConfiguration.sort(),'initial configuration');
 
-        var mostRecentSnapshot;
+          var mostRecentSnapshot;
 
-        function poll(){
+          function poll(){
 
-          var nextEvent = jsonTest.events.shift();
+            var nextEvent = jsonTest.events.shift();
 
-          if(!nextEvent) return t.done();
+            if(!nextEvent) return t.done();
 
-          function ns(){
+            function ns(){
 
-              //if(testSerialization && mostRecentSnapshot){
-                //load up state machine state
-              //  sc = new scion.Statechart(sc,{snapshot : JSON.parse(mostRecentSnapshot)});
-              //}
-              console.log('sending event',nextEvent.event);
+                //if(testSerialization && mostRecentSnapshot){
+                  //load up state machine state
+                //  sc = new scion.Statechart(sc,{snapshot : JSON.parse(mostRecentSnapshot)});
+                //}
+                console.log('sending event',nextEvent.event);
 
-              var actualNextConf = sc.gen(nextEvent.event);
+                var actualNextConf = sc.gen(nextEvent.event);
 
-              console.log('next configuration',actualNextConf);
+                console.log('next configuration',actualNextConf);
 
-              //if(JSON.stringify(actualNextConf.sort()) !== JSON.stringify(nextEvent.nextConfiguration.sort())) debugger;
+                //if(JSON.stringify(actualNextConf.sort()) !== JSON.stringify(nextEvent.nextConfiguration.sort())) debugger;
 
-              t.deepEqual(actualNextConf.sort(),nextEvent.nextConfiguration.sort(),'next configuration after sending event ' + nextEvent.event.name);
-              //dump state machine state
+                t.deepEqual(actualNextConf.sort(),nextEvent.nextConfiguration.sort(),'next configuration after sending event ' + nextEvent.event.name);
+                //dump state machine state
 
-              //if(testSerialization){
-              //  mostRecentSnapshot = JSON.stringify(sc.getSnapshot());
-                //console.log('mostRecentSnapshot',mostRecentSnapshot);
-              //  sc = null;  //clear the statechart in memory, just because
-              //}
+                //if(testSerialization){
+                //  mostRecentSnapshot = JSON.stringify(sc.getSnapshot());
+                  //console.log('mostRecentSnapshot',mostRecentSnapshot);
+                //  sc = null;  //clear the statechart in memory, just because
+                //}
 
-              poll();
+                poll();
+            }
+
+            if(nextEvent.after){
+                //console.log('Test harness waiting',nextEvent.after,'ms before sending next event');
+                setTimeout(ns,nextEvent.after);
+            }else{
+                ns();
+            }
           }
 
-          if(nextEvent.after){
-              //console.log('Test harness waiting',nextEvent.after,'ms before sending next event');
-              setTimeout(ns,nextEvent.after);
-          }else{
-              ns();
-          }
-        }
-
-        poll();
+          poll();
 
 
+        });
       });
-    });
-  
-  };
-}); 
+    
+    };
+  }); 
+  return fixtures;
+}
 
 if(!window.console){
   window.console = {
@@ -84,6 +87,7 @@ if(!window.console){
 
 function start(scxml){
 
+  var fixtures = prepareTestFixtures(scxml);
   var moduleStartTime, moduleEndTime, testResults = {};
   nodeunit.runModules(
   {"SCXML Tests": fixtures},
