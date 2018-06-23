@@ -34,7 +34,7 @@
     "http://www.w3.org/TR/scxml/"
   ],
   "dependencies": {
-    "sax": "1.3.1",
+    "@jbeard/sax": "1.3.2",
     "scion-core": "2.6.0",
     "defiant": "^1.4.5",
     "escodegen": "^1.8.1",
@@ -66,8 +66,8 @@
     "grunt-release": "^0.14.0",
     "grunt-run": "^0.6.0",
     "grunt-saucelabs": "^8.6.3",
-    "jsdoc": "^3.5.5",
     "load-grunt-tasks": "^3.5.0",
+    "typedoc": "^0.11.1",
     "minimist": "^1.2.0",
     "nodeunit": "^0.9.1",
     "request": "^2.74.0",
@@ -75,10 +75,11 @@
     "uglify-js": "^2.8.21",
     "underscore": "^1.8.3",
     "vm-browserify2": "0.0.6",
-    "watchify": "^3.9.0"
+    "watchify": "^3.9.0",
+    "scion-core-legacy": "1.0.0"
   },
   "engines": {
-    "node": ">=4.2.2",
+    "node": ">=6.0.0",
     "npm": ">=2.0.0"
   },
   "browser": {
@@ -92,10 +93,10 @@
     "test": "grunt build test",
     "bundle": "browserify -d lib/runtime/debug.js -o dist/scxml.debug.js -s scxml -v && browserify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
     "uglify": "uglifyjs dist/scxml.js -o dist/scxml.min.js",
-    "build": "npm run bundle && npm run uglify && npm run docs",
+    "build": "npm run bundle && npm run uglify && npm run docs && cp node_modules/scion-core/dist/* dist/",
     "watch": "watchify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
     "lint": "eslint lib/",
-    "docs": "jsdoc -d docs/ lib/runtime/document-string-to-model.js lib/runtime/facade.js lib/runtime/star-to-model.js"
+    "docs": "typedoc --module commonjs  --includeDeclarations --out docs/ ./tsd/index.d.ts --readme README.md"
   },
   "browserify": {
     "transform": [
@@ -116,7 +117,9 @@
       "basePath": "dist",
       "files": [
         "scxml.js",
-        "scxml.min.js"
+        "scxml.min.js",
+        "scion.js",
+        "scion.min.js"
       ]
     }
   ],
