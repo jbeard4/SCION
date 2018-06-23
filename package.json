@@ -42,6 +42,7 @@
     "optimist": "^0.6.1",
     "text-to-js-identifier": "0.0.4",
     "xmlserializer": "^0.6.0"
+    "opencollective": "^1.0.3",
   },
   "devDependencies": {
     "async": "^1.5.2",
@@ -88,6 +89,7 @@
   },
   "main": "./lib/runtime/facade",
   "scripts": {
+<<<<<<< HEAD
     "postversion": "git push --follow-tags && npm publish",
     "test": "grunt build test",
     "bundle": "browserify -d lib/runtime/debug.js -o dist/scxml.debug.js -s scxml -v && browserify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
@@ -108,6 +110,10 @@
         }
       ]
     ]
+=======
+    "test": "grunt build test",
+    "postinstall": "opencollective postinstall"
+>>>>>>> 65297e57302ab636557f1b8ca4d10161619efd83
   },
   "filename": "scxml.min.js",
   "npmName": "scion",
@@ -122,7 +128,15 @@
       ]
     }
   ],
+<<<<<<< HEAD
   "bin": {
     "scxml": "bin/cli.js"
   }
 }
+=======
+  "collective": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/SCION"
+  }
+}
+>>>>>>> 65297e57302ab636557f1b8ca4d10161619efd83
