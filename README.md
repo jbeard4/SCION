@@ -66,7 +66,7 @@ scxml.urlToModel("drag-and-drop.xml",function(err,model){
 
 See the API docs [here](http://jbeard4.github.io/SCION/modules/_workspace_scion_scxml_platform_projects_scion_tsd_index_d_.html).
 
-# Backwards-compatibility with SCION@3.x
+# Backwards-compatibility with `SCION@3.x`
 
 See the note [here](https://github.com/jbeard4/SCION-CORE#backwards-compatibility-semantics).
 
