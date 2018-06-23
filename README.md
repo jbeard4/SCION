@@ -84,7 +84,7 @@ Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com
 
 Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/SCION#sponsor)]
 
-<a href="https://opencollective.com/juan-carlos-madrid-abad#" target="_blank"><img width="890" src="https://opencollective.com/static/images/avatar-01.svg?width=890"></a>
+<a href="https://opencollective.com/juan-carlos-madrid-abad#" target="_blank"><img width="60" src="https://opencollective.com/static/images/avatar-01.svg?width=890"></a>
 
 <a href="https://opencollective.com/SCION/sponsor/0/website" target="_blank"><img src="https://opencollective.com/SCION/sponsor/0/avatar.svg"></a>
 <a href="https://opencollective.com/SCION/sponsor/1/website" target="_blank"><img src="https://opencollective.com/SCION/sponsor/1/avatar.svg"></a>
