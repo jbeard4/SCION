@@ -12,12 +12,11 @@
   "maintainers": [
     {
       "name": "Jacob Beard",
-      "email": "jake@minnow.io",
-      "url": "http://minnow.io"
+      "email": "jake@jacobeanrnd.com"
     }
   ],
   "bugs": {
-    "email": "jake@minnow.io",
+    "email": "jake@jacobeanrnd.com",
     "url": "https://github.com/jbeard4/SCION/issues"
   },
   "licenses": [
@@ -42,7 +41,7 @@
     "optimist": "^0.6.1",
     "text-to-js-identifier": "0.0.4",
     "xmlserializer": "^0.6.0",
-    "opencollective": "^1.0.3",
+    "opencollective": "^1.0.3"
   },
   "devDependencies": {
     "async": "^1.5.2",
@@ -89,7 +88,6 @@
   },
   "main": "./lib/runtime/facade",
   "scripts": {
-<<<<<<< HEAD
     "postversion": "git push --follow-tags && npm publish",
     "test": "grunt build test",
     "bundle": "browserify -d lib/runtime/debug.js -o dist/scxml.debug.js -s scxml -v && browserify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
@@ -97,7 +95,8 @@
     "build": "npm run bundle && npm run uglify && npm run docs && cp node_modules/scion-core/dist/* dist/",
     "watch": "watchify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
     "lint": "eslint lib/",
-    "docs": "typedoc --module commonjs  --includeDeclarations --out docs/ ./tsd/index.d.ts --readme README.md"
+    "docs": "typedoc --module commonjs  --includeDeclarations --out docs/ ./tsd/index.d.ts --readme README.md",
+    "postinstall": "opencollective postinstall"
   },
   "browserify": {
     "transform": [
@@ -110,10 +109,6 @@
         }
       ]
     ]
-=======
-    "test": "grunt build test",
-    "postinstall": "opencollective postinstall"
->>>>>>> 65297e57302ab636557f1b8ca4d10161619efd83
   },
   "filename": "scxml.min.js",
   "npmName": "scion",
@@ -128,15 +123,11 @@
       ]
     }
   ],
-<<<<<<< HEAD
   "bin": {
     "scxml": "bin/cli.js"
-  }
-}
-=======
+  },
   "collective": {
     "type": "opencollective",
     "url": "https://opencollective.com/SCION"
   }
 }
->>>>>>> 65297e57302ab636557f1b8ca4d10161619efd83
