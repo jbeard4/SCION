@@ -34,7 +34,8 @@ module.exports = function(grunt) {
         "scxml" : {
           options: {
             port : 42000,
-            script: 'test/node-test-server.js'
+            script: 'test/node-test-server.js',
+            args : grunt.option('legacy-semantics') ? ['--legacy-semantics'] : []
           }
         }
       },
@@ -72,11 +73,12 @@ module.exports = function(grunt) {
       release: {
         options: {
           beforeRelease : ['build', 'gitcommit:dist'],
-          additionalFiles: ['bower.json'],
-          github: {
-            repo: 'jbeard4/SCION', //put your user/repo here
-            accessTokenVar: 'GITHUB_ACCESS_TOKEN', //ENVIRONMENT VARIABLE that contains GitHub Access Token
-          }
+          additionalFiles: ['bower.json']
+        }
+      },
+      run : {
+        build : {
+          exec : 'npm run build'
         }
       },
       watch: {
@@ -110,19 +112,28 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('scxml-test-client', 'Run scxml tests in node. ', function(){
+    const legacySemantics = grunt.option('legacy-semantics');
+    console.log('legacySemantics',legacySemantics);
+    const scxmlTestFiles = 
+            grunt.file.expand(
+              require(legacySemantics ?
+                './grunt/scxml-tests.legacySemantics.json' : 
+                './grunt/scxml-tests.json'));
+    
     var done = this.async();
     //TODO: convert to submodule. 
     var startTests = require('scxml-test-framework');
     startTests({
-      verbose : true,
-      report : console,
-      scxmlTestFiles : grunt.file.expand(require('./grunt/scxml-tests.json'))
+      verbose : false,
+      report : 'console',
+      legacySemantics : legacySemantics,
+      scxmlTestFiles : scxmlTestFiles 
     }, done);
   });
 
   //TODO: copy babel-polyfill and nodeunit-browser into test/harness/browser/lib. I wish these were published via bower. 
   grunt.task.registerTask('test-semantics', ['express:scxml', 'scxml-test-client', 'express:scxml:stop']);
-  grunt.registerTask('build', [ 'make:dist/scxml.js:dist/scxml.min.js']);
+  grunt.registerTask('build', [ 'run:build']);
   grunt.registerTask('default', ['build']);
   grunt.registerTask('test-node', ['nodeunit:platform', 'test-semantics']);
   grunt.registerTask('test', [

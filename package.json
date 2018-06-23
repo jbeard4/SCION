@@ -1,6 +1,6 @@
 {
   "name": "scxml",
-  "version": "3.1.5",
+  "version": "4.3.1",
   "description": "An implementation of SCXML in JavaScript.",
   "keywords": [
     "scxml",
@@ -8,15 +8,16 @@
     "w3c",
     "javascript"
   ],
+  "types": "tsd/index.d.ts",
   "maintainers": [
     {
       "name": "Jacob Beard",
-      "email": "jbeard4@cs.mcgill.ca",
-      "url": "http://echo-flow.com"
+      "email": "jake@minnow.io",
+      "url": "http://minnow.io"
     }
   ],
   "bugs": {
-    "email": "jbeard4@cs.mcgill.ca",
+    "email": "jake@minnow.io",
     "url": "https://github.com/jbeard4/SCION/issues"
   },
   "licenses": [
@@ -33,21 +34,26 @@
     "http://www.w3.org/TR/scxml/"
   ],
   "dependencies": {
+    "@jbeard/sax": "1.3.2",
+    "scion-core": "2.6.0",
+    "escodegen": "^1.8.1",
     "esprima": "2.7.2",
-    "optimist": "0.6.1",
-    "sax": "1.2.1",
-    "scion-core": "1.5.4",
-    "text-to-js-identifier": "0.0.4"
+    "jsdom": "^11.1.0",
+    "optimist": "^0.6.1",
+    "text-to-js-identifier": "0.0.4",
+    "xmlserializer": "^0.6.0"
   },
   "devDependencies": {
     "async": "^1.5.2",
     "babel": "^6.23.0",
     "babel-cli": "^6.24.1",
     "babel-plugin-transform-es2015-modules-umd": "^6.8.0",
-    "babel-polyfill": "^6.9.1",
+    "babel-polyfill": "^6.23.0",
     "babel-preset-es2015": "^6.9.0",
+    "babelify": "^7.3.0",
     "browserify": "^14.3.0",
     "ejs": "^2.4.2",
+    "eslint": "^4.19.1",
     "express": "^4.14.0",
     "glob": "^7.0.5",
     "grunt": "^1.0.1",
@@ -56,30 +62,52 @@
     "grunt-contrib-watch": "^1.0.0",
     "grunt-express-server": "^0.5.3",
     "grunt-git": "^1.0.0",
-    "grunt-make": "^1.0.0",
     "grunt-release": "^0.14.0",
     "grunt-run": "^0.6.0",
     "grunt-saucelabs": "^8.6.3",
     "load-grunt-tasks": "^3.5.0",
+    "typedoc": "^0.11.1",
     "minimist": "^1.2.0",
     "nodeunit": "^0.9.1",
     "request": "^2.74.0",
-    "scxml-test-framework": "^1.0.2",
+    "scxml-test-framework": "2.0.0",
     "uglify-js": "^2.8.21",
     "underscore": "^1.8.3",
-    "vm-browserify2": "0.0.6"
+    "vm-browserify2": "0.0.6",
+    "watchify": "^3.9.0",
+    "scion-core-legacy": "1.0.0"
   },
   "engines": {
-    "node": ">=4.2.2",
+    "node": ">=6.0.0",
     "npm": ">=2.0.0"
   },
   "browser": {
-    "vm": "vm-browserify2",
-    "./lib/runtime/facade": "./dist/es5/runtime/facade"
+    "fs": "./lib/runtime/platform-bootstrap/browser/fs",
+    "jsdom": "./lib/runtime/platform-bootstrap/browser/jsdom",
+    "vm": "vm-browserify2"
   },
   "main": "./lib/runtime/facade",
   "scripts": {
-    "test": "grunt build test"
+    "postversion": "git push --follow-tags && npm publish",
+    "test": "grunt build test",
+    "bundle": "browserify -d lib/runtime/debug.js -o dist/scxml.debug.js -s scxml -v && browserify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
+    "uglify": "uglifyjs dist/scxml.js -o dist/scxml.min.js",
+    "build": "npm run bundle && npm run uglify && npm run docs && cp node_modules/scion-core/dist/* dist/",
+    "watch": "watchify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
+    "lint": "eslint lib/",
+    "docs": "typedoc --module commonjs  --includeDeclarations --out docs/ ./tsd/index.d.ts --readme README.md"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ]
+        }
+      ]
+    ]
   },
   "filename": "scxml.min.js",
   "npmName": "scion",
@@ -88,8 +116,13 @@
       "basePath": "dist",
       "files": [
         "scxml.js",
-        "scxml.min.js"
+        "scxml.min.js",
+        "scion.js",
+        "scion.min.js"
       ]
     }
-  ]
+  ],
+  "bin": {
+    "scxml": "bin/cli.js"
+  }
 }
