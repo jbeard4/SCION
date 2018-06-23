@@ -41,7 +41,7 @@
     "jsdom": "^11.1.0",
     "optimist": "^0.6.1",
     "text-to-js-identifier": "0.0.4",
-    "xmlserializer": "^0.6.0"
+    "xmlserializer": "^0.6.0",
     "opencollective": "^1.0.3",
   },
   "devDependencies": {
