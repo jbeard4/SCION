@@ -90,7 +90,7 @@
   "scripts": {
     "postversion": "git push --follow-tags && npm publish",
     "test": "grunt build test",
-    "bundle": "browserify -d lib/runtime/debug.js -o dist/scxml.debug.js -s scxml -v && browserify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
+    "bundle": "browserify -d lib/runtime/facade.js -o dist/scxml.debug.js -s scxml -v && browserify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
     "uglify": "uglifyjs dist/scxml.js -o dist/scxml.min.js",
     "build": "npm run bundle && npm run uglify && npm run docs && cp node_modules/scion-core/dist/* dist/",
     "watch": "watchify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
