@@ -30,7 +30,7 @@ module provides a backwards-compatible, drop-in replacement module.
 
 Further documentation on the scion-core-legacy module will be forthcoming, but for now, you can find an example of its use [here](https://github.com/jbeard4/SCION/blob/v4.3.1/test/node-test-server.js#L14-L16), in the node-test-server. 
 
-# Testing backwards-compatibility
+## Testing backwards-compatibility
 
 This section describes the approach used by SCION for testing backwards-compatibility.
 
@@ -88,6 +88,6 @@ You can run the tests for legacy semantics with the following invocation:
 
 `grunt test --legacy-semantics`
 
-# Support for `<invoke>` in legacy semantics
+## Support for `<invoke>` in legacy semantics
 
 Note that `<invoke>` is not currently supported in the legacy semantics. It does work, but it will invoke a new session with the Appendix D semantics. I could add an API to configure SCION to start new invoked sessions with legacy semantics, if people report this as a desirable feature.
