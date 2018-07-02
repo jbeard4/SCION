@@ -64,7 +64,7 @@ scxml.urlToModel("drag-and-drop.xml",function(err,model){
 
 # API
 
-See the API docs [here](http://scion.io/modules/_workspace_scion_scxml_platform_projects_scion_tsd_index_d_.html).
+See the API docs [here](https://scion.io/modules/_workspace_scion_scxml_platform_projects_scion_tsd_index_d_.html).
 
 # Backwards-compatibility with `SCION@3.x`
 
