@@ -17,10 +17,10 @@ class Template extends React.Component {
         </Link>
         <ul className="navbar-nav mr-auto">
           <li className={`nav-item ${location.pathname === '/blog' ? 'active' : ''}`}>
-            <Link className="nav-link" to="/blog"><i className="fa fa-wrench"></i>&nbsp; Blog</Link>
+            <Link className="nav-link" to="/blog">Blog</Link>
           </li>
           <li className={`nav-item ${location.pathname.match(/.html$/) ? 'active' : ''}`}>
-            <Link className="nav-link" to="/modules/_workspace_scion_scxml_platform_projects_scion_tsd_index_d_.html"><i className="fa fa-wrench"></i>&nbsp; API</Link>
+            <Link className="nav-link" to="/modules/_workspace_scion_scxml_platform_projects_scion_tsd_index_d_.html">API</Link>
           </li>
         </ul>
       </nav>

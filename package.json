@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "bootstrap": "^4.1.1",
+    "disqus-react": "^1.0.5",
     "gatsby": "^1.8.12",
     "gatsby-link": "^1.6.8",
     "gatsby-plugin-google-analytics": "^1.0.4",
