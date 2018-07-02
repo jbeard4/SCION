@@ -7,6 +7,9 @@ module.exports = {
   },
   plugins: [
     {
+      resolve: `gatsby-plugin-feed`
+    },
+    {
       resolve: `gatsby-source-filesystem`,
       options: {
         path: `${__dirname}/src/pages`,
