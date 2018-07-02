@@ -80,8 +80,6 @@ This project exists thanks to all the people who contribute.
 
 Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/SCION#backer)]
 
-<a href="https://opencollective.com/juan-carlos-madrid-abad#" target="_blank"><img width="60" src="https://opencollective.com/static/images/avatar-01.svg?width=890"></a>
-
 ## Sponsors
 
 Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/SCION#sponsor)]
@@ -96,6 +94,12 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 <a href="https://opencollective.com/SCION/sponsor/7/website" target="_blank"><img src="https://opencollective.com/SCION/sponsor/7/avatar.svg"></a>
 <a href="https://opencollective.com/SCION/sponsor/8/website" target="_blank"><img src="https://opencollective.com/SCION/sponsor/8/avatar.svg"></a>
 <a href="https://opencollective.com/SCION/sponsor/9/website" target="_blank"><img src="https://opencollective.com/SCION/sponsor/9/avatar.svg"></a>
+
+# Support
+
+To report a bug: [file an issue on GitHub](https://github.com/jbeard4/SCION/issues).
+
+For general questions: [![Join the chat at https://gitter.im/SCION-SCXML/Lobby](https://badges.gitter.im/SCION-SCXML/Lobby.svg)](https://gitter.im/SCION-SCXML/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # Build Status
 
