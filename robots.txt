@@ -1,4 +1,2 @@
 User-agent: *
-Disallow: 
-
-Sitemap: http://jbeard4.github.com/SCION/sitemap.xml 
+Disallow:
