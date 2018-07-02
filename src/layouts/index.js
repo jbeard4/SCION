@@ -8,7 +8,10 @@ class Template extends React.Component {
     const { location, children } = this.props
     let header = (
       <nav className="navbar navbar-expand navbar-dark bg-dark">
-        <a href="https://github.com/jbeard4/SCION"><img style={{position: 'absolute', top: 0, right: 0, border: 0}} src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png" alt="Fork me on GitHub"/></a>
+        {
+          location.pathname === '/' && 
+            <a href="https://github.com/jbeard4/SCION"><img style={{position: 'absolute', top: 0, right: 0, border: 0, zIndex: 1}} src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png" alt="Fork me on GitHub"/></a>
+        }
         <Link className="navbar-brand" exact to="/">
           SCION
         </Link>
@@ -16,8 +19,8 @@ class Template extends React.Component {
           <li className={`nav-item ${location.pathname === '/blog' ? 'active' : ''}`}>
             <Link className="nav-link" to="/blog"><i className="fa fa-wrench"></i>&nbsp; Blog</Link>
           </li>
-          <li className={`nav-item ${location.pathname === '/api-docs' ? 'active' : ''}`}>
-            <Link className="nav-link" to="/api-docs"><i className="fa fa-wrench"></i>&nbsp; API Docs</Link>
+          <li className={`nav-item ${location.pathname.match(/.html$/) ? 'active' : ''}`}>
+            <Link className="nav-link" to="/modules/_workspace_scion_scxml_platform_projects_scion_tsd_index_d_.html"><i className="fa fa-wrench"></i>&nbsp; API</Link>
           </li>
         </ul>
       </nav>
