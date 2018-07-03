@@ -16,7 +16,7 @@ class Template extends React.Component {
           SCION
         </Link>
         <ul className="navbar-nav mr-auto">
-          <li className={`nav-item ${location.pathname === '/blog' ? 'active' : ''}`}>
+          <li className={`nav-item ${location.pathname.match(/^\/blog/) ? 'active' : ''}`}>
             <Link className="nav-link" to="/blog">Blog</Link>
           </li>
           <li className={`nav-item ${location.pathname.match(/.html$/) ? 'active' : ''}`}>
