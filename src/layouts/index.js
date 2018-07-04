@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'gatsby-link'
+import Footer from '../components/Footer'
 import './index.css';
 import 'prismjs/themes/prism-twilight.css';
 
@@ -33,9 +34,7 @@ class Template extends React.Component {
             {children()}
           </div>
         </div>
-        <footer style={{backgroundColor: '#f5f5f5'}}>
-          SCION is professionally developed and maintained by Jacobean Research and Development, LLC.
-        </footer>
+        <Footer />
       </div>
     )
   }

@@ -1,29 +1,6 @@
-html, body, [id="___gatsby"], [data-reactroot] {
-  width: 100%;
-  height: 100%;
-}
-
-[data-reactroot] {
-  display: flex;
-  flex-direction: column;
-}
-
 .navbar {
   margin-bottom: 1em;
 }
-
-[data-reactroot] > .content {
-  flex-grow: 1;
-  position: relative;
-}
-
-[data-reactroot] > .content > div {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  overflow-y: auto;
-}
-
 
 footer {
   text-align: center;
