@@ -30,7 +30,10 @@ const toc = [
 ];
 
 const TutorialPageWrapper = ({ Component, pathname }) => {
-  const tocIdx = toc.findIndex( o => pathname.indexOf(o.path) > -1 ) 
+  let tocIdx = toc.findIndex( o => pathname.indexOf(o.path) > -1 ) 
+  if(tocIdx === -1){
+    tocIdx = 0;
+  }
   const curSection = toc[tocIdx];
   const prevSection = toc[tocIdx - 1]
   const nextSection = toc[tocIdx + 1]
