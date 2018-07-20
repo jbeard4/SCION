@@ -5,8 +5,9 @@ import Helmet from 'react-helmet'
 import SCHVIZ from '@jbeard/schviz2';
 import scxml from 'scxml';
 import lampScxml from './simple-lamp.scxml';
+import TutorialPageWrapper from '../../components/TutorialPageWrapper'
 
-class TutorialsIndex extends React.Component {
+class LightSwitchExample extends React.Component {
 
   constructor(props){
     super(props);
@@ -116,5 +117,10 @@ const LampSwitch = ({sc, configuration}) => (
 );
 
 
-export default TutorialsIndex; 
+const WrappedLightSwitchExample = ({location}) => (
+  <TutorialPageWrapper Component={LightSwitchExample} pathname={location.pathname} />
+);
+
+
+export default WrappedLightSwitchExample; 
 

@@ -1,5 +1,4 @@
 import * as React from "react";
-import Link from 'gatsby-link'
 
 const Home = () => (
   <div className="container">
