@@ -28,7 +28,6 @@ export default class Footer extends React.Component {
     window.requestAnimationFrame(() => {
       setTimeout(() => {
         const position = this.getPosition()
-        console.log('boundsCheckAndUpdate', position);
         this.setState({position});
       }, 0);
     });
