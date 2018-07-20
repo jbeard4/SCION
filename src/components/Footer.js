@@ -21,7 +21,7 @@ export default class Footer extends React.Component {
 
   boundsCheck(){
     return typeof document !== 'undefined' && typeof window !== 'undefined' &&
-      document.body.offsetHeight < window.innerHeight;
+      document.getElementById('___gatsby').offsetHeight < window.innerHeight;
   } 
 
   boundsCheckAndUpdate(){

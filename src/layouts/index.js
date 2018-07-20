@@ -3,6 +3,8 @@ import Link from 'gatsby-link'
 import Footer from '../components/Footer'
 import './index.css';
 import 'prismjs/themes/prism-twilight.css';
+import 'babel-polyfill';
+import 'jquery';
 
 class Template extends React.Component {
   render() {
@@ -22,6 +24,9 @@ class Template extends React.Component {
           </li>
           <li className={`nav-item ${location.pathname.match(/.html$/) ? 'active' : ''}`}>
             <Link className="nav-link" to="/modules/_workspace_scion_scxml_platform_projects_scion_tsd_index_d_.html">API</Link>
+          </li>
+          <li className={`nav-item`}>
+            <Link className="nav-link" to="/tutorials">Tutorial</Link>
           </li>
         </ul>
       </nav>

@@ -114,3 +114,15 @@ exports.onCreateNode = ({ node, boundActionCreators, getNode }) => {
     })
   }
 }
+
+exports.modifyWebpackConfig = ({ config, stage }) => {
+  config.merge({
+    externals: {
+      'module': 'module'
+    }
+  })
+  config.loader('raw-loader', {
+    test: /\.scxml$/
+  });
+  return config;
+};
