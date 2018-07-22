@@ -1,0 +1,12 @@
+<scxml
+  xmlns="http://www.w3.org/2005/07/scxml"
+  version="1.0"
+  name="twoButtonLamp"
+  initial="off">
+  <state id="on">
+    <transition event="switch-off" target="off"/>
+  </state>
+  <state id="off">
+    <transition event="switch-on" target="on"/>
+  </state>
+</scxml>
