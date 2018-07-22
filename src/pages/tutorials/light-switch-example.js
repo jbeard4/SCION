@@ -53,7 +53,7 @@ export class LightSwitchExample extends React.Component {
               <LampSwitch sc={this.sc} configuration={this.state && this.state.configuration}/>
             }
             caption={
-              <span> I am a <strong>light switch</strong>. You can <strong>touch</strong> me! </span>
+              <span> I am a <strong>light switch</strong>.<br /> You can <strong>touch</strong> me! </span>
             }
             />
           <Cell 
@@ -88,7 +88,7 @@ export class LightSwitchExample extends React.Component {
   }
 }
 
-const LampBulb = ({configuration}) => (
+export const LampBulb = ({configuration}) => (
   <svg id="svg2598" version="1.0" viewBox="0 0 44 54" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
    <defs id="defs2601">
     <linearGradient id="linearGradient3401" x1="14.5" x2="27.625" y1="42" y2="42" gradientUnits="userSpaceOnUse">
@@ -116,7 +116,7 @@ const LampBulb = ({configuration}) => (
 );
 
 const LampSwitch = ({sc, configuration}) => (
-  <svg  width="100%" height="100%" id="svg2" enableBackground="new 0 0 356.251 512" version="1.1" viewBox="0 0 356.25 512" xmlns="http://www.w3.org/2000/svg" onClick={(e) => {e.stopPropagation(); e.preventDefault(); sc.gen('touch')}}>
+  <svg style={{position: 'absolute'}} width="100%" height="100%" id="svg2" enableBackground="new 0 0 356.251 512" version="1.1" viewBox="0 0 356.25 512" xmlns="http://www.w3.org/2000/svg" onClick={(e) => {e.stopPropagation(); e.preventDefault(); sc.gen('touch')}}>
     <path id="path6" d="m178.39 100.6c9.886 0 17.973-8.088 17.973-17.965 0-9.965-8.087-17.965-17.973-17.965-9.965 0-18.053 8-18.053 17.965 0 9.877 8.088 17.965 18.053 17.965z" fill="#231f20"/>
     <path id="path8" d="m178.39 406.01c-9.965 0-18.053 7.991-18.053 17.965 0 9.877 8.088 17.965 18.053 17.965 9.886 0 17.973-8.088 17.973-17.965 0-9.974-8.086-17.965-17.973-17.965z" fill="#231f20"/>
     <path id="path10" d="m302.36 0h-248.46c-29.72 0-53.896 24.176-53.896 53.896v404.21c0 29.719 24.176 53.895 53.896 53.895h248.46c29.72 0 53.896-24.176 53.896-53.896v-404.21c-1e-3 -29.72-24.177-53.896-53.897-53.896zm35.931 458.1c0 19.817-16.114 35.93-35.93 35.93h-248.46c-19.812 0-35.93-16.114-35.93-35.93v-404.21c0-19.817 16.118-35.93 35.93-35.93h248.46c19.817 0 35.93 16.114 35.93 35.93v404.21z" fill="#231f20"/>
@@ -126,7 +126,7 @@ const LampSwitch = ({sc, configuration}) => (
   </svg>
 );
 
-const Cell = ({ component, caption, rowSpan } ) => (
+export const Cell = ({ component, caption, rowSpan } ) => (
   <td rowSpan={rowSpan}>
     <div style={{width: '100%', height: '100%', position: 'relative'}}>
       <div style={{width: '100%', height: '100%', position: 'absolute'}}>
