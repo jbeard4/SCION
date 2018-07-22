@@ -3,34 +3,21 @@ import Link from 'gatsby-link'
 
 const toc = [
   {
-    name : "Tutorial",
+    name : "Introduction",
     path:"/tutorials/introduction",
-  },
-  {
-    name : "Overview of SCXML",
-    path:"/tutorials/basics",
   },
   {
     name : "Basic States and Transitions",
     path:"/tutorials/basic-states-and-transitions",
   },
   {
-    name : "Multiple Events Per Transition",
-    path:"/tutorials/multiple-events-per-transition",
+    name : "A more advanced example",
+    path:"/tutorials/another-example",
   },
-  {
-    name : "Light Switch Example",
-    path:"/tutorials/light-switch-example",
-  }/*,
-  {
-    name : "Other",
-    path:"/tutorials/other",
-  }
-  */
 ];
 
 const TutorialPageWrapper = ({ Component, pathname }) => {
-  let tocIdx = toc.findIndex( o => pathname.indexOf(o.path) > -1 ) 
+  let tocIdx = toc.findIndex( (o) => pathname.indexOf(o.path) > -1 ) 
   if(tocIdx === -1){
     tocIdx = 0;
   }

@@ -4,10 +4,12 @@ import get from 'lodash/get'
 import Helmet from 'react-helmet'
 import SCHVIZ from '@jbeard/schviz2';
 import scxml from 'scxml';
-import lampScxml from './simple-lamp.scxml';
+import _lampScxml from './simple-lamp.scxml';
 import TutorialPageWrapper from '../../components/TutorialPageWrapper'
 
-class LightSwitchExample extends React.Component {
+export const lampScxml = _lampScxml;
+
+export class LightSwitchExample extends React.Component {
 
   constructor(props){
     super(props);
@@ -43,38 +45,46 @@ class LightSwitchExample extends React.Component {
   }
 
   render(){
-    return <div className="container">
-      <h3> Light Switch Example </h3>
-
-      <p>Let’s say we have a touch lamp. Whenever you touch it, it turns on if it was off and off if it was on.</p>
-
-      <p>So we have two states: ‘on’ and ‘off’. We also have one event: ‘touch’. We can organize this into a statechart like so:</p>
-
-      <div className="row">
-        <div style={{height:'400px',position:'relative',width:'100%'}}>
-          <SCHVIZ 
-            scxmlDocumentString={lampScxml}
-            disableAnimation={true}
-            disableZoom={true}
-            configuration={this.state && this.state.configuration}
-            disableZoomAnimation={true}
-            transitionsEnabled={this.state && this.state.transitionsEnabled} 
+    return <table style={{width: '100%', height: '400px'}}>
+      <tbody> 
+        <tr>
+          <Cell 
+            component={
+              <LampSwitch sc={this.sc} configuration={this.state && this.state.configuration}/>
+            }
+            caption={
+              <span> I am a <strong>light switch</strong>. You can <strong>touch</strong> me! </span>
+            }
             />
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-md-6">
-          <div style={{height:'400px',position:'relative',width:'100%'}}>
-            <LampSwitch sc={this.sc} configuration={this.state && this.state.configuration}/>
-          </div>
-        </div>
-        <div className="col-md-6">
-          <div style={{height:'400px',position:'relative',width:'100%'}}>
-            <LampBulb configuration={this.state && this.state.configuration}/>
-          </div>
-        </div>
-      </div>
-    </div>
+          <Cell 
+            component={
+              <SCHVIZ 
+                scxmlDocumentString={lampScxml}
+                disableAnimation={true}
+                disableZoom={true}
+                configuration={this.state && this.state.configuration}
+                disableZoomAnimation={true}
+                transitionsEnabled={this.state && this.state.transitionsEnabled} 
+                />
+            }
+            caption={
+              <span>I am a <strong>state machine</strong></span>
+            }
+            rowSpan="2"
+            />
+        </tr>
+        <tr>
+          <Cell 
+            component={
+              <LampBulb configuration={this.state && this.state.configuration}/>
+            }
+            caption={
+             <span>I am a <strong>light bulb</strong>.</span>
+            }
+            />
+        </tr>
+      </tbody>
+    </table>
   }
 }
 
@@ -106,15 +116,32 @@ const LampBulb = ({configuration}) => (
 );
 
 const LampSwitch = ({sc, configuration}) => (
-  <svg  width="100%" height="100%" id="svg2" enableBackground="new 0 0 356.251 512" version="1.1" viewBox="0 0 356.25 512" xmlns="http://www.w3.org/2000/svg">
+  <svg  width="100%" height="100%" id="svg2" enableBackground="new 0 0 356.251 512" version="1.1" viewBox="0 0 356.25 512" xmlns="http://www.w3.org/2000/svg" onClick={(e) => {e.stopPropagation(); e.preventDefault(); sc.gen('touch')}}>
     <path id="path6" d="m178.39 100.6c9.886 0 17.973-8.088 17.973-17.965 0-9.965-8.087-17.965-17.973-17.965-9.965 0-18.053 8-18.053 17.965 0 9.877 8.088 17.965 18.053 17.965z" fill="#231f20"/>
     <path id="path8" d="m178.39 406.01c-9.965 0-18.053 7.991-18.053 17.965 0 9.877 8.088 17.965 18.053 17.965 9.886 0 17.973-8.088 17.973-17.965 0-9.974-8.086-17.965-17.973-17.965z" fill="#231f20"/>
     <path id="path10" d="m302.36 0h-248.46c-29.72 0-53.896 24.176-53.896 53.896v404.21c0 29.719 24.176 53.895 53.896 53.895h248.46c29.72 0 53.896-24.176 53.896-53.896v-404.21c-1e-3 -29.72-24.177-53.896-53.897-53.896zm35.931 458.1c0 19.817-16.114 35.93-35.93 35.93h-248.46c-19.812 0-35.93-16.114-35.93-35.93v-404.21c0-19.817 16.118-35.93 35.93-35.93h248.46c19.817 0 35.93 16.114 35.93 35.93v404.21z" fill="#231f20"/>
     <rect id="rect3019" x="131.8" y="148.61" width="91.119" height="203.93" rx="2.04" ry="1.875" fill="#231f20"/>
     <rect id="rect3032" transform="translate(-3.54e-6)" x="149.15" y="165.42" width="55.864" height="110.64" rx="2.04" ry="1.875" fillOpacity="0"/>
-     <rect id="rect3034" transform={`translate(-3.54e-6, ${configuration && configuration[0] === 'on' ? 0 : 57})`} x="149.15" y="165.42" width="55.864" height="110.64" rx="2.04" ry="1.875" fill="#fff" style={{transition:'transform .5s ease-out'}} onClick={(e) => {e.stopPropagation(); e.preventDefault(); sc.gen('touch')}}/>
+     <rect id="rect3034" transform={`translate(-3.54e-6, ${configuration && configuration[0] === 'on' ? 0 : 57})`} x="149.15" y="165.42" width="55.864" height="110.64" rx="2.04" ry="1.875" fill="#fff" style={{transition:'transform .5s ease-out'}} />
   </svg>
 );
+
+const Cell = ({ component, caption, rowSpan } ) => (
+  <td rowSpan={rowSpan}>
+    <div style={{width: '100%', height: '100%', position: 'relative'}}>
+      <div style={{width: '100%', height: '100%', position: 'absolute'}}>
+        <div style={{width: '100%', height: '100%', display:'flex', flexDirection: 'column'}}>
+          <div style={{ flexGrow: 1, position: 'relative'}}>
+            <div style={{width: '100%', height: '100%', position: 'absolute'}}>
+              {component} 
+            </div>
+          </div>
+          <p style={{textAlign: 'center'}}>{caption}</p>
+        </div>
+      </div>
+    </div>
+  </td>
+)
 
 
 const WrappedLightSwitchExample = ({location}) => (
