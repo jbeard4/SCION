@@ -1,0 +1,19 @@
+<scxml 
+  xmlns="http://www.w3.org/2005/07/scxml"
+  version="1.0"
+  initial="alive">
+  <state id="alive">
+    <state id="intact">
+      <transition event="chopped-up" target="disabled"/>
+      <transition event="staked" target="torpor"/>
+    </state>
+    <state id="disabled">
+      <transition event="healed" target="intact"/>
+    </state>
+    <state id="torpor">
+      <transition event="un-staked" target="intact"/>
+    </state>
+    <transition event="burned" target="dead"/>
+  </state>
+  <final id="dead"/>
+</scxml>
