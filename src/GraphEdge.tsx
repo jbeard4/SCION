@@ -16,6 +16,7 @@ export interface GraphEdgeProps {
   disableAnimation? : boolean;
   highlighted : boolean;
   selected : boolean;
+  id?: string;
 }
 
 export interface GraphEdgeAnimation {
@@ -241,7 +242,7 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
   }
 
   public render(){
-    var edgeId = this.props.edge.id;
+    var edgeId = `${this.props.id}:${this.props.edge.id}`;
     var markerId = `${edgeId}:marker`;
     let toReturn = <g>
       <marker viewBox="0 -5 10 10" refX="0" refY="0" markerWidth="3" markerHeight="5"

@@ -28,6 +28,7 @@ export interface GraphNodeProps {
   statesForDefaultEntry : string[];
   selectedNodeId:string;
   selectedEdgeId:string;
+  id?: string;
 }
 
 export interface KGraphNodeAnimation {
@@ -235,7 +236,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                           this.props.statesForDefaultEntry.indexOf(edge.target) > -1 ).length;
     }
 
-    let toReturn = <g id={this.state.to.node.id} 
+    let toReturn = <g id={`${this.props.id}:${this.state.to.node.id}`} 
             className={
               classNames({
                 "node" : true,
@@ -341,6 +342,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                 statesForDefaultEntry={this.props.statesForDefaultEntry}
                 selectedNodeId={this.props.selectedNodeId}
                 selectedEdgeId={this.props.selectedEdgeId}
+                id={this.props.id}
                 />
           )))
         }
@@ -366,6 +368,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                     this.props.kgraph.getKgraphNodeById(edge.source).$type === 'initial' 
                   ) 
                 }
+                id={this.props.id}
                 />
             )) 
         }

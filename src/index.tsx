@@ -40,6 +40,7 @@ export interface GraphRootProps {
   expandAllStatesByDefault? : boolean;
   tabIndex? : number;
   glContainer? : any;
+  id?: string;
 }
 
 export interface GraphRootAnimation {

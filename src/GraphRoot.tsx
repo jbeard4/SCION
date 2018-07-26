@@ -632,6 +632,7 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
                 statesForDefaultEntry={this.props.statesForDefaultEntry}
                 selectedNodeId={this.state.selectedNodeId}
                 selectedEdgeId={this.state.selectedEdgeId}
+                id={this.props.id}
                 />
           }
         </g>
