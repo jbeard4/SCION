@@ -65,6 +65,7 @@ export class LightSwitchExample extends React.Component {
                 configuration={this.state && this.state.configuration}
                 disableZoomAnimation={true}
                 transitionsEnabled={this.state && this.state.transitionsEnabled} 
+                id="lightSwitch"
                 />
             }
             caption={
