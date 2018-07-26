@@ -1,6 +1,7 @@
 import * as React from "react";
 import {GraphRootProps, GraphRootAnimation, getDefaultLayoutOptions} from './index';
-import scxml = require('@jbeard/scxml');    //TODO: make scxml an es6 module
+import scxml = require('scxml');    //TODO: make scxml an es6 module
+import { SCState } from 'scion-core-base';    //TODO: make scxml an es6 module
 import _ = require('underscore');
 import Debug = require('debug');
 const debug = Debug('GraphRoot');
@@ -18,7 +19,7 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
   private previousVirtualViewbox : SVGRect;
   public collapsedNodeMap : any;
   private lastTransitionId : string;
-  private cachedLastScjson : scxml.scion.SCState;
+  private cachedLastScjson : SCState;
   private handleResize : any;
 
   constructor(props:GraphRootProps){
@@ -137,7 +138,7 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
   didMove : boolean;
 
   handleMouseDown(event){
-    console.log('handleMouseDown', event, event.clientX, event.clientY);
+    //console.log('handleMouseDown', event, event.clientX, event.clientY);
     if(event.button !== 0) return;
     this.eventStamp = {clientX : event.clientX, clientY : event.clientY};
     this.cachedClickEventTarget = event.target;
@@ -271,7 +272,7 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
   }
 
   componentWillUnmount(){
-    $(window).off('resize', this.handleResize)
+    window.removeEventListener('resize', this.handleResize);
   }
 
   private initCollapsedNodeMap(scjson){
@@ -317,14 +318,14 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
       let kgraphRoot = props.kgraphRoot || kgRoot;
       let kgraph = new KGraph(idGenerator, this.svgRootElement, kgraphRoot);
       let allEdges = kgraph ? this._getAllEdges(kgraph) : [];
-      let enabledEdges = this._getEnabledEdges(allEdges, this.state.transitionsEnabled);
+      let enabledEdges = this._getEnabledEdges(allEdges, props.transitionsEnabled);
       const options = getDefaultLayoutOptions(props.layoutOptions)
       if(!this.props.disableAnimation) this.svgRootElement.pauseAnimations();
       //wait a tick here to give him time to render.
       //TODO: would be better to fix this by performing layout in a webworker thread.
       setTimeout( () => {
         kgraph.updateLayout(options, (err, rootNode) => {
-          console.log('kgraph rootNode',rootNode);
+          //console.log('kgraph rootNode',rootNode);
           if(err) throw err;
           this.virtualViewbox = this.getOriginalViewbox(kgraph);
           this.setState({ 
@@ -410,7 +411,7 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
   }
 
   handleKeypress(event){
-    console.log(event.key, event);
+    //console.log(event.key, event);
     if(event.target !== this.htmlRootElement) return;
     switch(event.key){
       case ' ':
@@ -533,10 +534,8 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
   }
 
   componentDidMount(){
-    const $ = window['jQuery'] as any;
-    $(window).on('resize', this.handleResize)
-
-    $(document).on('keypress', this.handleKeypress.bind(this));
+    window.addEventListener('resize', this.handleResize);
+    document.addEventListener('keypress', this.handleKeypress.bind(this));
 
     this.checkProps(this.props);
     if( this.props.pathToSCXML ||

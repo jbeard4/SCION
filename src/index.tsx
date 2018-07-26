@@ -2,17 +2,17 @@
 
 import * as React from "react";
 import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, Point} from './KGraph';
-import scxml = require('@jbeard/scxml');    //TODO: make scxml an es6 module
+import { SCState } from 'scion-core-base';    //TODO: make scxml an es6 module
 import constants from './constants';
 import IdGenerator from './IdGenerator';
 import Debug = require('debug');
 const debug = Debug('GraphNode');
 import GraphNode from './GraphNode';
 import {LayoutOptions} from './IKGraphRenderBackend';
-import {SCState, SCTransition, findStateById} from './SCJSON';
 import SCJSONToKGraphTransformer from './SCJSONToKGraphTransformer';
 import {GraphRoot} from './GraphRoot';
 require('../bower_components/load-awesome/css/line-spin-fade-rotating.css')
+require('../test-integration/styles.css')
 import _ = require('underscore');
 
 
@@ -25,7 +25,7 @@ export interface GraphRootProps {
   pathToSCXML? : string;
   urlToSCXML? : string;
   scxmlDocumentString? : string;
-  scjson? : scxml.scion.SCState,  //TODO: refactor this property name to 'scState' 
+  scjson? : SCState,  //TODO: refactor this property name to 'scState' 
   kgraphRoot? : KGraphNode,
   layoutOptions? : LayoutOptions,
   redraw? : boolean,
@@ -70,7 +70,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, SchvizSt
   componentDidMount(){
     const jquery = window['jQuery'] as any;
     const self = this;
-    $(document).contextmenu({
+    if(jquery) jquery(document).contextmenu({
       delegate: ".schviz",
       autoFocus: true,
       preventContextMenuForPopup: true,

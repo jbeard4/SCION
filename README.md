@@ -1,25 +1,6 @@
-# SCHVIZ2
+# StateCHart VIsualiZation (SCHVIZ)
 
-## Getting started
+Pronounced like __schvitz__,  which is Yiddish for "sweat". 
 
-```bash
-npm install
-bower install
-open test.html
-```
+SCHVIZ is a React Component that accepts SCXML documents as input and generates interactive, hierarchical SVG graph diagrams as output.
 
-## Example Usage
-
-```javascript
-var schviz = new SCHVIZ(parent : DOMNode);
-
-schviz.renderSCJSON(jsonDoc : scjson)
-schviz.updateKgraph(kgraph : kgraphJson)
-```
-
-See `test.html` for example usage. 
-
-## Coming soon
-
-  * Dyanmically update rendering on model change
-  * highlight states and transitions

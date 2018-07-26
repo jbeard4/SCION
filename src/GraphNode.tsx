@@ -13,14 +13,6 @@ import GraphNodeLabel from './GraphNodeLabel';
 
 const debug = Debug('GraphNode');
 
-let electron;
-try {
-  electron = require('electron');
-} catch(e){
-  //not in electron
-}
-
-
 export interface GraphNodeProps {
   schviz : GraphRoot;
   node : KGraphNode;
