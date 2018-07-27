@@ -3,12 +3,16 @@ import Link from 'gatsby-link'
 
 const toc = [
   {
-    name : "Introduction",
+    name : "Why state machines?",
+    path:"/tutorials/fundamentals",
+  },
+  {
+    name : "States & Transitions",
     path:"/tutorials/introduction",
   },
   {
-    name : "Basic States and Transitions",
-    path:"/tutorials/basic-states-and-transitions",
+    name : "Doing with SCXML",
+    path:"/tutorials/doing-with-scxml",
   },
   {
     name : "A more advanced example",

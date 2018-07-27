@@ -100,7 +100,10 @@ class DragAndDropDemo extends React.Component {
   }
 
   render() {
-    return <div style={{width: '100%', height: '100%'}}>
+    return <div 
+        style={{width: '100%', height: '100%'}}
+        onMouseMove={ this.handleMouseEvent }
+      >
       <div 
         ref={ (e) => {
           if(!this.rect){
@@ -110,7 +113,6 @@ class DragAndDropDemo extends React.Component {
         }}
         onMouseDown={ this.handleMouseEvent }
         onMouseUp={ this.handleMouseEvent }
-        onMouseMove={ this.handleMouseEvent }
         style={{
           width:'100px',
           height:'100px',

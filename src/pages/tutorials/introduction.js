@@ -61,9 +61,10 @@ The SCXML code corresponding to the above example looks like this:
 <p>SCION is a suite of software libraries for working with SCXML in JavaScript. It provides:</p>
 
 <ul>
-<li> compiler and runtime for executing state machines</li>
+<li> runtime for executing state machines </li>
+<li> compiler for SCXML </li>
 <li> visualization </li>
-<li> lint </li>
+<li> linter </li>
 <li> graphical debugger </li>
 <li> other tools and utilities </li>
 </ul>
