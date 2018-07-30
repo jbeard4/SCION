@@ -246,6 +246,47 @@ export class KGraph {
                 walk.call(this,g2);
               }.bind(this))();
 
+
+              //9. recompute width/height bbox for root node to work around self loop edge label bug
+              (function(){
+                function walk(parentX, parentY, node){
+
+                  const minX = parentX + node.x || 0,
+                        minY = parentY + node.y || 0,
+                        maxX = minX + node.width || 0,
+                        maxY = minY + node.height || 0;
+
+                  const bboxes = [{x : minX, y: minY, width: node.width, height: node.height}]
+                        
+                  if(node.children){
+                    const childBBoxes = node.children.map(walk.bind(this, minX, minY));
+                    bboxes.push.apply(bboxes, childBBoxes) 
+                  } else if (node.edges){ 
+                     node.edges.forEach( (edge, i) => {
+                      if(edge.labels){
+                        const edgeLabelBboxes = node.children.map(walk.bind(this, minX, minY));
+                        bboxes.push.apply(bboxes, edgeLabelBboxes)
+                      } 
+                    })
+                  }
+
+                  const aggregateBBox = bboxes.reduce((
+                    {x: minX, y: minY, width: maxWidth, height: maxHeight}, 
+                    {x: nodeX, y: nodeY, width: nodeWidth, height: nodeHeight}) => {
+                      const maxX = Math.max(minX + maxWidth, nodeX + nodeWidth)
+                      const maxY = Math.max(minY + maxHeight, nodeY + nodeHeight)
+                      return {x : minX, y: minY, width: maxX - minX, height: maxY - minY}
+                    })
+
+                  return aggregateBBox; 
+                }
+                const bbox = walk.call(this,0,0,g2);
+                debug('Updating root bbox', g2.width, g2.height, bbox.width, bbox.height)
+                g2.width = bbox.width
+                g2.height = bbox.height
+              }.bind(this))();
+
+
               cb(null, g2);
             })
           })
