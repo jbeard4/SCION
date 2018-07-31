@@ -5,8 +5,7 @@ import Helmet from 'react-helmet'
 import SCHVIZ from '@jbeard/schviz2';
 import scxml from 'scxml';
 import _dragAndDropScxml from './drag-and-drop.scxml';
-import { Cell } from './light-switch-example';
-import TutorialPageWrapper from '../../components/TutorialPageWrapper'
+import { Cell } from '../light-switch-example';
 
 export const dragAndDropScxml = _dragAndDropScxml;
 

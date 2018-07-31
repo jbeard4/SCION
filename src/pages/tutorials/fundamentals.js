@@ -1,11 +1,9 @@
 import * as React from "react";
 import TutorialPageWrapper from '../../components/TutorialPageWrapper'
-import { LightSwitchExample, lampScxml } from './light-switch-example'
-import { TwoButtonLightSwitchExample } from './two-button-lamp'
 import Prism from 'prismjs'
 import PrismCode from 'react-prism'
 import SCHVIZ from '@jbeard/schviz2';
-import { vampireScxml, VampireExample } from './vampire-example';
+import { vampireScxml, VampireExample } from '../../examples/vampire-example';
 
 const Fundamentals = ({sectionName, by}) => (
   <div className="container">

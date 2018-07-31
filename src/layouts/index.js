@@ -26,7 +26,7 @@ class Template extends React.Component {
             <Link className="nav-link" to="/modules/_workspace_scion_scxml_platform_projects_scion_tsd_index_d_.html">API</Link>
           </li>
           <li className={`nav-item ${location.pathname.match(/^\/tutorials/) ? 'active' : ''}`}>
-            <Link className="nav-link" to="/tutorials/introduction">Tutorial</Link>
+            <Link className="nav-link" to="/tutorials/fundamentals">Tutorial</Link>
           </li>
         </ul>
       </nav>

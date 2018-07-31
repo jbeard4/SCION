@@ -5,7 +5,6 @@ import Helmet from 'react-helmet'
 import SCHVIZ from '@jbeard/schviz2';
 import scxml from 'scxml';
 import _lampScxml from './simple-lamp.scxml';
-import TutorialPageWrapper from '../../components/TutorialPageWrapper'
 
 export const lampScxml = _lampScxml;
 
@@ -145,10 +144,4 @@ export const Cell = ({ component, caption, rowSpan } ) => (
 )
 
 
-const WrappedLightSwitchExample = ({location}) => (
-  <TutorialPageWrapper Component={LightSwitchExample} pathname={location.pathname} />
-);
-
-
-export default WrappedLightSwitchExample; 
 

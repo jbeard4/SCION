@@ -1,7 +1,7 @@
 import * as React from "react";
 import TutorialPageWrapper from '../../components/TutorialPageWrapper'
-import { LightSwitchExample, lampScxml } from './light-switch-example'
-import { TwoButtonLightSwitchExample } from './two-button-lamp'
+import { LightSwitchExample, lampScxml } from '../../examples/light-switch-example'
+import { TwoButtonLightSwitchExample } from '../../examples/two-button-lamp'
 import Prism from 'prismjs'
 import PrismCode from 'react-prism'
 

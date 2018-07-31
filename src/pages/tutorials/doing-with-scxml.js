@@ -2,7 +2,7 @@ import * as React from "react";
 import TutorialPageWrapper from '../../components/TutorialPageWrapper'
 import Prism from 'prismjs'
 import PrismCode from 'react-prism'
-import { DragAndDropExample } from './drag-and-drop'
+import { DragAndDropExample } from '../../examples/drag-and-drop-example'
 
 const Introduction = ({sectionName}) => (
   <div className="container">
