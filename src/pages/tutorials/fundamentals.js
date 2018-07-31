@@ -7,9 +7,10 @@ import PrismCode from 'react-prism'
 import SCHVIZ from '@jbeard/schviz2';
 import { vampireScxml, VampireExample } from './vampire-example';
 
-const Fundamentals = ({sectionName}) => (
+const Fundamentals = ({sectionName, by}) => (
   <div className="container">
   <h1>{sectionName}</h1>
+  <h6>{by}</h6>
 
 <blockquote>
 States. The final frontier. These are the voyages of an enterprising developer. Her eternal mission: to explore strange new techniques, to seek out better ways to engineer for mental models and new design patterns. To boldly go where a few awesome devs have gone before.
@@ -70,7 +71,11 @@ function changeState (action) {
 {vampireScxml}
 </PrismCode>
 
-<p>Nancy can visualize this in the following diagram:</p>
+<h2>What is SCXML?</h2>
+
+<p>There are many dialects of state machines out there, and many are proprietary. SCXML is an open standard for state machines by the W3C. It describes an <strong>XML application</strong>, which specifies a syntax (a set of rules that define how you write XML code to define the state machine), and a semantics (a set of rules which describes how the state machine should be executed). The SCXML syntax is formalized by an XML schema definition, and the semantics is defined in pseudocode, and formalized by a test suite.</p>
+
+<p>Nancy can use SCION to visualize the above SCXML as a diagram:</p>
 
 <div style={{height: '400px', width: '100%', position: 'relative'}}>
   <SCHVIZ 
@@ -82,6 +87,23 @@ function changeState (action) {
     />
 </div>
 
+<h2>What is SCION?</h2>
+
+<p>SCION is a suite of software libraries for working with SCXML in JavaScript. It provides:</p>
+
+<ul>
+<li> runtime for executing state machines </li>
+<li> compiler for SCXML </li>
+<li> visualization </li>
+<li> linter </li>
+<li> graphical debugger </li>
+<li> other tools and utilities </li>
+</ul>
+
+<p>SCION powers the examples on this site.</p>
+
+<h2> How to run a state machine? </h2>
+
 <p> Nancy can create a small environment to run the state machine, with buttons to send events as input, and pictures to illustrate the current state: </p>
 
 <VampireExample />
@@ -92,9 +114,22 @@ function changeState (action) {
 
 <p>At this point you’re probably thinking “Alright, state machines work well for Nancy Drew’s problems, but will they work well for mine?” Good question.</p>
 
+<p>Does your application have well-defined, named states? Does it receive events? Does it flow between states in response to those events? Then state machines might be a good solution for you.</p>
+
 <p>‘State’ is a pretty good name for the phenomena SCXML can describe – when you’re developing software for discrete objects whose behaviors can be described in discrete groups, and those groups change depending on how the object is acted upon or what the object encounters, then you’re looking at an ideal use-case for statecharts.</p>
 
 <p>Users are themselves complicated and stochastic, but they like it when their appliances and applications operate in simple, clearly defined ways. This applies to many facets of those appliances/applications: the way users interact with them, the way they provide feedback to the user, and the tasks they help the user accomplish.</p>
+
+<p>Here are a set of application domains where state machines are often a good fit:</p>
+
+<ul>
+  <li> Embedded Systems (for controling safety-critical, embedded logic) </li>
+  <li> Interaction design (as a design language for communicating between designers and developers) </li>
+  <li> Business Workflows (like flow charts) </li>
+  <li> Customer Service (for defining phone trees, IVRs, chatbot, etc.) </li>
+</ul>
+
+<p>There are many other domains where state machines are useful. If you have an idea, please consider contributing a tutorial to this guide.</p>
 
 <p>All of that is a pretty abstract description, but you’ll find plenty of examples throughout this guide that should help illustrate how useful state machines can be.</p>
 

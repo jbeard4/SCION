@@ -59,7 +59,7 @@ export class DragAndDropExample extends React.Component {
                 />
             }
             caption={
-              <span> HTML Demo </span>
+              <span> Click and drag the rectangle </span>
             }
             />
         </tr>

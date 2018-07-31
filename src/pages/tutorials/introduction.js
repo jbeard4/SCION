@@ -5,9 +5,10 @@ import { TwoButtonLightSwitchExample } from './two-button-lamp'
 import Prism from 'prismjs'
 import PrismCode from 'react-prism'
 
-const Introduction = ({sectionName}) => (
+const Introduction = ({sectionName, by}) => (
   <div className="container">
   <h1>{sectionName}</h1>
+  <h6>{by}</h6>
 
 <h2>What is a state machine?</h2>
 
@@ -30,46 +31,6 @@ const Introduction = ({sectionName}) => (
 <TwoButtonLightSwitchExample />
 
 <p>From a design standpoint, this configuration takes a little more effort on the user’s part because the user has to decide what she intends to do, which determines which button to press. But perhaps this light consumes a lot of energy to turn on, so accidentally turning the light off is intentionally designed to require more thought.</p>
-
-<h2> Why is this useful? </h2>
-
-<p>Does your application have well-defined, named states? Does it receive events? Does it flow between states in response to those events? Then state machines might be a good solution for you.</p>
-
-<p>Here are a set of application domains where state machines are often a good fit:</p>
-
-<ul>
-  <li> Embedded Systems (for controling safety-critical, embedded logic) </li>
-  <li> Interaction design (as a design language for communicating between designers and developers) </li>
-  <li> Business Workflows (like flow charts) </li>
-  <li> Customer Service (for defining phone trees, IVRs, chatbot, etc.) </li>
-</ul>
-
-<p>There are many other domains where state machines are useful. If you have an idea, please consider contributing a tutorial to this guide.</p>
-
-<h2>What is SCXML?</h2>
-
-<p>There are many dialects of state machines out there, and many are proprietary. SCXML is an open standard for state machines by the W3C. It describes an <strong>XML application</strong>, which specifies a syntax (a set of rules that define how you write XML code to define the state machine), and a semantics (a set of rules which describes how the state machine should be executed). The SCXML syntax is formalized by an XML schema definition, and the semantics is defined in pseudocode, and formalized by a test suite.</p>
-
-The SCXML code corresponding to the above example looks like this:
-
-<PrismCode component="pre" className="language-xml">
-{lampScxml}
-</PrismCode>
-
-<h2>What is SCION?</h2>
-
-<p>SCION is a suite of software libraries for working with SCXML in JavaScript. It provides:</p>
-
-<ul>
-<li> runtime for executing state machines </li>
-<li> compiler for SCXML </li>
-<li> visualization </li>
-<li> linter </li>
-<li> graphical debugger </li>
-<li> other tools and utilities </li>
-</ul>
-
-<p>SCION powers the examples on this site.</p>
 
 </div>
 )
