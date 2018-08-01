@@ -6,6 +6,9 @@ import SCHVIZ from '@jbeard/schviz2';
 import scxml from 'scxml';
 import _dragAndDropScxml from './drag-and-drop.scxml';
 import { Cell } from '../light-switch-example';
+import DragAndDropDemo from './drag-and-drop-demo';
+import DragAndDropDemoTxt from './drag-and-drop-demo.js?txt';
+import { ShowHideSourceCodeLink } from '../../components';
 
 export const dragAndDropScxml = _dragAndDropScxml;
 
@@ -13,6 +16,7 @@ export class DragAndDropExample extends React.Component {
 
   constructor(props){
     super(props);
+    this.state = {};
     this.scPromise = new Promise((resolve, reject) => {
       scxml.documentStringToModel(null, dragAndDropScxml, (err, model) => {
         if(err) reject(err);
@@ -26,8 +30,10 @@ export class DragAndDropExample extends React.Component {
             transitionsEnabled = new Map();
           })
           this.sc.on('onBigStepEnd',() => {
+            const [configuration, history, isInFinalState, datamodel] = this.sc.getSnapshot();
             this.setState({ 
-              configuration : this.sc.getConfiguration(),
+              configuration, 
+              datamodel, 
               transitionsEnabled 
             });
           })
@@ -48,78 +54,48 @@ export class DragAndDropExample extends React.Component {
   }
 
   render(){
-    return <table style={{width: '100%', height: '800px'}}>
-      <tbody> 
-        <tr>
-          <Cell 
-            component={
-              <DragAndDropDemo 
-                scPromise={this.scPromise}
-                />
-            }
-            caption={
-              <span> Click and drag the rectangle </span>
-            }
-            />
-        </tr>
-        <tr>
-          <Cell 
-            component={
-              <SCHVIZ 
-                scxmlDocumentString={dragAndDropScxml}
-                disableAnimation={true}
-                disableZoom={true}
-                configuration={this.state && this.state.configuration}
-                disableZoomAnimation={true}
-                transitionsEnabled={this.state && this.state.transitionsEnabled} 
-                expandAllStatesByDefault={true}
-                id="drag-and-drop"
-                />
-            }
-            caption={
-              <span>State machine</span>
-            }
-            />
-        </tr>
-      </tbody>
-    </table>
-  }
-}
-
-class DragAndDropDemo extends React.Component {
-
-  constructor(props){
-    super(props);
-    this.handleMouseEvent = this.handleMouseEvent.bind(this);
-  }
-
-  handleMouseEvent(e){
-    e.persist();
-    this.props.scPromise.then( (sc) => sc.gen(e.type, e) )
-  }
-
-  render() {
-    return <div 
-        style={{width: '100%', height: '100%'}}
-        onMouseMove={ this.handleMouseEvent }
-      >
-      <div 
-        ref={ (e) => {
-          if(!this.rect){
-            this.rect = e; 
-            this.props.scPromise.then( (sc) => sc.gen('init', this.rect) )
-          }
-        }}
-        onMouseDown={ this.handleMouseEvent }
-        onMouseUp={ this.handleMouseEvent }
-        style={{
-          width:'100px',
-          height:'100px',
-          backgroundColor:'red',
-          border:'2px solid black',
-          position:'absolute',
-          left:'0px'
-        }}/>
+    return <div>
+      <table style={{width: '100%', height: '400px'}}>
+        <tbody> 
+          <tr>
+            <Cell 
+              showSourceCode={this.state.showSourceCode}
+              sourceCode={DragAndDropDemoTxt} 
+              component={
+                <DragAndDropDemo 
+                  scPromise={this.scPromise}
+                  configuration={this.state.configuration}
+                  datamodel={this.state.datamodel}
+                  />
+              }
+              caption={
+                <span> Click and drag the rectangle </span>
+              }
+              />
+            <Cell 
+              showSourceCode={this.state.showSourceCode}
+              sourceCode={dragAndDropScxml} 
+              component={
+                <SCHVIZ 
+                  scxmlDocumentString={dragAndDropScxml}
+                  disableAnimation={true}
+                  disableZoom={true}
+                  configuration={this.state && this.state.configuration}
+                  disableZoomAnimation={true}
+                  transitionsEnabled={this.state && this.state.transitionsEnabled} 
+                  expandAllStatesByDefault={true}
+                  id="drag-and-drop"
+                  />
+              }
+              caption={
+                <span>State machine</span>
+              }
+              />
+          </tr>
+        </tbody>
+      </table>
+      <ShowHideSourceCodeLink self={this} />
     </div>
   }
 }
+

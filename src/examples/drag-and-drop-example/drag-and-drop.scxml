@@ -6,25 +6,11 @@
         <data id="firstEvent"/>
         <data id="eventStamp"/>
         <data id="rectNode"/>
-        <data id="rectX"/>
-        <data id="rectY"/>
+        <data id="rectX" expr="0"/>
+        <data id="rectY" expr="0"/>
     </datamodel>
 
-    <state id="initial-default">
-        <transition event="init" target="idle">
-            <assign location="rectNode" expr="_event.data"/>
-            <assign location="rectX" expr="0"/>
-            <assign location="rectY" expr="0"/>
-        </transition>
-    </state>
-
     <state id="idle">
-        <onentry>
-            <script>
-                rectNode.textContent = 'idle';
-            </script>
-        </onentry>
-
         <transition event="mousedown" target="dragging">
             <assign location="firstEvent" expr="_event.data"/>
             <assign location="eventStamp" expr="_event.data"/>
@@ -32,25 +18,14 @@
     </state>
 
     <state id="dragging">
-        <onentry>
-            <script>
-                rectNode.textContent = 'dragging';
-            </script>
-        </onentry>
-
         <transition event="mouseup" target="idle"/>
 
         <transition event="mousemove" target="dragging">
             <script>
                 var dx = eventStamp.clientX - _event.data.clientX;
                 var dy = eventStamp.clientY - _event.data.clientY;
-
-                //note that rectNode, rectX and rectY are all exposed
-                //from the datamodel as local variables
                 rectX -= dx;
                 rectY -= dy;
-                rectNode.style.left = rectX + 'px';
-                rectNode.style.top = rectY + 'px';
             </script>
             <assign location="eventStamp" expr="_event.data"/>
         </transition>
