@@ -3,30 +3,26 @@
     version="1.0">
 
     <datamodel>
-        <data id="firstEvent"/>
         <data id="eventStamp"/>
-        <data id="rectNode"/>
         <data id="rectX" expr="0"/>
         <data id="rectY" expr="0"/>
+        <data id="dx"/>
+        <data id="dy"/>
     </datamodel>
 
     <state id="idle">
         <transition event="mousedown" target="dragging">
-            <assign location="firstEvent" expr="_event.data"/>
             <assign location="eventStamp" expr="_event.data"/>
         </transition>
     </state>
 
     <state id="dragging">
         <transition event="mouseup" target="idle"/>
-
         <transition event="mousemove" target="dragging">
-            <script>
-                var dx = eventStamp.clientX - _event.data.clientX;
-                var dy = eventStamp.clientY - _event.data.clientY;
-                rectX -= dx;
-                rectY -= dy;
-            </script>
+            <assign location="dx" expr="eventStamp.clientX - _event.data.clientX"/>
+            <assign location="dy" expr="eventStamp.clientY - _event.data.clientY"/>
+            <assign location="rectX" expr="rectX - dx"/>
+            <assign location="rectY" expr="rectY - dy"/>
             <assign location="eventStamp" expr="_event.data"/>
         </transition>
     </state>
