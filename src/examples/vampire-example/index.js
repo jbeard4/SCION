@@ -11,7 +11,6 @@ import Buttons from './buttons'
 import ButtonsTxt from './buttons?txt'
 
 export const vampireScxml = _vampireScxml;
-
 export class VampireExample extends React.Component {
 
   constructor(props){
