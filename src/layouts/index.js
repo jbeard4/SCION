@@ -3,7 +3,6 @@ import Link from 'gatsby-link'
 import Footer from '../components/Footer'
 import './index.css';
 import 'prismjs/themes/prism-twilight.css';
-import 'babel-polyfill';
 import 'jquery';
 
 class Template extends React.Component {

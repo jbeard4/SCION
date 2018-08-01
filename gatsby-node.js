@@ -116,11 +116,22 @@ exports.onCreateNode = ({ node, boundActionCreators, getNode }) => {
 }
 
 exports.modifyWebpackConfig = ({ config, stage }) => {
+  const resolvedConfig = config.resolve();
+  const entryPointKey = Object.keys(resolvedConfig.entry)[0]
+  let entryPoints = resolvedConfig.entry[entryPointKey];
+  entryPoints = ['babel-polyfill'].concat(entryPoints); 
+  console.log('new entryPoints', entryPoints);
+
   config.merge({
     externals: {
       'module': 'module'
     }
+  }).merge(function(current){
+    current.entry[entryPointKey] = entryPoints
+    return current;
   })
+  const util = require('util');
+  console.log('new config', stage, util.inspect(config.resolve(), {showHidden:true, depth: null}))
   config.loader('raw-loader', {
     // see https://stackoverflow.com/questions/44924751/use-different-loaders-for-files-with-same-extension
     test: /\.((scxml)|(js\?txt))$/
