@@ -122,7 +122,8 @@ exports.modifyWebpackConfig = ({ config, stage }) => {
     }
   })
   config.loader('raw-loader', {
-    test: /\.scxml$/
+    // see https://stackoverflow.com/questions/44924751/use-different-loaders-for-files-with-same-extension
+    test: /\.((scxml)|(js\?txt))$/
   });
   return config;
 };

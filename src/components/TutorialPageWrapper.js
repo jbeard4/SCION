@@ -1,30 +1,29 @@
 import * as React from "react";
 import Link from 'gatsby-link'
 
-const jbeard4 = <a target="_blank" href="https://github.com/jbeard4">@jbeard4</a>,
-      thure = <a target="_blank" href="https://github.com/thure">@thure</a>
-const by1 = <span>Content by {jbeard4} and {thure}. Programming by {jbeard4}.</span>,
-      by2 = <span>Content by {thure}. Programming by {jbeard4}.</span>;
+const thure = <a target="_blank" href="https://github.com/thure">@thure</a>
+const by = <span>Based on the tutorials by {thure}.</span>;
 
 const toc = [
   {
     name : "Why state machines?",
     path:"/tutorials/fundamentals",
-    by: by1
+    by
   },
   {
     name : "States & Transitions",
     path:"/tutorials/introduction",
-    by: by2
+    by
   },
   {
     name : "Doing with SCXML",
     path:"/tutorials/doing-with-scxml",
-    by: by2
+    by
   },
   {
     name : "A more advanced example",
     path:"/tutorials/another-example",
+    by
   },
 ];
 

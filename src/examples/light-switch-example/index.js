@@ -5,6 +5,7 @@ import Helmet from 'react-helmet'
 import SCHVIZ from '@jbeard/schviz2';
 import scxml from 'scxml';
 import _lampScxml from './simple-lamp.scxml';
+import PrismCode from 'react-prism';
 
 export const lampScxml = _lampScxml;
 
@@ -126,17 +127,25 @@ const LampSwitch = ({sc, configuration}) => (
   </svg>
 );
 
-export const Cell = ({ component, caption, rowSpan } ) => (
+export const Cell = ({ component, caption, rowSpan, showSourceCode, prismLanguage, sourceCode } ) => (
   <td rowSpan={rowSpan}>
     <div style={{width: '100%', height: '100%', position: 'relative'}}>
       <div style={{width: '100%', height: '100%', position: 'absolute'}}>
         <div style={{width: '100%', height: '100%', display:'flex', flexDirection: 'column'}}>
           <div style={{ flexGrow: 1, position: 'relative'}}>
             <div style={{width: '100%', height: '100%', position: 'absolute'}}>
-              {component} 
+              <div style={{width: '100%', height: '100%', overflow: 'scroll'}}>
+                {
+                  showSourceCode ? 
+                    <PrismCode component="pre" className={`language-${prismLanguage || 'javascript'}`}>
+                      { sourceCode }
+                    </PrismCode> : 
+                    component
+                }
+              </div>
             </div>
           </div>
-          <p style={{textAlign: 'center'}}>{caption}</p>
+          <div style={{textAlign: 'center'}}>{showSourceCode ? '' : caption}</div>
         </div>
       </div>
     </div>
