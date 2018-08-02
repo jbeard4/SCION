@@ -28,7 +28,6 @@
     "gatsby-transformer-sharp": "^1.6.1",
     "immutable": "^4.0.0-rc.9",
     "jquery": "^3.3.1",
-    "jsx-to-string": "^1.4.0",
     "lodash": "^4.15.0",
     "popper.js": "^1.14.3",
     "prismjs": "^1.15.0",

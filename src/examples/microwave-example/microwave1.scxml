@@ -1,0 +1,20 @@
+<scxml>
+
+  <state id="unplugged">
+    <transition event="plug-in" target="plugged-in"/>
+  </state>
+
+  <state id="plugged-in">
+    <initial>
+      <transition target="idle"/>
+    </initial>
+    <state id="idle">
+      <transition event="start" target="cooking"/>
+    </state>
+    <state id="cooking">
+      <transition event="stop" target="idle"/>
+    </state>
+    <transition event="unplug" target="unplugged"/>
+  </state>
+  
+</scxml>

@@ -21,6 +21,11 @@ const toc = [
     by
   },
   {
+    name : "Compound States",
+    path:"/tutorials/compound-states",
+    by
+  },
+  {
     name : "A more advanced example",
     path:"/tutorials/another-example",
     by
