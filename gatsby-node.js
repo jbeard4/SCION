@@ -134,8 +134,8 @@ exports.modifyWebpackConfig = ({ config, stage }) => {
       return current;
     })
   }
-  const util = require('util');
-  console.log('new config', stage, util.inspect(config.resolve(), {showHidden:true, depth: null}))
+  //const util = require('util');
+  //console.log('new config', stage, util.inspect(config.resolve(), {showHidden:true, depth: null}))
   config.loader('raw-loader', {
     // see https://stackoverflow.com/questions/44924751/use-different-loaders-for-files-with-same-extension
     test: /\.((scxml)|(js\?txt))$/
