@@ -10,41 +10,12 @@ import ButtonsTxt from './buttons.js?txt';
 import MicrowaveDemo from './microwave-demo';
 import MicrowaveDemoTxt from './microwave-demo.js?txt';
 import { Cell } from '../light-switch-example';
+import { SCComponent } from '../common';
 
-export default class MicrowaveExample extends React.Component {
+export default class MicrowaveExample extends SCComponent {
 
   constructor(props){
-    super(props);
-    this.state = {};
-    scxml.documentStringToModel(null, props.microwaveScxml, (err, model) => {
-      if(err) throw err;
-      model.prepare((err, modelFactory) => {
-        if(err) throw err;
-        this.sc = new scxml.scion.Statechart(modelFactory);
-
-        let transitionsEnabled;
-        this.sc.on('onBigStepBegin',() => {
-          transitionsEnabled = new Map();
-        })
-        this.sc.on('onBigStepEnd',() => {
-          this.setState({ 
-            configuration : this.sc.getConfiguration(),
-            transitionsEnabled 
-          });
-        })
-        this.sc.on('onTransition',(transitionSourceId,targetIds,transitionIndex) => {
-          if(transitionsEnabled.has(transitionSourceId)){
-            const set = transitionsEnabled.get(transitionSourceId);
-            set.add(transitionIndex);
-          }else{
-            const set = new Set();
-            set.add(transitionIndex);
-            transitionsEnabled.set(transitionSourceId, set);
-          }
-        });
-        this.sc.start();
-      });
-    });
+    super(props, props.microwaveScxml);
   }
 
   render(){

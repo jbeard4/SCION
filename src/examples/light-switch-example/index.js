@@ -1,7 +1,4 @@
 import React from 'react'
-import Link from 'gatsby-link'
-import get from 'lodash/get'
-import Helmet from 'react-helmet'
 import SCHVIZ from '@jbeard/schviz2';
 import scxml from 'scxml';
 import _lampScxml from './simple-lamp.scxml';
@@ -11,43 +8,14 @@ import LampBulb from './lamp-bulb';
 import LampSwitch from './lamp-switch';
 import LampBulbTxt from './lamp-bulb.js?txt';
 import LampSwitchTxt from './lamp-switch.js?txt';
+import { SCComponent } from '../common';
 
 export const lampScxml = _lampScxml;
 
-export class LightSwitchExample extends React.Component {
+export class LightSwitchExample extends SCComponent {
 
   constructor(props){
-    super(props);
-    this.state = {};
-    scxml.documentStringToModel(null, lampScxml, (err, model) => {
-      if(err) throw err;
-      model.prepare((err, modelFactory) => {
-        if(err) throw err;
-        this.sc = new scxml.scion.Statechart(modelFactory);
-
-        let transitionsEnabled;
-        this.sc.on('onBigStepBegin',() => {
-          transitionsEnabled = new Map();
-        })
-        this.sc.on('onBigStepEnd',() => {
-          this.setState({ 
-            configuration : this.sc.getConfiguration(),
-            transitionsEnabled 
-          });
-        })
-        this.sc.on('onTransition',(transitionSourceId,targetIds,transitionIndex) => {
-          if(transitionsEnabled.has(transitionSourceId)){
-            const set = transitionsEnabled.get(transitionSourceId);
-            set.add(transitionIndex);
-          }else{
-            const set = new Set();
-            set.add(transitionIndex);
-            transitionsEnabled.set(transitionSourceId, set);
-          }
-        });
-        this.sc.start();
-      });
-    });
+    super(props, lampScxml);
   }
 
   render(){

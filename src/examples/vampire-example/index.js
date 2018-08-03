@@ -1,5 +1,4 @@
 import React from 'react'
-import Helmet from 'react-helmet'
 import SCHVIZ from '@jbeard/schviz2';
 import scxml from 'scxml';
 import _vampireScxml from './vampire.scxml';
@@ -9,42 +8,14 @@ import VampireImg from './vampire-image'
 import VampireImgTxt from './vampire-image.js?txt'
 import Buttons from './buttons'
 import ButtonsTxt from './buttons?txt'
+import { SCComponent } from '../common';
 
 export const vampireScxml = _vampireScxml;
-export class VampireExample extends React.Component {
+
+export class VampireExample extends SCComponent {
 
   constructor(props){
-    super(props);
-    this.state = {};
-    scxml.documentStringToModel(null, _vampireScxml, (err, model) => {
-      if(err) throw err;
-      model.prepare((err, modelFactory) => {
-        if(err) throw err;
-        this.sc = new scxml.scion.Statechart(modelFactory);
-
-        let transitionsEnabled;
-        this.sc.on('onBigStepBegin',() => {
-          transitionsEnabled = new Map();
-        })
-        this.sc.on('onBigStepEnd',() => {
-          this.setState({ 
-            configuration : this.sc.getConfiguration(),
-            transitionsEnabled 
-          });
-        })
-        this.sc.on('onTransition',(transitionSourceId,targetIds,transitionIndex) => {
-          if(transitionsEnabled.has(transitionSourceId)){
-            const set = transitionsEnabled.get(transitionSourceId);
-            set.add(transitionIndex);
-          }else{
-            const set = new Set();
-            set.add(transitionIndex);
-            transitionsEnabled.set(transitionSourceId, set);
-          }
-        });
-        this.sc.start();
-      });
-    });
+    super(props, vampireScxml);
   }
 
   render(){
