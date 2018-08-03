@@ -2,13 +2,12 @@ import React from 'react'
 import SCHVIZ from '@jbeard/schviz2';
 import scxml from 'scxml';
 import _vampireScxml from './vampire.scxml';
-import { Cell } from '../light-switch-example';
 import { ShowHideSourceCodeLink } from '../../components';
 import VampireImg from './vampire-image'
 import VampireImgTxt from './vampire-image.js?txt'
 import Buttons from './buttons'
 import ButtonsTxt from './buttons?txt'
-import { SCComponent } from '../common';
+import { SCComponent, Cell  } from '../common';
 
 export const vampireScxml = _vampireScxml;
 

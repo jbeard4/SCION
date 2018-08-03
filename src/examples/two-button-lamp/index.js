@@ -2,13 +2,12 @@ import React from 'react'
 import SCHVIZ from '@jbeard/schviz2';
 import scxml from 'scxml';
 import _lampScxml from './two-button-lamp.scxml';
-import { Cell } from '../light-switch-example';
 import LampSwitchButtons from './buttons';
 import LampSwitchButtonsTxt from './buttons.js?txt';
 import LampBulb from '../light-switch-example/lamp-bulb';
 import LampBulbTxt from '../light-switch-example/lamp-bulb.js?txt';
 import { ShowHideSourceCodeLink } from '../../components';
-import { SCComponent } from '../common';
+import { SCComponent, Cell  } from '../common';
 
 export const lampScxml = _lampScxml;
 

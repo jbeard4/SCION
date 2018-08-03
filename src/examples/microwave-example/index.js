@@ -1,16 +1,11 @@
 import React from 'react'
-import Link from 'gatsby-link'
-import get from 'lodash/get'
-import Helmet from 'react-helmet'
 import SCHVIZ from '@jbeard/schviz2';
-import scxml from 'scxml';
 import { ShowHideSourceCodeLink } from '../../components';
+import { SCComponent, Cell } from '../common';
 import Buttons from './buttons';
 import ButtonsTxt from './buttons.js?txt';
 import MicrowaveDemo from './microwave-demo';
 import MicrowaveDemoTxt from './microwave-demo.js?txt';
-import { Cell } from '../light-switch-example';
-import { SCComponent } from '../common';
 
 export default class MicrowaveExample extends SCComponent {
 

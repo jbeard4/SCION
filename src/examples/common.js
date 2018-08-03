@@ -1,5 +1,6 @@
 import React from 'react'
 import scxml from 'scxml';
+import PrismCode from 'react-prism';
 
 export class SCComponent extends React.Component{
   constructor(props, scxmlDocumentString){
@@ -41,3 +42,28 @@ export class SCComponent extends React.Component{
     })
   }
 }
+
+export const Cell = ({ component, caption, rowSpan, showSourceCode, prismLanguage, sourceCode } ) => (
+  <td rowSpan={rowSpan}>
+    <div style={{width: '100%', height: '100%', position: 'relative'}}>
+      <div style={{width: '100%', height: '100%', position: 'absolute'}}>
+        <div style={{width: '100%', height: '100%', display:'flex', flexDirection: 'column'}}>
+          <div style={{ flexGrow: 1, position: 'relative'}}>
+            <div style={{width: '100%', height: '100%', position: 'absolute'}}>
+              <div style={{width: '100%', height: '100%', overflow: 'scroll'}}>
+                {
+                  showSourceCode ? 
+                    <PrismCode component="pre" className={`language-${prismLanguage || 'javascript'}`}>
+                      { sourceCode }
+                    </PrismCode> : 
+                    component
+                }
+              </div>
+            </div>
+          </div>
+          <div style={{textAlign: 'center'}}>{showSourceCode ? '' : caption}</div>
+        </div>
+      </div>
+    </div>
+  </td>
+)

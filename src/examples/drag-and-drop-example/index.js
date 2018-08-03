@@ -1,11 +1,10 @@
 import React from 'react'
 import SCHVIZ from '@jbeard/schviz2';
 import _dragAndDropScxml from './drag-and-drop.scxml';
-import { Cell } from '../light-switch-example';
 import DragAndDropDemo from './drag-and-drop-demo';
 import DragAndDropDemoTxt from './drag-and-drop-demo.js?txt';
 import { ShowHideSourceCodeLink } from '../../components';
-import { SCComponent } from '../common';
+import { SCComponent, Cell  } from '../common';
 
 export const dragAndDropScxml = _dragAndDropScxml;
 

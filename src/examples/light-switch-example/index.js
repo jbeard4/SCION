@@ -2,13 +2,12 @@ import React from 'react'
 import SCHVIZ from '@jbeard/schviz2';
 import scxml from 'scxml';
 import _lampScxml from './simple-lamp.scxml';
-import PrismCode from 'react-prism';
 import { ShowHideSourceCodeLink } from '../../components';
 import LampBulb from './lamp-bulb';
 import LampSwitch from './lamp-switch';
 import LampBulbTxt from './lamp-bulb.js?txt';
 import LampSwitchTxt from './lamp-switch.js?txt';
-import { SCComponent } from '../common';
+import { SCComponent, Cell } from '../common';
 
 export const lampScxml = _lampScxml;
 
@@ -73,30 +72,6 @@ export class LightSwitchExample extends SCComponent {
 }
 
 
-export const Cell = ({ component, caption, rowSpan, showSourceCode, prismLanguage, sourceCode } ) => (
-  <td rowSpan={rowSpan}>
-    <div style={{width: '100%', height: '100%', position: 'relative'}}>
-      <div style={{width: '100%', height: '100%', position: 'absolute'}}>
-        <div style={{width: '100%', height: '100%', display:'flex', flexDirection: 'column'}}>
-          <div style={{ flexGrow: 1, position: 'relative'}}>
-            <div style={{width: '100%', height: '100%', position: 'absolute'}}>
-              <div style={{width: '100%', height: '100%', overflow: 'scroll'}}>
-                {
-                  showSourceCode ? 
-                    <PrismCode component="pre" className={`language-${prismLanguage || 'javascript'}`}>
-                      { sourceCode }
-                    </PrismCode> : 
-                    component
-                }
-              </div>
-            </div>
-          </div>
-          <div style={{textAlign: 'center'}}>{showSourceCode ? '' : caption}</div>
-        </div>
-      </div>
-    </div>
-  </td>
-)
 
 
 
