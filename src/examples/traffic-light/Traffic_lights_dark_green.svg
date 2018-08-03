@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   width="130"
+   height="330"
+   id="svg37956">
+  <title
+     id="title37958">green traffic lights</title>
+  <metadata
+     id="metadata38006">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>green traffic lights</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  
+  <defs
+     id="defs37962">
+    <radialGradient
+       cx="0.5"
+       cy="0.5"
+       r="0.5"
+       fx="0.5"
+       fy="0.5"
+       id="g">
+      <stop
+         id="stop37979"
+         style="stop-color:#74fc94;stop-opacity:1"
+         offset="0" />
+      <stop
+         id="stop37981"
+         style="stop-color:#3ad55e;stop-opacity:1"
+         offset="0.69999999" />
+      <stop
+         id="stop37983"
+         style="stop-color:#00af29;stop-opacity:1"
+         offset="1" />
+    </radialGradient>
+    <radialGradient
+       cx="0.5"
+       cy="0.5"
+       r="0.5"
+       fx="0.5"
+       fy="0.5"
+       id="b">
+      <stop
+         id="stop37986"
+         style="stop-color:#4d4d4d;stop-opacity:1"
+         offset="0" />
+      <stop
+         id="stop37988"
+         style="stop-color:#1a1a1a;stop-opacity:1"
+         offset="0.69999999" />
+      <stop
+         id="stop37990"
+         style="stop-color:#000000;stop-opacity:1"
+         offset="1" />
+    </radialGradient>
+  </defs>
+  <g
+     id="g38012">
+    <path
+       d="m 5,5 120,0 0,320 -120,0 z"
+       id="rect37999"
+       style="fill:#1a1a1a;stroke:#000000;stroke-width:10" />
+    <path
+       d="M 109,65 C 109,89.300529 89.300529,109 65,109 40.699471,109 21,89.300529 21,65 21,40.699471 40.699471,21 65,21 c 24.300529,0 44,19.699471 44,44 z"
+       id="redlight"
+       style="fill:url(#b);stroke:#000000;stroke-width:10" />
+    <path
+       d="m 109,165 c 0,24.30053 -19.699471,44 -44,44 -24.300529,0 -44,-19.69947 -44,-44 0,-24.30053 19.699471,-44 44,-44 24.300529,0 44,19.69947 44,44 z"
+       id="yellight"
+       style="fill:url(#b);stroke:#000000;stroke-width:10" />
+    <path
+       d="m 109,265 c 0,24.30053 -19.699471,44 -44,44 -24.300529,0 -44,-19.69947 -44,-44 0,-24.30053 19.699471,-44 44,-44 24.300529,0 44,19.69947 44,44 z"
+       id="grelight"
+       style="fill:url(#g);stroke:#000000;stroke-width:10" />
+  </g>
+</svg>

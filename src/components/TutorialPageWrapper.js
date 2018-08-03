@@ -26,6 +26,11 @@ const toc = [
     by
   },
   {
+    name : "Conditional Transitions",
+    path:"/tutorials/conditional-transitions",
+    by
+  },
+  {
     name : "A more advanced example",
     path:"/tutorials/another-example",
     by
