@@ -2,9 +2,10 @@ import * as React from "react";
 import TutorialPageWrapper from '../../components/TutorialPageWrapper'
 import { DragAndDropExample } from '../../examples/drag-and-drop-example'
 
-const Introduction = ({sectionName}) => (
+const Introduction = ({sectionName, by}) => (
   <div className="container">
   <h1>{sectionName}</h1>
+  <h6>{by}</h6>
 
 <p>Until now, we’ve written SCXML that doesn’t actually do anything. In the real world, when you transition to a new state UI elements need to be hidden or shown, or the appliance needs to sing a song, or the simulated character needs to use a different sprite. This chapter is about doing those things in SCXML.</p>
 

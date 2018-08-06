@@ -16,17 +16,15 @@ export class TrafficLightExample extends SCComponent {
 
   render(){
     return <div>
-      <table style={{width: '100%', height: '800px'}}>
+      <table style={{width: '100%', height: '400px'}}>
         <tbody> 
           <tr>
             <Cell 
               showSourceCode={this.state.showSourceCode}
               sourceCode={TrafficLightTxt}
-              component={<TrafficLight configuration={this.state.configuration} />}
-              caption={<span>Traffic Light</span>}
+              component={<TrafficLight configuration={this.state.configuration} datamodel={this.state.datamodel} />}
+              caption={<span>I am a <strong>traffic light</strong></span>}
               />
-          </tr>
-          <tr>
             <Cell 
               showSourceCode={this.state.showSourceCode}
               sourceCode={trafficLightScxml}
@@ -40,12 +38,12 @@ export class TrafficLightExample extends SCComponent {
                   transitionsEnabled={this.state && this.state.transitionsEnabled} 
                   id="trafficLight"
                   expandAllStatesByDefault={true}
+                  layoutOptions={SCHVIZ.layouts.auto}
                   />
               }
               caption={
                 <span>I am a <strong>state machine</strong></span>
               }
-              rowSpan="2"
               />
           </tr>
         </tbody>

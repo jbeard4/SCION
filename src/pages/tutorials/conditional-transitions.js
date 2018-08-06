@@ -2,9 +2,10 @@ import * as React from "react";
 import TutorialPageWrapper from '../../components/TutorialPageWrapper'
 import { TrafficLightExample } from '../../examples/traffic-light'
 
-const ConditionalTransitions = ({sectionName}) => (
+const ConditionalTransitions = ({sectionName, by}) => (
   <div className="container">
   <h1>{sectionName}</h1>
+  <h6>{by}</h6>
 
 <p>By this point you probably understand generally how statecharts work. In this section we’ll discuss less ubiquitous features of SCXML that nonetheless will come in handy in certain circumstances.</p>
 
