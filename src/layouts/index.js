@@ -4,6 +4,7 @@ import Footer from '../components/Footer'
 import './index.css';
 import 'prismjs/themes/prism-twilight.css';
 import 'jquery';
+import '@fortawesome/fontawesome-free/css/all.css';
 
 class Template extends React.Component {
   render() {

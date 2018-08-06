@@ -7,6 +7,7 @@
     "url": "https://github.com/gatsbyjs/gatsby-starter-blog/issues"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.2.0",
     "bootstrap": "^4.1.1",
     "disqus-react": "^1.0.5",
     "gatsby": "^1.8.12",
