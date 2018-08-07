@@ -121,10 +121,10 @@ function changeState (action) {
 <p>Here are a set of application domains where state machines are often a good fit:</p>
 
 <ul>
-  <li> Embedded Systems (for controling safety-critical, embedded logic) </li>
-  <li> Interaction design (as a design language for communicating between designers and developers) </li>
+  <li> Embedded Systems (for safety-critical control logic) </li>
+  <li> Interaction design (as a language for communicating between designers and developers) </li>
   <li> Business Workflows (like flow charts) </li>
-  <li> Customer Service (for defining phone trees, IVRs, chatbot, etc.) </li>
+  <li> Customer Service (for defining phone trees, IVRs, chatbots, etc.) </li>
 </ul>
 
 <p>There are many other domains where state machines are useful. If you have an idea, please consider contributing a tutorial to this guide.</p>

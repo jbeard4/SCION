@@ -34,6 +34,7 @@
     "popper.js": "^1.14.3",
     "prismjs": "^1.15.0",
     "react-prism": "^4.3.2",
+    "react-twitter-widgets": "^1.7.1",
     "recompose": "^0.27.1"
   },
   "devDependencies": {

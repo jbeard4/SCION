@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Tweet } from 'react-twitter-widgets'
 
 const Home = () => (
   <div className="container">
@@ -52,13 +53,13 @@ const Home = () => (
       <div id="tweets" className="container">
         <div className="row">
           <div className="col-md-4">
-            <blockquote className="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr">Enjoyed your slides! I love this. I played with scion, scxml, and UIs. It is the right path! <a href="https://t.co/N0uIqSBWSz">https://t.co/N0uIqSBWSz</a> <a href="https://t.co/TJi4BnJV2H">https://t.co/TJi4BnJV2H</a></p>&mdash; Erik Mogensen (@mogsie) <a href="https://twitter.com/mogsie/status/901366326131863556?ref_src=twsrc%5Etfw">August 26, 2017</a></blockquote>
+            <Tweet tweetId="535771690463420417"/>
           </div>
           <div className="col-md-4">
-            <blockquote className="twitter-tweet" data-cards="hidden" data-lang="en"><p lang="en" dir="ltr">SCXML + SCION = Javascript state charts, runs anywhere. <a href="https://t.co/vXkr8PVxzw">https://t.co/vXkr8PVxzw</a> <a href="https://twitter.com/mogsie?ref_src=twsrc%5Etfw">@mogsie</a> <a href="https://twitter.com/restfest?ref_src=twsrc%5Etfw">@restfest</a></p>&mdash; J(a)son Harmon (@jharmn) <a href="https://twitter.com/jharmn/status/515922487264440320?ref_src=twsrc%5Etfw">September 27, 2014</a></blockquote>
+            <Tweet tweetId="515922487264440320"/>
           </div>
           <div className="col-md-4">
-            <blockquote className="twitter-tweet" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/jbeard4?ref_src=twsrc%5Etfw">@jbeard4</a> I&#39;m going to use SCION on a commercial website! I suppose this means I&#39;ll have to read the SCXML spec.</p>&mdash; Will (@wwwillshown) <a href="https://twitter.com/wwwillshown/status/236218270984855552?ref_src=twsrc%5Etfw">August 16, 2012</a></blockquote>
+            <Tweet tweetId="236218270984855552"/>
           </div>
         </div>
       </div>

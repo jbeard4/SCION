@@ -36,7 +36,7 @@ const toc = [
     by
   },
   {
-    name : "A more advanced example",
+    name : "Next Steps",
     path:"/tutorials/another-example",
     by
   },
