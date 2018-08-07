@@ -1,0 +1,15 @@
+<scxml initial="modal-closed">
+  <state id="modal-closed" initial="gallery">
+    <state id="gallery">
+      <transition target="carousel" event="go-to-carousel"/>
+    </state>
+    <state id="carousel">
+      <transition target="gallery" event="go-to-gallery"/>
+    </state>
+    <history id="reentry"/>
+    <transition event="open-modal" target="modal-open"/>
+  </state>
+  <state id="modal-open">
+    <transition event="close-modal" target="reentry"/>
+  </state>
+</scxml>

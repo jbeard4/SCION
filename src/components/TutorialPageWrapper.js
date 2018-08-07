@@ -31,6 +31,11 @@ const toc = [
     by
   },
   {
+    name : "The History State",
+    path:"/tutorials/history",
+    by
+  },
+  {
     name : "A more advanced example",
     path:"/tutorials/another-example",
     by
