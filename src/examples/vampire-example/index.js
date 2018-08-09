@@ -19,7 +19,7 @@ export class VampireExample extends SCComponent {
 
   render(){
     return <div>
-      <table style={{width: '100%', height: '400px'}}>
+      <table style={{width: '100%', height: '455px'}}>
         <tbody> 
           <tr>
             <Cell 
@@ -66,6 +66,10 @@ export class VampireExample extends SCComponent {
               }
               />
           </tr>
+        </tbody>
+      </table> 
+      <table style={{width: '100%'}}>
+        <tbody>
           <tr>
             <td> 
               <p 
@@ -77,7 +81,7 @@ export class VampireExample extends SCComponent {
             </td>
           </tr>
         </tbody>
-      </table> 
+      </table>
     </div>
   }
 }

@@ -54,6 +54,7 @@ export class TwoButtonLightSwitchExample extends SCComponent {
           </tr>
           <tr>
             <Cell 
+              overflow="hidden"
               showSourceCode={this.state.showSourceCode}
               sourceCode={LampBulbTxt}
               component={

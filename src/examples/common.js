@@ -43,14 +43,14 @@ export class SCComponent extends React.Component{
   }
 }
 
-export const Cell = ({ component, caption, rowSpan, showSourceCode, prismLanguage, sourceCode } ) => (
-  <td rowSpan={rowSpan}>
+export const Cell = ({ component, caption, rowSpan, showSourceCode, prismLanguage, sourceCode, overflow = 'scroll' } ) => (
+  <td rowSpan={rowSpan} style={{border: '1px solid #eee'}}>
     <div style={{width: '100%', height: '100%', position: 'relative'}}>
       <div style={{width: '100%', height: '100%', position: 'absolute'}}>
         <div style={{width: '100%', height: '100%', display:'flex', flexDirection: 'column'}}>
           <div style={{ flexGrow: 1, position: 'relative'}}>
             <div style={{width: '100%', height: '100%', position: 'absolute'}}>
-              <div style={{width: '100%', height: '100%', overflow: 'scroll'}}>
+              <div style={{width: '100%', height: '100%', overflow: showSourceCode ? 'scroll' : overflow }}>
                 {
                   showSourceCode ? 
                     <PrismCode component="pre" className={`language-${prismLanguage || 'javascript'}`}>
