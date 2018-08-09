@@ -53,6 +53,8 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
   svgGElement : SVGGElement;
   animateTransformElement : SVGAnimationElement;
   animateXElement : SVGAnimationElement;
+  animateX1Element : SVGAnimationElement;
+  animateX2Element : SVGAnimationElement;
   animateYElement : SVGAnimationElement;
   animateWidthElement : SVGAnimationElement;
   animateHeightElement : SVGAnimationElement;
@@ -198,10 +200,12 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
     if(!this.props.disableAnimation) [
       this.animateTransformElement,
       this.animateXElement,
+      this.animateX1Element,
+      this.animateX2Element,
       this.animateYElement,
       this.animateWidthElement,
       this.animateHeightElement,
-    ].forEach( animation => animation.beginElement() );
+    ].forEach( animation => animation && animation.beginElement() );
   }
 
   render(){
@@ -322,6 +326,35 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
         isRoot={this.props.isRoot}
         disableAnimation={this.props.disableAnimation}
         />
+      { !isLeaf && !this.props.isRoot ? 
+        <line 
+          x1={this.props.disableAnimation ? 0 : undefined }
+          x2={this.props.disableAnimation ? this.state.to.node.width : undefined} 
+          y1="5" y2="5" > 
+          {
+            !this.props.disableAnimation && [
+              <animate attributeName="x1" attributeType="XML"
+                       key="0"
+                       ref={(e: SVGAnimationElement) => { this.animateX1Element = e; }}
+                       fill="freeze" 
+                       begin="indefinite"
+                       className={constants.START}
+                       dur={constants.ANIM_DURATION} 
+                       from={this.state.to.node.width / 2 } 
+                       to={0} />,
+              <animate attributeName="x2" attributeType="XML"
+                       key="1"
+                       ref={(e: SVGAnimationElement) => { this.animateX2Element = e; }}
+                       fill="freeze" 
+                       begin="indefinite"
+                       className={constants.START}
+                       dur={constants.ANIM_DURATION} 
+                       from={this.state.to.node.width / 2}
+                       to={this.state.to.node.width} />
+              ]
+          }
+        </line> : 
+        undefined }
       <g className="childNodes" transform={`translate(0,${this.props.node.$type === 'actionContainer' || this.props.node.$type === 'action' || this.props.node.$type === 'invoke' ? 2 : 0})`}>
         { 
 

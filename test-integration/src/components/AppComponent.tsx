@@ -1,5 +1,7 @@
 import * as React from "react";
-import scxml = require('@jbeard/scxml');    //TODO: make scxml an es6 module
+import {SCState, ModelFactory, Event} from 'scion-core-base' //TODO: we should not need to require these directly, but typescript does not seem to like the reference to scxml.scion
+import {Statechart} from 'scion-core'
+import scxml = require('scxml');    //TODO: make scxml an es6 module
                                     //TODO: expose SCJSON object type, so we do not need to use "any" type
 import SCHVIZ from '../../..';
 import Console from '@jbeard/console-component';
@@ -8,7 +10,7 @@ interface AppComponentState {
   pathToSCXML? : string;
   scxmlDocumentString? : string;
   urlToSCXML? : string;
-  scjson? : scxml.scion.SCState;
+  scjson? : SCState;
 
   targetAPI : string;
   pathToSelectedTest : string;
@@ -17,7 +19,7 @@ interface AppComponentState {
   layoutOptions? : any;
   redraw? : boolean;
   disableAnimation? : boolean;
-  interpreter : scxml.scion.SCInterpreter;
+  interpreter : Statechart;
   configuration? : string[];
 }
 
@@ -234,14 +236,14 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
 
         const handleModelFactoryFactory = (err, model : scxml.ModelFactoryFactory) => {
           if(err) throw err;
-          model.prepare((err, modelFactory : scxml.scion.ModelFactory) => {
+          model.prepare((err, modelFactory : ModelFactory) => {
             if(err) throw err;
             handleModelOrModelFactory(modelFactory);
           });
         }
 
-        const handleModelOrModelFactory = (model : scxml.scion.SCState | scxml.scion.ModelFactory) => {
-          let interpreter = new scxml.scion.Statechart(model); 
+        const handleModelOrModelFactory = (model : SCState | ModelFactory) => {
+          let interpreter = new Statechart(model); 
           interpreter.on('onBigStepEnd',() => {
             this.setState({
               configuration : interpreter.getConfiguration() 
@@ -363,7 +365,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
             }
           </div>
           <Console  
-            handleSubmit={(e : scxml.scion.Event) => this.state.interpreter.gen(e)} 
+            handleSubmit={(e : Event) => this.state.interpreter.gen(e)} 
             isActive={!!this.state.interpreter}/>
         </div>
       </div>;

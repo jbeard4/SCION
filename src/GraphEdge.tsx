@@ -106,7 +106,7 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
 
   _toBegin(props){
     return props.edge.$hyperlink && (!this.componentHasRendered || props.redraw) ? 
-      `${this.normalizeStateId(props.edge.$hyperlink)}_last.endEvent` : 
+      `${this.normalizeStateId(this.prefixWithEdgeId(props.edge.$hyperlink))}_last.endEvent` : 
       'indefinite'; 
   }
 
@@ -241,11 +241,15 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
     return id.replace(/-/g,'_');
   }
 
+  private prefixWithEdgeId(edgeId){
+    return this.props.id ? `${this.props.id}:${edgeId}` : edgeId;
+  }
+
   public render(){
-    var edgeId = `${this.props.id}:${this.props.edge.id}`;
+    var edgeId = this.prefixWithEdgeId(this.props.edge.id)
     var markerId = `${edgeId}:marker`;
     let toReturn = <g>
-      <marker viewBox="0 -5 10 10" refX="0" refY="0" markerWidth="3" markerHeight="5"
+      <marker viewBox="0 -5 10 10" refX="0" refY="0" markerWidth="6" markerHeight="10"
           id={markerId} 
           ref={(e: SVGMarkerElement) => { this.svgMarkerElement = e; }}
           orient={this.props.disableAnimation ? this.state.marker[this.state.marker.length - 1] : undefined}
@@ -306,7 +310,7 @@ export default class GraphEdge extends React.PureComponent<GraphEdgeProps, Graph
                 <animate attributeName="visibility"  attributeType="XML" fill="freeze" 
                          to="hidden"
                          key={0}
-                         begin={ `${this.props.edge.$hyperlink}_last.begin` }/>,
+                         begin={ `${this.prefixWithEdgeId(this.props.edge.$hyperlink)}_last.begin` }/>,
                 <animate attributeName="visibility"  attributeType="XML" fill="freeze" 
                          key={1}
                          to="visible"

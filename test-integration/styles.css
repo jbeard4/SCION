@@ -4,6 +4,7 @@ text {
 
 .node > rect {
   transition : stroke .1s ease-out;
+  stroke-width: .5;
 }
 
 
@@ -60,7 +61,7 @@ text {
 }
 
 g.leaf > rect {
-  fill: rgba(220,220,220,1);
+  fill: white;
 }
 
 g.leaf > text {
@@ -70,12 +71,18 @@ g.leaf > text {
 
 g.node.compound > line {
   stroke: black;
-  stroke-opacity: .6;
-  stroke-width:.1;
+  stroke-width:.5;
 } 
 
+g.node.compound.highlighted > line {
+  stroke: #c7254e;
+}
 
 g.node.type__invoke > rect, g.node.type__actionContainer > rect, g.node.type__transitionActionContainer > rect, g.node.type__contentContainer > rect, g.node.type__action > rect {
+  stroke-width:.1;
+}
+
+g.node.type__invoke > line, g.node.type__actionContainer > line, g.node.type__transitionActionContainer > line, g.node.type__contentContainer > line, g.node.type__action > line {
   stroke-width:.1;
 }
 
@@ -120,8 +127,8 @@ g.compound.type__parallel > g > g.node > rect {
 }
 
 .node > rect {
-  fill: rgba(0,0,0,.025);
-  stroke: #AAA;
+  fill: white;
+  stroke: black;
   transition : stroke .25s ease-out;
 }
 
@@ -130,7 +137,6 @@ g.compound.type__parallel > g > g.node > rect {
 }
 
 .node.highlighted > rect {
-  fill : #f9f2f4;
   stroke : #c7254e;
 }
 
@@ -170,9 +176,9 @@ g.compound.type__parallel > g > g.node > rect {
 
 .link {
   stroke: black;
-  stroke-opacity: .6;
   fill: none;
   transition : stroke .25s ease-out, stroke-opacity .25s ease-out;
+  stroke-width: .5;
 }
 
 
@@ -225,6 +231,3 @@ html, body {
   height:100%;
 }
 
-.schviz > div:focus {
-  border: 1px solid blue;
-}
