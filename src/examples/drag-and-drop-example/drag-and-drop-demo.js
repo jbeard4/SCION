@@ -1,4 +1,5 @@
 import React from 'react'
+import './drag-and-drop-example.css';
 
 export default class DragAndDropDemo extends React.Component {
 
@@ -14,18 +15,14 @@ export default class DragAndDropDemo extends React.Component {
 
   render() {
     return <div 
-        style={{width: '100%', height: '100%'}}
+        className="drag-and-drop-example"
         onMouseMove={ this.handleMouseEvent }
       >
       <div 
+        className="rect"
         onMouseDown={ this.handleMouseEvent }
         onMouseUp={ this.handleMouseEvent }
         style={{
-          width:'100px',
-          height:'100px',
-          backgroundColor:'red',
-          border:'2px solid black',
-          position:'absolute',
           left: `${this.props.datamodel && this.props.datamodel.rectX}px`,
           top: `${this.props.datamodel && this.props.datamodel.rectY}px`
         }}>

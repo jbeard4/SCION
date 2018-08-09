@@ -1,4 +1,5 @@
 import React from 'react'
+import './history-demo.css';
 
 const photos = []
 
@@ -7,7 +8,7 @@ for(var i = 0; i < 10; i++){
 }
 
 const HistoryDemo = ({configuration, scPromise}) => (
-  <div style={{width: '100%', height: '100%'}}>
+  <div className="history-demo">
     {
       (configuration && configuration[0] === 'gallery') && <Gallery scPromise={scPromise} />
     }
@@ -25,19 +26,13 @@ const OpenModalButton = ({scPromise}) => (
 )
 
 const Gallery = ({scPromise}) => (
-  <div style={{width: '100%', height: '100%'}}>
+  <div className="gallery">
     <button onClick={ () => scPromise.then( (sc) => sc.gen('go-to-carousel') )}> Go to carousel </button>
     <OpenModalButton scPromise={scPromise} />
     <div> Gallery </div>
     {
       photos.map( i => (
-        <div key={i} style={{
-            width: '50px',
-            height: '50px',
-            backgroundColor: 'lightgray',
-            margin: '1em',
-            display: 'inline-block'
-          }}>
+        <div key={i} className="placeholder">
           {i}
         </div>
       ))
@@ -68,18 +63,12 @@ class Carousel extends React.Component {
   }
 
   render(){
-    return <div style={{width: '100%', height: '100%'}}>
+    return <div className="carousel">
       <button onClick={ () => this.props.scPromise.then( (sc) => sc.gen('go-to-gallery') )}> Go to gallery </button>
       <OpenModalButton scPromise={this.props.scPromise} />
       <div> Carousel </div>
       <button onClick={this.clickLeft} disabled={i === 0}>&larr;</button>
-      <div style={{
-          width: '50px',
-          height: '50px',
-          backgroundColor: 'lightgray',
-          margin: '1em',
-          display: 'inline-block'
-        }}>
+      <div className="placeholder">
         {this.state.index}
       </div>
       <button onClick={this.clickRight} disabled={i === (photos.length - 1)}>&rarr;</button>
@@ -88,11 +77,11 @@ class Carousel extends React.Component {
 }
 
 const Modal = ({scPromise}) => (
-  <div style={{width: '100%', height: '100%'}}>
-    <div style={{textAlign: 'right', backgroundColor: 'lightgray', border: '1px solid black'}}>
-      <span style={{cursor: 'pointer'}} onClick={() => scPromise.then( (sc) => sc.gen('close-modal') )}> &times; </span>
+  <div className="demo-modal">
+    <div>
+      <span className="close-icon" onClick={() => scPromise.then( (sc) => sc.gen('close-modal') )}> &times; </span>
     </div>
-    <div style={{border: '1px solid black', height: '100px'}}> This is a modal dialog </div>
+    <div> This is a modal dialog </div>
   </div>
 )
 

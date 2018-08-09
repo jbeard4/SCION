@@ -11,7 +11,11 @@ export class TrafficLightExample extends SCComponent {
   constructor(props){
     super(props, trafficLightScxml);
     //wait for promise to resolve, then set up setInterval to send tick events into the state machine
-    this.scPromise.then( (sc) => ( setInterval( (() => sc.gen('tick')), 1000) ))
+    this.scPromise.then( (sc) => ( this.handle = setInterval( (() => sc.gen('tick')), 1000) ))
+  }
+
+  componentWillUnmount(){
+    clearInterval(this.handle)
   }
 
   render(){
