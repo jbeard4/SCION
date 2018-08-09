@@ -66,17 +66,17 @@ export class VampireExample extends SCComponent {
               }
               />
           </tr>
+          <tr>
+            <td> 
+              <p 
+                onClick={() => this.sc.start()}
+                style={{color: 'blue', cursor: 'pointer', fontStyle: 'italic'}}><i className="fas fa-redo"></i> Click to reset the state machine</p>
+            </td>
+            <td> 
+              <ShowHideSourceCodeLink self={this} />
+            </td>
+          </tr>
         </tbody>
-        <tr>
-          <td> 
-            <p 
-              onClick={() => this.sc.start()}
-              style={{color: 'blue', cursor: 'pointer', fontStyle: 'italic'}}><i className="fas fa-redo"></i> Click to reset the state machine</p>
-          </td>
-          <td> 
-            <ShowHideSourceCodeLink self={this} />
-          </td>
-        </tr>
       </table> 
     </div>
   }
