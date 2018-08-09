@@ -1,8 +1,11 @@
 import * as React from "react";
+import PrismCode from 'react-prism';
 import TutorialPageWrapper from '../../components/TutorialPageWrapper'
 import MicrowaveExample from '../../examples/microwave-example'
 import microwaveScxml1 from '../../examples/microwave-example/microwave1.scxml';
 import microwaveScxml2 from '../../examples/microwave-example/microwave2.scxml';
+import microwaveScxml3 from '../../examples/microwave-example/microwave3.scxml';
+import { ToggleableSchviz } from '../../examples/common'
 
 const Introduction = ({sectionName, by}) => (
   <div className="container">
@@ -17,17 +20,33 @@ const Introduction = ({sectionName, by}) => (
 
 <p>There are two ways around this problem: always specify non-compound states (‘simple’ states) as transition targets, or specify an <code>initial</code> state for compound states. If you want your project to scale and you don’t have a specific reason not to point to an initial state, we think you should do the latter.</p>
 
-<h2> <code>@initial</code> or <code>&lt;initial&gt;</code> </h2>
+<h2> <code>@initial</code>, <code>&lt;initial&gt;</code>, or first child </h2>
 
-<p>The SCXML standard is extremely consistent everywhere but here. Such is the way of a W3C standard, but that’s part of W3C’s strange beauty. You can specify the first sub-state to go to in a compound state in **one of two** ways: an <code>initial</code> attribute on the compound state, or an <code>&lt;initial&gt;</code> node with a single <code>&lt;transition target="…"&gt;</code> child.</p>
+<p>The SCXML standard is extremely consistent everywhere but here. Such is the way of a W3C standard, but that’s part of W3C’s strange beauty. You can specify the first sub-state to go to in a compound state in one of three ways: </p>
 
-<p>Here are two statecharts for a microwave that use compound states to describe how the microwave behaves when it’s plugged in:</p>
+<ul>
+  <li> an <code>initial</code> attribute on the compound state, or </li>
+  <li> an <code>&lt;initial&gt;</code> node with a single <code>&lt;transition target="…"&gt;</code> child, or </li>
+  <li> if neither an initial attribute nor <code>&lt;initial&gt;</code> node are specified in the compound state, then the first child state will be the initial state </li>
+</ul>
 
-<h4> <code>@initial</code> </h4>
+<p>Here are three statecharts for a microwave that use compound states to describe how the microwave behaves when it’s plugged in:</p>
 
-<MicrowaveExample microwaveScxml={microwaveScxml1} />
+<h6> <code>@initial</code> </h6>
 
-<h4> <code>&lt;initial&gt;</code> </h4>
+<ToggleableSchviz scxmlDocumentString={microwaveScxml1} id="microwave1" />
+
+<h6> <code>&lt;initial&gt;</code> </h6>
+
+<ToggleableSchviz scxmlDocumentString={microwaveScxml2} id="microwave2" />
+
+<h6> First child state </h6>
+
+<ToggleableSchviz scxmlDocumentString={microwaveScxml3} id="microwave3" />
+
+<h6> Example </h6>
+
+<p>This example uses <code>&lt;initial&gt;</code>:</p>
 
 <MicrowaveExample microwaveScxml={microwaveScxml2} />
 

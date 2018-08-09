@@ -61,7 +61,7 @@ function changeState (action) {
 
 <p>A character’s status in general is more accurately represented by nested categories. Are they alive or dead? If they’re alive, can they move? If not, what will rehabilitate them? What kills an angel? A werewolf? An elf?</p>
 
-<p>She decides state machines are the best way to represent these conditions. Since state machines interpret statecharts, and those can be represented both visually and in machine-readable SCXML she’ll have an easier time both designing and developing the different types of characters.</p>
+<p>Nancy feels state machines are the best way to represent these conditions. Since state machines interpret statecharts, and those can be represented both visually and in machine-readable SCXML she’ll have an easier time both designing and developing the different types of characters.</p>
 
 <p>Instead of the ugly dispatch tree, the vampires’ conditions are represented by this SCXML document:</p>
 

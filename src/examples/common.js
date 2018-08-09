@@ -1,6 +1,7 @@
 import React from 'react'
 import scxml from 'scxml';
 import PrismCode from 'react-prism';
+import SCHVIZ from '@jbeard/schviz2';
 
 export class SCComponent extends React.Component{
   constructor(props, scxmlDocumentString){
@@ -67,3 +68,39 @@ export const Cell = ({ component, caption, rowSpan, showSourceCode, prismLanguag
     </div>
   </td>
 )
+
+export class ToggleableSchviz extends React.Component{
+  constructor(props){
+    super(props)
+    this.state = {showSourceCode: true};
+  }
+
+  render(){
+    return <div>
+      {
+        this.state.showSourceCode ? 
+          <PrismCode component="pre" className="language-xml">
+            {this.props.scxmlDocumentString}
+          </PrismCode> :
+          <div style={{width: '100%', height: '400px', position: 'relative'}}>
+            <SCHVIZ 
+              scxmlDocumentString={this.props.scxmlDocumentString}
+              disableAnimation={true}
+              disableZoom={true}
+              disableZoomAnimation={true}
+              id={this.props.id}
+              />
+          </div>
+      }
+      <p 
+        style={{textAlign:'right', color: 'blue', cursor: 'pointer', fontStyle: 'italic'}} 
+        onClick={ () => this.setState({showSourceCode : !this.state.showSourceCode}) }>
+        {
+          this.state.showSourceCode ? 
+            <span>Click to show visualization <i className="fas fa-image"></i></span> :
+            <span>Click to show source code <i className="fas fa-file-code"></i></span> 
+        }
+      </p>
+    </div> 
+  }
+}

@@ -2,13 +2,14 @@
   <state id="unplugged">
     <transition event="plug-in" target="plugged-in"/>
   </state>
-  <state id="plugged-in" initial="idle">
-    <state id="cooking">
-      <transition event="stop" target="idle"/>
-    </state>
+  <state id="plugged-in">
     <state id="idle">
       <transition event="start" target="cooking"/>
+    </state>
+    <state id="cooking">
+      <transition event="stop" target="idle"/>
     </state>
     <transition event="unplug" target="unplugged"/>
   </state>
 </scxml>
+
