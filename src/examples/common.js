@@ -1,5 +1,6 @@
 import React from 'react'
 import scxml from 'scxml';
+import Prism from 'prismjs'
 import PrismCode from 'react-prism';
 import SCHVIZ from '@jbeard/schviz2';
 
@@ -20,7 +21,8 @@ export class SCComponent extends React.Component{
             transitionsEnabled = new Map();
           })
           this.sc.on('onBigStepEnd',() => {
-            const [configuration, history, isInFinalState, datamodel] = this.sc.getSnapshot();
+            const [_, history, isInFinalState, datamodel] = this.sc.getSnapshot();
+            const configuration = this.sc.getFullConfiguration();
             this.setState({ 
               configuration, 
               datamodel, 
