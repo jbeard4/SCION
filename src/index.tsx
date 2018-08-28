@@ -11,7 +11,7 @@ import GraphNode from './GraphNode';
 import {LayoutOptions} from './IKGraphRenderBackend';
 import SCJSONToKGraphTransformer from './SCJSONToKGraphTransformer';
 import {GraphRoot} from './GraphRoot';
-require('../bower_components/load-awesome/css/line-spin-fade-rotating.css')
+require('../node_modules/load-awesome/css/line-spin-fade-rotating.css')
 require('../test-integration/styles.css')
 import _ = require('underscore');
 

@@ -1,23 +1,24 @@
 {
-  "name": "@jbeard/schviz2",
+  "name": "schviz",
   "version": "3.2.5",
   "description": "SCJSON to KGraph to SVG rendering library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
-    "scxml": "4.3.1",
-    "scion-core-base": "1.0.0",
     "babel-polyfill": "^6.23.0",
     "babel-preset-es2015": "^6.24.1",
     "classnames": "^2.2.5",
     "debug": "^2.6.3",
     "grunt": "^1.0.1",
     "klayjs": "^0.4.1",
+    "load-awesome": "^1.1.0",
     "pathseg": "^1.0.2",
     "q": "^1.4.1",
+    "scion-core-base": "^1.0.0",
+    "scxml": "^4.3.1",
     "underscore": "^1.8.3"
   },
-  "peerDependencies" : {
+  "peerDependencies": {
     "jquery": "^3.1.1",
     "jquery-ui-dist": "^1.12.1",
     "ui-contextmenu": "^1.18.1"
@@ -59,8 +60,7 @@
     "clean": "rm -rf dist/*",
     "server": "node grunt/server.js",
     "start": "npm run server",
-    "harness": "opn http://localhost:3001/test-integration/index.html",
-    "postinstall": "bower install load-awesome"
+    "harness": "opn http://localhost:3001/test-integration/index.html"
   },
   "browserify": {
     "transform": [
