@@ -1,5 +1,5 @@
 {
-  "name": "@jbeard/scion-sourcemap-plugin",
+  "name": "scxml-sourcemap-plugin",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,9 +11,9 @@
   "dependencies": {
     "esprima": "^4.0.0",
     "source-map": "^0.6.1",
-    "vm-browserify2": "0.0.6"
+    "@jbeard/vm-browserify": "0.0.6"
   },
   "browser": {
-    "vm": "vm-browserify2"
+    "vm": "@jbeard/vm-browserify"
   }
 }

@@ -87,11 +87,13 @@ SCJsonRawModule.prototype.prepare = function(cb, executionContext, hostContext){
               global[k] = executionContext[k];
             });
             var fnModel = require(modulePath);
+            fnModel._executionContext = executionContext;
             cb(null, fnModel); 
           });
         });
       } else {
         var fnModel = vm.runInContext(generatedCode, executionContext);
+        fnModel._executionContext = executionContext;
         cb(null, fnModel); 
       }
     }, hostContext);
