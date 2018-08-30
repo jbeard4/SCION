@@ -286,9 +286,9 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
 
       return window.localStorage && window.localStorage.collapsedNodeMap ? 
         JSON.parse(window.localStorage.collapsedNodeMap) : 
-        //(!this.props.expandAllStatesByDefault  ?
-          //traverse(scjson, 0, {}) : 
-          {}; //);
+        (!this.props.expandAllStatesByDefault  ?
+          traverse(scjson, 0, {}) : 
+          {});
   }
 
   private initSCJson(props : GraphRootProps , initialRender : boolean){

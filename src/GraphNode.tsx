@@ -33,6 +33,8 @@ export interface GraphNodeProps {
 
 export interface KGraphNodeAnimation {
   node : KGraphNode;
+  x1 : number;
+  x2 : number;
   translate : {
     x : number;
     y : number;
@@ -71,6 +73,8 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
         width : 0,
         height : 0,
       },
+      x1 : props.node.width / 2,
+      x2 : props.node.width / 2,
       translate : {
         x : props.node.x,
         y : props.node.y
@@ -117,6 +121,8 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
     };
     return {
       node : toNode,
+      x1 : 0,
+      x2 : node.width,
       translate : {
         x : node.x,
         y : node.y
@@ -340,8 +346,8 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                        begin="indefinite"
                        className={constants.START}
                        dur={constants.ANIM_DURATION} 
-                       from={this.state.to.node.width / 2 } 
-                       to={0} />,
+                       from={this.state.from.x1} 
+                       to={this.state.to.x1} />,
               <animate attributeName="x2" attributeType="XML"
                        key="1"
                        ref={(e: SVGAnimationElement) => { this.animateX2Element = e; }}
@@ -349,8 +355,8 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                        begin="indefinite"
                        className={constants.START}
                        dur={constants.ANIM_DURATION} 
-                       from={this.state.to.node.width / 2}
-                       to={this.state.to.node.width} />
+                       from={this.state.from.x2}
+                       to={this.state.to.x2} />
               ]
           }
         </line> : 
