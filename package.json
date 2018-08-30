@@ -1,10 +1,10 @@
 {
-  "name": "@jbeard/scxml-tool",
+  "name": "scion-cli",
   "version": "1.0.11",
   "description": "A minimal standalone graphical SCXML simulation environment.",
   "main": "main.js",
   "bin": {
-    "schviz": "bin/cli.js"
+    "scion": "bin/cli.js"
   },
   "scripts": {
     "start": "electron .",
@@ -22,19 +22,23 @@
     "clean": "rm -rf dist/*"
   },
   "dependencies": {
-    "@jbeard/schviz2": "3.2.5",
-    "@jbeard/scxml": "4.3.1",
     "babel-polyfill": "^6.23.0",
     "jquery-ui-dist": "^1.12.1",
     "optimist": "^0.6.1",
+    "schviz": "3.2.5",
+    "scion-core": "2.6.0",
+    "scxml-sourcemap-plugin": "1.0.0",
+    "scion-scxml-monitor-middleware": "1.0.0",
+    "scxml": "4.3.1",
     "toastr": "^2.1.2",
-    "ui-contextmenu": "^1.18.1"
+    "ui-contextmenu": "^1.18.1",
+    "yargs": "^12.0.1"
   },
   "keywords": [
     "SCXML"
   ],
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "license": "CC-BY-NC-SA-4.0",
+  "license": "RPL-1.5",
   "devDependencies": {
     "@types/es6-shim": "0.31.34",
     "@types/jquery": "2.0.41",

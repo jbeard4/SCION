@@ -1,6 +1,7 @@
 import * as React from "react";
-import SCHVIZ from '@jbeard/schviz2';
-import scxml = require('@jbeard/scxml');
+import SCHVIZ from 'schviz';
+import scxml = require('scxml');
+import scion = require('scion-core');
 import electron = require('electron');
 import {handleError, clear} from '../handle-errors';
 
@@ -99,7 +100,7 @@ export default class AppComponent extends React.Component<AppComponentProps, App
             }
 
             //Use the statechart object model to instantiate an instance of the statechart interpreter. Optionally, we can pass to the construct an object to be used as the context object (the 'this' object) in script evaluation. Lots of other parameters are available.
-            var interpreter = new scxml.scion.SCInterpreter(fnModel);
+            var interpreter = new scion.Statechart(fnModel);
 
             interpreter.start();
 
