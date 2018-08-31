@@ -1,5 +1,5 @@
-const scxml = require('../../../../..');
-import fnModel from '../../dist/drag-and-drop'
+const scion = require('scion-core');
+import modelFactory from '../../dist/drag-and-drop'
 
 const initialState = { snapshot: null };
 
@@ -11,12 +11,12 @@ const handleAction = ({ snapshot } = initialState, action) => {
   let interpreter
   if(!snapshot){
     //instantiate the interpreter
-    interpreter = new scxml.scion.Statechart(fnModel);
+    interpreter = new scion.Statechart(modelFactory);
     //start the interpreter
     interpreter.start();
   }else{
     //instantiate the interpreter
-    interpreter = new scxml.scion.Statechart(fnModel, { snapshot });
+    interpreter = new scion.Statechart(modelFactory, { snapshot });
   }
 
   interpreter.gen(action); 
