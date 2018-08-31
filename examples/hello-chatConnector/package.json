@@ -1,5 +1,5 @@
 {
-  "name": "scxml-botbuilder-sample-firstRun",
+  "name": "scxml-botbuilder-hello-chatConnector",
   "version": "1.0.0",
   "description": "Bot Builder Sample - FirstRun",
   "scripts": {
@@ -14,8 +14,7 @@
     "botbuilder-samples"
   ],
   "dependencies": {
-    "botbuilder": "^3.7.0",
-    "restify": "^4.3.0",
-    "scxml": "git+ssh://git@nas:jbeard4/scion#ab54372290c33dc76389b105aee3adf6101e466f"
+    "scion-scxml-botbuilder-common": "1.0.0",
+    "scion-scxml-botbuilder-common-scxml-components": "1.0.0"
   }
 }

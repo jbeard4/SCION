@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scxml xmlns="http://www.w3.org/2005/07/scxml" xmlns:conf="http://www.w3.org/2005/scxml-conformance" initial="initial-default" version="1.0" datamodel="ecmascript">
+  <transition event="error">
+    <log label="error" expr="_event"/>
+  </transition>
   <datamodel>
     <!-- via param --> 
     <data id="messageBuffer"/>

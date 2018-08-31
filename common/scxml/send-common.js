@@ -8,7 +8,7 @@ function send(){
     "source": event.source,
     "textLocale": event.textLocale,
     "address": event.address,
-    "text": textArgs.join('')
+    "text": util.format.apply(util, textArgs)
   };
   messageBuffer.push(message);
 }
