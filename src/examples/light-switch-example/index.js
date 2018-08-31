@@ -1,5 +1,5 @@
 import React from 'react'
-import SCHVIZ from '@jbeard/schviz2';
+import SCHVIZ from 'schviz';
 import _lampScxml from './simple-lamp.scxml';
 import { ShowHideSourceCodeLink } from '../../components';
 import LampBulb from './lamp-bulb';

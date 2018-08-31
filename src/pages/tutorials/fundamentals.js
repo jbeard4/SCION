@@ -2,7 +2,7 @@ import * as React from "react";
 import TutorialPageWrapper from '../../components/TutorialPageWrapper'
 import Prism from 'prismjs'
 import PrismCode from 'react-prism'
-import SCHVIZ from '@jbeard/schviz2';
+import SCHVIZ from 'schviz';
 import { vampireScxml, VampireExample } from '../../examples/vampire-example';
 
 const Fundamentals = ({sectionName, by}) => (

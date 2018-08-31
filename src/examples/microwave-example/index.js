@@ -1,5 +1,5 @@
 import React from 'react'
-import SCHVIZ from '@jbeard/schviz2';
+import SCHVIZ from 'schviz';
 import { ShowHideSourceCodeLink } from '../../components';
 import { SCComponent, Cell } from '../common';
 import Buttons from './buttons';

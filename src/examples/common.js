@@ -2,7 +2,7 @@ import React from 'react'
 import scxml from 'scxml';
 import Prism from 'prismjs'
 import PrismCode from 'react-prism';
-import SCHVIZ from '@jbeard/schviz2';
+import SCHVIZ from 'schviz';
 
 export class SCComponent extends React.Component{
   constructor(props, scxmlDocumentString){

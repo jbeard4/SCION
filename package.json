@@ -1,5 +1,5 @@
 {
-  "name": "gatsby-starter-blog-no-styles",
+  "name": "sciblog",
   "description": "Starter Gatsby Blog No Styles",
   "version": "1.0.0",
   "author": "Noah Glusenkamp <noah.glusenkamp@gmail.com>",
@@ -7,6 +7,8 @@
     "url": "https://github.com/gatsbyjs/gatsby-starter-blog/issues"
   },
   "dependencies": {
+    "schviz": "3.2.5",
+    "scxml": "4.3.1",
     "@fortawesome/fontawesome-free": "^5.2.0",
     "bootstrap": "^4.1.1",
     "disqus-react": "^1.0.5",

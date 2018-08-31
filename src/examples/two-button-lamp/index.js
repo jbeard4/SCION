@@ -1,5 +1,5 @@
 import React from 'react'
-import SCHVIZ from '@jbeard/schviz2';
+import SCHVIZ from 'schviz';
 import scxml from 'scxml';
 import _lampScxml from './two-button-lamp.scxml';
 import LampSwitchButtons from './buttons';

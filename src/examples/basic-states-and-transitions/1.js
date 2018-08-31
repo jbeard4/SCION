@@ -1,6 +1,6 @@
 import * as React from "react";
 import Link from 'gatsby-link'
-import SCHVIZ from '@jbeard/schviz2'
+import SCHVIZ from 'schviz'
 import TutorialPageWrapper from '../../../components/TutorialPageWrapper'
 import basic1 from 'scxml-test-framework/test/basic/basic1.scxml'
 
