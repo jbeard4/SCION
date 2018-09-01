@@ -6,6 +6,7 @@
   "devDependencies": {
     "scion-core-base": "^1.0.0",
     "scxml": "^4.3.1",
+    "schviz": "3.2.5",
     "@jbeard/console-component": "1.0.3",
     "@types/jquery": "^2.0.41",
     "@types/react": "15.6.1",

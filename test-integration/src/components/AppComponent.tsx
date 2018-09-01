@@ -3,7 +3,7 @@ import {SCState, ModelFactory, Event} from 'scion-core-base' //TODO: we should n
 import {Statechart} from 'scion-core'
 import scxml = require('scxml');    //TODO: make scxml an es6 module
                                     //TODO: expose SCJSON object type, so we do not need to use "any" type
-import SCHVIZ from '../../..';
+import SCHVIZ from 'schviz';
 import Console from '@jbeard/console-component';
 
 interface AppComponentState {
