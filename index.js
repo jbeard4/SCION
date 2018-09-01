@@ -1,9 +1,15 @@
+#!/usr/bin/env node
 const fs = require('fs');
 const restify = require('restify');
 const util = require('util');
 const path = require('path');
 const log = require('./util').log;
 const os = require('os');
+const corsMiddleware = require('restify-cors-middleware')
+
+const cors = corsMiddleware({
+  origins: ['*'],
+})
 
 const localConfigurationFile = path.join(os.homedir(),'.scion.conf.json');
 
@@ -49,6 +55,9 @@ function init(options){
 
   //catches uncaught exceptions
   process.on('uncaughtException', exitHandler);
+
+  server.pre(cors.preflight)
+  server.use(cors.actual)
 
   //serve static files
   //TODO: factor this out

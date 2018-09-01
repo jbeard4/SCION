@@ -19,8 +19,11 @@
   "dependencies": {
     "@jbeard/jsondiffpatch": "^0.2.5",
     "@jbeard/react-collapsible": "^2.0.6",
-    "@jbeard/schviz2": "3.2.5",
-    "@jbeard/scxml": "4.3.1",
+    "schviz": "3.2.5",
+    "scxml": "4.3.1",
+    "jquery": "^3.1.1",
+    "jquery-ui-dist": "^1.12.1",
+    "ui-contextmenu": "^1.18.1",
     "@types/jquery": "^1.10.33",
     "@types/slickgrid": "^2.1.25",
     "babel-plugin-transform-class-properties": "^6.24.1",

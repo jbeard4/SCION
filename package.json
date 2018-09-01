@@ -1,8 +1,11 @@
 {
-  "name": "@jbeard/scion-scxml-debugger-middleware",
+  "name": "scion-scxml-monitor-middleware",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "bin" : {
+    "scion-scxml-monitor": "./index.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "bundle" : "browserify client.js -d  -o dist/client.js -s ScionMonitorClient -v"
@@ -10,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "restify": "^6.3.4"
+    "restify": "^6.3.4",
+    "restify-cors-middleware" : "^1.1.1"
   }
 }
