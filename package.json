@@ -1,7 +1,7 @@
 {
-  "name": "redux-devtools-log-monitor",
+  "name": "redux-devtools-scion-monitor",
   "version": "1.4.0",
-  "description": "The default tree view monitor for Redux DevTools",
+  "description": "State machine visualization for SCION",
   "main": "lib/index.js",
   "files": [
     "lib",
@@ -13,7 +13,7 @@
     "lint": "eslint src test",
     "test": "NODE_ENV=test mocha --compilers js:babel-core/register --recursive",
     "test:watch": "NODE_ENV=test mocha --compilers js:babel-core/register --recursive --watch",
-    "prepublish": "npm run lint && npm run test && npm run clean && npm run build"
+    "prepublish": "npm run test && npm run clean && npm run build"
   },
   "repository": {
     "type": "git",
@@ -58,8 +58,13 @@
   "dependencies": {
     "lodash.debounce": "^4.0.4",
     "prop-types": "^15.0.0",
+    "react": "^16.4.0",
     "react-json-tree": "^0.11.0",
     "react-pure-render": "^1.0.2",
-    "redux-devtools-themes": "^1.0.0"
+    "react-redux": "^5.0.7",
+    "redux": "^4.0.0",
+    "redux-devtools": "^3.4.1",
+    "redux-devtools-themes": "^1.0.0",
+    "schviz": "3.2.5"
   }
 }

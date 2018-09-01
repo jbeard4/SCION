@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import SCHVIZ from 'schviz';
 import PropTypes from 'prop-types';
 import shouldPureComponentUpdate from 'react-pure-render/function';
 import * as themes from 'redux-devtools-themes';
@@ -188,41 +189,21 @@ export default class LogMonitor extends Component {
       select,
       expandActionRoot,
       expandStateRoot,
-      markStateDiff
+      markStateDiff,
+      scjson
     } = this.props;
 
-    const entryListProps = {
-      theme,
-      actionsById,
-      skippedActionIds,
-      stagedActionIds,
-      computedStates,
-      currentStateIndex,
-      consecutiveToggleStartId,
-      select,
-      expandActionRoot,
-      expandStateRoot,
-      markStateDiff,
-      onActionClick: this.handleToggleAction,
-      onActionShiftClick: this.handleToggleConsecutiveAction
+    const { state:{ snapshot: [configuration, history, isInFinalState, datamodel] }} = computedStates[currentStateIndex];
+    
+    const schvizProps = {
+      configuration,
+      scjson,
+      hideActions : true
     };
 
     return (
-      <div style={{...styles.container, backgroundColor: theme.base00}}>
-        {!this.props.hideMainButtons &&
-          <LogMonitorButtonBar
-            theme={theme}
-            dispatch={dispatch}
-            hasStates={computedStates.length > 1}
-            hasSkippedActions={skippedActionIds.length > 0}
-          />
-        }
-        <div
-          style={this.props.hideMainButtons ? styles.elements : { ...styles.elements, top: 30 }}
-          ref={this.getRef}
-        >
-          <LogMonitorEntryList {...entryListProps} />
-        </div>
+      <div style={{backgroundColor: 'white'}}>
+        <SCHVIZ {...schvizProps} />
       </div>
     );
   }
