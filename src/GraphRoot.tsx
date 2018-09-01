@@ -855,7 +855,8 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
 
     //compute scale transform as ratio of svg viewport w or h, and svg viewport w or h 
     //take into account the aspect ratio scaling.
-    const scale = svgViewportWidth/viewbox.width; 
+    //const scale = svgViewportWidth/viewbox.width; 
+    const scale = viewbox.width > viewbox.height ? svgViewportWidth/viewbox.width : svgViewportHeight/viewbox.height; 
 
     //compute translate transform as: ratio of viewport width/height to screen width/height. 
     //project (multiply) points in space by this ratio.
