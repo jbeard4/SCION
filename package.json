@@ -18,7 +18,8 @@
     "codemirror": "^5.18.2",
     "create-react-class": "^15.5.1",
     "lodash.isequal": "^4.5.0",
-    "prop-types": "^15.5.4"
+    "prop-types": "^15.5.4",
+    "require-dir": "^0.3.2"
   },
   "devDependencies": {
     "gulp": "^3.9.1",

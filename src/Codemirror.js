@@ -2,7 +2,6 @@ const React = require('react');
 const ReactDOM = require('react-dom');
 const PropTypes = require('prop-types');
 const className = require('classnames');
-const debounce = require('lodash.debounce');
 const isEqual = require('lodash.isequal');
 const createReactClass = require('create-react-class');
 
@@ -41,7 +40,6 @@ const CodeMirror = createReactClass({
 		};
 	},
 	componentWillMount () {
-		this.componentWillReceiveProps = debounce(this.componentWillReceiveProps, 0);
 		if (this.props.path) {
 			console.error('Warning: react-codemirror: the `path` prop has been changed to `name`');
 		}
@@ -54,7 +52,7 @@ const CodeMirror = createReactClass({
 		this.codeMirror.on('focus', this.focusChanged.bind(this, true));
 		this.codeMirror.on('blur', this.focusChanged.bind(this, false));
 		this.codeMirror.on('scroll', this.scrollChanged);
-		this.codeMirror.setValue(this.props.defaultValue || this.props.value || '');
+		//this.codeMirror.setValue(this.props.defaultValue || this.props.value || '');
 	},
 	componentWillUnmount () {
 		// is there a lighter-weight way to remove the cm instance?
