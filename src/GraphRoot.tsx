@@ -699,7 +699,7 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
   }
 
   fetchNodeDOMElement(nodeId){
-    return document.querySelector(`g#${this.escapeIdStringForQuerySelector(GraphNode.getPrefixedNodeId(this.props.id, nodeId))} > rect`) as SVGGElement;
+    return document.querySelector(`g#${this.escapeIdStringForQuerySelector(nodeId)} > rect`) as SVGGElement;
   }
 
   escapeIdStringForQuerySelector(nodeOrEdgeId){
@@ -710,8 +710,8 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
     const edge = this.state.allEdges.filter( edge => edge.id === edgeId)[0]
 
     //zoom to source state, target state, and the edge itself
-    const e1 = this.fetchNodeDOMElement(edge.source);
-    const e2 = this.fetchNodeDOMElement(edge.target);
+    const e1 = this.fetchNodeDOMElement(GraphNode.getPrefixedNodeId(this.props.id, edge.source));
+    const e2 = this.fetchNodeDOMElement(GraphNode.getPrefixedNodeId(this.props.id, edge.target));
     const e3 = this.fetchEdgeDOMElement(edgeId);
 
     //get bbox in canvas coordinates
