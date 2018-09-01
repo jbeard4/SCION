@@ -1,0 +1,19 @@
+{
+  "name": "vi-everywhere",
+  "version": "1.0.0",
+  "description": "This is a project to create an executable model of the behaviour of the vi text editor using Statecharts. An SVG-based editing environment is also provided as a reference implementation of a scriptable editing environment.",
+  "main": "editor.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "scion-scxml-monitor"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "scxml-debug": "1.0.0",
+    "babel-polyfill": "^6.26.0"
+  },
+  "devDependencies": {
+    "scion-scxml-monitor-middleware": "1.0.0"
+  }
+}
