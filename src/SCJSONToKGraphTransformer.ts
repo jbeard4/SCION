@@ -12,6 +12,7 @@ const TRANSITION_CONTAINER_PROPS = { "borderSpacing": 0, "spacing": 0, direction
 
 export interface TransformOptions {
   hideActions : boolean;
+  idPrefix: string;
 }
 
 export default class SCJSONToKGraphTransformer {
@@ -19,6 +20,7 @@ export default class SCJSONToKGraphTransformer {
   _idGenerator : IdGenerator; 
   _stateToKlayNodeMap : Map<SCState,KGraphNode>;
   _svgRenderer : GraphRoot;
+  _options: TransformOptions;
 
   constructor(idGenerator: IdGenerator, svgRenderer : GraphRoot){
     this._idGenerator = idGenerator;
@@ -27,6 +29,7 @@ export default class SCJSONToKGraphTransformer {
   }
 
   transform(scjson, options: TransformOptions){
+    this._options = options;
     this._normalizeStateIds(scjson);
     var idMap = this._getIdMap(scjson);
     var transformedScjsonCopy1 = this._normalizeScjsonInitialStates(scjson);
@@ -60,8 +63,7 @@ export default class SCJSONToKGraphTransformer {
     return newScjson;
 
     function traverse(state){
-      
-      if(!(this._svgRenderer.collapsedNodeMap[state.id])){   //skip generating an initial state if he is collapsed
+      if(!(this.isStateCollapsed(state))){   //skip generating an initial state if he is collapsed
         var fakeInitialState;
         if(state.initial){
           //initial attribute - create a fake <initial> scjson node 
@@ -119,7 +121,7 @@ export default class SCJSONToKGraphTransformer {
  
     //1. initialize virtual states
     function walkInitVirtualStates(state){
-      if(this._svgRenderer.collapsedNodeMap[state.id] && 
+      if(this.isStateCollapsed(state) && 
           (
             (state.states && state.states.length) ||
             (state.datamodel && state.datamodel.declarations && state.datamodel.declarations.length) ||
@@ -222,7 +224,7 @@ export default class SCJSONToKGraphTransformer {
 
     function walkRemoveActionsFromCollapsedStates(state){
       
-      if(this._svgRenderer.collapsedNodeMap[state.id]){
+      if(this.isStateCollapsed(state)){
         ['datamodel','onEntry','onExit','invokes','donedata'].forEach( prop => delete state[prop] );
       }
 
@@ -283,6 +285,10 @@ export default class SCJSONToKGraphTransformer {
     }
     step(state);
     return allDescendants;
+  }
+
+  isStateCollapsed(state) : boolean {
+    return !!this._svgRenderer.collapsedNodeMap[`${this._options.idPrefix}:${state.id}`]; //TODO: consolidate this id generation code.
   }
 
   _makeKLayParams(parentKlayNode, scjsonContainer, traverseInContent){
@@ -394,7 +400,7 @@ export default class SCJSONToKGraphTransformer {
   }
 
   _conditionallyCollapseNode(node, next){
-    if(this._svgRenderer.collapsedNodeMap[node.id]){
+    if(this.isStateCollapsed(node)){
       var virtualState = {
         id :  `${node.id}:virtual`,
         labels : [{text : '...'}],

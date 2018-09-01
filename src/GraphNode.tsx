@@ -214,6 +214,11 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
     ].forEach( animation => animation && animation.beginElement() );
   }
 
+
+  public getFullNodeId(){
+    return `${this.props.id}:${this.state.to.node.id}`;
+  }
+
   render(){
     debug('render',this.state.to.node.id);
 
@@ -246,7 +251,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                           this.props.statesForDefaultEntry.indexOf(edge.target) > -1 ).length;
     }
 
-    let toReturn = <g id={`${this.props.id}:${this.state.to.node.id}`} 
+    let toReturn = <g id={this.getFullNodeId()}
             className={
               classNames({
                 "node" : true,

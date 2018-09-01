@@ -302,7 +302,7 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
         let idGenerator = new IdGenerator();
         let transformer = new SCJSONToKGraphTransformer(idGenerator, this);
         var newKlayToScjsonMap, newKgraphRoot; 
-        newKgraphRoot = transformer.transform(props.scjson, {hideActions : props.hideActions});
+        newKgraphRoot = transformer.transform(props.scjson, {hideActions : props.hideActions, idPrefix: props.id});
         this.setState({progress : this.state.progress.slice(0,-1).concat(this.state.progress[this.state.progress.length-1] + ` Done (${(new Date() as any) - tic}ms)`)}, () => {
           this.initKGraph(props, initialRender, idGenerator, newKgraphRoot);
         });
@@ -551,7 +551,7 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
 
   public toggleExpandContractState(nodeId : string){
     this.collapsedNodeMap[nodeId] = !this.collapsedNodeMap[nodeId]; //toggle contracted
-    window.localStorage.collapsedNodeMap = JSON.stringify(this.collapsedNodeMap);
+    window.localStorage.collapsedNodeMap = JSON.stringify(this.collapsedNodeMap);   //persist
     let props = this.props;
     if(this.cachedLastScjson){
       props = _.extend({}, props, {scjson : this.cachedLastScjson});
