@@ -5,8 +5,7 @@
     <script src="/babel-polyfill/dist/polyfill.js"></script>
     <script src="/react/dist/react.js"></script>
     <script src="/react-dom/dist/react-dom.js"></script>
-    <script src="/@jbeard/schviz2/dist/schviz.js"></script>
-    <link rel="stylesheet" type="text/css" href="/@jbeard/schviz2/test-integration/styles.css">
+    <script src="/schviz/dist/schviz.js"></script>
     <style type="text/css">
       body {
         background : white;
@@ -22,13 +21,12 @@
     <div class="app">
     </div>
     <script>
-      function render(scxmlString, initialRender){
+      function render(scxmlString){
         ReactDOM.render(React.createElement(
           SCHVIZ.default, 
           {
             scxmlDocumentString:scxmlString,
-            disableAnimation:initialRender,
-            hideActions : true
+            expandAllStatesByDefault:true
           }),
           document.querySelector('.app')
         );
@@ -39,7 +37,7 @@
         // Do nothing
       });
       this.socket.on('scxml.update', (value) => {
-        render(value, false);
+        render(value);
       });
     </script>
   </body>

@@ -51,8 +51,7 @@
         "url": "https://github.com/EFanZh/Graphviz-Preview"
     },
     "dependencies": {
-        "@jbeard/schviz2": "3.2.5",
-        "scxmllint": "1.0.0",
+        "schviz": "3.2.5",
         "babel-polyfill": "^6.26.0",
         "cors": "^2.8.4",
         "express": "^4.16.2",
