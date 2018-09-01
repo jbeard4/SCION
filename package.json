@@ -1,5 +1,5 @@
 {
-  "name": "@jbeard/scxmllint",
+  "name": "scharpie",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -13,7 +13,7 @@
     "@jbeard/xmllint": "^0.1.1"
   },
   "bin": {
-    "scxmllint": "index.js"
+    "scharpie": "index.js"
   },
   "devDependencies": {
     "brfs": "^1.4.4"
