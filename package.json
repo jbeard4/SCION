@@ -1,10 +1,11 @@
 {
   "name": "umio",
   "version": "1.1.1",
-  "description": "Morse code parser implemented in SCXML, designed to work with the microexpresscion SCXML orchestration server.",
+  "description": "Morse code parser implemented in SCXML",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "publish" : "bash ./scripts/copy-scripts.sh; couchapp push node.couchapp.js http://system:system@localhost:5984/system-public"
+    "publish" : "bash ./scripts/copy-scripts.sh; couchapp push node.couchapp.js http://system:system@localhost:5984/system-public",
+    "start": "scion-scxml-monitor"
   },
   "repository": {
     "type": "git",
@@ -18,6 +19,9 @@
   "homepage": "https://github.com/jbeard4/scxml-morse-input-out#readme",
   "dependencies": {
     "babel-polyfill": "^6.26.0",
-    "ejs": "^2.3.3"
+    "scxml-debug": "1.0.0"
+  },
+  "devDependencies": {
+    "scion-scxml-monitor-middleware": "1.0.0"
   }
 }

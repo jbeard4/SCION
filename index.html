@@ -2,7 +2,7 @@
 <html>
   <head>
   </head>
-  <body>
+  <body style="overflow-y:hidden">
 <h3>Telegraph Key</h3>
 <dt id="morseKey">
 <svg
@@ -252,9 +252,8 @@
   ")": "-.--.-"
 }
 </pre>
-<script src="/modules/babel-polyfill/6.26.0/polyfill.js"></script>
-<script src="/modules/scxml/4.3.1/scxml.js"></script>
-<script src="/modules/scion-scxml-debugger-middleware/1.0.0/client.js"></script>
+<script src="/node_modules/babel-polyfill/dist/polyfill.js"></script>
+<script src="/node_modules/scxml-debug/dist/scxml.debug.js"></script>
 <script>
   function main(){
     //here we pull this out of the document, but, thanks to clean design, 
@@ -264,8 +263,6 @@
     var morseOutput = document.getElementById("morseOutput")
     var bufferOutput = document.getElementById("bufferOutput")
 
-
-      
     scxml.urlToModel('./build/morse.scxml',function(err,modelFactoryFactory){
         if(err) throw err;
 
