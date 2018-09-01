@@ -1,5 +1,5 @@
 {
-  "name": "vm-browserify2",
+  "name": "@jbeard/vm-browserify",
   "version": "0.0.6",
   "description": "vm module for the browser",
   "main": "index.js",

@@ -63,7 +63,7 @@ var Script = exports.Script = function NodeScript (code) {
 };
 
 Script.prototype.runInContext = function (context) {
-    if (!(context instanceof Context)) {
+    if (!context._iframe) {
         throw new TypeError("needs a 'context' argument.");
     }
     
