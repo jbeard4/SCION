@@ -1,0 +1,15 @@
+{
+  "name": "test-scharpie",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "eslint --plugin scharpie basic1.scxml"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^5.4.0",
+    "eslint-plugin-scharpie": "4.0.1"
+  }
+}
