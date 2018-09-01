@@ -16,9 +16,7 @@
     "q": "^1.4.1",
     "scion-core-base": "^1.0.0",
     "scxml": "^4.3.1",
-    "underscore": "^1.8.3"
-  },
-  "peerDependencies": {
+    "underscore": "^1.8.3",
     "jquery": "^3.1.1",
     "jquery-ui-dist": "^1.12.1",
     "ui-contextmenu": "^1.18.1"

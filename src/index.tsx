@@ -13,7 +13,12 @@ import SCJSONToKGraphTransformer from './SCJSONToKGraphTransformer';
 import {GraphRoot} from './GraphRoot';
 require('../node_modules/load-awesome/css/line-spin-fade-rotating.css')
 require('../test-integration/styles.css')
+require('../node_modules/jquery-ui-dist/jquery-ui.css')
 import _ = require('underscore');
+
+window['$'] = window['jQuery'] = require('jQuery');
+require('jquery-ui-dist/jquery-ui.js');
+require('ui-contextmenu/jquery.ui-contextmenu.js');
 
 
 export function getDefaultLayoutOptions(layoutOptions){
