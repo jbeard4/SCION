@@ -861,6 +861,10 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
     this.svgRootElement.style.transform = transform;
   }
 
+  resetZoom(){
+    this.zoomToViewbox(this.getOriginalViewbox(this.state.kgraph));
+  }
+
   private svgRectToViewBox(rect : SVGRect){
     return `${rect.x} ${rect.y} ${rect.width} ${rect.height}`;
   }

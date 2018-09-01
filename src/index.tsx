@@ -98,7 +98,12 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, SchvizSt
         {
           title : 'Expand/contract',
           cmd : 'toggleExpandNode'
-        }
+        },
+        {title: "----"},
+        {
+          title : 'Reset Zoom',
+          cmd : 'resetZoom'
+        },
       ],
       beforeOpen: function(event, ui) {
         var $menu = ui.menu,
@@ -128,6 +133,9 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, SchvizSt
             break;
           case 'toggleExpandNode':
             self.graphRoot.toggleExpandContractState(ui.extraData.nodeId);
+            break;
+          case 'resetZoom':
+            self.graphRoot.resetZoom();
             break;
         }
       }

@@ -4,7 +4,7 @@
   "description": "SCJSON to KGraph to SVG rendering library",
   "main": "dist/index.js",
   "devDependencies": {
-    "scion-core-base": "^1.0.0",
+    "scion-core": "2.6.0",
     "scxml": "^4.3.1",
     "schviz": "3.2.5",
     "@jbeard/console-component": "1.0.3",
