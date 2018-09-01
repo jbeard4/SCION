@@ -9,23 +9,38 @@ It has been my dream since a long time (2006!) to release a fully integrated fra
 
 When SCION started, it was basically a library implementing an interpreter/compiler for the SCXML standard in JavaScript, for node.js and the browser.
 
-With the release of SCION@5.0.0, the scope of the project has expanded to be a complete system for developing SCXML in JavaScript, including all necessary developer tools:
+With the release of SCION@5.0.0, the scope of the project has expanded to be a complete system for developing SCXML in JavaScript. SCION is now a software _distribution_ which includes the following core libraries:
 
-* runtime (SCION-CORE)
-* compiler (SCXML)
-* visualizer (SCHVIZ)
-* linter (SCHARPIE)
-* visual debugger 
-* IDE plugins 
+* runtime (scion-core)
+* compiler (scxml)
+* visualizer (schviz)
+* linter (scharpie)
 
-As well as parts that are not software, but still very important for an open source software (OSS) ecosystem to thrive:
+These core libraries are used in the following new developer tools:
 
-* online documentation (api docs, examples, and tutorials)
-* community
+* scion-cli: command-line tool based on Electron to visualize and lint scxml files
+* scion-monitor: visual debugger for SCION
+* scion-monitor-middleware: plugin for SCION that connects a SCION node or browser client to the scion-monitor
+* : IDE Integrations for VSCode
+* : Visual debugging with chrome devtools debugger (thanks to SCXML support for sourcemaps)
+
+Finally, these libraries enable the development of online documentation (API docs, examples, and tutorials), which is important for an open source software ecosystem to thrive. Some of these tuturials which can be seen [here](). I hope that opening these tools to the community will allow people to develop and contribute their own tutorials.
 
 Today I am starting to release this new work, which should be considered beta, but useable. Please give it a try and send feedback.
 
-## Creating a sustainable future for SCION v5+
+## Overview
+
+### Support for Debugging SCXML with Chrome DevTools 
+
+scxml is a compiler. Generates js source code, which is then executed to produce a "model" object. 
+
+Plugin to add support for generation of source maps. A visual JavaScript debugger, like Chrome DevTools, can read the sourcemap and allow you to set breakpoints in the SCXML source file. This works in Node.js and the Browser. Here is a vide of it in action.
+
+<video - node>
+
+<video - browser>
+
+## Creating a sustainable future for SCION
 
 I am seeking an economic engine to sustain and fund the ongoing development of SCION.
 
