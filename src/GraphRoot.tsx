@@ -699,7 +699,7 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
   }
 
   fetchNodeDOMElement(nodeId){
-    return document.querySelector(`g#${this.escapeIdStringForQuerySelector(nodeId)} > rect`) as SVGGElement;
+    return document.querySelector(`g#${this.escapeIdStringForQuerySelector(GraphNode.getPrefixedNodeId(this.props.id, nodeId))} > rect`) as SVGGElement;
   }
 
   escapeIdStringForQuerySelector(nodeOrEdgeId){
