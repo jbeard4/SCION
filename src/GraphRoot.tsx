@@ -360,7 +360,7 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
   }
 
   selectChildNode(kgraphNodeId : string){
-    const kgraphNode : KGraphNode = this.state.kgraph.getKgraphNodeById(kgraphNodeId); 
+    const kgraphNode : KGraphNode = this.state.kgraph.getKgraphNodeById(GraphNode.extractNodeIdFromFullNodeId(kgraphNodeId)); 
     //select first child
     //TODO: maybe select the initial state, if he has one?
     if(kgraphNode.children && kgraphNode.children.length){
@@ -368,9 +368,12 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
       this.setState({
         selectedEdgeId : null,
         selectedNodeId : 
-          initialStateIdx > -1 ? 
-          kgraphNode.children[initialStateIdx].id :
-          kgraphNode.children[0].id
+          GraphNode.getPrefixedNodeId(
+            this.props.id,
+            initialStateIdx > -1 ? 
+            kgraphNode.children[initialStateIdx].id :
+            kgraphNode.children[0].id
+          )
       });
     }
   }
@@ -379,21 +382,32 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
     //select first child
     this.setState({
       selectedEdgeId : null,
-      selectedNodeId : this.state.kgraph._childToParentMap.get(kgraphNodeId) 
+      selectedNodeId : 
+        GraphNode.getPrefixedNodeId(
+          this.props.id,
+          this.state.kgraph._childToParentMap.get(
+            GraphNode.extractNodeIdFromFullNodeId(kgraphNodeId) 
+          )
+        )
     });
   }
 
   selectNextOrPrevState(next:boolean){
+    const simpleNodeId = GraphNode.extractNodeIdFromFullNodeId(this.state.selectedNodeId);
     const parentKgraphNode : KGraphNode = 
-      this.state.kgraph.getKgraphNodeById(this.state.kgraph._childToParentMap.get(this.state.selectedNodeId)); 
+      this.state.kgraph.getKgraphNodeById(this.state.kgraph._childToParentMap.get(simpleNodeId)); 
 
-    const idx = parentKgraphNode.children.map( child => child.id ).indexOf(this.state.selectedNodeId)
+    const idx = parentKgraphNode.children.map( child => child.id ).indexOf(simpleNodeId)
     const tmp = (idx+(next ? 1 : -1)) 
     const nextIdx = tmp >= 0 ? tmp % parentKgraphNode.children.length : parentKgraphNode.children.length + tmp;
     const nextChild = parentKgraphNode.children[nextIdx];
     this.setState({
       selectedEdgeId : null,
-      selectedNodeId : nextChild.id
+      selectedNodeId : 
+        GraphNode.getPrefixedNodeId(
+          this.props.id,
+          nextChild.id
+        )
     });
   }
 
@@ -424,7 +438,8 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
         }else if (this.state.selectedNodeId){  
           //TODO: remember last transition that we used to enter this state. if it's populated, then return to that transition
           //navigate to first transition targeting this state
-          const edges = this.state.allEdges.filter( edge => edge.target === this.state.selectedNodeId)
+          const simpleNodeId = GraphNode.extractNodeIdFromFullNodeId(this.state.selectedNodeId);
+          const edges = this.state.allEdges.filter( edge => edge.target === simpleNodeId)
           if(edges.length){
             this.setState({
               selectedNodeId: null,
@@ -434,7 +449,11 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
         }else if(this.state.selectedEdgeId){
           //go to source state
           this.setState({
-            selectedNodeId: this.state.kgraph.getKgraphEdgeById(this.state.selectedEdgeId).source,
+            selectedNodeId: 
+              GraphNode.getPrefixedNodeId(
+                this.props.id,
+                this.state.kgraph.getKgraphEdgeById(this.state.selectedEdgeId).source,
+              ),
             selectedEdgeId: null
           });
         }
@@ -466,7 +485,8 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
           //do nothing
         }else if (this.state.selectedNodeId){  
           //navigate to first transition
-          const edges = this.state.allEdges.filter( edge => edge.source === this.state.selectedNodeId)
+          const simpleNodeId = GraphNode.extractNodeIdFromFullNodeId(this.state.selectedNodeId);
+          const edges = this.state.allEdges.filter( edge => edge.source === simpleNodeId )
           if(edges && edges.length){
             this.setState({
               selectedNodeId: null,
@@ -476,7 +496,11 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
         }else if(this.state.selectedEdgeId){
           //go to target state
           this.setState({
-            selectedNodeId: this.state.kgraph.getKgraphEdgeById(this.state.selectedEdgeId).target,
+            selectedNodeId: 
+              GraphNode.getPrefixedNodeId(
+                this.props.id,
+                this.state.kgraph.getKgraphEdgeById(this.state.selectedEdgeId).target,
+              ),
             selectedEdgeId: null
           });
         }

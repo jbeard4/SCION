@@ -216,11 +216,15 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
 
 
   getFullNodeId(){
-    return GraphNode.getNodeId(this.props.id, this.state.to.node.id);
+    return GraphNode.getPrefixedNodeId(this.props.id, this.state.to.node.id);
   }
 
-  public static getNodeId(idPrefix: string, nodeId: string){
+  public static getPrefixedNodeId(idPrefix: string, nodeId: string){
     return `${idPrefix}:${nodeId}`;
+  }
+
+  public static extractNodeIdFromFullNodeId(fullNodeId: string){
+    return fullNodeId.split(':').slice(1).join(':');    //FIXME: this is probably the worst way to do this. If user specifies an @id property that includes ':', this will break
   }
 
   render(){

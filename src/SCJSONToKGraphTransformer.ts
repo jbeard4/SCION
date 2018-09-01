@@ -289,7 +289,7 @@ export default class SCJSONToKGraphTransformer {
   }
 
   isStateCollapsed(state) : boolean {
-    return !!this._svgRenderer.collapsedNodeMap[GraphNode.getNodeId(this._options.idPrefix, state.id)]; //TODO: consolidate this id generation code.
+    return !!this._svgRenderer.collapsedNodeMap[GraphNode.getPrefixedNodeId(this._options.idPrefix, state.id)]; //TODO: consolidate this id generation code.
   }
 
   _makeKLayParams(parentKlayNode, scjsonContainer, traverseInContent){
