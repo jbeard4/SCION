@@ -211,7 +211,7 @@ function verifyWithScxmlScopes(
       }
     })
 
-    localVerify(String(code));
+    pushMessages(localVerify(String(code)), code);
   }
 
   config.rules = Object.assign(
