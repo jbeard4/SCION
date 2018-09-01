@@ -1,0 +1,19 @@
+{
+  "name": "scxml-debug",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "browserify -d index.js -o dist/scxml.debug.js -s scxml -v"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "browserify": "^16.2.2"
+  },
+  "dependencies": {
+    "scxml": "4.3.1",
+    "scxml-sourcemap-plugin": "1.0.0",
+    "scion-scxml-monitor-middleware": "1.0.0"
+  },
+  "description": ""
+}
