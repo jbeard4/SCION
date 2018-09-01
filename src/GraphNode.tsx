@@ -215,8 +215,12 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
   }
 
 
-  public getFullNodeId(){
-    return `${this.props.id}:${this.state.to.node.id}`;
+  getFullNodeId(){
+    return GraphNode.getNodeId(this.props.id, this.state.to.node.id);
+  }
+
+  public static getNodeId(idPrefix: string, nodeId: string){
+    return `${idPrefix}:${nodeId}`;
   }
 
   render(){
@@ -251,7 +255,9 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                           this.props.statesForDefaultEntry.indexOf(edge.target) > -1 ).length;
     }
 
-    let toReturn = <g id={this.getFullNodeId()}
+    const fullNodeId = this.getFullNodeId();
+
+    let toReturn = <g id={fullNodeId}
             className={
               classNames({
                 "node" : true,
@@ -265,7 +271,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
                     ),
                 "highlighted" : this.props.configuration && this.props.configuration.indexOf(this.state.to.node.id) > -1,
                 "exited" : exitInitialState || (this.props.previousConfiguration && this.props.previousConfiguration.indexOf(this.state.to.node.id) > -1),
-                "selected" : this.props.node.id === this.props.selectedNodeId
+                "selected" : fullNodeId === this.props.selectedNodeId
               })
             }
             ref={(e: SVGGElement) => { this.svgGElement = e; }}

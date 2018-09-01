@@ -4,6 +4,7 @@ import IdGenerator from './IdGenerator';
 import _ = require('underscore');
 import {SCState} from './SCJSON';
 import {GraphRoot} from './GraphRoot'
+import GraphNode from './GraphNode'
 import {KGraphNode, KGraphEdge, KGraphLabel} from './KGraph';
 
 const DEFAULTPROPS = { "borderSpacing": 6};
@@ -288,7 +289,7 @@ export default class SCJSONToKGraphTransformer {
   }
 
   isStateCollapsed(state) : boolean {
-    return !!this._svgRenderer.collapsedNodeMap[`${this._options.idPrefix}:${state.id}`]; //TODO: consolidate this id generation code.
+    return !!this._svgRenderer.collapsedNodeMap[GraphNode.getNodeId(this._options.idPrefix, state.id)]; //TODO: consolidate this id generation code.
   }
 
   _makeKLayParams(parentKlayNode, scjsonContainer, traverseInContent){
