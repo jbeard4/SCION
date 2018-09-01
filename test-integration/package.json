@@ -13,9 +13,6 @@
     "@types/react-dom": "0.14.23",
     "babel-polyfill": "^6.23.0",
     "debug": "^2.6.3",
-    "jquery": "^3.1.1",
-    "jquery-ui-dist": "^1.12.1",
-    "ui-contextmenu": "^1.18.1",
     "babel": "^6.23.0",
     "babelify": "^7.3.0",
     "bootstrap": "^3.3.7",
@@ -27,7 +24,10 @@
     "sorcery": "^0.10.0",
     "typescript": "^2.2.2",
     "uglify-js": "^2.8.21",
-    "watchify": "^3.9.0"
+    "watchify": "^3.9.0",
+    "jquery": "^3.1.1",
+    "jquery-ui-dist": "^1.12.1",
+    "ui-contextmenu": "^1.18.1"
   },
   "scripts": {
     "watch": "tsc -p . --outDir dist/ -w & ( cd dist; watchify index.js -d  -o 'cat > main.js; sorcery -i main.js' -v )",

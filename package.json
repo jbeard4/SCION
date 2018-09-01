@@ -21,6 +21,11 @@
     "jquery-ui-dist": "^1.12.1",
     "ui-contextmenu": "^1.18.1"
   },
+  "peerDependencies":{
+    "jquery": "^3.1.1",
+    "jquery-ui-dist": "^1.12.1",
+    "ui-contextmenu": "^1.18.1"
+  },
   "devDependencies": {
     "@types/es6-shim": "0.31.33",
     "@types/jquery": "2.0.41",
