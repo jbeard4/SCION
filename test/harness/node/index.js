@@ -1,5 +1,5 @@
 var scion = require('../../..');
-var tests = require('scion-core-test-framework')(scion.Statechart,{ 
+var tests = require('@scion-scxml/core-test-framework')(scion.Statechart,{ 
   // these tests are known to fail for legacy SCION semantics
   testsToIgnore : [
     './parallel+interrupt/test21.test.json(serialization)(async)',
