@@ -20,6 +20,5 @@
     "grunt": "^1.0.1",
     "grunt-browserify": "^5.0.0",
     "load-grunt-tasks": "^3.5.0"
-  },
-  "private": true
+  }
 }
