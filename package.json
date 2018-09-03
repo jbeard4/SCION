@@ -21,6 +21,5 @@
   "devDependencies": {
     "standard": "^8.6.0",
     "tap": "^10.0.2"
-  },
-  "private": true
+  }
 }
