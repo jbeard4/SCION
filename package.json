@@ -31,6 +31,5 @@
     "validate": "npm run lint && npm run test",
     "test": "jest",
     "lint": "eslint ."
-  },
-  "private": true
+  }
 }
