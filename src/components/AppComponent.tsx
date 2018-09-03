@@ -1,7 +1,7 @@
 import * as React from "react";
-import SCHVIZ from 'schviz';
-import scxml = require('scxml');
-import scion = require('scion-core');
+import SCHVIZ from '@scion-scxml/schviz';
+import scxml = require('@scion-scxml/scxml');
+import scion = require('@scion-scxml/core');
 import electron = require('electron');
 import {handleError, clear} from '../handle-errors';
 

@@ -1,5 +1,5 @@
 {
-  "name": "scion-cli",
+  "name": "@scion-scxml/cli",
   "version": "1.0.11",
   "description": "A minimal standalone graphical SCXML simulation environment.",
   "main": "main.js",
@@ -25,14 +25,14 @@
     "babel-polyfill": "^6.23.0",
     "jquery-ui-dist": "^1.12.1",
     "optimist": "^0.6.1",
-    "schviz": "3.2.5",
-    "scion-core": "2.6.0",
-    "scxml-sourcemap-plugin": "1.0.0",
-    "scion-scxml-monitor-middleware": "1.0.0",
-    "scxml": "4.3.1",
     "toastr": "^2.1.2",
     "ui-contextmenu": "^1.18.1",
-    "yargs": "^12.0.1"
+    "yargs": "^12.0.1",
+    "@scion-scxml/schviz": "3.2.5",
+    "@scion-scxml/core": "2.6.0",
+    "@scion-scxml/sourcemap-plugin": "1.0.0",
+    "@scion-scxml/monitor-middleware": "1.0.0",
+    "@scion-scxml/scxml": "4.3.1"
   },
   "keywords": [
     "SCXML"
@@ -53,11 +53,11 @@
     "electron-packager": "^8.6.0",
     "exorcist": "^0.4.0",
     "jquery": "^3.3.1",
-    "scxml-test-framework": "^1.0.2",
     "sorcery": "^0.10.0",
     "tsify": "^3.0.1",
     "typescript": "2.3.3",
     "uglifyify": "^3.0.4",
     "watchify": "^3.9.0"
-  }
+  },
+  "private": true
 }

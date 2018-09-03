@@ -38,8 +38,8 @@ require('yargs') // eslint-disable-line
     )
   }, (argv) => {
     if(argv.format === 'module'){
-      const scxml = require('scxml'); 
-      require('scxml-sourcemap-plugin')(scxml);  //load the sourcemaps plugin
+      const scxml = require('@scion-scxml/scxml'); 
+      require('@scion-scxml/sourcemap-plugin')(scxml);  //load the sourcemaps plugin
 
       scxml.pathToModel(argv.filename, function(err, model){
         if(err) return console.error(err);
@@ -107,7 +107,7 @@ require('yargs') // eslint-disable-line
 
 
 function startMonitorServer(){
-  return require('scion-scxml-monitor-middleware').init({'serve-scxml-from-root-fs':true});  //load the debug server plugin
+  return require('@scion-scxml/monitor-middleware').init({'serve-scxml-from-root-fs':true});  //load the debug server plugin
 }
 
 function setupArgumentsForExecutableCommand(yargs, description){
@@ -126,14 +126,14 @@ function setupArgumentsForExecutableCommand(yargs, description){
 }
 
 function setupInterpreterForExecutableCommand(argv, cb){
-  const scxml = require('scxml');
+  const scxml = require('@scion-scxml/scxml');
 
   const Statechart = argv['legacy-semantics'] ? 
-    require('scion-core-legacy').Statechart :
+    require('@scion-scxml/core-legacy').Statechart :
     scxml.scion.Statechart;
 
   if(require('scxml/lib/util').IS_INSPECTING){
-    require('scxml-sourcemap-plugin')(scxml);  //load the sourcemaps plugin
+    require('@scion-scxml/sourcemap-plugin')(scxml);  //load the sourcemaps plugin
   }
 
   if(argv['monitor-server']){
