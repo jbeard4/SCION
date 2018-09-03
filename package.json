@@ -73,6 +73,5 @@
     "build": "grunt build && npm run docs",
     "watch": "watchify -d lib/scion.js -o dist/scion.js -s scion",
     "docs": "typedoc --module commonjs  --includeDeclarations --out docs/ ./tsd/scion-core-legacy.d.ts"
-  },
-  "private": true
+  }
 }
