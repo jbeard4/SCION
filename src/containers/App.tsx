@@ -1,6 +1,6 @@
 import * as React from "react";
-import Collapsible from '@jbeard/react-collapsible';
-import SCHVIZ from 'schviz';
+import Collapsible from '@scion-scxml/react-collapsible';
+import SCHVIZ from '@scion-scxml/schviz';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
 import {SlickgridComponent} from '../components/Slickgrid';

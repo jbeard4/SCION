@@ -1,5 +1,6 @@
 {
-  "name": "@jbeard/scion-scxml-dashboard",
+  "name": "@scion-scxml/dashboard",
+  "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/containers/App",
@@ -17,11 +18,7 @@
     "harness": "opn http://localhost:3001/test-integration/index.html"
   },
   "dependencies": {
-    "@jbeard/jsondiffpatch": "^0.2.5",
-    "@jbeard/react-collapsible": "^2.0.6",
-    "schviz": "3.2.5",
-    "scxml": "4.3.1",
-    "jquery": "^3.1.1",
+    "jquery": "1.11.2",
     "jquery-ui-dist": "^1.12.1",
     "ui-contextmenu": "^1.18.1",
     "@types/jquery": "^1.10.33",
@@ -31,16 +28,18 @@
     "babel-polyfill": "^6.26.0",
     "classnames": "^2.1.2",
     "font-awesome": "^4.7.0",
-    "jquery": "1.11.2",
     "jquery-ui": "^1.12.1",
-    "jquery-ui-dist": "^1.12.1",
     "jquery-ui-themes": "^1.12.0",
     "react-inspector": "^2.2.2",
     "react-redux": "^5.0.6",
     "react-ui-layout": "^1.0.4",
     "redux": "^3.1.5",
     "slickgrid": "^2.3.15",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "@scion-scxml/jsondiffpatch": "^0.2.5",
+    "@scion-scxml/react-collapsible": "^2.0.6",
+    "@scion-scxml/schviz": "3.2.5",
+    "@scion-scxml/scxml": "4.3.1"
   },
   "browserify": {
     "transform": [
@@ -73,6 +72,7 @@
     "babel-plugin-transform-decorators-legacy": "^1.2.0",
     "babel-polyfill": "^6.3.14",
     "babel-preset-es2015": "^6.24.1",
+    "babel-preset-es2015-loose": "^8.0.0",
     "babel-preset-react": "^6.3.13",
     "babel-preset-stage-0": "^6.3.13",
     "babelify": "^7.3.0",
@@ -99,5 +99,6 @@
     "uglify-js": "^2.8.21",
     "uglifyify": "^3.0.4",
     "watchify": "^3.9.0"
-  }
+  },
+  "private": true
 }

@@ -1,5 +1,5 @@
 import * as React from "react";
-import {DiffPatcher, formatters}  from '@jbeard/jsondiffpatch'; 
+import {DiffPatcher, formatters}  from '@scion-scxml/jsondiffpatch'; 
 
 export interface DiffProps {
   left : any;
