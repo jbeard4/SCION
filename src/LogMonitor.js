@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import SCHVIZ from 'schviz';
+import SCHVIZ from '@scion-scxml/schviz';
 import PropTypes from 'prop-types';
 import shouldPureComponentUpdate from 'react-pure-render/function';
 import * as themes from 'redux-devtools-themes';

@@ -1,5 +1,5 @@
 {
-  "name": "redux-devtools-scion-monitor",
+  "name": "@scion-scxml/redux-devtools-scion-monitor",
   "version": "1.4.0",
   "description": "State machine visualization for SCION",
   "main": "lib/index.js",
@@ -65,6 +65,7 @@
     "redux": "^4.0.0",
     "redux-devtools": "^3.4.1",
     "redux-devtools-themes": "^1.0.0",
-    "schviz": "3.2.5"
-  }
+    "@scion-scxml/schviz": "3.2.5"
+  },
+  "private": true
 }
