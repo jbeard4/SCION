@@ -1,19 +1,20 @@
 {
-  "name": "scxml-sourcemap-plugin",
+  "name": "@scion-scxml/sourcemap-plugin",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Jacob Beard <jake@jacobeanrnd.com>",
+  "license": "RPL-1.5",
   "dependencies": {
     "esprima": "^4.0.0",
     "source-map": "^0.6.1",
-    "@jbeard/vm-browserify": "0.0.6"
+    "@scion-scxml/vm-browserify": "0.0.6"
   },
   "browser": {
     "vm": "@jbeard/vm-browserify"
-  }
+  },
+  "private": true
 }
