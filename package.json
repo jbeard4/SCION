@@ -1,7 +1,7 @@
 {
   "name": "@scion-scxml/dashboard",
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "./dist/containers/App",
   "scripts": {
@@ -12,7 +12,7 @@
     "build": "npm run transpile && npm run bundle && npm run minify",
     "transpile": "tsc -p . --outDir dist/",
     "bundle": "cd dist; browserify -t browserify-css --exclude electron index.js -d  -o scion-scxml-dashboard.js -v; sorcery -i scion-scxml-dashboard.js",
-    "minify": "cd dist; uglifyjs scion-scxml-dashboard.js --in-source-map scion-scxml-dashboard.js.map  --source-map scion-scxml-dashboard.min.js.map  -o scion-scxml-dashboard.min.js",
+    "minify": "cd dist; uglifyjs scion-scxml-dashboard.js --in-source-map scion-scxml-dashboard.js.map  --source-map  -o scion-scxml-dashboard.min.js",
     "clean": "rm -rf dist/*",
     "server": "node grunt/server.js",
     "harness": "opn http://localhost:3001/test-integration/index.html"
@@ -39,7 +39,7 @@
     "@scion-scxml/jsondiffpatch": "^0.2.5",
     "@scion-scxml/react-collapsible": "^2.0.6",
     "@scion-scxml/schviz": "3.2.5",
-    "@scion-scxml/scxml": "4.3.1"
+    "@scion-scxml/scxml": "^4.3.3"
   },
   "browserify": {
     "transform": [
