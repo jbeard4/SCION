@@ -6,6 +6,5 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "license": "MIT",
-  "private": true
+  "license": "MIT"
 }

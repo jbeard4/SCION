@@ -5,7 +5,7 @@ const path = require('path');
 const _ = require('underscore');
 const recognizers = require('./recognizers');
 const scionDiagnostics = require('@scion-scxml/monitor-middleware');
-const diagnosticsClient = require('scion-scxml-monitor-middleware/client');
+const diagnosticsClient = require('@scion-scxml/monitor-middleware/client');
 require('@scion-scxml/sourcemap-plugin')(scxml);
 const log = require('./util').log;
 

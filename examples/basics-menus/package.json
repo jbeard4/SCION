@@ -10,12 +10,11 @@
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "MIT",
   "dependencies": {
-    "@scion-scxml/botbuilder-common": "1.0.0",
+    "@scion-scxml/botbuilder-common": "1.0.1",
     "@scion-scxml/botbuilder-common-scxml-components": "1.0.0"
   },
   "devDependencies": {
     "eslint": "^5.4.0",
     "@scion-scxml/eslint-plugin-scharpie": "4.0.1"
-  },
-  "private": true
+  }
 }
