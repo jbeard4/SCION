@@ -1,15 +1,17 @@
 {
-  "name": "test-scharpie",
+  "name": "@scion-scxml/test-scharpie",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "license": "Apache-2.0",
   "scripts": {
     "test": "eslint --plugin scharpie basic1.scxml"
   },
-  "author": "",
+  "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "ISC",
   "devDependencies": {
     "eslint": "^5.4.0",
-    "eslint-plugin-scharpie": "4.0.1"
-  }
+    "@scion-scxml/eslint-plugin-scharpie": "4.0.1"
+  },
+  "private": true
 }
