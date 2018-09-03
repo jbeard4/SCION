@@ -66,6 +66,5 @@
     "redux-devtools": "^3.4.1",
     "redux-devtools-themes": "^1.0.0",
     "@scion-scxml/schviz": "3.2.5"
-  },
-  "private": true
+  }
 }
