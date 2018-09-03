@@ -1,7 +1,9 @@
 {
-  "name": "scion-drag-and-drop-redux",
+  "name": "@scion-scxml/drag-and-drop-redux",
   "version": "0.0.1",
   "private": true,
+  "license": "Apache-2.0",
+  "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "devDependencies": {
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-polyfill": "^6.23.0",
@@ -22,9 +24,9 @@
     "react-dom": "^15.5.4",
     "react-redux": "^4.4.8",
     "redux": "^3.6.0",
-    "schviz": "3.2.5",
-    "scion-core": "2.6.0",
-    "scion-cli": "1.0.11"
+    "@scion-scxml/schviz": "3.2.5",
+    "@scion-scxml/core": "2.6.0",
+    "@scion-scxml/cli": "1.0.11"
   },
   "scripts": {
     "compile-scxml": "scion compile ./src/reducers/drag-and-drop.scxml --format json -o dist/drag-and-drop.json && scion compile ./src/reducers/drag-and-drop.scxml --format module -o dist/drag-and-drop.js",

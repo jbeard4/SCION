@@ -1,4 +1,4 @@
-const scion = require('scion-core');
+const scion = require('@scion-scxml/core');
 import fnModel from '../../dist/drag-and-drop'
 
 const handleAction = (state, action) => {

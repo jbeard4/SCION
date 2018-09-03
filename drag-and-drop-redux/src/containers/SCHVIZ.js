@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import SCHVIZ from 'schviz';
+import SCHVIZ from '@scion-scxml/schviz';
 import scjson from '../../dist/drag-and-drop.json'
 
 const mapStateToProps = ([configuration, history, isInFinalState, datamodel], ownProps) => {

@@ -1,4 +1,4 @@
-const scion = require('scion-core');
+const scion = require('@scion-scxml/core');
 import modelFactory from '../../dist/drag-and-drop'
 
 const initialState = { snapshot: null };
