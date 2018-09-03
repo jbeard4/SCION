@@ -12,6 +12,5 @@
   "devDependencies": {
     "eslint": "^5.4.0",
     "@scion-scxml/eslint-plugin-scharpie": "4.0.1"
-  },
-  "private": true
+  }
 }
