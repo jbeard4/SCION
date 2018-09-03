@@ -1,7 +1,7 @@
 import * as React from "react";
 import {GraphRootProps, GraphRootAnimation, getDefaultLayoutOptions} from './index';
 import scxml = require('@scion-scxml/scxml');    //TODO: make scxml an es6 module
-import { SCState } from 'scion-core-base';    //TODO: make scxml an es6 module
+import { SCState } from '@scion-scxml/core-base';    //TODO: make scxml an es6 module
 import _ = require('underscore');
 import Debug = require('debug');
 const debug = Debug('GraphRoot');

@@ -19,7 +19,7 @@
     "jquery-ui-dist": "^1.12.1",
     "ui-contextmenu": "^1.18.1",
     "@scion-scxml/core-base": "^1.0.0",
-    "@scion-scxml/scxml": "^4.3.1"
+    "@scion-scxml/scxml": "^4.3.3"
   },
   "peerDependencies": {
     "jquery": "^3.1.1",
@@ -84,6 +84,5 @@
   "bugs": {
     "url": "https://github.com/jbeard4/SCHVIZ2/issues"
   },
-  "homepage": "https://github.com/jbeard4/SCHVIZ2#readme",
-  "private": true
+  "homepage": "https://github.com/jbeard4/SCHVIZ2#readme"
 }

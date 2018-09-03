@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import {KGraph, KGraphNode, KGraphEdge, KGraphLabel, Point} from './KGraph';
-import { SCState } from 'scion-core-base';    //TODO: make scxml an es6 module
+import { SCState } from '@scion-scxml/core-base';    //TODO: make scxml an es6 module
 import constants from './constants';
 import IdGenerator from './IdGenerator';
 import Debug = require('debug');

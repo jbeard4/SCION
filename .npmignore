@@ -1,12 +1,4 @@
-Session.vim
-bower.json
+**/.*.sw*
 examples
-grunt
-log
-log.md
-node_modules
+**/node_modules
 src
-tests
-tmp
-tscommand-d77dfe0a.tmp.txt
-tsconfig.json
