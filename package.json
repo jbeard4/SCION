@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/scxml",
-  "version": "4.3.1",
+  "version": "4.3.3",
   "description": "An implementation of SCXML in JavaScript.",
   "keywords": [
     "scxml",
@@ -85,7 +85,7 @@
   "browser": {
     "fs": "./lib/runtime/platform-bootstrap/browser/fs",
     "jsdom": "./lib/runtime/platform-bootstrap/browser/jsdom",
-    "vm": "@jbeard/vm-browserify"
+    "vm": "@scion-scxml/vm-browserify"
   },
   "main": "./lib/runtime/facade",
   "scripts": {
@@ -124,12 +124,8 @@
       ]
     }
   ],
-  "bin": {
-    "scxml": "bin/cli.js"
-  },
   "collective": {
     "type": "opencollective",
     "url": "https://opencollective.com/SCION"
-  },
-  "private": true
+  }
 }
