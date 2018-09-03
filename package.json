@@ -1,5 +1,5 @@
 {
-  "name": "@jbeard/console-component",
+  "name": "@scion-scxml/console-component",
   "version": "1.0.3",
   "description": "",
   "main": "dist/index.js",
@@ -19,5 +19,6 @@
     "postversion": "git push && npm publish"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "license": "AGPL-3.0"
+  "license": "RPL-1.5",
+  "private": true
 }
