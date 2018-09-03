@@ -59,6 +59,5 @@
     "react-dom": "^15.6.1",
     "socket.io": "^2.0.4",
     "@scion-scxml/schviz": "3.2.5"
-  },
-  "private": true
+  }
 }
