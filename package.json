@@ -1,5 +1,5 @@
 {
-  "name": "@jbeard/react-codemirror",
+  "name": "@scion-scxml/react-codemirror",
   "version": "1.0.0",
   "description": "Codemirror",
   "main": "lib/Codemirror.js",
@@ -62,5 +62,6 @@
     "codemirror",
     "editor",
     "code"
-  ]
+  ],
+  "private": true
 }
