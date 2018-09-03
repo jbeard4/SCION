@@ -1,5 +1,5 @@
 {
-  "name": "@jbeard/xmllint",
+  "name": "@scion-scxml/xmllint",
   "version": "0.1.1",
   "description": "Online demo at http://syssgx.github.com/xml.js/",
   "main": "xmllint.js",
@@ -31,5 +31,6 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/kripken/xml.js/issues"
-  }
+  },
+  "private": true
 }
