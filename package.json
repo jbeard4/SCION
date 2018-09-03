@@ -65,6 +65,5 @@
   "engines": {
     "node": "*"
   },
-  "homepage": "https://github.com/benjamine/jsondiffpatch",
-  "private": true
+  "homepage": "https://github.com/benjamine/jsondiffpatch"
 }
