@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bootstrap" : "lerna run bootstrap",
+    "build": "npm run bootstrap && lerna run --sort build"
   },
   "author": "",
   "license": "ISC",
