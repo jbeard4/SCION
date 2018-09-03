@@ -14,7 +14,6 @@
     "@scion-scxml/vm-browserify": "0.0.6"
   },
   "browser": {
-    "vm": "@jbeard/vm-browserify"
-  },
-  "private": true
+    "vm": "@scion-scxml/vm-browserify"
+  }
 }
