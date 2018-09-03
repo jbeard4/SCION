@@ -1,5 +1,5 @@
 {
-  "name": "@jbeard/jsondiffpatch",
+  "name": "@scion-scxml/jsondiffpatch",
   "version": "0.2.5",
   "author": "Benjamin Eidelman <beneidel@gmail.com>",
   "description": "Diff & Patch for Javascript objects",
@@ -65,5 +65,6 @@
   "engines": {
     "node": "*"
   },
-  "homepage": "https://github.com/benjamine/jsondiffpatch"
+  "homepage": "https://github.com/benjamine/jsondiffpatch",
+  "private": true
 }
