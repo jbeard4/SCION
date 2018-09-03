@@ -1,7 +1,7 @@
 const util = require('util');
 const builder = require('botbuilder');
 const restify = require('restify');
-const scxml = require('scxml');
+const scxml = require('@scion-scxml/scxml');
 let fnModel;
 
 const sessionStore = {};

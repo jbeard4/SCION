@@ -1,15 +1,17 @@
 {
-  "name": "basics-multiTurn",
+  "name": "@scion-scxml/basics-multiTurn",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ."
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Jacob Beard <jake@jacobeanrnd.com>",
+  "license": "MIT",
   "dependencies": {
-    "scion-scxml-botbuilder-common": "1.0.0",
-    "scion-scxml-botbuilder-common-scxml-components": "1.0.0"
-  }
+    "@scion-scxml/botbuilder-common": "1.0.0",
+    "@scion-scxml/botbuilder-common-scxml-components": "1.0.0"
+  },
+  "private": true
 }

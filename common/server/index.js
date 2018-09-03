@@ -1,12 +1,12 @@
 const restify = require('restify');
 const builder = require('botbuilder');
-const scxml = require('scxml');
+const scxml = require('@scion-scxml/scxml');
 const path = require('path');
 const _ = require('underscore');
 const recognizers = require('./recognizers');
-const scionDiagnostics = require('scion-scxml-monitor-middleware');
+const scionDiagnostics = require('@scion-scxml/monitor-middleware');
 const diagnosticsClient = require('scion-scxml-monitor-middleware/client');
-require('scxml-sourcemap-plugin')(scxml);
+require('@scion-scxml/sourcemap-plugin')(scxml);
 const log = require('./util').log;
 
 function init(srcDir,mainScxmlFile,options){
