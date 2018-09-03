@@ -19,6 +19,5 @@
     "postversion": "git push && npm publish"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "license": "RPL-1.5",
-  "private": true
+  "license": "RPL-1.5"
 }
