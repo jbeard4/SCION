@@ -1,63 +1,64 @@
 {
-    "name": "scxml-preview",
-    "version": "0.0.3",
-    "publisher": "EFanZh",
-    "engines": {
-        "vscode": "^1.14.1"
-    },
-    "license": "SEE LICENSE IN LICENSE",
-    "displayName": "Graphviz Preview",
-    "description": "Preview Graphviz (DOT) files.",
-    "categories": [
-        "Languages"
-    ],
-    "keywords": [
-        "scxml",
-        "preview"
-    ],
-    "main": "./out/src/extension",
-    "contributes": {
-        "commands": [
-            {
-                "command": "scxml.showPreview",
-                "title": "Show Preview",
-                "category": "SCXML"
-            }
-        ]
-    },
-    "activationEvents": [
-        "onCommand:scxml.showPreview"
-    ],
-    "devDependencies": {
-        "@types/node": "^6.0.83",
-        "@types/socket.io": "^1.4.31",
-        "@types/socket.io-client": "^1.4.32",
-        "socket.io-client": "^2.0.4",
-        "tslint-language-service": "^0.9.6",
-        "typescript": "^2.4.1",
-        "vscode": "^1.1.4"
-    },
-    "scripts": {
-        "vscode:prepublish": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
-        "compile": "npm run vscode:prepublish",
-        "build": "npm run compile",
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "node ./node_modules/vscode/bin/test"
-    },
-    "icon": "icon.png",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/EFanZh/Graphviz-Preview"
-    },
-    "dependencies": {
-        "schviz": "3.2.5",
-        "babel-polyfill": "^6.26.0",
-        "cors": "^2.8.4",
-        "express": "^4.16.2",
-        "q": "^1.5.1",
-        "react": "^15.6.1",
-        "react-dom": "^15.6.1",
-        "socket.io": "^2.0.4"
-    }
+  "name": "@scion-scxml/preview",
+  "version": "0.0.3",
+  "publisher": "EFanZh",
+  "engines": {
+    "vscode": "^1.14.1"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "displayName": "Graphviz Preview",
+  "description": "Preview Graphviz (DOT) files.",
+  "categories": [
+    "Languages"
+  ],
+  "keywords": [
+    "scxml",
+    "preview"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "scxml.showPreview",
+        "title": "Show Preview",
+        "category": "SCXML"
+      }
+    ]
+  },
+  "activationEvents": [
+    "onCommand:scxml.showPreview"
+  ],
+  "devDependencies": {
+    "@types/node": "^6.0.83",
+    "@types/socket.io": "^1.4.31",
+    "@types/socket.io-client": "^1.4.32",
+    "socket.io-client": "^2.0.4",
+    "tslint-language-service": "^0.9.6",
+    "typescript": "^2.4.1",
+    "vscode": "^1.1.4"
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "compile": "npm run vscode:prepublish",
+    "build": "npm run compile",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "node ./node_modules/vscode/bin/test"
+  },
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EFanZh/Graphviz-Preview"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "q": "^1.5.1",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "socket.io": "^2.0.4",
+    "@scion-scxml/schviz": "3.2.5"
+  },
+  "private": true
 }
