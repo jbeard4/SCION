@@ -220,7 +220,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
   }
 
   public static getPrefixedNodeId(idPrefix: string, nodeId: string){
-    return `${idPrefix ? `${idPrefix}:`: ''}${nodeId}`;
+    return `${idPrefix}:${nodeId}`;
   }
 
   public static extractNodeIdFromFullNodeId(fullNodeId: string){

@@ -1,13 +1,9 @@
 {
-  "name": "schviz-test-framework",
+  "name": "@scion-scxml/schviz-test-framework",
   "version": "2.2.2",
   "description": "SCJSON to KGraph to SVG rendering library",
   "main": "dist/index.js",
   "devDependencies": {
-    "scion-core": "2.6.0",
-    "scxml": "^4.3.1",
-    "schviz": "3.2.5",
-    "@jbeard/console-component": "1.0.3",
     "@types/jquery": "^2.0.41",
     "@types/react": "15.6.1",
     "@types/react-dom": "0.14.23",
@@ -27,7 +23,11 @@
     "watchify": "^3.9.0",
     "jquery": "^3.1.1",
     "jquery-ui-dist": "^1.12.1",
-    "ui-contextmenu": "^1.18.1"
+    "ui-contextmenu": "^1.18.1",
+    "@scion-scxml/core": "2.6.0",
+    "@scion-scxml/scxml": "^4.3.1",
+    "@scion-scxml/schviz": "3.2.5",
+    "@scion-scxml/console-component": "1.0.3"
   },
   "scripts": {
     "watch": "tsc -p . --outDir dist/ -w & ( cd dist; watchify index.js -d  -o 'cat > main.js; sorcery -i main.js' -v )",
@@ -51,13 +51,14 @@
     "scxml"
   ],
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "license": "AGPL-3.0",
+  "license": "RPL-1.5",
   "bugs": {
     "url": "https://github.com/jbeard4/SCHVIZ2/issues"
   },
   "homepage": "https://github.com/jbeard4/SCHVIZ2#readme",
   "dependencies": {
-    "scxml-test-framework": "^2.0.0",
-    "whatwg-fetch": "^2.0.3"
-  }
+    "whatwg-fetch": "^2.0.3",
+    "@scion-scxml/test-framework": "^2.0.0"
+  },
+  "private": true
 }

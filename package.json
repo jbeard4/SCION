@@ -1,5 +1,5 @@
 {
-  "name": "schviz",
+  "name": "@scion-scxml/schviz",
   "version": "3.2.5",
   "description": "SCJSON to KGraph to SVG rendering library",
   "main": "dist/index.js",
@@ -14,14 +14,14 @@
     "load-awesome": "^1.1.0",
     "pathseg": "^1.0.2",
     "q": "^1.4.1",
-    "scion-core-base": "^1.0.0",
-    "scxml": "^4.3.1",
     "underscore": "^1.8.3",
     "jquery": "^3.1.1",
     "jquery-ui-dist": "^1.12.1",
-    "ui-contextmenu": "^1.18.1"
+    "ui-contextmenu": "^1.18.1",
+    "@scion-scxml/core-base": "^1.0.0",
+    "@scion-scxml/scxml": "^4.3.1"
   },
-  "peerDependencies":{
+  "peerDependencies": {
     "jquery": "^3.1.1",
     "jquery-ui-dist": "^1.12.1",
     "ui-contextmenu": "^1.18.1"
@@ -80,9 +80,10 @@
     "scxml"
   ],
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "license": "AGPL-3.0",
+  "license": "RPL-1.5",
   "bugs": {
     "url": "https://github.com/jbeard4/SCHVIZ2/issues"
   },
-  "homepage": "https://github.com/jbeard4/SCHVIZ2#readme"
+  "homepage": "https://github.com/jbeard4/SCHVIZ2#readme",
+  "private": true
 }
