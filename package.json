@@ -1,5 +1,5 @@
 {
-  "name": "@jbeard/vm-browserify",
+  "name": "@scion-scxml/vm-browserify",
   "version": "0.0.6",
   "description": "vm module for the browser",
   "main": "index.js",
@@ -42,5 +42,6 @@
       "iphone/6.0..latest",
       "android-browser/4.2..latest"
     ]
-  }
+  },
+  "private": true
 }
