@@ -1,6 +1,6 @@
 import React from 'react'
-import SCHVIZ from 'schviz';
-import scxml from 'scxml';
+import SCHVIZ from '@scion-scxml/schviz';
+import scxml from '@scion-scxml/scxml';
 import _vampireScxml from './vampire.scxml';
 import { ShowHideSourceCodeLink } from '../../components';
 import VampireImg from './vampire-image'

@@ -1,5 +1,5 @@
 import React from 'react'
-import SCHVIZ from 'schviz';
+import SCHVIZ from '@scion-scxml/schviz';
 import historyScxml from './history.scxml';
 import HistoryDemo from './history-demo';
 import HistoryDemoTxt from './history-demo.js?txt';

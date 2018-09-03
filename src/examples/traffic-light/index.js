@@ -1,5 +1,5 @@
 import React from 'react'
-import SCHVIZ from 'schviz';
+import SCHVIZ from '@scion-scxml/schviz';
 import trafficLightScxml from './traffic-light.scxml';
 import TrafficLight from './traffic-light';
 import TrafficLightTxt from './traffic-light.js?txt';

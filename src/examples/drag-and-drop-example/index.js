@@ -1,5 +1,5 @@
 import React from 'react'
-import SCHVIZ from 'schviz';
+import SCHVIZ from '@scion-scxml/schviz';
 import _dragAndDropScxml from './drag-and-drop.scxml';
 import DragAndDropDemo from './drag-and-drop-demo';
 import DragAndDropDemoTxt from './drag-and-drop-demo.js?txt';

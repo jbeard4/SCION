@@ -1,8 +1,8 @@
 import React from 'react'
-import scxml from 'scxml';
+import scxml from '@scion-scxml/scxml';
 import Prism from 'prismjs'
 import PrismCode from 'react-prism';
-import SCHVIZ from 'schviz';
+import SCHVIZ from '@scion-scxml/schviz';
 
 export class SCComponent extends React.Component{
   constructor(props, scxmlDocumentString){

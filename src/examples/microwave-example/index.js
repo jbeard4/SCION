@@ -1,5 +1,5 @@
 import React from 'react'
-import SCHVIZ from 'schviz';
+import SCHVIZ from '@scion-scxml/schviz';
 import { ShowHideSourceCodeLink } from '../../components';
 import { SCComponent, Cell } from '../common';
 import Buttons from './buttons';

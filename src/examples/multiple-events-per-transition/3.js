@@ -1,6 +1,6 @@
 import * as React from "react";
 import Link from 'gatsby-link'
-import SCHVIZ from 'schviz'
+import SCHVIZ from '@scion-scxml/schviz'
 import TutorialPageWrapper from '../../../components/TutorialPageWrapper'
 import basic1 from 'scxml-test-framework/test/multiple-events-per-transition/test1.scxml'
 
