@@ -12,7 +12,7 @@ var argv = require('optimist')
     .argv;
 
 const interpreterConstructor = argv['legacy-semantics'] ?
-      require('scion-core-legacy').Statechart :
+      require('@scion-scxml/core-legacy').Statechart :
       scxml.scion.Statechart;
 
 if(process.env.TEST_SOURCEMAPS_PLUGIN){ 

@@ -122,7 +122,7 @@ module.exports = function(grunt) {
     
     var done = this.async();
     //TODO: convert to submodule. 
-    var startTests = require('scxml-test-framework');
+    var startTests = require('@scion-scxml/test-framework');
     startTests({
       verbose : false,
       report : 'console',
