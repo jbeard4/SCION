@@ -6,7 +6,7 @@ const utils = require("./utils")
 const oneLine = utils.oneLine
 const splatSet = utils.splatSet
 const getSettings = require("./settings").getSettings
-const scharpie = require('scharpie');
+const scharpie = require('@scion-scxml/scharpie');
 
 const BOM = "\uFEFF"
 const GET_SCOPE_RULE_NAME = "__eslint-plugin-html-get-scope"

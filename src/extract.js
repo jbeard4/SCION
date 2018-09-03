@@ -1,6 +1,6 @@
 "use strict"
 
-const sax = require("@jbeard/sax")
+const sax = require("@scion-scxml/sax")
 const TransformableString = require("./TransformableString")
 const _ = require('underscore');
 
