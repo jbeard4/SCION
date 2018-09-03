@@ -1,5 +1,5 @@
 {
-  "name": "scion-core-base",
+  "name": "@scion-scxml/core-base",
   "version": "1.0.0",
   "description": "Provide BaseInterpreter class and helper functions to modules that implement Statechart interface.",
   "main": "./lib/scion-core-base.js",
@@ -34,5 +34,6 @@
     "babel-plugin-transform-es2015-modules-umd": "^6.8.0",
     "babel-polyfill": "^6.23.0",
     "babel-preset-es2015": "^6.9.0"
-  }
+  },
+  "private": true
 }
