@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/scharpie",
-  "version": "1.0.0",
+  "version": "1.0.7",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,8 +9,8 @@
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "RPL-1.5",
   "dependencies": {
-    "xml2js": "^0.4.19",
-    "@scion-scxml/xmllint": "^0.1.1"
+    "@scion-scxml/xmllint": "^0.1.9",
+    "xml2js": "^0.4.19"
   },
   "bin": {
     "scharpie": "index.js"
@@ -24,5 +24,6 @@
         "brfs"
       ]
     ]
-  }
+  },
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
