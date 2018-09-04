@@ -1,7 +1,7 @@
 {
   "name": "@scion-scxml/core",
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "version": "2.6.0",
+  "version": "2.6.7",
   "description": "StateCharts Interpretation and Optimization eNgine (SCION) CORE is an implementation of Statecharts in JavaScript.",
   "keywords": [
     "scxml",
@@ -28,6 +28,7 @@
     "@scion-scxml/core-base": "1.0.0"
   },
   "devDependencies": {
+    "@scion-scxml/core-test-framework": "1.0.0",
     "async": "^1.5.2",
     "babel-plugin-transform-es2015-modules-umd": "^6.8.0",
     "babel-polyfill": "^6.9.1",
@@ -49,8 +50,7 @@
     "nodeunit": "^0.9.1",
     "typedoc": "^0.11.1",
     "underscore": "^1.8.3",
-    "watchify": "^3.9.0",
-    "@scion-scxml/core-test-framework": "1.0.0"
+    "watchify": "^3.9.0"
   },
   "engines": {
     "node": ">=4.2.2"
@@ -75,5 +75,6 @@
     "build": "grunt build",
     "watch": "watchify -d lib/scion.js -o dist/scion.js -s scion",
     "docs": "typedoc --module commonjs  --includeDeclarations --out docs/ ./tsd/scion-core.d.ts --readme README.md"
-  }
+  },
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
