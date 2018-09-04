@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/preview",
-  "version": "0.0.3",
+  "version": "0.0.10",
   "publisher": "EFanZh",
   "engines": {
     "vscode": "^1.14.1"
@@ -51,13 +51,14 @@
     "url": "https://github.com/EFanZh/Graphviz-Preview"
   },
   "dependencies": {
+    "@scion-scxml/schviz": "^3.2.12",
     "babel-polyfill": "^6.26.0",
     "cors": "^2.8.4",
     "express": "^4.16.2",
     "q": "^1.5.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
-    "socket.io": "^2.0.4",
-    "@scion-scxml/schviz": "3.2.5"
-  }
+    "socket.io": "^2.0.4"
+  },
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
