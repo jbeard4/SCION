@@ -1,7 +1,7 @@
 {
   "name": "@scion-scxml/dashboard",
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "version": "1.0.1",
+  "version": "1.0.5",
   "description": "",
   "main": "./dist/containers/App",
   "scripts": {
@@ -18,9 +18,10 @@
     "harness": "opn http://localhost:3001/test-integration/index.html"
   },
   "dependencies": {
-    "jquery": "1.11.2",
-    "jquery-ui-dist": "^1.12.1",
-    "ui-contextmenu": "^1.18.1",
+    "@scion-scxml/jsondiffpatch": "^0.2.10",
+    "@scion-scxml/react-collapsible": "^2.0.11",
+    "@scion-scxml/schviz": "^3.2.9",
+    "@scion-scxml/scxml": "^4.3.7",
     "@types/jquery": "^1.10.33",
     "@types/slickgrid": "^2.1.25",
     "babel-plugin-transform-class-properties": "^6.24.1",
@@ -28,18 +29,17 @@
     "babel-polyfill": "^6.26.0",
     "classnames": "^2.1.2",
     "font-awesome": "^4.7.0",
+    "jquery": "1.11.2",
     "jquery-ui": "^1.12.1",
+    "jquery-ui-dist": "^1.12.1",
     "jquery-ui-themes": "^1.12.0",
     "react-inspector": "^2.2.2",
     "react-redux": "^5.0.6",
     "react-ui-layout": "^1.0.4",
     "redux": "^3.1.5",
     "slickgrid": "^2.3.15",
-    "underscore": "^1.8.3",
-    "@scion-scxml/jsondiffpatch": "^0.2.5",
-    "@scion-scxml/react-collapsible": "^2.0.6",
-    "@scion-scxml/schviz": "3.2.5",
-    "@scion-scxml/scxml": "^4.3.3"
+    "ui-contextmenu": "^1.18.1",
+    "underscore": "^1.8.3"
   },
   "browserify": {
     "transform": [
@@ -100,5 +100,5 @@
     "uglifyify": "^3.0.4",
     "watchify": "^3.9.0"
   },
-  "private": true
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
