@@ -1,7 +1,7 @@
 {
   "name": "@scion-scxml/core-legacy",
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "version": "1.0.0",
+  "version": "1.0.7",
   "description": "Legacy semantics for SCION Statecharts",
   "keywords": [
     "scxml",
@@ -28,6 +28,7 @@
     "@scion-scxml/core-base": "1.0.0"
   },
   "devDependencies": {
+    "@scion-scxml/core-test-framework": "1.0.0",
     "babel-plugin-transform-es2015-modules-umd": "^6.8.0",
     "babel-polyfill": "^6.9.1",
     "babel-preset-es2015": "^6.9.0",
@@ -47,8 +48,7 @@
     "load-grunt-tasks": "^3.5.0",
     "nodeunit": "^0.9.1",
     "underscore": "^1.8.3",
-    "watchify": "^3.9.0",
-    "@scion-scxml/core-test-framework": "1.0.0"
+    "watchify": "^3.9.0"
   },
   "engines": {
     "node": ">=4.2.2"
@@ -73,5 +73,6 @@
     "build": "grunt build && npm run docs",
     "watch": "watchify -d lib/scion.js -o dist/scion.js -s scion",
     "docs": "typedoc --module commonjs  --includeDeclarations --out docs/ ./tsd/scion-core-legacy.d.ts"
-  }
+  },
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
