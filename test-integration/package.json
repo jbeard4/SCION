@@ -1,33 +1,33 @@
 {
   "name": "@scion-scxml/schviz-test-framework",
-  "version": "2.2.2",
+  "version": "2.2.9",
   "description": "SCJSON to KGraph to SVG rendering library",
   "main": "dist/index.js",
   "devDependencies": {
+    "@scion-scxml/console-component": "1.0.3",
+    "@scion-scxml/core": "^2.6.7",
+    "@scion-scxml/schviz": "^3.2.12",
+    "@scion-scxml/scxml": "^4.3.10",
     "@types/jquery": "^2.0.41",
     "@types/react": "15.6.1",
     "@types/react-dom": "0.14.23",
-    "babel-polyfill": "^6.23.0",
-    "debug": "^2.6.3",
     "babel": "^6.23.0",
+    "babel-polyfill": "^6.23.0",
     "babelify": "^7.3.0",
     "bootstrap": "^3.3.7",
     "browserify": "^14.3.0",
     "browserify-css": "^0.10.0",
+    "debug": "^2.6.3",
     "exorcist": "^0.4.0",
     "express": "^4.14.0",
+    "jquery": "^3.1.1",
+    "jquery-ui-dist": "^1.12.1",
     "opn-cli": "^3.1.0",
     "sorcery": "^0.10.0",
     "typescript": "^2.2.2",
     "uglify-js": "^2.8.21",
-    "watchify": "^3.9.0",
-    "jquery": "^3.1.1",
-    "jquery-ui-dist": "^1.12.1",
     "ui-contextmenu": "^1.18.1",
-    "@scion-scxml/core": "2.6.0",
-    "@scion-scxml/scxml": "^4.3.3",
-    "@scion-scxml/schviz": "3.2.5",
-    "@scion-scxml/console-component": "1.0.3"
+    "watchify": "^3.9.0"
   },
   "scripts": {
     "watch": "tsc -p . --outDir dist/ -w & ( cd dist; watchify index.js -d  -o 'cat > main.js; sorcery -i main.js' -v )",
@@ -57,7 +57,8 @@
   },
   "homepage": "https://github.com/jbeard4/SCHVIZ2#readme",
   "dependencies": {
-    "whatwg-fetch": "^2.0.3",
-    "@scion-scxml/test-framework": "^2.0.0"
-  }
+    "@scion-scxml/test-framework": "^2.0.8",
+    "whatwg-fetch": "^2.0.3"
+  },
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
