@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/eslint",
-  "version": "4.17.1",
+  "version": "4.17.9",
   "author": "Nicholas C. Zakas <nicholas+npm@nczconsulting.com>",
   "description": "An AST-based pattern checker for JavaScript.",
   "bin": {
@@ -126,5 +126,6 @@
   "license": "MIT",
   "engines": {
     "node": ">=4"
-  }
+  },
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
