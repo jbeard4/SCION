@@ -1,13 +1,15 @@
 {
   "name": "@scion-scxml/sciblog",
   "description": "Starter Gatsby Blog No Styles",
-  "version": "1.0.0",
+  "version": "1.0.7",
   "author": "Noah Glusenkamp <noah.glusenkamp@gmail.com>",
   "bugs": {
     "url": "https://github.com/gatsbyjs/gatsby-starter-blog/issues"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.2.0",
+    "@scion-scxml/schviz": "^3.2.12",
+    "@scion-scxml/scxml": "^4.3.10",
     "bootstrap": "^4.1.1",
     "disqus-react": "^1.0.5",
     "gatsby": "^1.8.12",
@@ -35,9 +37,7 @@
     "prismjs": "^1.15.0",
     "react-prism": "^4.3.2",
     "react-twitter-widgets": "^1.7.1",
-    "recompose": "^0.27.1",
-    "@scion-scxml/schviz": "3.2.5",
-    "@scion-scxml/scxml": "4.3.1"
+    "recompose": "^0.27.1"
   },
   "devDependencies": {
     "eslint": "^5.0.1",
@@ -66,5 +66,5 @@
     "fix-semi": "eslint --quiet --ignore-pattern node_modules --ignore-pattern public --parser babel-eslint --no-eslintrc --rule '{\"semi\": [2, \"never\"], \"no-extra-semi\": [2]}' --fix gatsby-node.js",
     "serve": "gatsby serve"
   },
-  "private": true
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
