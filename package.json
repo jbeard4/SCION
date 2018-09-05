@@ -25,10 +25,10 @@
     "url": "https://github.com/jbeard4/SCION-CORE.git"
   },
   "dependencies": {
-    "@scion-scxml/core-base": "1.0.0"
+    "@scion-scxml/core-base": "1.0.8"
   },
   "devDependencies": {
-    "@scion-scxml/core-test-framework": "1.0.0",
+    "@scion-scxml/core-test-framework": "1.0.8",
     "async": "^1.5.2",
     "babel-plugin-transform-es2015-modules-umd": "^6.8.0",
     "babel-polyfill": "^6.9.1",
