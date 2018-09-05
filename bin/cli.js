@@ -93,10 +93,14 @@ require('yargs') // eslint-disable-line
       interpreter.start();
     });
   })
-  .command('lint [filename]', 'lint an SCXML file', (yargs) => {
-    //TODO
+  .command('lint', 'lint an SCXML file (this is an alias for "eslint --plugin scharpie")', (yargs) => {
   }, (argv) => {
-    //TODO
+    const proc = require('child_process');
+    const filenames = argv._.slice(1);
+    var child = proc.spawn('npx', ['eslint', '--plugin', 'scharpie'].concat(filenames), {stdio: 'inherit'})
+    child.on('close', function (code) {
+      process.exit(code)
+    })
   })
   .command('monitor', 'start a monitor server', (yargs) => {
   }, (argv) => {
@@ -132,13 +136,13 @@ function setupInterpreterForExecutableCommand(argv, cb){
     require('@scion-scxml/core-legacy').Statechart :
     scxml.scion.Statechart;
 
-  if(require('scxml/lib/util').IS_INSPECTING){
+  if(require('@scion-scxml/scxml/lib/util').IS_INSPECTING){
     require('@scion-scxml/sourcemap-plugin')(scxml);  //load the sourcemaps plugin
   }
 
   if(argv['monitor-server']){
     const broadcast = startMonitorServer();
-    const client = require('scion-scxml-monitor-middleware/client')
+    const client = require('@scion-scxml/monitor-middleware/client')
     client.init(scxml,{broadcast})
   }
 
