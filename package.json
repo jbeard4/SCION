@@ -4,12 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "licensezero-postinstall"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "license": "RPL-1.5",
+  "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
     "@scion-scxml/xmllint": "^0.1.9",
+    "licensezero-postinstall": "^1.0.0",
     "xml2js": "^0.4.19"
   },
   "bin": {
