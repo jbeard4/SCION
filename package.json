@@ -15,6 +15,7 @@
     "jquery": "^3.1.1",
     "jquery-ui-dist": "^1.12.1",
     "klayjs": "^0.4.1",
+    "licensezero-postinstall": "^1.0.0",
     "load-awesome": "^1.1.0",
     "pathseg": "^1.0.2",
     "q": "^1.4.1",
@@ -63,7 +64,8 @@
     "clean": "rm -rf dist/*",
     "server": "node grunt/server.js",
     "start": "npm run server",
-    "harness": "opn http://localhost:3001/test-integration/index.html"
+    "harness": "opn http://localhost:3001/test-integration/index.html",
+    "postinstall": "licensezero-postinstall"
   },
   "browserify": {
     "transform": [
@@ -80,7 +82,7 @@
     "scxml"
   ],
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "license": "RPL-1.5",
+  "license": "SEE LICENSE IN LICENSE",
   "bugs": {
     "url": "https://github.com/jbeard4/SCHVIZ2/issues"
   },
