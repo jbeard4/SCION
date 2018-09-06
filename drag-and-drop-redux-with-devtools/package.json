@@ -1,10 +1,10 @@
 {
   "name": "@scion-scxml/drag-and-drop-redux-with-devtools",
-  "version": "0.0.1",
-  "private": true,
+  "version": "0.0.8",
   "license": "Apache-2.0",
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "devDependencies": {
+    "@scion-scxml/redux-devtools-scion-monitor": "^1.4.7",
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-polyfill": "^6.23.0",
     "babel-preset-es2015": "^6.24.1",
@@ -18,10 +18,12 @@
     "redux-devtools-dock-monitor": "^1.1.3",
     "redux-devtools-log-monitor": "^1.4.0",
     "redux-slider-monitor": "^2.0.0-1",
-    "sorcery": "^0.10.0",
-    "@scion-scxml/redux-devtools-scion-monitor": "1.4.0"
+    "sorcery": "^0.10.0"
   },
   "dependencies": {
+    "@scion-scxml/cli": "^1.0.24",
+    "@scion-scxml/core": "^2.6.7",
+    "@scion-scxml/schviz": "^3.2.12",
     "babel-preset-react": "^6.24.1",
     "jquery": "^3.3.1",
     "prop-types": "^15.5.8",
@@ -29,10 +31,7 @@
     "react-dom": "^15.5.4",
     "react-redux": "^4.4.8",
     "redux": "^3.6.0",
-    "redux-thunk": "^2.3.0",
-    "@scion-scxml/schviz": "3.2.5",
-    "@scion-scxml/cli": "1.0.11",
-    "@scion-scxml/core": "2.6.0"
+    "redux-thunk": "^2.3.0"
   },
   "main": "src/index.jsx",
   "scripts": {
@@ -40,5 +39,6 @@
     "bundle": "cd dist; browserify -d -t babelify ../src/index.js -o ./index.js; sorcery -i index.js",
     "build": "npm run compile-scxml && npm run bundle",
     "watch": "cd dist; watchify -d -t babelify ../src/index.js -o 'cat > index.js; sorcery -i index.js' -v"
-  }
+  },
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
