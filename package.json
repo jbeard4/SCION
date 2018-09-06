@@ -1,11 +1,13 @@
 {
   "name": "@scion-scxml/umio",
-  "version": "1.1.1",
+  "version": "1.1.8",
   "description": "Morse code parser implemented in SCXML",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "publish": "bash ./scripts/copy-scripts.sh; couchapp push node.couchapp.js http://system:system@localhost:5984/system-public",
     "start": "scion-scxml-monitor"
+  },
+  "bin": {
+    "umio": "bin/start.sh"
   },
   "repository": {
     "type": "git",
@@ -18,11 +20,11 @@
   },
   "homepage": "https://github.com/jbeard4/scxml-morse-input-out#readme",
   "dependencies": {
-    "babel-polyfill": "^6.26.0",
-    "@scion-scxml/debug": "1.0.0"
+    "@scion-scxml/debug": "^1.0.8",
+    "babel-polyfill": "^6.26.0"
   },
   "devDependencies": {
-    "@scion-scxml/monitor-middleware": "1.0.0"
+    "@scion-scxml/monitor-middleware": "^1.0.8"
   },
-  "private": true
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
