@@ -7,10 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "license": "RPL-1.5",
+  "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
     "@scion-scxml/vm-browserify": "0.0.6",
     "esprima": "^4.0.0",
+    "licensezero-postinstall": "^1.0.0",
     "source-map": "^0.6.1"
   },
   "browser": {
