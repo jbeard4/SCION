@@ -1,20 +1,22 @@
 {
   "name": "@scion-scxml/debug",
-  "version": "1.0.0",
+  "version": "1.0.8",
   "main": "index.js",
   "scripts": {
-    "build": "browserify -d index.js -o dist/scxml.debug.js -s scxml -v"
+    "build": "browserify -d index.js -o dist/scxml.debug.js -s scxml -v",
+    "postinstall": "licensezero-postinstall"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "license": "RPL-1.5",
+  "license": "SEE LICENSE IN LICENSE",
   "devDependencies": {
     "browserify": "^16.2.2"
   },
   "dependencies": {
-    "@scion-scxml/scxml": "4.3.1",
-    "@scion-scxml/sourcemap-plugin": "1.0.0",
-    "@scion-scxml/monitor-middleware": "1.0.0"
+    "@scion-scxml/monitor-middleware": "^1.0.8",
+    "@scion-scxml/scxml": "^4.3.10",
+    "@scion-scxml/sourcemap-plugin": "^1.0.7",
+    "licensezero-postinstall": "^1.0.0"
   },
   "description": "",
-  "private": true
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }

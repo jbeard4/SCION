@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "licensezero": [
+    {
+      "agentSignature": "d320f5bc6dd57337ceaf0d18a1097d10cb8d827d988b56013fb2075ad0a4c846134a3acee4ec2d1fd52a06e4b3cd752b5bd29713e2114b12ccbe7c66fcb7fd0e",
+      "license": {
+        "homepage": "http://scion.io/",
+        "jurisdiction": "US-DE",
+        "name": "Jacob Beard",
+        "projectID": "6be6d763-fe23-4a59-acdd-db7f6f461bc0",
+        "publicKey": "181f308900e4a0d804402606615482958051b42b6c187a1015b28defcd645379",
+        "terms": "parity",
+        "version": "2.4.0"
+      },
+      "licensorSignature": "1abf7ccddb584656f8849b558e9d1f7f36283f4259edb18c0c2f6fe6ee7334d9127f440360314db3a85067e87290111bdc230d894f13f0f3813152d010d6d60d"
+    }
+  ]
+}
