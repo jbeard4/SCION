@@ -1,7 +1,7 @@
 {
   "name": "@scion-scxml/dashboard",
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "version": "1.0.5",
+  "version": "1.0.8",
   "description": "",
   "main": "./dist/containers/App",
   "scripts": {
@@ -15,13 +15,15 @@
     "minify": "cd dist; uglifyjs scion-scxml-dashboard.js --in-source-map scion-scxml-dashboard.js.map  --source-map  -o scion-scxml-dashboard.min.js",
     "clean": "rm -rf dist/*",
     "server": "node grunt/server.js",
-    "harness": "opn http://localhost:3001/test-integration/index.html"
+    "harness": "opn http://localhost:3001/test-integration/index.html",
+    "postinstall": "licensezero-postinstall && node scripts/postinstall.js"
   },
+  "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
-    "@scion-scxml/jsondiffpatch": "^0.2.10",
-    "@scion-scxml/react-collapsible": "^2.0.11",
-    "@scion-scxml/schviz": "^3.2.9",
-    "@scion-scxml/scxml": "^4.3.7",
+    "@scion-scxml/jsondiffpatch": "^0.2.13",
+    "@scion-scxml/react-collapsible": "^2.0.14",
+    "@scion-scxml/schviz": "^3.2.12",
+    "@scion-scxml/scxml": "^4.3.10",
     "@types/jquery": "^1.10.33",
     "@types/slickgrid": "^2.1.25",
     "babel-plugin-transform-class-properties": "^6.24.1",
@@ -29,10 +31,12 @@
     "babel-polyfill": "^6.26.0",
     "classnames": "^2.1.2",
     "font-awesome": "^4.7.0",
+    "fs-extra": "^7.0.0",
     "jquery": "1.11.2",
     "jquery-ui": "^1.12.1",
     "jquery-ui-dist": "^1.12.1",
     "jquery-ui-themes": "^1.12.0",
+    "licensezero-postinstall": "^1.0.0",
     "react-inspector": "^2.2.2",
     "react-redux": "^5.0.6",
     "react-ui-layout": "^1.0.4",

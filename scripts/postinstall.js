@@ -20,7 +20,7 @@ fs.mkdirpSync(scionScxmlDir);
     const moduleDestDir = path.join(nodeModulesDir, moduleName)
 
     if(fs.existsSync(moduleSrcDir) && !fs.existsSync(moduleDestDir)){
-      console.log('copying', moduleSrcDir, 'to', moduleDestDir);
+      //console.log('copying', moduleSrcDir, 'to', moduleDestDir);
       fs.copySync(moduleSrcDir, moduleDestDir);
     }
   })
