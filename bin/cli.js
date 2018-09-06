@@ -104,14 +104,23 @@ require('yargs') // eslint-disable-line
   })
   .command('monitor', 'start a monitor server', (yargs) => {
   }, (argv) => {
-    startMonitorServer();
+    startMonitorServer(startMonitorElectron);
   })
   .help()
   .argv
 
+function startMonitorElectron(){
+  const electron = require('electron');
+  const proc = require('child_process');
 
-function startMonitorServer(){
-  return require('@scion-scxml/monitor-middleware').init({'serve-scxml-from-root-fs':true});  //load the debug server plugin
+  var child = proc.spawn(electron, [path.join(__dirname,'..','monitor-main')], {stdio: 'inherit'})
+  child.on('close', function (code) {
+    process.exit(code)
+  })
+}
+
+function startMonitorServer(cb){
+  return require('@scion-scxml/monitor-middleware').init({'serve-scxml-from-root-fs':true}, cb);  //load the debug server plugin
 }
 
 function setupArgumentsForExecutableCommand(yargs, description){
@@ -141,7 +150,7 @@ function setupInterpreterForExecutableCommand(argv, cb){
   }
 
   if(argv['monitor-server']){
-    const broadcast = startMonitorServer();
+    const broadcast = startMonitorServer(startMonitorElectron);
     const client = require('@scion-scxml/monitor-middleware/client')
     client.init(scxml,{broadcast})
   }
