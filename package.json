@@ -19,7 +19,8 @@
     "build-prod": "npm run transpile && npm run bundle-prod && npm run minify-prod",
     "bundle-prod": "cd dist/; browserify --exclude electron --bare  index.js  -d -v -o scxml-tool.js",
     "minify-prod": "cd dist/; uglifyjs scxml-tool.js -o scxml-tool.min.js",
-    "clean": "rm -rf dist/*"
+    "clean": "rm -rf dist/*",
+    "postinstall": "licensezero-postinstall"
   },
   "dependencies": {
     "@scion-scxml/core": "^2.6.7",
@@ -30,6 +31,7 @@
     "babel-polyfill": "^6.23.0",
     "electron": "^1.4.1",
     "jquery-ui-dist": "^1.12.1",
+    "licensezero-postinstall": "^1.0.0",
     "optimist": "^0.6.1",
     "toastr": "^2.1.2",
     "ui-contextmenu": "^1.18.1",
@@ -39,7 +41,7 @@
     "SCXML"
   ],
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "license": "RPL-1.5",
+  "license": "SEE LICENSE IN LICENSE",
   "devDependencies": {
     "@types/es6-shim": "0.31.34",
     "@types/jquery": "2.0.41",
