@@ -1,4 +1,4 @@
-import { ModelFactory, SCState } from 'scion-core';
+import { ModelFactory, SCState } from '@scion-scxml/core';
 import _scion = require('@scion-scxml/core');
 
 export interface ModelFactoryFactory {
