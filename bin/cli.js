@@ -93,11 +93,11 @@ require('yargs') // eslint-disable-line
       interpreter.start();
     });
   })
-  .command('lint', 'lint an SCXML file (this is an alias for "eslint --plugin scharpie")', (yargs) => {
+  .command('lint', 'lint an SCXML file (this is an alias for "eslint --plugin @scion-scxml/eslint-plugin-scharpie")', (yargs) => {
   }, (argv) => {
     const proc = require('child_process');
     const filenames = argv._.slice(1);
-    var child = proc.spawn('npx', ['eslint', '--plugin', 'scharpie'].concat(filenames), {stdio: 'inherit'})
+    var child = proc.spawn('npx', ['eslint', '--plugin', '@scion-scxml/eslint-plugin-scharpie'].concat(filenames), {stdio: 'inherit'})
     child.on('close', function (code) {
       process.exit(code)
     })
