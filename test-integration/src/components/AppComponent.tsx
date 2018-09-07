@@ -1,5 +1,5 @@
 import * as React from "react";
-import {SCState, ModelFactory, Event} from 'scion-core-base' //TODO: we should not need to require these directly, but typescript does not seem to like the reference to scxml.scion
+import {SCState, ModelFactory, Event} from '@scion-scxml/core-base' //TODO: we should not need to require these directly, but typescript does not seem to like the reference to scxml.scion
 import {Statechart} from '@scion-scxml/core'
 import scxml = require('@scion-scxml/scxml');    //TODO: make scxml an es6 module
                                     //TODO: expose SCJSON object type, so we do not need to use "any" type
