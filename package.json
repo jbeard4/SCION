@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/redux-devtools-scion-monitor",
-  "version": "1.4.7",
+  "version": "1.4.10",
   "description": "State machine visualization for SCION",
   "main": "lib/index.js",
   "files": [
@@ -56,7 +56,7 @@
     "redux-devtools": "^3.4.0"
   },
   "dependencies": {
-    "@scion-scxml/schviz": "^3.2.12",
+    "@scion-scxml/schviz": "^3.2.15",
     "lodash.debounce": "^4.0.4",
     "prop-types": "^15.0.0",
     "react": "^16.4.0",
