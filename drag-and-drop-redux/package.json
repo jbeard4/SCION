@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/drag-and-drop-redux",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "license": "Apache-2.0",
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "devDependencies": {
@@ -16,7 +16,7 @@
     "sorcery": "^0.10.0"
   },
   "dependencies": {
-    "@scion-scxml/cli": "^1.0.25",
+    "@scion-scxml/cli": "^1.0.26",
     "@scion-scxml/core": "^2.6.12",
     "@scion-scxml/schviz": "^3.2.15",
     "babel-preset-react": "^6.24.1",
