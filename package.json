@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/cli",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "description": "A minimal standalone graphical SCXML simulation environment.",
   "main": "main.js",
   "bin": {

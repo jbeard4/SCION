@@ -132,7 +132,7 @@ function setupArgumentsForExecutableCommand(yargs, description){
       describe: 'Run with legacy semantics',
       type: 'boolean'
     })
-    .option('monitor-server', {
+    .option('monitor', {
       describe: 'Start monitor server, and connect run SCXML with monitor client',
       type: 'boolean'
     });
@@ -149,7 +149,7 @@ function setupInterpreterForExecutableCommand(argv, cb){
     require('@scion-scxml/sourcemap-plugin')(scxml);  //load the sourcemaps plugin
   }
 
-  if(argv['monitor-server']){
+  if(argv['monitor']){
     const broadcast = startMonitorServer(startMonitorElectron);
     const client = require('@scion-scxml/monitor-middleware/client')
     client.init(scxml,{broadcast})
