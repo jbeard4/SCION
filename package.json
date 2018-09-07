@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/cli",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "description": "A minimal standalone graphical SCXML simulation environment.",
   "main": "main.js",
   "bin": {
@@ -23,11 +23,11 @@
     "postinstall": "licensezero-postinstall"
   },
   "dependencies": {
-    "@scion-scxml/core": "^2.6.7",
-    "@scion-scxml/monitor-middleware": "^1.0.8",
-    "@scion-scxml/schviz": "^3.2.12",
-    "@scion-scxml/scxml": "^4.3.10",
-    "@scion-scxml/sourcemap-plugin": "^1.0.7",
+    "@scion-scxml/core": "^2.6.12",
+    "@scion-scxml/monitor-middleware": "^1.0.9",
+    "@scion-scxml/schviz": "^3.2.15",
+    "@scion-scxml/scxml": "^4.3.15",
+    "@scion-scxml/sourcemap-plugin": "^1.0.12",
     "babel-polyfill": "^6.23.0",
     "electron": "^1.4.1",
     "jquery-ui-dist": "^1.12.1",
