@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/vm-browserify",
-  "version": "0.0.14",
+  "version": "0.0.19",
   "description": "vm module for the browser",
   "main": "index.js",
   "repository": {
