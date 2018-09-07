@@ -1,7 +1,7 @@
 {
   "name": "@scion-scxml/core-legacy",
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "version": "1.0.7",
+  "version": "1.0.12",
   "description": "Legacy semantics for SCION Statecharts",
   "keywords": [
     "scxml",
