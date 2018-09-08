@@ -2,6 +2,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const OPTION='serve-scxml-from-root-fs';
+
 require('yargs') // eslint-disable-line
   .command('init [filename]', 'initialize a new SCXML file', (yargs) => {
     setupArgumentsForOutputCommand(yargs);
@@ -103,8 +105,13 @@ require('yargs') // eslint-disable-line
     })
   })
   .command('monitor', 'start a monitor server', (yargs) => {
+    yargs
+      .option(OPTION, {
+        describe: 'Interpret paths to scxml files as being relative to the filesystem root (as opposed to PWD)',
+        type: 'boolean'
+      })
   }, (argv) => {
-    startMonitorServer(startMonitorElectron);
+    startMonitorServer(false, startMonitorElectron);
   })
   .help()
   .argv
@@ -119,8 +126,8 @@ function startMonitorElectron(){
   })
 }
 
-function startMonitorServer(cb){
-  return require('@scion-scxml/monitor-middleware').init({'serve-scxml-from-root-fs':true}, cb);  //load the debug server plugin
+function startMonitorServer(serveScxmlFromRootFs, cb){
+  return require('@scion-scxml/monitor-middleware').init({[ OPTION ]:serveScxmlFromRootFs}, cb);  //load the debug server plugin
 }
 
 function setupArgumentsForExecutableCommand(yargs, description){
@@ -150,7 +157,7 @@ function setupInterpreterForExecutableCommand(argv, cb){
   }
 
   if(argv['monitor']){
-    const broadcast = startMonitorServer(startMonitorElectron);
+    const broadcast = startMonitorServer(true, startMonitorElectron);
     const client = require('@scion-scxml/monitor-middleware/client')
     client.init(scxml,{broadcast})
   }
