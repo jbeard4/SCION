@@ -289,7 +289,8 @@ class App extends React.Component<AppProps, AppState> {
             this.schvizComponent && this.schvizComponent.graphRoot.refreshViewbox();
           })
         }),
-        stateManagement__enabled:	true
+        stateManagement__enabled:	true,
+        south__minSize: 100
       });
 
       if(this.props.glContainer){
