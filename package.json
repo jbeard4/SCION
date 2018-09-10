@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/vscode-preview",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "publisher": "EFanZh",
   "engines": {
     "vscode": "^1.14.1"
@@ -49,7 +49,7 @@
     "url": "https://github.com/EFanZh/Graphviz-Preview"
   },
   "dependencies": {
-    "@scion-scxml/schviz": "^3.2.16",
+    "@scion-scxml/schviz": "^3.2.17",
     "babel-polyfill": "^6.26.0",
     "cors": "^2.8.4",
     "express": "^4.16.2",
