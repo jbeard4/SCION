@@ -267,7 +267,7 @@ function verifyWithScxmlScopes(
     const values = firstPassValues[i]
     //console.log('values.code',String(values.code));
     //console.log('values.isRootScript',values.isRootScript);
-    pushMessages(localVerify(values.sourceCode), values.code)
+    if(!values.code.src) pushMessages(localVerify(values.sourceCode), values.code)
   }
 
   config.rules = originalRules;
