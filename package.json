@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/test-scharpie",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "",
   "main": "index.js",
   "license": "ISC",
@@ -9,7 +9,7 @@
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "devDependencies": {
-    "@scion-scxml/eslint-plugin-scharpie": "^4.0.13",
+    "@scion-scxml/eslint-plugin-scharpie": "^4.0.14",
     "eslint": "^5.4.0"
   },
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
