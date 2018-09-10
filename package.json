@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/debug",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "main": "index.js",
   "scripts": {
     "build": "browserify -d index.js -o dist/scxml.debug.js -s scxml -v",
@@ -12,9 +12,9 @@
     "browserify": "^16.2.2"
   },
   "dependencies": {
-    "@scion-scxml/monitor-middleware": "^1.0.10",
-    "@scion-scxml/scxml": "^4.3.16",
-    "@scion-scxml/sourcemap-plugin": "^1.0.13",
+    "@scion-scxml/monitor-middleware": "^1.0.11",
+    "@scion-scxml/scxml": "^4.3.17",
+    "@scion-scxml/sourcemap-plugin": "^1.0.14",
     "licensezero-postinstall": "^1.0.0"
   },
   "description": "",
