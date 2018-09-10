@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/core-test-framework",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "Test harness for modules that implement scion.Statechart interface.",
   "main": "./lib/harness/common/setup-nodeunit-tests.js",
   "directories": {
