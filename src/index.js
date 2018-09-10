@@ -1,6 +1,7 @@
 "use strict"
 
 const path = require("path")
+const fs = require('fs');
 const extract = require("./extract")
 const utils = require("./utils")
 const oneLine = utils.oneLine
@@ -9,8 +10,8 @@ const getSettings = require("./settings").getSettings
 const scharpie = require('@scion-scxml/scharpie');
 
 const BOM = "\uFEFF"
-const GET_SCOPE_RULE_NAME = "__eslint-plugin-html-get-scope"
-const DECLARE_VARIABLES_RULE_NAME = "__eslint-plugin-html-declare-variables"
+const GET_SCOPE_RULE_NAME = "__eslint-plugin-scxml-get-scope"
+const DECLARE_VARIABLES_RULE_NAME = "__eslint-plugin-scxml-declare-variables"
 const scxmlGlobalPlatformVariables = ['_x','_sessionid','_ioprocessors','In']
 const scxmlLocalPlatformVariables = ['_event']
 
@@ -64,9 +65,9 @@ function iterateESLintModules(fn) {
   if (!found) {
     throw new Error(
       oneLine`
-        eslint-plugin-html error: It seems that eslint is not loaded.
+        eslint-plugin-scharpie error: It seems that eslint is not loaded.
         If you think it is a bug, please file a report at
-        https://github.com/BenoitZugmeyer/eslint-plugin-html/issues
+        https://github.com/scion-scxml/eslint-plugin-scharpie/issues
       `
     )
   }
@@ -143,7 +144,7 @@ function patch(Linter) {
         isSCXML,
         pluginSettings.isJavaScriptMIMEType
       )
-
+ 
       if (pluginSettings.reportBadIndent) {
         currentInfos.badIndentationLines.forEach(line => {
           messages.push({
@@ -158,6 +159,7 @@ function patch(Linter) {
 
       verifyWithScxmlScopes.call(
         this,
+        filename,
         localVerify,
         config,
         currentInfos,
@@ -178,6 +180,7 @@ function patch(Linter) {
 module.exports = patch;
 
 function verifyWithScxmlScopes(
+  filename,
   localVerify,
   config,
   currentInfos,
@@ -211,7 +214,15 @@ function verifyWithScxmlScopes(
       }
     })
 
-    pushMessages(localVerify(String(code)), code);
+    if(code.src){
+      //TODO: make this work in the browser
+      const pathToFile = path.resolve(path.dirname(filename), code.src);
+      //Run localverify, just to get globals from the script src. 
+      //We don't want to run lint on it.
+      localVerify(fs.readFileSync(pathToFile, 'utf8'));
+    }else{
+      pushMessages(localVerify(String(code)), code);
+    }
   }
 
   config.rules = Object.assign(
