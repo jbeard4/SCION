@@ -8,10 +8,10 @@ import * as q from 'q';
 import * as path from "path";
 
 export class Server extends EventEmitter {
-    private server: SocketIO.Server;
+    private server: any;
     private app: Express;
     private httpServer: http.Server;
-    private clients: SocketIO.Socket[] = [];
+    private clients: any[] = [];
     public buffer : string;
     constructor() {
         super();
@@ -39,7 +39,7 @@ export class Server extends EventEmitter {
 
         this.app = express();
         this.httpServer = http.createServer(this.app);
-        this.server = io(this.httpServer);
+        this.server = io(this.httpServer, {wsEngine: 'ws'});
 
         let rootDirectory = path.join(__dirname, '..','..','browser');
         this.app.use(express.static(rootDirectory));
@@ -65,7 +65,7 @@ export class Server extends EventEmitter {
         return def.promise;
     }
 
-    private onSocketConnection(socket: SocketIO.Socket) {
+    private onSocketConnection(socket: any) {
         this.clients.push(socket);
         socket.on('disconnect', () => {
             const index = this.clients.findIndex(sock => sock.id === socket.id);

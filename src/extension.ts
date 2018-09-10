@@ -43,7 +43,6 @@ export function activate(context: vscode.ExtensionContext)
     {
 
         server = new Server();
-        server.start();
         server.start().then(async port => {
             console.log('server started', port);
             previewContentProvider.ServerPort = port;
