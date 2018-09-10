@@ -1,7 +1,7 @@
 {
   "name": "@scion-scxml/dashboard",
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "",
   "main": "./dist/containers/App",
   "scripts": {
@@ -20,10 +20,10 @@
   },
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
-    "@scion-scxml/jsondiffpatch": "^0.2.18",
-    "@scion-scxml/react-collapsible": "^2.0.19",
-    "@scion-scxml/schviz": "^3.2.15",
-    "@scion-scxml/scxml": "^4.3.15",
+    "@scion-scxml/jsondiffpatch": "^0.2.19",
+    "@scion-scxml/react-collapsible": "^2.0.20",
+    "@scion-scxml/schviz": "^3.2.16",
+    "@scion-scxml/scxml": "^4.3.16",
     "@types/jquery": "^1.10.33",
     "@types/slickgrid": "^2.1.25",
     "babel-plugin-transform-class-properties": "^6.24.1",
