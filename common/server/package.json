@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/botbuilder-common",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Bot Builder Sample - FirstRun",
   "scripts": {
     "start": "node app.js"
@@ -15,9 +15,9 @@
   ],
   "main": "./index.js",
   "dependencies": {
-    "@scion-scxml/monitor-middleware": "^1.0.10",
-    "@scion-scxml/scxml": "^4.3.16",
-    "@scion-scxml/sourcemap-plugin": "^1.0.13",
+    "@scion-scxml/monitor-middleware": "^1.0.11",
+    "@scion-scxml/scxml": "^4.3.17",
+    "@scion-scxml/sourcemap-plugin": "^1.0.14",
     "botbuilder": "^3.9.1",
     "restify": "^4.3.0",
     "underscore": "^1.8.3"
