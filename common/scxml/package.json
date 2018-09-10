@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/botbuilder-common-scxml-components",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

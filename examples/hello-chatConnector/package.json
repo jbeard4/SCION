@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/botbuilder-hello-chatconnector",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Bot Builder Sample - FirstRun",
   "scripts": {
     "start": "node app.js"
@@ -14,7 +14,7 @@
     "botbuilder-samples"
   ],
   "dependencies": {
-    "@scion-scxml/botbuilder-common": "^1.0.9",
+    "@scion-scxml/botbuilder-common": "^1.0.10",
     "@scion-scxml/botbuilder-common-scxml-components": "1.0.0"
   },
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
