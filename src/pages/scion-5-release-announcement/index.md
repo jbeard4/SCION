@@ -20,6 +20,12 @@ These core libraries enable advanced debugging, as well as the development of be
 
 ## SCION DevTools Overview
 
+### Online documentation
+
+There has been a dearth of learning resources for SCXML. Online documention (API docs, examples, and tutorials) is essential to enabling an open software ecosystem to flourish, SCION attempts to provide libraries to facilitate the creation of this documentation. 
+
+To start this off, you can find some tutorials written by my friend [@thure](http://github.com/thure) [here](/tutorials/fundamentals).  More examples will be forthcoming, and I hope that opening these libraries to the community will allow people to develop and contribute their own online tutorials.
+
 ### CLI tool
 
 The SCION command-line tool allows you to visualize, lint, compile and interactively run SCXML files. You can also monitor SCXML sessions using the new monitor tool, described in the section below. You can see an example of this in the video below:
@@ -28,7 +34,7 @@ The SCION command-line tool allows you to visualize, lint, compile and interacti
 
 ### Graphical debugging
 
-The new __sourcemap-plugin__ module adds support for generating source maps to the scion scxml compiler. This enables a visual JavaScript debugger, like Chrome DevTools or VSCode, to read the sourcemap, set breakpoints in the SCXML source file, and inspect the SCXML datamodel. This works in Node.js and the Browser. 
+The new __sourcemap-plugin__ module adds support for generating source maps to the SCION compiler. This enables a visual JavaScript debugger, like Chrome DevTools or VSCode, to read the sourcemap, set breakpoints in the SCXML source file, and inspect the SCXML datamodel. This works in Node.js and the Browser. 
 
 Additionally, SCION includes a new __monitor__ utility, which provides a user interface to view a log of events processed by the state machine, and display debugging information, such as the datamodel, inner event queue, and session hierarchy, to visualize how the state changes over time.
 
@@ -36,17 +42,16 @@ Here is a video of these features in action:
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/Pg9tYuJN6BI" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
-### SCION DevTools VSCode Extension 
+### Visual Studio Code Integrations 
 
-Brings SCXML linting, visualization, and graphical debugging to VSCode environment. 
+SCION integrates with the Visual Studio Code (VSCode) IDE in the following ways:
+* linting, using VSCode's built-in support for eslint, and the eslint-plugin-scharpie package for linting SCXML
+* visualization, using the new @scion-scxml/vscode-preview VSCode extension
+* graphical debugging, using VSCode's built-in JavaScript debugger, and the new SCION sourcemap-plugin mentioned above.
 
-<TODO: video>
+You can see an example of this in the following video:
 
-### Examples and tutorials
-
-Finally, SCION enables the development of online documentation (API docs, examples, and tutorials), which is important for an open source software ecosystem to flourish. Some of these tuturials which can be seen [here](/tutorials/fundamentals). 
-
-More examples will be forthcoming, and I hope that opening these tools to the community will allow people to develop and contribute their own tutorials.
+<iframe width="480" height="270" src="https://www.youtube.com/embed/G7ADiXTP-LM" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
 ## Availability 
 
@@ -76,7 +81,7 @@ Source code will be made available on Gitlab at a new organization [SCION-SCXML]
 
 I am seeking an economic engine to sustain and fund the ongoing development of SCION.
 
-I started SCION in 2012 as a research project toward the completion of my master’s thesis. When I created SCION, I was a student living in Kingston, Ontario, where cost of living was more affordable. 
+I started SCION in 2011 as a research project toward the completion of my master’s thesis. When I created SCION, I was a student living in Kingston, Ontario, where cost of living was more affordable. 
 
 In the USA, money is like oxygen — you need it to live. I make a living through consulting, typically building custom business applications for enterprises. SCION has had a lot to do with my success. Every project I have worked on has come through a direct referral. People have discovered SCION, and then sometimes years later, they remember me and reach out about a job opportunity. The indirect economic benefits of maintaining an open source project are real and significant.
 
@@ -133,15 +138,15 @@ If you want to contribute to SCION, and you have concerns about licensing, pleas
 
 ## Intention to migrate from Github to Gitlab
 
-Last, I wanted to mention my intention to migrate from Github to Gitlab for hosting the SCION source code. I intend to do this to protest Microsoft's (who recently purchased Github) contract with ICE. I signed a [petition](https://github.com/selfagency/microsoft-drop-ice) to this effect, and I have thought a lot about this in the months since.
+Last, I wanted to mention my intention to migrate from Github to Gitlab for hosting the SCION source code. I intend to do this to protest Microsoft's (who recently purchased Github) contract with the Department of Immigration and Customs Enforcement (ICE). I signed a [petition](https://github.com/selfagency/microsoft-drop-ice) to this effect, and I have thought a lot about this in the months since.
 
-On the one hand, I am not opposed to using Microsoft's open source technologies. I use a lot of it in SCION, for example integrating with the MS Botbuilder framework and VSCode IDE.  Also, I don't have any illusion that my action, as an individual developer, will have any effect on Microsoft's decision-making. It's only when it looks like the cost to MS outweighs the benefit that any action will be taken. And Microsoft does a lot of business with the US government, so this will likely require a sea change on the part of developers before they take any notice.
+On the one hand, I am not opposed to using Microsoft's open source technologies. I use a lot of it in SCION, for example integrating with the MS Botbuilder framework and VSCode IDE.  Also, I don't have any illusion that my action, as an individual developer, will have any effect on Microsoft's decision-making. It's only when it looks like the cost to Microsoft outweighs the benefit that any action will be taken. And Microsoft does a lot of business with the US government, so this will likely require a sea change on the part of developers before they take any notice.
 
-On the other hand, software is speech, and I feel that, as a developer born in the US, I have a moral and ethical responsibility to use my voice to protest what I see as abuses committed by the government. Separating infant children from their parents for misdemeanor crimes, and detaining them indefinitely in cages is a heinous abuse of power, and anything that I can do to draw attention to this, and prevent it from becoming normalized and accepted, must be strongly considered.
+On the other hand, software is speech, and I feel that, as a developer born in the US, I have a moral and ethical responsibility to use my voice to protest what I see as abuses committed by the government. Separating infant children from their parents for misdemeanor crimes, and detaining them indefinitely in cages is an abuse of power.
 
-If we all act together, so that when people think of Github and Microsoft's brands, it is associated the abuses of ICE, and user's begin to migrate _en masse_, then that will have the potential to impact Microsoft's decision-making regarding their contract with ICE. Let's work together to make this petition real, and move our projects to Github's competitors. 
+Github is a de facto standard platform for open source development. Moving SCION to Gitlab will create some friction for SCION users and contributors, and violate the principle of least surprise for new users. Normally, that is the opposite of what is desirable for an open source project, but in this case, it is the point. I want users and developers to momentarily consider the relationship between Microsoft and ICE, because the situation with ICE separating child immigrants from their parents and detaining them indefinitely is not normal, or acceptable, or business as usual. Anything that I can do to draw attention to this, and prevent it from becoming normalized and accepted, must be strongly considered.
 
-Fortunately, this transition is facilitated by the fact that Gitlab is an excellent and complete product. It does pretty much everything that Github does and more.
+Fortunately, this transition is facilitated by the fact that Gitlab is an excellent and complete product. It does pretty much everything that Github does and more, and the friction caused by migrating should be minimal.
 
 ## Next steps
 
