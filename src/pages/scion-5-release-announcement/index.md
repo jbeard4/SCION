@@ -140,14 +140,16 @@ If you want to contribute to SCION, and you have concerns about licensing, pleas
 
 Last, I wanted to mention my intention to migrate from Github to Gitlab for hosting the SCION source code. I intend to do this to protest Microsoft's (who recently purchased Github) contract with the Department of Immigration and Customs Enforcement (ICE). I signed a [petition](https://github.com/selfagency/microsoft-drop-ice) to this effect, and I have thought a lot about this in the months since.
 
-On the one hand, I am not opposed to using Microsoft's open source technologies. I use a lot of it in SCION, for example integrating with the MS Botbuilder framework and VSCode IDE.  Also, I don't have any illusion that my action, as an individual developer, will have any effect on Microsoft's decision-making. It's only when it looks like the cost to Microsoft outweighs the benefit that any action will be taken. And Microsoft does a lot of business with the US government, so this will likely require a sea change on the part of developers before they take any notice.
+On the one hand, I am not opposed to using Microsoft's open source technologies. I use a lot of it in SCION, for example integrating with the MS Botbuilder framework and VSCode IDE.  Also, I don't have any illusion that my action, as an individual developer, will have any effect on Microsoft's decision-making. It's only when it looks like the cost to Microsoft outweighs the benefit that any action will be taken. And Microsoft does a lot of business with the US government, so this will likely require a sea change among developers before they start to take notice.
 
-On the other hand, software is speech, and I feel that, as a developer born in the US, I have a moral and ethical responsibility to use my voice to protest what I see as abuses committed by the government. Separating infant children from their parents for misdemeanor crimes, and detaining them indefinitely in cages is an abuse of power.
+On the other hand, software is speech, and I feel that, as a developer born in the US, I have a moral and ethical responsibility to use my voice to protest what I see as abuses committed by the government. Separating infant children from their parents for misdemeanor crimes, and detaining them indefinitely in cages, potentially causing permanent psychological trauma, is an abuse of power.
 
 Github is a de facto standard platform for open source development. Moving SCION to Gitlab will create some friction for SCION users and contributors, and violate the principle of least surprise for new users. Normally, that is the opposite of what is desirable for an open source project, but in this case, it is the point. I want users and developers to momentarily consider the relationship between Microsoft and ICE, because the situation with ICE separating child immigrants from their parents and detaining them indefinitely is not normal, or acceptable, or business as usual. Anything that I can do to draw attention to this, and prevent it from becoming normalized and accepted, must be strongly considered.
 
 Fortunately, this transition is facilitated by the fact that Gitlab is an excellent and complete product. It does pretty much everything that Github does and more, and the friction caused by migrating should be minimal.
 
 ## Next steps
+
+So, that's it. Lots of new features, some changes, hopefully all for the best.
 
 I will be publishing more examples, documentation, and tutorials over the coming weeks. Thanks, and I look forward to receiving your feedback.
