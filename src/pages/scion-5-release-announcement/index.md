@@ -100,9 +100,75 @@ tl;dr the SCION license policy is as follows:
 * the new development tools will be LicenseZero Parity 3.0 (e.g. the schviz module)
 * finally, SCXML tutorials and examples will be released as Apache-2.0
 
-Here is a complete list of all modules and their associated licenses at the time of this writing:
+Here is a complete list of all modules and their associated licenses at the time of this writing (note that all of the package names are prefixed with the @scion-scxml/ organization name):
 
-<Table of modules and licenses.>
+<table class="table table-striped">
+  <thead>
+    <th>
+      Package name
+    </th>
+    <th>
+      License
+    </th>
+    <th>
+      Description
+    </th>
+    <th>
+      Forked from
+    </th>
+  </thead>
+  <tbody>
+    <tr>
+      <td  colspan="4" style="text-align:center; font-weight:bold"> Libraries </td>
+    </tr>
+    <tr><td> eslint </td><td> MIT </td><td> An AST-based pattern checker for JavaScript. </td><td> <a href="https://github.com/eslint/eslint"> eslint/eslint </a> </td></tr>
+    <tr><td> jsondiffpatch </td><td> MIT </td><td> Diff & Patch for Javascript objects </td><td> <a href="https://github.com/benjamine/jsondiffpatch"> benjamine/jsondiffpatch </a> </td></tr>
+    <tr><td> sax </td><td> ISC </td><td> An evented streaming XML parser in JavaScript </td><td> <a href="https://github.com/isaacs/sax-js"> isaacs/sax-js </a> </td></tr>
+    <tr><td> xmllint </td><td> MIT </td><td> Port of libxml to JavaScript using Emscripten </td><td> <a href="https://github.com/kripken/xml.js"> kripken/xml </a> </td></tr>
+    <tr><td> react-collapsible </td><td> MIT </td><td> React component to wrap content in Collapsible element with trigger to open and close. </td><td> <a href="https://github.com/glennflanagan/react-collapsible"> glennflanagan/react </a> </td></tr>
+    <tr><td> react-codemirror </td><td> MIT </td><td> Codemirror </td><td> <a href="https://github.com/JedWatson/react-codemirror"> JedWatson/react-codemirror </a> </td></tr>
+    <tr><td> vm-browserify </td><td> MIT </td><td> vm module for the browser </td><td> <a href="http://github.com/substack/vm-browserify"> substack/vm </a> </td></tr>
+    <tr><td> botbuilder-common-scxml-components </td><td> MIT </td><td> A set of scripts to help integrate SCION with the Microsoft Botbuilder framework - to be included from within a &lt;script&gt; tag inside of an SCXML file </td><td>  </td></tr>
+    <tr><td> botbuilder-common </td><td> MIT </td><td> A set of scripts to help integrate SCION with the Microsoft Botbuilder framework </td><td>  </td></tr>
+    <tr><td> core-base </td><td> Apache-2.0 </td><td> Provide BaseInterpreter class and helper functions to modules that implement Statechart interface. </td><td>  </td></tr>
+    <tr><td> core-legacy </td><td> Apache-2.0 </td><td> Legacy semantics for SCION Statecharts </td><td> </td></tr>
+    <tr><td> core-test-framework </td><td> Apache-2.0 </td><td> Test harness for modules that implement scion.Statechart interface. </td><td>  </td></tr>
+    <tr><td> scxml </td><td> Apache-2.0 </td><td> An implementation of SCXML in JavaScript. </td><td> <a href="https://github.com/jbeard4/SCION"> jbeard4/SCION </a> </td></tr>
+    <tr><td> schviz-test-framework </td><td> Apache-2.0 </td><td> Test framework for SCHVIZ </td><td>  </td></tr>
+    <tr><td> test-framework </td><td> Apache-2.0 </td><td> A set of SCXML tests, and an HTTP client test runner for testing against SCXML HTTP test servers. </td><td> <a href="https://github.com/jbeard4/scxml-test-framework"> jbeard4/scxml-test-framework </a> </td></tr>
+    <tr><td> core </td><td> Apache-2.0 </td><td> StateCharts Interpretation and Optimization eNgine (SCION) CORE is an implementation of Statecharts in JavaScript. </td><td> <a href="https://github.com/jbeard4/SCION-CORE"> jbeard4/SCION-CORE </a> </td></tr>
+    <tr><td> scharpie </td><td> Apache-2.0 </td><td> Validate SCXML against the official W3C SCXML XML schema </td><td>  </td></tr>
+    <tr><td> sourcemap-plugin </td><td> L0-Parity-3.0 </td><td> SCION compiler plugin that adds support for generation of sourcemaps </td><td>  </td></tr>
+    <tr><td> schviz </td><td> L0-Parity-3.0 </td><td> SCXML visualization library </td><td>  </td></tr>
+    <tr><td> dashboard </td><td> L0-Parity-3.0 </td><td> Web dashboard for SCION monitor </td><td>  </td></tr>
+    <tr><td> monitor-middleware </td><td> L0-Parity-3.0 </td><td> SCION monitor server </td><td>  </td></tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <td  colspan="4" style="text-align:center; font-weight:bold"> Develper Tools </td>
+    </tr>
+    <tr><td> eslint-plugin-scharpie </td><td> ISC </td><td> A ESLint plugin to lint and fix inline scripts contained in SCXML files. </td><td> <a href="https://github.com/BenoitZugmeyer/eslint-plugin-html"> BenoitZugmeyer/eslint-plugin-html </a> </td></tr>
+    <tr><td> redux-devtools-scion-monitor </td><td> MIT </td><td> Redux monitor that adds support for visualization of SCXML model </td><td> <a href="https://github.com/gaearon/redux-devtools-log-monitor"> gaearon/redux-devtools-log-monitor </a> </td></tr>
+    <tr><td> vscode-preview </td><td> MIT </td><td> Visual Studio Code extension to preview SCXML files. </td><td> <a href="https://github.com/EFanZh/Graphviz-Preview"> EFanZh/Graphviz </a> </td></tr>
+    <tr><td> debug </td><td> L0-Parity-3.0 </td><td> Drop-in replacement for the scxml compiler module, that automatically enables the sourcemap-plugin and monitor client </td><td>  </td></tr>
+    <tr><td> cli </td><td> L0-Parity-3.0 </td><td> A command-line interface to SCION </td><td>  </td></tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <td colspan="4" style="text-align:center; font-weight:bold"> Examples </td>
+    </tr>
+    <tr><td> test-scharpie </td><td> ISC </td><td> Tests for scharpie (SCXML linter) </td><td> </td></tr>
+    <tr><td> sciblog </td><td> MIT </td><td> Source code to website hosted at <a href="http://scion.scxml.io"> scion.scxml.io </a> </td><td> <a href="https://github.com/noahg/gatsby-starter-blog-no-styles"> noahg/gatsby </a> </td></tr>
+    <tr><td> botbuilder-sample-firstrun </td><td> MIT </td><td> Example of SCION Botbuilder integration, based on the botbuilder-sample-firstrun example </td><td>  </td></tr>
+    <tr><td> basics-menus </td><td> MIT </td><td> Example of SCION Botbuilder integration, based on the botbuilder-basics-menus example </td><td>  </td></tr>
+    <tr><td> botbuilder-hello-chatconnector </td><td> MIT </td><td> Example of SCION Botbuilder integration, based on the botbuilder-hello-chatconnector example </td><td>  </td></tr>
+    <tr><td> basics-multiturn </td><td> MIT </td><td> Example of SCION Botbuilder integration, based on the botbuilder-basics-multiturn example </td><td>  </td></tr>
+    <tr><td> drag-and-drop-redux </td><td> Apache-2.0 </td><td> Redux integration example </td><td>  </td></tr>
+    <tr><td> drag-and-drop-redux-with-devtools </td><td> Apache-2.0 </td><td> Redux integration example that includes redux devtools, as well as the redux-devtools-scion-monitor </td><td>  </td></tr>
+    <tr><td> umio </td><td> Apache-2.0 </td><td> Morse code parser implemented in SCXML </td><td> <a href="https://github.com/jbeard4/scxml-morse-input-out"> jbeard4/scxml-morse-input-out </a> </td></tr>
+    <tr><td> vi-everywhere </td><td> Apache-2.0 </td><td> This is a project to create an executable model of the behaviour of the vi text editor using Statecharts. An SVG-based editing environment is also provided as a reference implementation of a scriptable editing environment. </td><td> <a href="https://github.com/jbeard4/vi-everywhere"> jbeard4/vi-everywhere </a>  </td></tr>
+  </tbody>
+</table>
 
 I have thought a lot about this licensing scheme, and wanted to share my thoughts on how I arrived here.
 
@@ -138,7 +204,7 @@ If you want to contribute to SCION, and you have concerns about licensing, pleas
 
 ## Intention to migrate from Github to Gitlab
 
-Last, I wanted to mention my intention to migrate from Github to Gitlab for hosting the SCION source code. I intend to do this to protest Microsoft's (who recently purchased Github) contract with the Department of Immigration and Customs Enforcement (ICE). I signed a [petition](https://github.com/selfagency/microsoft-drop-ice) to this effect, and I have thought a lot about this in the months since.
+Last, I wanted to mention my intention to migrate from Github to Gitlab for hosting the SCION source code. I intend to do this to protest Microsoft's (who recently purchased Github) contract with United States Immigration and Customs Enforcement (ICE). I signed a [petition](https://github.com/selfagency/microsoft-drop-ice) to this effect, and I have thought a lot about this in the months since.
 
 On the one hand, I am not opposed to using Microsoft's open source technologies. I use a lot of it in SCION, for example integrating with the MS Botbuilder framework and VSCode IDE.  Also, I don't have any illusion that my action, as an individual developer, will have any effect on Microsoft's decision-making. It's only when it looks like the cost to Microsoft outweighs the benefit that any action will be taken. And Microsoft does a lot of business with the US government, so this will likely require a sea change among developers before they start to take notice.
 
