@@ -22,6 +22,7 @@
     "gatsby-plugin-react-css-modules": "^1.0.15",
     "gatsby-plugin-react-helmet": "^1.0.3",
     "gatsby-plugin-sharp": "^1.6.2",
+    "gatsby-remark-autolink-headers": "^1.4.19",
     "gatsby-remark-copy-linked-files": "^1.5.2",
     "gatsby-remark-images": "^1.5.4",
     "gatsby-remark-prismjs": "^1.2.1",

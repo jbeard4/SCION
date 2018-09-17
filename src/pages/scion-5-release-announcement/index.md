@@ -5,6 +5,8 @@ date: 2018-08-27
 template: article.jade
 ---
 
+## Introduction
+
 Since 2006, I’ve dreamt of releasing  a fully integrated framework for SCXML/Statecharts in JavaScript. What I mean by "fully integrated" is: you have model visualization, visual debugging, and basic language tools, such as linting. Everything needed to do real work with SCXML/Statecharts in the JavaScript ecosystem.
 
 When SCION started, it was basically a library implementing an interpreter/compiler for the SCXML standard in JavaScript, for node.js and the browser.
@@ -106,6 +108,8 @@ tl;dr the SCION license policy is as follows:
 
 Here is a complete list of all modules and their associated licenses at the time of this writing (note that all of the package names are prefixed with the @scion-scxml/ organization name):
 
+<p>
+<div style="height: 20em; overflow-y: scroll">
 <table class="table table-striped">
   <thead>
     <th>
@@ -173,6 +177,8 @@ Here is a complete list of all modules and their associated licenses at the time
     <tr><td> vi-everywhere </td><td> Apache-2.0 </td><td> This is a project to create an executable model of the behaviour of the vi text editor using Statecharts. An SVG-based editing environment is also provided as a reference implementation of a scriptable editing environment. </td><td> <a href="https://github.com/jbeard4/vi-everywhere"> jbeard4/vi-everywhere </a>  </td></tr>
   </tbody>
 </table>
+</div>
+</p>
 
 I have thought a lot about this licensing scheme, and wanted to share my thoughts on how I arrived here.
 
