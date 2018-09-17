@@ -27,6 +27,7 @@
     "gatsby-remark-prismjs": "^1.2.1",
     "gatsby-remark-responsive-iframe": "^1.4.3",
     "gatsby-remark-smartypants": "^1.4.3",
+    "gatsby-remark-toc": "^1.1.0",
     "gatsby-source-filesystem": "^1.4.3",
     "gatsby-transformer-remark": "^1.7.1",
     "gatsby-transformer-sharp": "^1.6.1",

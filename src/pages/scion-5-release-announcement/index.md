@@ -22,7 +22,7 @@ These core libraries enable advanced debugging, as well as the development of be
 
 ### Online documentation
 
-There has been a dearth of learning resources for SCXML. Online documention (API docs, examples, and tutorials) is essential to enabling an open software ecosystem to flourish, SCION attempts to provide libraries to facilitate the creation of this documentation. 
+There has been a dearth of learning resources for SCXML. Online documention (API docs, examples, and tutorials) is essential to enabling an open software ecosystem to flourish, and SCION attempts to provide libraries to facilitate the creation of this documentation. 
 
 To start this off, you can find some tutorials written by my friend [@thure](http://github.com/thure) [here](/tutorials/fundamentals).  More examples will be forthcoming, and I hope that opening these libraries to the community will allow people to develop and contribute their own online tutorials.
 
@@ -52,6 +52,10 @@ SCION integrates with the Visual Studio Code (VSCode) IDE in the following ways:
 You can see an example of this in the following video:
 
 <iframe width="480" height="270" src="https://www.youtube.com/embed/G7ADiXTP-LM" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
+### React Integrations
+
+
 
 ## Availability 
 
@@ -188,7 +192,7 @@ The challenge has been figuring how to ask large enterprises to pay for a licens
 
 I have decided to license the new developer tools under the LicenseZero Parity license, version 3.0. Parity is a public software license which is similar to the GNU Public License (GPL), in that if you use it to develop new software, the license says that you have to open source that code, or purchase a private license. I like this license because it is short, simple, expansive, and fair. Also, LicenseZero makes it convenient to purchase a private license through its command-line tool, or on its website. You can find more information about the LicenseZero Parity License [here](https://guide.licensezero.com/#public-licenses). 
 
-I call this approach license “evolution”, rather than “revolution”, because the parts of the project that have been licensed as Apache-2.0 will continue to be published under the same license. If you are upgrading an existing application to the latest versions of SCION and SCION-CORE, you should be able to do so without needing to worry about the Parity license. Only the new modules will be published under Parity. The new SCION DevTools are not necessary to build applications based on SCION, but I believe they will help developers a great deal.
+I call this approach license “evolution”, rather than “revolution”, because the parts of the project that have been licensed as Apache-2.0 will continue to be published under the same license. If you are upgrading an existing application to the latest versions of SCION and SCION-CORE, you should be able to do so without needing to worry about the Parity license. Only the new SCION DevTools modules will be published under Parity. The new SCION DevTools are not necessary to build applications based on SCION, but I believe they will help developers a great deal.
 
 ### Concerns Around Contributions
 
