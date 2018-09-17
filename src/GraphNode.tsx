@@ -155,6 +155,7 @@ export default class GraphNode extends React.PureComponent<GraphNodeProps, Graph
         nextProps.isRoot  !== this.props.isRoot || 
         nextProps.graphRoot  !== this.props.graphRoot || 
         //nextProps.allEdges  !== this.props.allEdges || 
+        nextProps.enabledEdges  !== this.props.enabledEdges || 
         nextProps.kgraph  !== this.props.kgraph || 
         //nextProps.redraw !== this.props.redraw || 
         (function(s1, s2){
