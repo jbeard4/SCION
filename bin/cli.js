@@ -51,7 +51,7 @@ require('yargs') // eslint-disable-line
         }, {moduleFormat : 'commonjs'});
       });
     } else {
-      const scxmlToScjson = require('scxml/lib/compiler/scxml-to-scjson');
+      const scxmlToScjson = require('@scion-scxml/scxml/lib/compiler/scxml-to-scjson');
       const scjson = scxmlToScjson(fs.readFileSync(argv.filename,'utf8'));
       writeOutput(argv, JSON.stringify(scjson,null, 4));
     }
