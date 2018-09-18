@@ -6,7 +6,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "bootstrap" : "lerna run bootstrap",
-    "build": "npm run bootstrap && lerna run --sort build"
+    "build": "npm run bootstrap && lerna run --sort build",
+    "version": "lerna version --no-git-tag-version --no-push",
+    "push": "lerna exec --concurrency 1 'pwd; git push origin'",
+    "commit": "lerna exec --concurrency 1 'if [ \"$( git status --porcelain )\" ]; then pwd; git diff | less; git commit -a; fi;'",
+    "commit-packages": "lerna exec --concurrency 1 'if [ \"$( git status --porcelain )\" ]; then pwd; git commit -a -m \"Update package version\"; fi;'",
+    "publish": "bash scripts/publish.sh",
+    "postinstall": "licensezero-postinstall"
   },
   "author": "",
   "license": "ISC",

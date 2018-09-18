@@ -1,0 +1,1 @@
+lerna exec --concurrency 1 "if [ \$( node -e \"console.log(require('./package.json').version)\" ) != \$( npm view . version ) ]; then npm publish; else echo package version up-to-date - skipping; fi;"
