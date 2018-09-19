@@ -6,7 +6,7 @@ express.static.mime.define({'application/scxml+xml': ['scxml']});
 
 app.set('port', process.env.PORT || 3001);
 
-var testPairs = require('../test-integration/node_modules/scxml/grunt/test-pairs.js'); 
+var testPairs = require('../test-integration/node_modules/@scion-scxml/scxml/grunt/test-pairs.js'); 
 
 app.get('/scxml-tests', function(req, res){
   return res.json(testPairs); 

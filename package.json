@@ -54,12 +54,13 @@
     "watchify": "^3.9.0"
   },
   "scripts": {
-    "watch": "tsc -p . --outDir dist/ -w & ( cd dist; watchify --exclude electron index.js -d  -s SCHVIZ -o 'cat > schviz.js; sorcery -i schviz.js' -v )",
+    "watch": "tsc -p . --outDir dist/ -w & ( cd dist; watchify --exclude electron index.js -d  -s schviz -o 'cat > schviz.js; sorcery -i schviz.js' -v )",
     "preversion": "npm run build",
     "postversion": "git push --follow-tags && npm publish",
-    "build": "npm run transpile && npm run bundle && npm run minify",
+    "build": "npm run transpile && npm run bundle && npm run fix-global && npm run minify",
     "transpile": "tsc -p . --outDir dist/",
-    "bundle": "cd dist; browserify --exclude electron index.js -d  -s SCHVIZ -o schviz.js -v; sorcery -i schviz.js",
+    "fix-global": "sed -i -e 's/g.schviz = f()/g.scion = g.scion || {}; g.scion.schviz = f().default;/' dist/schviz.js",
+    "bundle": "cd dist; browserify --exclude electron --exclude @scion-scxml/scxml index.js -d  -s schviz -o schviz.js -v; sorcery -i schviz.js",
     "minify": "cd dist; uglifyjs schviz.js --in-source-map schviz.js.map  --source-map schviz.min.js.map  -o schviz.min.js",
     "clean": "rm -rf dist/*",
     "server": "node grunt/server.js",

@@ -1,6 +1,6 @@
 import * as React from "react";
 import {GraphRootProps, GraphRootAnimation, getDefaultLayoutOptions} from './index';
-import scxml = require('@scion-scxml/scxml');    //TODO: make scxml an es6 module
+import scxml from './scxml';
 import { SCState } from '@scion-scxml/core-base';    //TODO: make scxml an es6 module
 import _ = require('underscore');
 import Debug = require('debug');
@@ -243,7 +243,7 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
   private initSCXML(props : GraphRootProps , initialRender : boolean){
 
     const handler = (text) => {
-      let scjson = scxml.ext.compilerInternals.scxmlToScjson(text);
+      let scjson = scxml['ext'].compilerInternals.scxmlToScjson(text);
       this.cachedLastScjson = scjson; 
       let augmentedProps = _.extend({}, props, {scjson : scjson});
       this.setState({progress : this.state.progress.slice(0,-1).concat(this.state.progress[this.state.progress.length-1] + ` Done (${(new Date() as any) - tic}ms)`)}, () => {
