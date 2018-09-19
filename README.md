@@ -57,7 +57,7 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 
 # Support
 
-To report a bug: [file an issue on GitHub](https://github.com/jbeard4/SCION/issues).
+To report a bug: [file an issue on GitLab](https://gitlab.com/scion-scxml/scion/issues).
 
 For general questions: [![Join the chat at https://gitter.im/SCION-SCXML/Lobby](https://badges.gitter.im/SCION-SCXML/Lobby.svg)](https://gitter.im/SCION-SCXML/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
