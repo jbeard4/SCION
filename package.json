@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "bootstrap" : "lerna run bootstrap",
-    "build": "npm run bootstrap && lerna run --sort build",
+    "build": "npm run bootstrap && lerna run --sort build && copy-dist",
+    "copy-dist": "mkdir dist && cp projects/libraries/scxml/dist/scxml*.js dist/ && cp projects/devtools/debug/dist/scxml.debug.js dist/ && cp projects/libraries/core/dist/scion.* dist/ && cp projects/libraries/schviz/dist/schviz.* dist/",
     "version": "lerna version --no-git-tag-version --no-push",
     "push": "lerna exec --concurrency 1 'pwd; git push origin'",
     "commit": "lerna exec --concurrency 1 'if [ \"$( git status --porcelain )\" ]; then pwd; git diff | less; git commit -a; fi;'",
