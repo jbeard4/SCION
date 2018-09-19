@@ -30,7 +30,7 @@
   "scripts": {
     "compile-scxml": "scion compile ./src/reducers/drag-and-drop.scxml --format json -o dist/drag-and-drop.json && scion compile ./src/reducers/drag-and-drop.scxml --format module -o dist/drag-and-drop.js",
     "bundle": "cd dist; browserify -d -t babelify ../src/index.js -o ./index.js; sorcery -i index.js",
-    "build": "npm run compile-scxml && npm run bundle",
+    "build": "mkdir -p dist; npm run compile-scxml && npm run bundle",
     "watch": "cd dist; watchify -d -t babelify ../src/index.js -o 'cat > index.js; sorcery -i index.js' -v"
   },
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
