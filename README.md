@@ -23,7 +23,7 @@ Add the following script tags to your HTML:
 <script src="https://cdnjs.cloudflare.com/ajax/libs/scion/4.3.1/scxml.min.js">
 ```
 
-Then SCION API available as global singleton object `scxml`.
+Then SCION API available as global singleton object `scion.scxml`.
 
 ### npm and browserify
 
@@ -50,7 +50,7 @@ scxml.urlToModel("drag-and-drop.xml",function(err,model){
     if(err) throw err;
 
     //instantiate the interpreter
-    var sc = new scxml.scion.Statechart(fnModel);
+    var sc = new scxml.core.Statechart(fnModel);
 
     //start the interpreter
     sc.start();
