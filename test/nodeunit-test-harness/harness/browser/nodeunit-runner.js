@@ -11,14 +11,14 @@ function prepareTestFixtures(scxml){
     fixtures[scxmlTest] = function(t){
 
       console.log('Parsing model');
-      scxml.urlToModel(scxmlTest,function(err, model){
+      window.scion.scxml.urlToModel(scxmlTest,function(err, model){
         if(err) throw err;
         console.log('Preparing model');
         model.prepare(function(err, fnModel) {
           //console.log('fnModel', fnModel.toString());
           if(err) throw err;
           console.log('Instantiating machine');
-          var sc = new scxml.scion.Statechart(fnModel, {sessionid : scxmlTest});
+          var sc = new window.scion.scxml.core.Statechart(fnModel, {sessionid : scxmlTest});
           console.log('Starting machine');
 
           var actualInitialConf = sc.start();
