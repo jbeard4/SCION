@@ -57,7 +57,7 @@
     "watch": "tsc -p . --outDir dist/ -w & ( cd dist; watchify --exclude electron index.js -d  -s schviz -o 'cat > schviz.js; sorcery -i schviz.js' -v )",
     "preversion": "npm run build",
     "postversion": "git push --follow-tags && npm publish",
-    "build": "npm run transpile && npm run bundle && npm run fix-global && npm run minify",
+    "build": "mkdir -p dist && npm run transpile && npm run bundle && npm run fix-global && npm run minify",
     "transpile": "tsc -p . --outDir dist/",
     "fix-global": "sed -i -e 's/g.schviz = f()/g.scion = g.scion || {}; g.scion.schviz = f().default;/' dist/schviz.js",
     "bundle": "cd dist; browserify --exclude electron --exclude @scion-scxml/scxml index.js -d  -s schviz -o schviz.js -v; sorcery -i schviz.js",
