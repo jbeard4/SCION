@@ -3,7 +3,8 @@
   "version": "1.0.11",
   "main": "index.js",
   "scripts": {
-    "build": "browserify -d index.js -o dist/scxml.debug.js -s scxml -v",
+    "fix-global": "sed -i -e 's/g.scxml = f()/g.scion = g.scion || {}; g.scion.scxml = f(); g.scion.core = g.scion.scxml.core;/' dist/scxml.debug.js",
+    "build": "mkdir -p dist && browserify -d index.js -o dist/scxml.debug.js -s scxml -v && npm run fix-global",
     "postinstall": "licensezero-postinstall"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
