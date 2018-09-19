@@ -94,7 +94,7 @@
     "fix-global": "sed -i -e 's/g.scxml = f()/g.scion = g.scion || {}; g.scion.scxml = f(); g.scion.core = g.scion.scxml.core;/' dist/scxml.js",
     "bundle": "browserify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
     "uglify": "uglifyjs dist/scxml.js -o dist/scxml.min.js",
-    "build": "npm run bundle && npm run fix-global && npm run uglify",
+    "build": "mkdir -p dist && npm run bundle && npm run fix-global && npm run uglify",
     "watch": "watchify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
     "lint": "eslint lib/",
     "docs": "typedoc --module commonjs  --includeDeclarations --out docs/ ./tsd/index.d.ts --readme README.md",
