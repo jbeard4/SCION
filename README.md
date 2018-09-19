@@ -5,44 +5,21 @@ lets you program with Statecharts using a simple JavaScript/JSON API.
 
 # Installation
 
-## Browser
+## Browser (VanillaJS)
 
 scion-core is available on cdnjs. Simply add the script tag to you page:
 
 ```
-<script src="https://cdnjs.cloudflare.com/ajax/libs/scion/4.3.1/scion.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/scion/4.3.1/core.min.js"></script>
 ```
 
-scion-core is then available as the global variable `scion`.
-
-Alternatively, install via bower:
-
-```
-npm install -g bower
-bower install scion-core
-```
-
-Add to your page:
-
-`<script src="bower_components/scion-core/dist/scion.min.js"></script>`
-
-scion-core is then available as the global variable `scion`.
-
-Alternatively, load scion-core via RequireJS:
-
-```html
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js"></script>
-  <script>
-    require(['/bower_components/scion-core/dist/scion.min.js'], function(){
-    }); 
-  </script>
-```
+scion-core is then available as the global variable `scion.core`.
 
 ## Node.js
 
 Install scion-core via npm:
 
-    npm install scion-core
+    npm install @scion-scxml/core
 
 # Backwards-compatibility (semantics)
 
@@ -319,6 +296,7 @@ The context object ("`this`") of onEntry, onExit, and onTransition functions con
 
 
 
+
 # Quickstart and Simple Use Case
 
 Let's start with the simple example of drag-and-drop behaviour in the browser. You can run this demo live on jsfiddle [here](http://jsfiddle.net/jbeard4/MDkLe/11/).
@@ -426,8 +404,7 @@ You can then perform the following steps to script web content:
 ```html
 <html>
     <head>
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js"></script>
-        <script src="bower_components/scion-core/dist/scion.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/scion/4.3.1/core.min.js"></script>
     </head>
     <body>
         <div id="rect"/>
@@ -485,7 +462,7 @@ You can then perform the following steps to script web content:
             };
 
             //instantiate the interpreter
-            var interpreter = new scion.SCInterpreter(statechartModel);
+            var interpreter = new scion.core.Statechart(statechartModel);
 
             //start the interpreter
             interpreter.start();
