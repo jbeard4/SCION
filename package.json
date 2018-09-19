@@ -93,7 +93,7 @@
     "test": "grunt build test",
     "bundle": "browserify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
     "uglify": "uglifyjs dist/scxml.js -o dist/scxml.min.js",
-    "build": "npm run bundle && npm run uglify && cp node_modules/scion-core/dist/* dist/",
+    "build": "npm run bundle && npm run uglify",
     "watch": "watchify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
     "lint": "eslint lib/",
     "docs": "typedoc --module commonjs  --includeDeclarations --out docs/ ./tsd/index.d.ts --readme README.md",
