@@ -112,19 +112,6 @@
       ]
     ]
   },
-  "filename": "scxml.min.js",
-  "npmName": "scion",
-  "npmFileMap": [
-    {
-      "basePath": "dist",
-      "files": [
-        "scxml.js",
-        "scxml.min.js",
-        "scion.js",
-        "scion.min.js"
-      ]
-    }
-  ],
   "collective": {
     "type": "opencollective",
     "url": "https://opencollective.com/SCION"
