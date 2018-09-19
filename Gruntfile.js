@@ -126,6 +126,6 @@ module.exports = function(grunt) {
   grunt.registerTask('run-browser-tests-dev', ['express:dev', 'saucelabs-custom', 'express:dev:stop' ]);
   grunt.registerTask('run-browser-tests-prod', ['express:prod', 'saucelabs-custom', 'express:prod:stop' ]);
   grunt.registerTask('run-browser-tests-prod-require', ['express:prod-require', 'saucelabs-custom','express:prod-require:stop' ]);
-  grunt.registerTask('build', ['browserify', 'replace', 'babel', 'uglify']);
+  grunt.registerTask('build', ['browserify', 'babel', 'replace', 'uglify']);
   grunt.registerTask('default', ['build']);
 };
