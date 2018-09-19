@@ -9,8 +9,8 @@ module.exports = function(grunt) {
           banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
         },
         build: {
-          src: 'dist/scion.js',
-          dest: 'dist/scion.min.js'
+          src: 'dist/core.js',
+          dest: 'dist/core.min.js'
         }
       },
       babel: {
@@ -21,7 +21,7 @@ module.exports = function(grunt) {
           },
           dist: {
               files: {
-                  'dist/scion.js' : 'dist/scion.js'
+                  'dist/core.js' : 'dist/core.js'
               }
           }
       },
@@ -33,11 +33,26 @@ module.exports = function(grunt) {
           options: {
             debug : true,
             browserifyOptions : {
-              standalone: 'scion'
+              standalone: 'core'
             }
           },
           src: ['lib/Statechart.js'],
-          dest: 'dist/scion.js'
+          dest: 'dist/core.js'
+        }
+      },
+      replace: {
+        dist: {
+          options: {
+            patterns: [
+              {
+                match: /global.core = /,
+                replacement: 'global.scion = global.scion || {}; global.scion.core = '
+              }
+            ]
+          },
+          files: [
+            {src: ['dist/core.js'], dest: 'dist/core.js'}
+          ]
         }
       },
       express: {
@@ -85,9 +100,9 @@ module.exports = function(grunt) {
               },
               files: {
                   src: [
-                    'dist/scion.js',
-                    'dist/scion.js.map',
-                    'dist/scion.min.js'
+                    'dist/core.js',
+                    'dist/core.js.map',
+                    'dist/core.min.js'
                   ]
               }
           }
@@ -111,6 +126,6 @@ module.exports = function(grunt) {
   grunt.registerTask('run-browser-tests-dev', ['express:dev', 'saucelabs-custom', 'express:dev:stop' ]);
   grunt.registerTask('run-browser-tests-prod', ['express:prod', 'saucelabs-custom', 'express:prod:stop' ]);
   grunt.registerTask('run-browser-tests-prod-require', ['express:prod-require', 'saucelabs-custom','express:prod-require:stop' ]);
-  grunt.registerTask('build', ['browserify', 'babel', 'uglify']);
+  grunt.registerTask('build', ['browserify', 'replace', 'babel', 'uglify']);
   grunt.registerTask('default', ['build']);
 };

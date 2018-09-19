@@ -44,6 +44,7 @@
     "grunt-express-server": "^0.5.3",
     "grunt-git": "^1.0.0",
     "grunt-release": "^0.14.0",
+    "grunt-replace": "^1.0.1",
     "grunt-saucelabs": "9.0.0",
     "jsdoc": "^3.5.5",
     "load-grunt-tasks": "^3.5.0",
