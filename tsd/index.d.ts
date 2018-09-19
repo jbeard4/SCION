@@ -23,3 +23,4 @@ export namespace ext {
 }
 
 export var scion: typeof _scion;
+export var core: typeof _scion;

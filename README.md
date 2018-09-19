@@ -10,7 +10,7 @@ SCXML provides a declarative markup for Statecharts, a powerful modelling langua
 
 ## node.js
 
-`npm install scxml`
+`npm install @scion-scxml/scxml`
 
 ## browser
 
