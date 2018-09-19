@@ -1,0 +1,6 @@
+image: node:8.11.4
+
+all_tests:
+  script:
+   - npm install
+   - npm run test
