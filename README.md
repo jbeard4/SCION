@@ -485,5 +485,5 @@ You can then perform the following steps to script web content:
 
 # Build Status
 
-[![Build status](https://travis-ci.org/jbeard4/SCION-CORE.svg?branch=master)](https://travis-ci.org/jbeard4/SCION-CORE)
+[![Build status](https://gitlab.com/scion-scxml/core/badges/master/build.svg)](https://gitlab.com/scion-scxml/core)
 
