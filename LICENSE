@@ -1,24 +1,24 @@
-The Parity Public License 2.4.0
+The Parity Public License 3.0.0
 
-Copyright Notice: Jacob Beard
+Copyright Notice: Jacobean Research and Development
 
-Source Notice: http://scion.io/
+Source Notice: https://www.npmjs.com/package/@scion-scxml/schviz
 
 This license lets you use and share this software for free, as
-long as you release any software you make with it. Specifically:
+long as you contribute software you make with it. Specifically:
 
 If you follow the rules below, you may do everything with this
 software that would otherwise infringe either my copyright in it,
 any patent claim I can license that covers this software as of my
 latest contribution, or both.
 
-1. Release source code for changes you make to this software.
+1. Contribute source code for changes you make to this software.
 
-2. If you run or combine this software with other software in
-   any larger program, release all source code for that program.
+2. If you run or combine this software with other software in any
+   larger program, contribute all source code for that program.
 
-3. Release all source code for software whose source code
-   you write, change, or analyze with this software.
+3. Contribute all source code for software you develop, deploy,
+   monitor, or run with this software.
 
 4. Ensure everyone who gets a copy of this software from you,
    in source code or any other form, gets the text of this
@@ -29,14 +29,14 @@ latest contribution, or both.
    alone, accusing this software, with or without changes,
    alone or as part of a larger program.
 
-To release source code, publish the preferred form for making
+To contribute source code, publish the preferred form for making
 changes through a freely accessible distribution system widely
 used for similar source code, and license contributions not
 already licensed to the public on terms as permissive as this
 license accordingly.
 
 You are excused for unknowingly breaking 1, 2, or 3 if you
-release source code, or stop doing anything requiring this
+contribute source code, or stop doing anything requiring this
 license, within 30 days of learning you broke the rule.
 
 **This software comes as is, without any warranty at all. As far
@@ -48,12 +48,12 @@ to this software or this license, for any kind of legal claim.**
 
 Licensor Signature (Ed25519):
 
-de34d442a041f43efdad48b312f0970f3405043f5df0f430388acd8bbb1a140b
-b3d46dcf693126e733d9628bbd4ccc4edcc1064351a9230d4788dcd6bab4770d
+5c409c5af21892194cc68f296f4b763ca294b8a4e442b97dc63d4e5ee078a2ea
+61ab23c00887e6b5f04e156f32c7a74eee43b28f33fc513d540d3cd5b2cbbb03
 
 ---
 
 Agent Signature (Ed25519):
 
-8b84ef79f4ec4b387fda419bba63ee8a64f80bb860eefb5154c3f107fdad0ec7
-724e7b53e048008c6a81380327e6ab5151582438d9045f8a2bf3fe82a1285b04
+2e8613a0a981652e3d30d69db04e71e11f50354e033fbcc87bd0f9be42b8e235
+2916d43239eb86596dccd265d5d436101c4b87d14945b4ed377b6679acfcf30e
