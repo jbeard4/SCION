@@ -1,13 +1,13 @@
 {
   "name": "@scion-scxml/vscode-preview",
   "version": "0.0.15",
-  "publisher": "EFanZh",
+  "publisher": "jacobeanrnd",
   "engines": {
     "vscode": "^1.14.1"
   },
   "license": "SEE LICENSE IN LICENSE",
-  "displayName": "Graphviz Preview",
-  "description": "Preview Graphviz (DOT) files.",
+  "displayName": "SCXML Preview",
+  "description": "Preview SCXML files.",
   "categories": [
     "Languages"
   ],
@@ -46,7 +46,7 @@
   "icon": "icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/EFanZh/Graphviz-Preview"
+    "url": "https://gitlab.com/scion-scxml/vscode-preview"
   },
   "dependencies": {
     "@scion-scxml/schviz": "^3.2.17",
