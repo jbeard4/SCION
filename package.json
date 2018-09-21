@@ -12,6 +12,8 @@
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "Apache-2.0",
+  "repository": "https://gitlab.com/scion-scxml/example-vi.git",
+  "homepage": "https://gitlab.com/scion-scxml/example-vi",
   "dependencies": {
     "@scion-scxml/debug": "^1.0.11",
     "babel-polyfill": "^6.26.0"
