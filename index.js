@@ -3,7 +3,6 @@ const fs = require('fs');
 const restify = require('restify');
 const util = require('util');
 const path = require('path');
-const log = require('./util').log;
 const os = require('os');
 const corsMiddleware = require('restify-cors-middleware')
 
@@ -13,7 +12,7 @@ const cors = corsMiddleware({
 
 const localConfigurationFile = path.join(os.homedir(),'.scion.conf.json');
 
-function init(options){
+function init(options, cb){
 
   options = options || {};
 
@@ -23,6 +22,7 @@ function init(options){
     server = restify.createServer();
     server.listen(process.env.port || process.env.PORT || 3978, function () {
         console.log('SCION debugging server %s listening to %s', server.name, server.url);
+        if(cb) cb();
     });
   }
 
@@ -87,9 +87,17 @@ function init(options){
     });
   });
 
-  server.get(/\/dashboard.*/, restify.plugins.serveStatic({
-    'directory': path.join(__dirname, 'static'),
-    'default': 'index.html'
+  const pathToDashboard = require.resolve('@scion-scxml/dashboard')
+  const relativePathToDashboard = 
+    path.relative(
+      process.env.PWD,
+      path.dirname(path.dirname(path.dirname(path.dirname(pathToDashboard)))));
+  //console.log('pathToDashboard ', pathToDashboard );
+  //console.log('relativePathToDashboard ', relativePathToDashboard );
+  server.get('/dashboard/.*', restify.plugins.serveStatic({
+    'directory': relativePathToDashboard,
+    'default': 'index.html',
+    maxAge: -1
   }));
 
   server.get('/api/update-stream', function(req, res){
@@ -109,7 +117,6 @@ function init(options){
     'directory': process.env.PWD,
     'default': 'index.html'
   }));
-
 
   function broadcast(messageName, messageData){
     for(let res of responses){
