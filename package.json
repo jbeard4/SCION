@@ -1,7 +1,7 @@
 {
   "name": "@scion-scxml/cli",
   "version": "1.0.29",
-  "description": "A minimal standalone graphical SCXML simulation environment.",
+  "description": "A command-line interface to SCION",
   "main": "main.js",
   "bin": {
     "scion": "bin/cli.js"
@@ -61,5 +61,7 @@
     "uglifyify": "^3.0.4",
     "watchify": "^3.9.0"
   },
+  "repository": "https://gitlab.com/scion-scxml/cli.git",
+  "homepage": "https://gitlab.com/scion-scxml/cli",
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
