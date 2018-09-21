@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jbeard4/scxml-morse-input-out.git"
+    "url": "https://gitlab.com/scion-scxml/example-universal-morse-input-output.git"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/jbeard4/scxml-morse-input-out/issues"
+    "url": "https://gitlab.com/scion-scxml/example-universal-morse-input-output/issues"
   },
-  "homepage": "https://github.com/jbeard4/scxml-morse-input-out#readme",
+  "homepage": "https://gitlab.com/scion-scxml/example-universal-morse-input-output",
   "dependencies": {
     "@scion-scxml/debug": "^1.0.11",
     "babel-polyfill": "^6.26.0"
