@@ -17,13 +17,14 @@
   ],
   "bugs": {
     "email": "jake@jacobeanrnd.com",
-    "url": "https://github.com/jbeard4/SCION-CORE/issues"
+    "url": "https://gitlab.com/scion-scxml/core/issues"
   },
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jbeard4/SCION-CORE.git"
+    "url": "https://gitlab.com/scion-scxml/core.git"
   },
+  "homepage": "https://gitlab.com/scion-scxml/core",
   "dependencies": {
     "@scion-scxml/core-base": "^1.0.15"
   },
