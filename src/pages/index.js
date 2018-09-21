@@ -49,21 +49,6 @@ const Home = () => (
           </div>
         </div>
       </div>
-      <hr/>
-      <div id="tweets" className="container">
-        <div className="row">
-          <div className="col-md-4">
-            <Tweet tweetId="535771690463420417"/>
-          </div>
-          <div className="col-md-4">
-            <Tweet tweetId="515922487264440320"/>
-          </div>
-          <div className="col-md-4">
-            <Tweet tweetId="236218270984855552"/>
-          </div>
-        </div>
-      </div>
-      <hr/>
     </div>
   </div>
 )

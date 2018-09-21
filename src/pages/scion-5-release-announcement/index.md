@@ -57,32 +57,6 @@ You can see an example of this in the following video:
 
 ### React Integrations
 
-
-
-## Availability 
-
-I am starting to roll out this new work in a private beta. If you want to try it, please sign up for the mailing list below, or join the chat on Gitter:
-
-<link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css">
-<style type="text/css">
-    #mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; width:100%;}
-    /* Add your own MailChimp form style overrides in your site stylesheet or in this style block.
-       We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
-</style>
-<div id="mc_embed_signup">
-<form action="https://jacobeanrnd.us19.list-manage.com/subscribe/post?u=a7806227a1320bcc8f1d15da1&amp;id=59a5c5dc97" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
-    <div id="mc_embed_signup_scroll">
-    
-    <input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
-    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
-    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_a7806227a1320bcc8f1d15da1_59a5c5dc97" tabindex="-1" value=""></div>
-    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
-    </div>
-</form>
-</div>
-
-Source code will be made available on Gitlab at a new organization [SCION-SCXML](https://gitlab.com/SCION-SCXML) (more on this below).
-
 ## Creating a sustainable future for SCION
 
 I am seeking an economic engine to sustain and fund the ongoing development of SCION.
@@ -214,7 +188,9 @@ If you want to contribute to SCION, and you have concerns about licensing, pleas
 
 ## Intention to migrate from Github to Gitlab
 
-Last, I wanted to mention my intention to migrate from Github to Gitlab for hosting the SCION source code. I intend to do this to protest Microsoft's (who recently purchased Github) contract with United States Immigration and Customs Enforcement (ICE). I signed a [petition](https://github.com/selfagency/microsoft-drop-ice) to this effect, and I have thought a lot about this in the months since.
+Last, I wanted to mention my intention to migrate from Github to Gitlab for hosting the SCION source code. Source code will be made available on Gitlab at a new organization [SCION-SCXML](https://gitlab.com/SCION-SCXML).
+
+I intend to do this to protest Microsoft's (who recently purchased Github) contract with United States Immigration and Customs Enforcement (ICE). I signed a [petition](https://github.com/selfagency/microsoft-drop-ice) to this effect, and I have thought a lot about this in the months since.
 
 On the one hand, I am not opposed to using Microsoft's open source technologies. I use a lot of it in SCION, for example integrating with the MS Botbuilder framework and VSCode IDE.  Also, I don't have any illusion that my action, as an individual developer, will have any effect on Microsoft's decision-making. It's only when it looks like the cost to Microsoft outweighs the benefit that any action will be taken. And Microsoft does a lot of business with the US government, so this will likely require a sea change among developers before they start to take notice.
 
@@ -228,4 +204,25 @@ Fortunately, this transition is facilitated by the fact that Gitlab is an excell
 
 So, that's it. Lots of new features, some changes, hopefully all for the best.
 
-I will be publishing more examples, documentation, and tutorials over the coming weeks. Thanks, and I look forward to receiving your feedback.
+I will be publishing more examples, documentation, and tutorials over the coming weeks. If you want to receive updates, please sign up for the mailing list below, or [![Join the chat at https://gitter.im/SCION-SCXML/Lobby](https://badges.gitter.im/SCION-SCXML/Lobby.svg)](https://gitter.im/SCION-SCXML/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge):
+
+<link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+    #mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; width:100%;}
+    /* Add your own MailChimp form style overrides in your site stylesheet or in this style block.
+       We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+</style>
+<div id="mc_embed_signup">
+<form action="https://jacobeanrnd.us19.list-manage.com/subscribe/post?u=a7806227a1320bcc8f1d15da1&amp;id=59a5c5dc97" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+    <div id="mc_embed_signup_scroll">
+    
+    <input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_a7806227a1320bcc8f1d15da1_59a5c5dc97" tabindex="-1" value=""></div>
+    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+    </div>
+</form>
+</div>
+
+Thanks, and I look forward to receiving your feedback.
+
