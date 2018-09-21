@@ -15,6 +15,11 @@
   "dependencies": {
     "async": "^2.6.1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/scion-scxml/core-test-framework.git" 
+  },
+  "homepage": "https://gitlab.com/scion-scxml/core-test-framework",
   "devDependencies": {
     "grunt": "^1.0.1",
     "grunt-browserify": "^5.0.0",
