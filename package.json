@@ -9,6 +9,10 @@
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "Apache-2.0",
+  "repository": {
+    "type" : "git",
+    "url" : "https://gitlab.com/scion-scxml/core-base.git"
+  },
   "dependencies": {
     "tiny-events": "^1.0.1"
   },
