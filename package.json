@@ -1,7 +1,7 @@
 {
   "name": "@scion-scxml/schviz",
   "version": "3.2.17",
-  "description": "SCJSON to KGraph to SVG rendering library",
+  "description": "SCXML visualization library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
@@ -77,7 +77,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/JacobeanRnD/SCHVIZ2.git"
+    "url": "git://gitlab.com/scion-scxml/schviz.git"
   },
   "keywords": [
     "scxml"
@@ -85,8 +85,8 @@
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "SEE LICENSE IN LICENSE",
   "bugs": {
-    "url": "https://github.com/jbeard4/SCHVIZ2/issues"
+    "url": "https://gitlab.com/scion-scxml/schviz/issues"
   },
-  "homepage": "https://github.com/jbeard4/SCHVIZ2#readme",
+  "homepage": "https://gitlab.com/scion-scxml/schviz#readme",
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }

@@ -55,9 +55,9 @@
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/jbeard4/SCHVIZ2/issues"
+    "url": "https://gitlab.com/scion-scxml/schviz/issues"
   },
-  "homepage": "https://github.com/jbeard4/SCHVIZ2#readme",
+  "homepage": "https://gitlab.com/scion-scxml/schviz",
   "dependencies": {
     "@scion-scxml/test-framework": "^2.0.15",
     "whatwg-fetch": "^2.0.3"
