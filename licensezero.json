@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "licensezero": [
     {
-      "agentSignature": "46c07f263d34e8533d64ffbbca5ccc39d0f0892f61966f672c9987786979fc204a012c337e733e380e07fe70644930ec0baab59a9ea0d2053fb354d529b00f05",
+      "agentSignature": "07d93bcb2f30a3f28344bc2792abfd551bb67c9505226b3c1f43d16a87736b5d7d6cf35ea26342ac2a0fd8a9ca156a171263b06a9aa5bb63ee0da923e25e3b07",
       "license": {
-        "homepage": "http://scion.io/",
+        "homepage": "https://www.npmjs.com/package/@scion-scxml/cli",
         "jurisdiction": "US-DE",
-        "name": "Jacob Beard",
-        "projectID": "c8939f0a-a00a-43c2-9b52-fd4bcea58f1f",
-        "publicKey": "181f308900e4a0d804402606615482958051b42b6c187a1015b28defcd645379",
+        "name": "Jacobean Research and Development",
+        "projectID": "899c07f3-a5f9-4c08-bb4c-d06c91563488",
+        "publicKey": "5c9441fef36e5952d1906de3951b423a2e258c71cc9f5aea154a0319f5d73a10",
         "terms": "parity",
-        "version": "2.4.0"
+        "version": "3.0.0"
       },
-      "licensorSignature": "70451f12dd7a2e16903be14333600f0b793240904be7793421c90e51ceb91288e47cf7a6a164b7e8e682e151113af14edb94706aa82a80d5c3c250c123c50500"
+      "licensorSignature": "07e49726e79347b9320da8ffc725adc71452632c8307b9754b4f7e1baa53ff2df726f8c69eaf3936d93afc9426c02cb65d169ba68bb02bff71af22cd0ccf5d01"
     }
   ]
 }
