@@ -25,5 +25,4 @@ Options:
 
 Here is a video of the SCION cli in action:
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/GbP3_b8GVbM" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-
+[![Link to video](https://img.youtube.com/vi/GbP3_b8GVbM/0.jpg)](https://www.youtube.com/watch?v=GbP3_b8GVbM)
