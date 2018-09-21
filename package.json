@@ -14,6 +14,11 @@
     "licensezero-postinstall": "^1.0.0",
     "source-map": "^0.6.1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/scion-scxml/sourcemap-plugin.git" 
+  },
+  "homepage": "https://gitlab.com/scion-scxml/sourcemap-plugin",
   "browser": {
     "vm": "@scion-scxml/vm-browserify"
   },
