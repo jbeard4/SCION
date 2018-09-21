@@ -3,6 +3,9 @@
   "version": "0.0.13",
   "license": "Apache-2.0",
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
+  "description": "Redux integration example",
+  "repository": "https://gitlab.com/scion-scxml/example-react-redux.git",
+  "homepage": "https://gitlab.com/scion-scxml/example-react-redux",
   "devDependencies": {
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-polyfill": "^6.23.0",

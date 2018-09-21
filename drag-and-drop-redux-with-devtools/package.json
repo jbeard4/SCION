@@ -3,6 +3,9 @@
   "version": "0.0.13",
   "license": "Apache-2.0",
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
+  "description": "Redux integration example that includes redux devtools, as well as the redux-devtools-scion-monitor",
+  "repository": "https://gitlab.com/scion-scxml/drag-and-drop-redux-with-devtools.git",
+  "homepage": "https://gitlab.com/scion-scxml/drag-and-drop-redux-with-devtools/tree/master/drag-and-drop-redux-with-devtools",
   "devDependencies": {
     "@scion-scxml/redux-devtools-scion-monitor": "^1.4.12",
     "babel-plugin-transform-react-jsx": "^6.24.1",
