@@ -1,7 +1,7 @@
 {
   "name": "@scion-scxml/botbuilder-hello-chatconnector",
   "version": "1.0.10",
-  "description": "Bot Builder Sample - FirstRun",
+  "description": "Example of SCION Botbuilder integration, based on the botbuilder-hello-chatconnector example",
   "scripts": {
     "start": "node app.js"
   },

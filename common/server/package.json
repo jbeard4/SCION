@@ -1,7 +1,7 @@
 {
   "name": "@scion-scxml/botbuilder-common",
   "version": "1.0.11",
-  "description": "Bot Builder Sample - FirstRun",
+  "description": "A set of scripts to help integrate SCION with the Microsoft Botbuilder framework",
   "scripts": {
     "start": "node app.js"
   },
@@ -22,5 +22,7 @@
     "restify": "^4.3.0",
     "underscore": "^1.8.3"
   },
+  "repository": "https://gitlab.com/scion-scxml/example-botbuilder.git",
+  "homepage": "https://gitlab.com/scion-scxml/example-botbuilder/tree/master/common/scxml",
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }

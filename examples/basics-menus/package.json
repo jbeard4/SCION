@@ -20,5 +20,7 @@
     "@scion-scxml/eslint-plugin-scharpie": "^4.0.15",
     "eslint": "^5.4.0"
   },
+  "repository": "https://gitlab.com/scion-scxml/example-botbuilder.git",
+  "homepage": "https://gitlab.com/scion-scxml/example-botbuilder/tree/master/examples/basics-menus",
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
