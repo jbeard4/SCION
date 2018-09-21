@@ -18,6 +18,8 @@
     "@scion-scxml/sourcemap-plugin": "^1.0.14",
     "licensezero-postinstall": "^1.0.0"
   },
-  "description": "",
+  "description": "Drop-in replacement for the SCION scxml compiler module, that automatically enables the sourcemap-plugin and monitor client",
+  "repository": "https://gitlab.com/scion-scxml/debug.git",
+  "homepage": "https://gitlab.com/scion-scxml/debug",
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
