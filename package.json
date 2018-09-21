@@ -8,7 +8,7 @@
     "postinstall": "licensezero-postinstall"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "Apache-2.0",
   "dependencies": {
     "@scion-scxml/xmllint": "^0.1.16",
     "licensezero-postinstall": "^1.0.0",
@@ -19,6 +19,10 @@
   },
   "devDependencies": {
     "brfs": "^1.4.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/scion-scxml/scharpie.git" 
   },
   "browserify": {
     "transform": [
