@@ -14,5 +14,4 @@ require('@scion-scxml/sourcemap-plugin')(scxml);  //load the sourcemaps plugin
 
 Here is a video of this module in action:
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/Pg9tYuJN6BI" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-
+[![Link to video](https://img.youtube.com/vi/Pg9tYuJN6BI/0.jpg)](https://www.youtube.com/watch?v=Pg9tYuJN6BI)
