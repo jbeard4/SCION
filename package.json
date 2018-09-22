@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/umio",
-  "version": "1.1.11",
+  "version": "1.1.12",
   "description": "Morse code parser implemented in SCXML",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -20,11 +20,11 @@
   },
   "homepage": "https://gitlab.com/scion-scxml/example-universal-morse-input-output",
   "dependencies": {
-    "@scion-scxml/debug": "^1.0.11",
+    "@scion-scxml/debug": "^1.0.12",
     "babel-polyfill": "^6.26.0"
   },
   "devDependencies": {
-    "@scion-scxml/monitor-middleware": "^1.0.11"
+    "@scion-scxml/monitor-middleware": "^1.0.12"
   },
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
