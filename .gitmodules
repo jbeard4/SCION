@@ -1,51 +1,24 @@
 [submodule "projects/libraries/scxml"]
 	path = projects/libraries/scxml
 	url = git@gitlab.com:scion-scxml/scxml.git
-[submodule "projects/libraries/scion-core"]
-	path = projects/libraries/scion-core	
-  url = git@nas.nest:jbeard4/SCION-CORE.git
 [submodule "projects/libraries/schviz"]
 	path = projects/libraries/schviz
 	url = git@gitlab.com:scion-scxml/schviz.git
-[submodule "projects/examples/scion-botbuilder"]
-	path = projects/examples/scion-botbuilder	
-  url = git@nas:jbeard4/SCION-SCXML-Botbuilder.git
-[submodule "projects/devtools/scion-cli"]
-	path = projects/devtools/scion-cli	
-  url = git@nas.nest:JacobeanRnD/scxml-electron-standalone-tool.git
 [submodule "projects/libraries/sax-js"]
 	path = projects/libraries/sax-js
 	url = git@gitlab.com:scion-scxml/sax-js.git
 [submodule "projects/libraries/console-component"]
 	path = projects/libraries/console-component
 	url = git@gitlab.com:scion-scxml/console-component.git
-[submodule "projects/eslint-plugin-scharpie"]
-	path = projects/eslint-plugin-scharpie	
-  url = git@nas:JacobeanRnD/eslint-plugin-scxml.git
 [submodule "projects/libraries/jsondiffpatch"]
 	path = projects/libraries/jsondiffpatch
 	url = git@gitlab.com:scion-scxml/jsondiffpatch.git
 [submodule "projects/libraries/react-collapsible"]
 	path = projects/libraries/react-collapsible
 	url = git@gitlab.com:scion-scxml/react-collapsible.git
-[submodule "projects/scion-scxml-monitor-middleware"]
-	path = projects/scion-scxml-monitor-middleware	
-  url = git@nas:jbeard4/scion-scxml-monitor-middleware.git
-[submodule "projects/libraries/scion-sourcemap-plugin"]
-	path = projects/libraries/scion-sourcemap-plugin	
-  url = git@nas:jbeard4/scion-sourcemap-plugin.git
-[submodule "projects/libraries/scxml-test-framework"]
-	path = projects/libraries/scxml-test-framework	
-  url = git@nas.nest:jbeard4/scxml-test-framework.git
 [submodule "projects/devtools/scharpie"]
 	path = projects/devtools/scharpie
 	url = git@gitlab.com:scion-scxml/scharpie.git
-[submodule "projects/devtools/vscode-scxml-preview"]
-	path = projects/devtools/vscode-scxml-preview  
-  url = git@nas:JacobeanRnD/vscode-scxml-preview.git
-[submodule "projects/examples/vi-everywhere"]
-	path = projects/examples/vi-everywhere	
-  url = git@nas:JacobeanRnD/vi-everywhere.git
 [submodule "projects/libraries/eslint"]
 	path = projects/libraries/eslint
 	url = git@gitlab.com:scion-scxml/eslint.git
