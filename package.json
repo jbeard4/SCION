@@ -2,7 +2,7 @@
   "name": "@scion-scxml/sax",
   "description": "An evented streaming XML parser in JavaScript",
   "author": "Isaac Z. Schlueter <i@izs.me> (http://blog.izs.me/)",
-  "version": "1.3.16",
+  "version": "1.3.17",
   "main": "lib/sax.js",
   "license": "ISC",
   "scripts": {
@@ -10,7 +10,7 @@
     "posttest": "standard -F test/*.js lib/*.js",
     "preversion": "npm test",
     "postversion": "npm publish",
-    "postpublish": "git push origin --all; git push origin --tags"
+    "postpublish": "git push gitlab --all; git push gitlab --tags"
   },
   "repository": "git://github.com/isaacs/sax-js.git",
   "files": [
