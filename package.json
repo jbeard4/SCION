@@ -1,12 +1,12 @@
 {
   "name": "@scion-scxml/schviz",
-  "version": "3.2.17",
+  "version": "3.2.18",
   "description": "SCXML visualization library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
-    "@scion-scxml/core-base": "^1.0.15",
-    "@scion-scxml/scxml": "^4.3.17",
+    "@scion-scxml/core-base": "^1.0.16",
+    "@scion-scxml/scxml": "^4.3.18",
     "babel-polyfill": "^6.23.0",
     "babel-preset-es2015": "^6.24.1",
     "classnames": "^2.2.5",
