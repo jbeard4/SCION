@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/react-codemirror",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "Codemirror",
   "main": "lib/Codemirror.js",
   "author": "Jed Watson",
