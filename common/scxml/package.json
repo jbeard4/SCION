@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/botbuilder-common-scxml-components",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "A set of scripts to help integrate SCION with the Microsoft Botbuilder framework - to be included from within a <script> tag inside of an SCXML file",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
