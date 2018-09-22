@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/core-base",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "Provide BaseInterpreter class and helper functions to modules that implement Statechart interface.",
   "main": "./lib/scion-core-base.js",
   "directories": {
@@ -10,8 +10,8 @@
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "Apache-2.0",
   "repository": {
-    "type" : "git",
-    "url" : "https://gitlab.com/scion-scxml/core-base.git"
+    "type": "git",
+    "url": "https://gitlab.com/scion-scxml/core-base.git"
   },
   "dependencies": {
     "tiny-events": "^1.0.1"
