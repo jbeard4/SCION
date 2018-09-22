@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/eslint-plugin-scharpie",
-  "version": "4.0.15",
+  "version": "4.0.16",
   "description": "A ESLint plugin to lint and fix inline scripts contained in SCXML files.",
   "license": "ISC",
   "repository": {
@@ -17,8 +17,8 @@
   ],
   "main": "src/index.js",
   "dependencies": {
-    "@scion-scxml/sax": "^1.3.16",
-    "@scion-scxml/scharpie": "^1.0.14",
+    "@scion-scxml/sax": "^1.3.17",
+    "@scion-scxml/scharpie": "^1.0.15",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
