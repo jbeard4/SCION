@@ -1,3 +1,5 @@
+# SCION SCXML System
+
 [![Backers on Open Collective](https://opencollective.com/scion/backers/badge.svg)](#backers)
  [![Sponsors on Open Collective](https://opencollective.com/scion/sponsors/badge.svg)](#sponsors) 
 
@@ -5,30 +7,56 @@ This module is the top-level git repository for the SCION SCXML System (SCION). 
 
 This package (`scion`) is published to npm so that the bundled modules can be consumed and published by cdnjs for use in the browser. The bundled modules are in the `dist/` directory: 
 
-core (Statecharts interpreter):
+[core](https://gitlab.com/scion-scxml/core) (Statecharts interpreter):
 
 * core.js
 * core.js.map
 * core.min.js
 
-scxml (SCXML compiler and runtime):
+[scxml](https://gitlab.com/scion-scxml/scxml) (SCXML compiler and runtime):
 
 * scxml.js
 * scxml.min.js
 * scxml.debug.js (SCXML compiler with sourcemaps enabled)
 
-schviz (visualization):
+[schviz](https://gitlab.com/scion-scxml/schviz) (visualization):
 
 * dist/schviz.js
 * dist/schviz.js.map
 * dist/schviz.min.js
 * dist/schviz.min.js.map
 
-If you are using SCION in Node.js, you should use npm to install specific packages (e.g. `@scion-scxml/core`, `@scion-scxml/scxml`, `@scion-scxml/schviz`, etc.) rather than installing this module. 
+If you are using SCION in Node.js, you should use npm to install specific packages (e.g. `[@scion-scxml/core](https://www.npmjs.com/package/@scion-scxml/core)`, `[@scion-scxml/scxml](https://www.npmjs.com/package/@scion-scxml/scxml)`, `[@scion-scxml/schviz](https://www.npmjs.com/package/@scion-scxml/schviz)`, etc.) rather than installing this module. 
 
 For more information on specific modules that are published as a part of SCION, please check each individual project's README.
 
 For more information on the SCION project, please visit [scion.scxml.io](https://scion.scxml.io).
+
+## Developing
+
+Clone this repository and then update submodules:
+
+```
+git submodule init
+git submodule update
+```
+
+Install nodejs modules:
+
+```
+npm install
+```
+
+Build all packages:
+
+```
+npm run build
+```
+
+Then run a sanity test using the cli module:
+
+
+
 
 ## Contributors
 
