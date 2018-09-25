@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/redux-devtools-scion-monitor",
-  "version": "1.4.13",
+  "version": "1.4.14",
   "description": "Redux monitor to visualize SCXML state",
   "main": "lib/index.js",
   "files": [
@@ -61,7 +61,7 @@
     "redux-devtools": "^3.4.0"
   },
   "dependencies": {
-    "@scion-scxml/schviz": "^3.2.18",
+    "@scion-scxml/schviz": "^3.2.19",
     "lodash.debounce": "^4.0.4",
     "prop-types": "^15.0.0",
     "react": "^16.4.0",
