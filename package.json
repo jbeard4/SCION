@@ -36,7 +36,6 @@
     "react": "global:React"
   },
   "scripts": {
-    "build": "gulp clean && NODE_ENV=production gulp build",
     "bump": "gulp bump",
     "bump:minor": "gulp bump:minor",
     "bump:major": "gulp bump:major",
