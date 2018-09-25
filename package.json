@@ -1,5 +1,5 @@
 {
-  "name": "@scion-scxml/eslint-plugin-scharpie",
+  "name": "@scion-scxml/eslint-plugin",
   "version": "4.0.16",
   "description": "A ESLint plugin to lint and fix inline scripts contained in SCXML files.",
   "license": "ISC",
