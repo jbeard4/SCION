@@ -26,7 +26,7 @@ This package (`scion`) is published to npm so that the bundled modules can be co
 * dist/schviz.min.js
 * dist/schviz.min.js.map
 
-If you are using SCION in Node.js, you should use npm to install specific packages (e.g. `[@scion-scxml/core](https://www.npmjs.com/package/@scion-scxml/core)`, `[@scion-scxml/scxml](https://www.npmjs.com/package/@scion-scxml/scxml)`, `[@scion-scxml/schviz](https://www.npmjs.com/package/@scion-scxml/schviz)`, etc.) rather than installing this module. 
+If you are using SCION in Node.js, you should use npm to install specific packages (e.g. [@scion-scxml/core](https://www.npmjs.com/package/@scion-scxml/core), [@scion-scxml/scxml](https://www.npmjs.com/package/@scion-scxml/scxml), [@scion-scxml/schviz](https://www.npmjs.com/package/@scion-scxml/schviz), etc.) rather than installing this module. 
 
 For more information on specific modules that are published as a part of SCION, please check each individual project's README.
 
