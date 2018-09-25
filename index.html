@@ -263,11 +263,11 @@
     var morseOutput = document.getElementById("morseOutput")
     var bufferOutput = document.getElementById("bufferOutput")
 
-    scxml.urlToModel('./build/morse.scxml',function(err,modelFactoryFactory){
+    scion.scxml.urlToModel('./build/morse.scxml',function(err,modelFactoryFactory){
         if(err) throw err;
 
         modelFactoryFactory.prepare(function(err,modelFactory){
-          const interpreter = new scxml.scion.Statechart(modelFactory);
+          const interpreter = new scion.core.Statechart(modelFactory);
 
 
           var osc, gain;
