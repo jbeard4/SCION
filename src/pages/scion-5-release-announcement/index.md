@@ -53,7 +53,7 @@ Here is a video of these features in action:
 ### Visual Studio Code Integrations 
 
 SCION integrates with the Visual Studio Code (VSCode) IDE in the following ways:
-* linting, using VSCode's built-in support for eslint, and the eslint-plugin-scharpie package for linting SCXML
+* linting, using VSCode's built-in support for eslint, and the @scion-scxml/eslint-plugin package for linting SCXML
 * visualization, using the new @scion-scxml/vscode-preview VSCode extension
 * graphical debugging, using VSCode's built-in JavaScript debugger, and the new SCION sourcemap-plugin mentioned above.
 
@@ -80,7 +80,7 @@ I continue to work on SCION because I enjoy it. It’s a labor of love. I like t
 tl;dr the SCION license policy is as follows: 
 
 * the core engine will remain Apache-2.0 (e.g., the scxml and core modules)
-* if the module is forked from an existing project, then that module will have the same license as the project from which it was forked (e.g. eslint-plugin-scharpie) 
+* if the module is forked from an existing project, then that module will have the same license as the project from which it was forked (e.g. @scion-scxml/eslint-plugin) 
 * the new development tools will be LicenseZero Parity 3.0 (e.g. the schviz module)
 * finally, SCXML tutorials and examples will be released as Apache-2.0
 
@@ -133,7 +133,7 @@ Here is a complete list of all modules and their associated licenses at the time
     <tr>
       <td  colspan="4" style="text-align:center; font-weight:bold"> Develper Tools </td>
     </tr>
-    <tr><td> <a href="https://gitlab.com/scion-scxml/eslint-plugin-scharpie"> eslint-plugin-scharpie </a></td><td> ISC </td><td> A ESLint plugin to lint and fix inline scripts contained in SCXML files. </td><td> <a href="https://github.com/BenoitZugmeyer/eslint-plugin-html"> BenoitZugmeyer/eslint-plugin-html </a> </td></tr>
+    <tr><td> <a href="https://gitlab.com/scion-scxml/eslint-plugin"> eslint-plugin </a></td><td> ISC </td><td> A ESLint plugin to lint and fix inline scripts contained in SCXML files. </td><td> <a href="https://github.com/BenoitZugmeyer/eslint-plugin-html"> BenoitZugmeyer/eslint-plugin-html </a> </td></tr>
     <tr><td> <a href="https://gitlab.com/scion-scxml/redux-devtools-scion-monitor"> redux-devtools-scion-monitor </a></td><td> MIT </td><td> Redux monitor that adds support for visualization of SCXML model </td><td> <a href="https://github.com/gaearon/redux-devtools-log-monitor"> gaearon/redux-devtools-log-monitor </a> </td></tr>
     <tr><td> <a href="https://gitlab.com/scion-scxml/vscode-preview"> vscode-preview </a></td><td> MIT </td><td> Visual Studio Code extension to preview SCXML files. </td><td> <a href="https://github.com/EFanZh/Graphviz-Preview"> EFanZh/Graphviz </a> </td></tr>
     <tr><td> <a href="https://gitlab.com/scion-scxml/debug"> debug </a></td><td> L0-Parity-3.0 </td><td> Drop-in replacement for the scxml compiler module, that automatically enables the sourcemap-plugin and monitor client </td><td>  </td></tr>
