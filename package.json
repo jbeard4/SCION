@@ -1,7 +1,7 @@
 {
   "name": "@scion-scxml/sciblog",
   "description": "Source code to SCION homepage (scion.scxml.io)",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "author": "Noah Glusenkamp <noah.glusenkamp@gmail.com>",
   "contributors": [
     "Jacob Beard <jake@jacobeanrnd.com> (http://jacobeanrnd.com)"
@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.2.0",
-    "@scion-scxml/schviz": "^3.2.18",
-    "@scion-scxml/scxml": "^4.3.18",
+    "@scion-scxml/schviz": "^3.2.19",
+    "@scion-scxml/scxml": "^4.3.19",
     "bootstrap": "^4.1.1",
     "disqus-react": "^1.0.5",
     "gatsby": "^1.8.12",
