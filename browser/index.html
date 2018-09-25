@@ -5,6 +5,7 @@
     <script src="/babel-polyfill/dist/polyfill.js"></script>
     <script src="/react/dist/react.js"></script>
     <script src="/react-dom/dist/react-dom.js"></script>
+    <script src="/@scion-scxml/scxml/dist/scxml.js"></script>
     <script src="/@scion-scxml/schviz/dist/schviz.js"></script>
     <style type="text/css">
       body {
@@ -23,7 +24,7 @@
     <script>
       function render(scxmlString){
         ReactDOM.render(React.createElement(
-          SCHVIZ.default, 
+          window.scion.schviz, 
           {
             scxmlDocumentString:scxmlString,
             expandAllStatesByDefault:true
