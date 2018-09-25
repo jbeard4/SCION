@@ -66,11 +66,11 @@ Released under GNU GPL, read the file 'COPYING' for more information
     commandText.setAttributeNS(null,"y",height - (textExtent.height*2));
     commandCursorNode.setAttributeNS(null,"y",height - textExtent.height);
 
-    scxml.urlToModel('editor-behaviour.scxml',function(err,modelFactoryFactory){
+    window.scion.scxml.urlToModel('editor-behaviour.scxml',function(err,modelFactoryFactory){
         if(err) throw err;
 
         modelFactoryFactory.prepare(function(err,modelFactory){
-          const scInstance = new scxml.scion.Statechart(modelFactory);
+          const scInstance = new window.scion.core.Statechart(modelFactory);
           var editor = SVGEditorFactory.createNewSVGEditorInstance(document.documentElement,txt,cursorNode,commandCursorNode,modeText,locationText,commandText,selectionParent,textExtent,width,scInstance);
           editor.install(); 
         })
