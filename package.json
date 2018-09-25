@@ -73,7 +73,7 @@
     "minimist": "^1.2.0",
     "nodeunit": "^0.9.1",
     "request": "^2.74.0",
-    "typedoc": "^0.11.1",
+    "typedoc": "^0.12.0",
     "uglify-js": "^2.8.21",
     "underscore": "^1.8.3",
     "watchify": "^3.9.0"
@@ -94,10 +94,10 @@
     "fix-global": "sed -i -e 's/g.scxml = f()/g.scion = g.scion || {}; g.scion.scxml = f(); g.scion.core = g.scion.scxml.core;/' dist/scxml.js",
     "bundle": "browserify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
     "uglify": "uglifyjs dist/scxml.js -o dist/scxml.min.js",
-    "build": "mkdir -p dist && npm run bundle && npm run fix-global && npm run uglify",
+    "build": "mkdir -p dist && npm run bundle && npm run fix-global && npm run uglify && npm run docs",
     "watch": "watchify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
     "lint": "eslint lib/",
-    "docs": "typedoc --module commonjs  --includeDeclarations --out docs/ ./tsd/index.d.ts --readme README.md",
+    "docs": "typedoc --module commonjs  --includeDeclarations --out dist/docs/ ./tsd/index.d.ts --readme README.md",
     "postinstall": "opencollective postinstall"
   },
   "browserify": {
