@@ -8,7 +8,7 @@ module.exports = {
         "ecmaVersion": 5
     },
     "plugins" : [
-        "scharpie"
+        "@scion-scxml"
     ],
     "rules": {
         "indent": [
