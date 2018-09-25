@@ -50,7 +50,7 @@
     "jsdoc": "^3.5.5",
     "load-grunt-tasks": "^3.5.0",
     "nodeunit": "^0.9.1",
-    "typedoc": "^0.11.1",
+    "typedoc": "^0.12.0",
     "underscore": "^1.8.3",
     "watchify": "^3.9.0"
   },
@@ -74,9 +74,9 @@
   "scripts": {
     "postversion": "git push --follow-tags && npm publish",
     "test": "grunt test",
-    "build": "mkdir -p dist && grunt build",
+    "build": "mkdir -p dist && grunt build && npm run docs",
     "watch": "watchify -d lib/scion.js -o dist/scion.js -s scion",
-    "docs": "typedoc --module commonjs  --includeDeclarations --out docs/ ./tsd/scion-core.d.ts --readme README.md"
+    "docs": "typedoc --module commonjs  --includeDeclarations --out dist/docs/ ./tsd/scion-core.d.ts --readme README.md"
   },
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
