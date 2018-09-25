@@ -4,11 +4,11 @@
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bootstrap" : "lerna run bootstrap",
-    "build": "npm run bootstrap && lerna run --sort build && copy-dist",
+    "bootstrap": "lerna bootstrap",
+    "build": "npm run bootstrap && lerna run --sort build && npm run copy-dist",
     "copy-dist": "mkdir -p dist && cp projects/libraries/scxml/dist/scxml*.js dist/ && cp projects/devtools/debug/dist/scxml.debug.js dist/ && cp projects/libraries/core/dist/core.* dist/ && cp projects/libraries/schviz/dist/schviz.* dist/",
     "version": "lerna version --no-git-tag-version --no-push",
-    "push": "lerna exec --concurrency 1 'pwd; git push gitlab'",
+    "push": "lerna exec --concurrency 1 'pwd; git push origin'",
     "commit": "lerna exec --concurrency 1 'if [ \"$( git status --porcelain )\" ]; then pwd; git diff | less; git commit -a; fi;'",
     "commit-packages": "lerna exec --concurrency 1 'if [ \"$( git status --porcelain )\" ]; then pwd; git commit -a -m \"Update package version\"; fi;'",
     "publish": "bash scripts/publish.sh"
