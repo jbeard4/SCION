@@ -14,10 +14,10 @@
   "license": "MIT",
   "dependencies": {
     "@scion-scxml/botbuilder-common": "^1.0.12",
-    "@scion-scxml/botbuilder-common-scxml-components": "1.0.0"
+    "@scion-scxml/botbuilder-common-scxml-components": "1.0.16"
   },
   "devDependencies": {
-    "@scion-scxml/eslint-plugin-scharpie": "^4.0.16",
+    "@scion-scxml/eslint-plugin": "^4.0.16",
     "eslint": "^5.4.0"
   },
   "repository": "https://gitlab.com/scion-scxml/example-botbuilder.git",

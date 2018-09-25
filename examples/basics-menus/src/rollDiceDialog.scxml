@@ -10,12 +10,12 @@
 
     <data id="lastMessage"/>
   </datamodel>
-  <script src="../node_modules/scion-scxml-botbuilder-common-scxml-components/send-common.js"></script>
+  <script src="../node_modules/@scion-scxml/botbuilder-common-scxml-components/send-common.js"></script>
   <state id="initial-default">
     <transition event="message">
       <assign location="lastMessage" expr="_event"/>
     </transition>
-    <invoke type="http://www.w3.org/TR/scxml/" src="file:../node_modules/scion-scxml-botbuilder-common-scxml-components/choice-dialog.scxml" autoforward="true">
+    <invoke type="http://www.w3.org/TR/scxml/" src="file:../node_modules/@scion-scxml/botbuilder-common-scxml-components/choice-dialog.scxml" autoforward="true">
       <param name="messageBuffer" expr="messageBuffer"/>
       <param name="prompt" expr="'How many dice should I roll?'"/>
       <param name="initialEvent" expr="initialEvent"/>

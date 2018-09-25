@@ -14,7 +14,5 @@
     "botbuilder-samples"
   ],
   "dependencies": {
-    "scion-scxml-botbuilder-common": "1.0.0",
-    "scion-scxml-botbuilder-common-scxml-components": "1.0.0"
   }
 }

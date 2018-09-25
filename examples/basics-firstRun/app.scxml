@@ -4,7 +4,7 @@
     <data id="userData" expr="{ name : null }"/>
     <data id="messageBuffer"/>
   </datamodel>
-  <script src="./node_modules/scion-scxml-botbuilder-common-scxml-components/send-common.js"></script>
+  <script src="./node_modules/@scion-scxml/botbuilder-common-scxml-components/send-common.js"></script>
   <transition event="error">
     <log label="error" expr="_event"/>
   </transition>
