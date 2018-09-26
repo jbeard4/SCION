@@ -32,7 +32,7 @@
 	path = projects/devtools/debug
 	url = git@gitlab.com:scion-scxml/debug.git
 [submodule "projects/devtools/eslint-plugin-scharpie"]
-	path = projects/devtools/plugin-scharpie
+	path = projects/devtools/eslint-plugin
 	url = git@gitlab.com:scion-scxml/eslint-plugin.git
 [submodule "projects/devtools/redux-devtools-scion-monitor"]
 	path = projects/devtools/redux-devtools-scion-monitor
