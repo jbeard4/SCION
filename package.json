@@ -40,7 +40,7 @@
     "watch": "tsc -watch -p ./",
     "compile": "npm run vscode:prepublish",
     "build": "npm run compile",
-    "postinstall": "node ./node_modules/vscode/bin/install '^1.14.1'",
+    "postinstall": "npm_package_engines_vscode='^1.14.1' node ./node_modules/vscode/bin/install",
     "test": "node ./node_modules/vscode/bin/test"
   },
   "icon": "icon.png",
