@@ -39,7 +39,6 @@
     "escodegen": "^1.8.1",
     "esprima": "2.7.2",
     "jsdom": "^11.1.0",
-    "opencollective": "^1.0.3",
     "optimist": "^0.6.1",
     "text-to-js-identifier": "0.0.4",
     "xmlserializer": "^0.6.0"
@@ -97,8 +96,7 @@
     "build": "mkdir -p dist && npm run bundle && npm run fix-global && npm run uglify && npm run docs",
     "watch": "watchify -d lib/runtime/facade.js -o dist/scxml.js -s scxml -v",
     "lint": "eslint lib/",
-    "docs": "typedoc --module commonjs  --includeDeclarations --out dist/docs/ ./tsd/index.d.ts --readme README.md",
-    "postinstall": "opencollective postinstall"
+    "docs": "typedoc --module commonjs  --includeDeclarations --out dist/docs/ ./tsd/index.d.ts --readme README.md"
   },
   "browserify": {
     "transform": [
@@ -111,10 +109,6 @@
         }
       ]
     ]
-  },
-  "collective": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/SCION"
   },
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
