@@ -1,7 +1,7 @@
 {
   "name": "scion",
-  "version": "5.0.0",
-  "description": "",
+  "version": "5.0.3",
+  "description": "SCION provides a system for developing with SCXML/Statecharts in JavaScript",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "bootstrap": "lerna bootstrap",
@@ -11,7 +11,7 @@
     "push": "lerna exec --concurrency 1 'pwd; git push origin'",
     "commit": "lerna exec --concurrency 1 'if [ \"$( git status --porcelain )\" ]; then pwd; git diff | less; git commit -a; fi;'",
     "commit-packages": "lerna exec --concurrency 1 'if [ \"$( git status --porcelain )\" ]; then pwd; git commit -a -m \"Update package version\"; fi;'",
-    "publish": "bash scripts/publish.sh"
+    "publish-deps": "bash scripts/publish.sh"
   },
   "author": "",
   "license": "ISC",
@@ -40,6 +40,23 @@
         "scxml.min.js"
       ]
     }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/scion-scxml/scion.git"
+  },
+  "files": [
+    "README.md",
+    "dist/core.js",
+    "dist/core.js.map",
+    "dist/core.min.js",
+    "dist/schviz.js",
+    "dist/schviz.js.map",
+    "dist/schviz.min.js",
+    "dist/schviz.min.js.map",
+    "dist/scxml.debug.js",
+    "dist/scxml.js",
+    "dist/scxml.min.js"
   ],
   "collective": {
     "type": "opencollective",
