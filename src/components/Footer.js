@@ -49,7 +49,7 @@ export default class Footer extends React.Component {
         right: 0
       }} 
       ref={ x => this.root = x }>
-      SCION is developed and maintained by <a href="https://jacobeanrnd.com">Jacobean Research and Development, LLC</a>.
+      SCION is developed and maintained by <a href="http://jacobeanrnd.com">Jacobean Research and Development, LLC</a>.
     </footer>
   }
 }
