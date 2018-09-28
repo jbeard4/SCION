@@ -158,7 +158,7 @@ Here is a complete list of all modules and their associated licenses at the time
 </div>
 </p>
 
-I have thought a lot about this licensing scheme, and wanted to share my thoughts on how I arrived here.
+I have thought a lot about this licensing model, and wanted to share my thoughts on how I arrived here.
 
 ### Funding Models
 
