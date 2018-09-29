@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/vscode-preview",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "publisher": "jacobeanrnd",
   "engines": {
     "vscode": "^1.14.1"
@@ -49,7 +49,7 @@
     "url": "https://gitlab.com/scion-scxml/vscode-preview"
   },
   "dependencies": {
-    "@scion-scxml/schviz": "^3.2.19",
+    "@scion-scxml/schviz": "^3.2.20",
     "babel-polyfill": "^6.26.0",
     "cors": "^2.8.4",
     "express": "^4.16.2",
