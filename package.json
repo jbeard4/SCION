@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/vi-everywhere",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "This is a project to create an executable model of the behaviour of the vi text editor using Statecharts. An SVG-based editing environment is also provided as a reference implementation of a scriptable editing environment.",
   "main": "editor.js",
   "bin": {
@@ -15,11 +15,11 @@
   "repository": "https://gitlab.com/scion-scxml/example-vi.git",
   "homepage": "https://gitlab.com/scion-scxml/example-vi",
   "dependencies": {
-    "@scion-scxml/debug": "^1.0.13",
+    "@scion-scxml/debug": "^1.0.14",
     "babel-polyfill": "^6.26.0"
   },
   "devDependencies": {
-    "@scion-scxml/monitor-middleware": "^1.0.13"
+    "@scion-scxml/monitor-middleware": "^1.0.14"
   },
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
