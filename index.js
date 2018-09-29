@@ -88,12 +88,14 @@ function init(options, cb){
   });
 
   const pathToDashboard = require.resolve('@scion-scxml/dashboard')
+  const x = path.dirname(path.dirname(path.dirname(path.dirname(pathToDashboard))));
   const relativePathToDashboard = 
     path.relative(
       process.env.PWD,
-      path.dirname(path.dirname(path.dirname(path.dirname(pathToDashboard)))));
-  //console.log('pathToDashboard ', pathToDashboard );
-  //console.log('relativePathToDashboard ', relativePathToDashboard );
+      x);
+  console.log('pathToDashboard ', pathToDashboard );
+  console.log('x ', x );
+  console.log('relativePathToDashboard ', relativePathToDashboard );
   server.get('/dashboard/.*', restify.plugins.serveStatic({
     'directory': relativePathToDashboard,
     'default': 'index.html',
