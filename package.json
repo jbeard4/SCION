@@ -1,6 +1,6 @@
 {
   "name": "scion",
-  "version": "5.0.3",
+  "version": "5.0.4",
   "description": "SCION provides a system for developing with SCXML/Statecharts in JavaScript",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
