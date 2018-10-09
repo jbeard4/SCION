@@ -1,5 +1,5 @@
 {
-  "name": "@scion-scxml/vscode-preview",
+  "name": "vscode-scxml-preview",
   "version": "0.0.22",
   "publisher": "JacobeanResearchandDevelopmentLLC",
   "engines": {
