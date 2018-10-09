@@ -2,3 +2,9 @@
 .vscodeignore
 node_modules
 out
+browser/socket.io.js
+browser/polyfill.js
+browser/react.js
+browser/react-dom.js
+browser/scxml.js
+browser/schviz.js

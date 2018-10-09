@@ -31,6 +31,8 @@
     "onCommand:scxml.showPreview"
   ],
   "devDependencies": {
+    "@scion-scxml/scxml": "^4.3.23",
+    "@scion-scxml/schviz": "^3.2.23",
     "@types/node": "^6.0.83",
     "@types/socket.io-client": "^1.4.32",
     "socket.io-client": "^2.0.4",
@@ -38,7 +40,8 @@
     "typescript": "^2.4.1"
   },
   "scripts": {
-    "vscode:prepublish": "tsc -p ./",
+    "copy-deps": "cp node_modules/babel-polyfill/dist/polyfill.js browser/ && cp node_modules/react/dist/react.js browser/ && cp node_modules/react-dom/dist/react-dom.js browser/ && cp node_modules/@scion-scxml/scxml/dist/scxml.js browser/ && cp node_modules/@scion-scxml/schviz/dist/schviz.js browser/",
+    "vscode:prepublish": "tsc -p ./ && npm run copy-deps",
     "watch": "tsc -watch -p ./",
     "compile": "npm run vscode:prepublish",
     "build": "npm run compile",
@@ -51,8 +54,6 @@
     "url": "https://gitlab.com/scion-scxml/vscode-preview"
   },
   "dependencies": {
-    "@scion-scxml/scxml": "^4.3.23",
-    "@scion-scxml/schviz": "^3.2.23",
     "babel-polyfill": "^6.26.0",
     "cors": "^2.8.4",
     "express": "^4.16.2",

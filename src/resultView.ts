@@ -5,7 +5,6 @@ import { Disposable } from 'vscode';
 
 export class TextDocumentContentProvider extends Disposable implements vscode.TextDocumentContentProvider {
     private _onDidChange = new vscode.EventEmitter<vscode.Uri>();
-    private lastUri: vscode.Uri;
     private serverPort: number;
 
     constructor() {
@@ -16,8 +15,7 @@ export class TextDocumentContentProvider extends Disposable implements vscode.Te
     public set ServerPort(value: number) {
         this.serverPort = value;
     }
-    public provideTextDocumentContent(uri: vscode.Uri): Thenable<string> {
-        this.lastUri = uri;
+    public provideTextDocumentContent(): Thenable<string> {
         return this.generateResultsView();
     }
 
