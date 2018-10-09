@@ -54,17 +54,17 @@
     "url": "https://gitlab.com/scion-scxml/vscode-preview"
   },
   "dependencies": {
-    "babel-polyfill": "^6.26.0",
     "cors": "^2.8.4",
     "express": "^4.16.2",
     "q": "^1.5.1",
+    "babel-polyfill": "^6.26.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "socket.io": "^2.0.4",
     "vscode": "^1.1.4"
   },
   "galleryBanner": {
-    "color": "#1b6fbc",
+    "color": "#f78a30",
     "theme": "dark"
   },
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
