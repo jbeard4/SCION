@@ -2,7 +2,7 @@
 
 Visual preview SCXML
 
-![Preview](http://g.recordit.co/kO647nsmoQ.gif "Preview")
+![Preview](https://gitlab.com/scion-scxml/vscode-preview/raw/master/screenshot.gif?inline=true "Preview")
 
 ## Configuring your VSCode for SCXML development:
 
