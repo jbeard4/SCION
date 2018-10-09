@@ -1,22 +1,9 @@
-# Graphviz Preview
+# SCXML Preview
 
-An extension for Visual Studio Code to preview Graphviz (DOT) files.
+Visual preview SCXML
 
-![Graphviz Preview screenshot](screenshot.png)
+![Preview](https://lh4.googleusercontent.com/YVRt92fqD-u-l31Okbi7M_pvwQDb5EJ-0wlNF2VzDNut0jtYn_8v-Z8krwvKrjzTjW6p7BTl3xwcRK5U5Pwo=w2560-h1452-rw "Preview")
 
-## Configuration
+## Configuring your VSCode for SCXML development:
 
-Make sure the extension can find the “dot” program. You can set `graphviz-preview.dotPath` option to the path of the dot executable, or make sure the directory containing the dot program is in your `PATH` environment variable.
-
-To set the `graphviz-preview.dotPath` option, go to File → Preference → Settings.
-
-## Roadmap
-
-- Add border and shadow to indicate graph border.
-- Allow user to save the generated graph.
-- Report error if the document is invalid.
-
-## Known issues
-
-- The zoom option resets when the preview updates.
-- After saving an untitled file, the preview becomes invalid.
+[![Link to video](https://img.youtube.com/vi/G7ADiXTP-LM/0.jpg)](https://www.youtube.com/watch?v=G7ADiXTP-LM)

@@ -1,10 +1,11 @@
 {
   "name": "@scion-scxml/vscode-preview",
-  "version": "0.0.18",
-  "publisher": "jacobeanrnd",
+  "version": "0.0.22",
+  "publisher": "JacobeanResearchandDevelopmentLLC",
   "engines": {
     "vscode": "^1.14.1"
   },
+  "homepage": "https://scion.scxml.io",
   "license": "SEE LICENSE IN LICENSE",
   "displayName": "SCXML Preview",
   "description": "Preview SCXML files.",
@@ -12,6 +13,7 @@
     "Languages"
   ],
   "keywords": [
+    "scion",
     "scxml",
     "preview"
   ],
@@ -49,7 +51,8 @@
     "url": "https://gitlab.com/scion-scxml/vscode-preview"
   },
   "dependencies": {
-    "@scion-scxml/schviz": "^3.2.20",
+    "@scion-scxml/scxml": "^4.3.23",
+    "@scion-scxml/schviz": "^3.2.23",
     "babel-polyfill": "^6.26.0",
     "cors": "^2.8.4",
     "express": "^4.16.2",
@@ -58,6 +61,9 @@
     "react-dom": "^15.6.1",
     "socket.io": "^2.0.4",
     "vscode": "^1.1.4"
+  },
+  "galleryBanner": {
+    "color": "#f67f1c"
   },
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
