@@ -22,6 +22,8 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
   let inScript = false
   let inScriptOpenTag = false
   let cdata = []
+  let entities = []
+  let cachedEntityStart;
   const tagStack = []
   const attributeValuePositionCache = {};
   const attributeValueEndPositionCache = {};
@@ -29,9 +31,13 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
 
   const chunks = []
   function pushChunk(type, end, isRootScript, src) {
-    chunks.push({ type, start: index, end, cdata, isRootScript, src})
+    chunks.push({ type, start: index, end, cdata, isRootScript, src, entities})
+    entities = []
     cdata = []
     index = end
+  }
+  function pushEntity(end, parsedEntity){
+    entities.push({start: cachedEntityStart, end, parsedEntity});
   }
 
   const parser = _.extend(sax.parser(true,{trim : false, xmlns : true}),
@@ -117,6 +123,14 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
         pushChunk("script", cachedBeginCloseTagPosition-2, isRootScript)
       },
 
+      onentitystart() {
+        cachedEntityStart = parser.position - 2;
+      },
+
+      onentity(entity) {
+        pushEntity(parser.position, entity);
+      },
+
       onattributevaluestart() {
         const name = parser.attribName;
         //console.log('onattributevaluestart', name, code.slice(0,parser.position));
@@ -182,7 +196,8 @@ function iterateScripts(code, options, onChunk, onDatamodelDeclaration) {
         end: chunks[index - 1].end,
         cdata,
         isRootScript : chunks[startChunkIndex].isRootScript,
-        src : chunks[startChunkIndex].src 
+        src : chunks[startChunkIndex].src,
+        entities : chunks[startChunkIndex].entities  
       })
     }
     let startChunkIndex = 0
@@ -290,6 +305,10 @@ function extract(code, indentDescriptor, xmlMode, isJavaScriptMIMEType) {
       }
       transformedCode.replace(0, chunk.start, "")
       transformedCode.replace(chunk.end, code.length, "")
+      for(const entity of chunk.entities){
+        //replace entities
+        transformedCode.replace(entity.start, entity.end, entity.parsedEntity)
+      }
       for (const action of dedent(
         computeIndent(indentDescriptor, previousHTML, indentSlice),
         indentSlice
