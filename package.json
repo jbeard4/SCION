@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/cli",
-  "version": "1.0.35",
+  "version": "1.0.36",
   "description": "A command-line interface to SCION",
   "main": "main.js",
   "bin": {
@@ -23,11 +23,11 @@
     "postinstall": "licensezero-postinstall"
   },
   "dependencies": {
-    "@scion-scxml/core": "^2.6.20",
-    "@scion-scxml/monitor-middleware": "^1.0.17",
-    "@scion-scxml/schviz": "^3.2.23",
-    "@scion-scxml/scxml": "^4.3.23",
-    "@scion-scxml/sourcemap-plugin": "^1.0.20",
+    "@scion-scxml/core": "^2.6.21",
+    "@scion-scxml/monitor-middleware": "^1.0.18",
+    "@scion-scxml/schviz": "^3.2.24",
+    "@scion-scxml/scxml": "^4.3.24",
+    "@scion-scxml/sourcemap-plugin": "^1.0.22",
     "babel-polyfill": "^6.23.0",
     "electron": "^1.4.1",
     "jquery-ui-dist": "^1.12.1",
