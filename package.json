@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/jsondiffpatch",
-  "version": "0.2.26",
+  "version": "0.2.28",
   "author": "Benjamin Eidelman <beneidel@gmail.com>",
   "description": "Diff & Patch for Javascript objects",
   "contributors": [
