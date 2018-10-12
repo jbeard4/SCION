@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/sourcemap-plugin",
-  "version": "1.0.17",
+  "version": "1.0.20",
   "description": "",
   "main": "index.js",
   "scripts": {
