@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/basics-menus",
-  "version": "1.0.13",
+  "version": "1.0.16",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -13,11 +13,11 @@
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "MIT",
   "dependencies": {
-    "@scion-scxml/botbuilder-common": "^1.0.14",
+    "@scion-scxml/botbuilder-common": "^1.0.17",
     "@scion-scxml/botbuilder-common-scxml-components": "^1.0.17"
   },
   "devDependencies": {
-    "@scion-scxml/eslint-plugin": "^4.0.18",
+    "@scion-scxml/eslint-plugin": "^4.0.21",
     "eslint": "^5.4.0"
   },
   "repository": "https://gitlab.com/scion-scxml/example-botbuilder.git",
