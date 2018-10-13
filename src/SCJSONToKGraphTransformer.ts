@@ -704,7 +704,8 @@ export default class SCJSONToKGraphTransformer {
       case 'cancel':
         return `\u2717 ${action.sendid ? action.sendid : ''}${action.sendidexpr ? `sendidexpr : ${action.sendidexpr.expr}` : ''}`;
       default:
-        throw new Error('Unrecognized action');
+        console.warn('Unrecognized action');
+        return action.$type;
     }
   }
 
