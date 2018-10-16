@@ -17,8 +17,8 @@ SCXML provides a declarative markup for Statecharts, a powerful modelling langua
 Add the following script tags to your HTML:
 
 ```
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.23.0/polyfill.min.js">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/scion/4.3.1/scxml.min.js">
+<script src="https://unpkg.com/babel-polyfill@6.23.0/dist/polyfill.min.js">
+<script src="https://unpkg.com/@scion-scxml/scxml@4.3.25/dist/scxml.min.js">
 ```
 
 Then SCION API available as global singleton object `scion.scxml`.
