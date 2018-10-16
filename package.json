@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/scharpie",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@scion-scxml/xmllint": "^0.1.24",
+    "@scion-scxml/xmllint": "^0.1.25",
     "licensezero-postinstall": "^1.0.0",
     "xml2js": "^0.4.19"
   },
