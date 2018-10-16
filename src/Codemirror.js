@@ -32,7 +32,7 @@ const CodeMirror = createReactClass({
 		};
 	},
 	getCodeMirrorInstance () {
-		return this.props.codeMirrorInstance || require('codemirror');
+		return this.props.codeMirrorInstance || require('@scion-scxml/codemirror');
 	},
 	getInitialState () {
 		return {
