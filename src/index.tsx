@@ -138,6 +138,10 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, SchvizSt
 
   }
 
+  refreshViewbox(){
+    this.graphRoot.refreshViewbox();
+  }
+
   componentWillReceiveProps(props : GraphRootProps){
     if(props.layoutOptions !== this.props.layoutOptions){
       this.setState({layoutOptions : props.layoutOptions});
