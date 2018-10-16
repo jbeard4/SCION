@@ -7,10 +7,10 @@ lets you program with Statecharts using a simple JavaScript/JSON API.
 
 ## Browser (VanillaJS)
 
-scion-core is available on cdnjs. Simply add the script tag to you page:
+scion-core is available on unpkg. Simply add the script tag to your page:
 
 ```
-<script src="https://cdnjs.cloudflare.com/ajax/libs/scion/4.3.1/core.min.js"></script>
+<script src="https://unpkg.com/@scion-scxml/core@2.6.22/dist/core.min.js"></script>
 ```
 
 scion-core is then available as the global variable `scion.core`.
@@ -404,7 +404,7 @@ You can then perform the following steps to script web content:
 ```html
 <html>
     <head>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/scion/4.3.1/core.min.js"></script>
+        <script src="https://unpkg.com/@scion-scxml/core@2.6.21/dist/core.min.js"></script>
     </head>
     <body>
         <div id="rect"/>
