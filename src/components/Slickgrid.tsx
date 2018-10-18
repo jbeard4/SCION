@@ -95,4 +95,8 @@ export class SlickgridComponent extends React.Component<SlickgridProps, {}> {
 
   }
 
+  handleResize(){
+    this.grid.resizeCanvas();
+  }
+
 }
