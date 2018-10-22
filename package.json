@@ -9,6 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "bundle": "browserify client.js -d  -o dist/client.js -s ScionMonitorClient -v",
+    "build": "npm run bundle",
     "postinstall": "licensezero-postinstall"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
@@ -20,6 +21,9 @@
     "licensezero-postinstall": "^1.0.0",
     "restify": "^6.3.4",
     "restify-cors-middleware": "^1.1.1"
+  },
+  "devDependencies": {
+    "browserify": "^14.3.0"
   },
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
