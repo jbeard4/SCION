@@ -4,7 +4,8 @@
   "description": "Morse code parser implemented in SCXML",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "scion-scxml-monitor"
+    "start": "scion-scxml-monitor",
+    "deploy": "bash scripts/copy-scripts.sh && couchapp push node.couchapp.js $COUCH_URL"
   },
   "bin": {
     "umio": "bin/start.sh"
@@ -20,11 +21,12 @@
   },
   "homepage": "https://gitlab.com/scion-scxml/example-universal-morse-input-output",
   "dependencies": {
-    "@scion-scxml/debug": "^1.0.19",
+    "@scion-scxml/scxml": "^4.3.25",
     "babel-polyfill": "^6.26.0"
   },
   "devDependencies": {
-    "@scion-scxml/monitor-middleware": "^1.0.19"
+    "@scion-scxml/monitor-middleware": "^1.0.19",
+    "couchapp": "^0.11.0"
   },
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }

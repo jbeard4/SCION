@@ -2,7 +2,8 @@
     , path = require('path');
 
   ddoc = {
-      _id: 'morse'
+      _id: 'morse',
+      type: 'project.example'
   }
 
   module.exports = ddoc;
