@@ -1,9 +1,11 @@
  var couchapp = require('couchapp')
-    , path = require('path');
+    , path = require('path')
+    , description = require('./package.json').description;
 
   ddoc = {
       _id: 'morse',
-      type: 'project.example'
+      type: 'project.example',
+      description 
   }
 
   module.exports = ddoc;
