@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-Copyright (C) 2011 Jacob Beard
-Released under GNU GPL, read the file 'COPYING' for more information
--->
-
 <scxml 
   xmlns="http://www.w3.org/2005/07/scxml" 
   xmlns:c="http://commons.apache.org/scxml-js"
