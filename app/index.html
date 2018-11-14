@@ -1,9 +1,4 @@
 <!DOCTYPE HTML>
-<!--
-Copyright (C) 2011 Jacob Beard
-Released under GNU GPL, read the file 'COPYING' for more information
--->
-
 <html>
   <head>
   </head>
@@ -33,9 +28,11 @@ Released under GNU GPL, read the file 'COPYING' for more information
   window.svgNS = "http://www.w3.org/2000/svg";
 </script>
 <script src="editor.js"></script>
-<script src="/node_modules/babel-polyfill/dist/polyfill.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.0.0/polyfill.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
-<script src="/node_modules/@scion-scxml/debug/dist/scxml.debug.js"></script>
+<script src="scxml.js"></script>
+<script src="client.js"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/scion/5.0.4/scxml.debug.js"></script>-->
 <script>
   function main(){
     //here we pull this out of the document, but, thanks to clean design, 
