@@ -8,8 +8,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bundle": "browserify client.js -d  -o dist/client.js -s ScionMonitorClient -v",
-    "build": "npm run bundle",
+    "fix-global": "sed -i -e 's/g.monitorClient = f()/g.scion = g.scion || {}; g.scion.monitorClient = f();/' dist/monitorClient.js",
+    "bundle": "browserify client.js -d  -o dist/monitorClient.js -s monitorClient -v",
+    "build": "npm run bundle && npm run fix-global",
     "postinstall": "licensezero-postinstall"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
@@ -18,6 +19,8 @@
   "homepage": "https://gitlab.com/scion-scxml/monitor-middleware",
   "dependencies": {
     "@scion-scxml/dashboard": "^1.0.21",
+    "@scion-scxml/monitor-middleware": "^1.0.19",
+    "cheerio": "^1.0.0-rc.2",
     "licensezero-postinstall": "^1.0.0",
     "restify": "^6.3.4",
     "restify-cors-middleware": "^1.1.1"

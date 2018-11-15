@@ -5,6 +5,8 @@ const util = require('util');
 const path = require('path');
 const os = require('os');
 const corsMiddleware = require('restify-cors-middleware')
+const cheerio = require('cheerio')
+const monitorClientStr = fs.readFileSync(path.join(path.dirname(require.resolve('@scion-scxml/monitor-middleware')), 'dist/monitorClient.js'), 'utf8');
 
 const cors = corsMiddleware({
   origins: ['*'],
@@ -21,7 +23,9 @@ function init(options, cb){
   if(!server){
     server = restify.createServer();
     server.listen(process.env.port || process.env.PORT || 3978, function () {
-        console.log('SCION debugging server %s listening to %s', server.name, server.url);
+        console.log('SCION debugging server running', server.name, server.url);
+        console.log('Open %s to run your application', server.url);
+        console.log('Open %s/dashboard to run the application dashboard', server.url);
         if(cb) cb();
     });
   }
@@ -93,9 +97,9 @@ function init(options, cb){
     path.relative(
       process.env.PWD,
       x);
-  console.log('pathToDashboard ', pathToDashboard );
-  console.log('x ', x );
-  console.log('relativePathToDashboard ', relativePathToDashboard );
+  //console.log('pathToDashboard ', pathToDashboard );
+  //console.log('x ', x );
+  //console.log('relativePathToDashboard ', relativePathToDashboard );
   server.get('/dashboard/.*', restify.plugins.serveStatic({
     'directory': relativePathToDashboard,
     'default': 'index.html',
@@ -115,10 +119,40 @@ function init(options, cb){
     });
   });
 
-  server.get(/\/.*/, restify.plugins.serveStatic({
-    'directory': process.env.PWD,
-    'default': 'index.html'
-  }));
+  function injectMonitorClientIntoIndex(req, res, next) {
+    //if he is a directory, get index.html
+    let pathToFile = path.join(process.env.PWD, req.url);
+    if(fs.existsSync(pathToFile)){
+      const stat = fs.statSync(pathToFile);
+      if(stat.isDirectory()){
+        pathToFile = path.join(pathToFile, 'index.html')
+      }
+    }
+
+    //use regular static server for everything other than index.html
+    if(!pathToFile.match(/index.html$/)){
+      return next();
+    }
+
+    const html = fs.readFileSync(pathToFile, 'utf8');
+    const $ = cheerio.load(html);
+    const scriptNode1 = $(`<script>
+      ${monitorClientStr}
+      window.scion.monitorClient.init(window.scion.scxml);
+    </script>`);
+    // locate the scxml script
+    const scxmlScriptNode = $('script[src$="scxml.js"],script[src$="scxml.min.js"]')
+    // inject the monitor client and initialization script
+    scriptNode1.insertAfter(scxmlScriptNode);
+    res.sendRaw(200, $.html(), {'content-type': 'text/html'});
+  }
+
+  server.get(/\/.*/, 
+    injectMonitorClientIntoIndex,
+    restify.plugins.serveStatic({
+      'directory': process.env.PWD,
+      'default': 'index.html'
+    }));
 
   function broadcast(messageName, messageData){
     for(let res of responses){

@@ -38,7 +38,18 @@ function init(scxml, options){
   const networkBroadcast = options.broadcast || defaultBroadcast;
   function broadcast(interpreter, messageName, messageData){
     const url = interpreter._model.docUrl;
-    const absPath = path.isAbsolute(url) ? url : path.resolve(url);
+    const absPath = 
+      path.isAbsolute(url) ? 
+        url : 
+        path.join(
+          typeof window !== undefined ? 
+            (
+              window.location.pathname.match(/\.html$/) ? 
+                path.dirname(window.location.pathname) :
+                window.location.pathname
+            ) :
+            process.env.PWD, 
+          url);
     networkBroadcast(
       messageName,
       {
