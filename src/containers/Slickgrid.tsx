@@ -26,6 +26,16 @@ class SlickgridContainer extends React.PureComponent<SlickgridContainerProps> {
 
     return <SlickgridComponent
       ref={(e) => this.slickGridComponent = e}
+      options={{
+        enableCellNavigation: true,
+        enableColumnReorder: false,
+        forceFitColumns : true
+      }}
+      columns={[
+        { id: "scxmlName", name: "SCXML Name", field: "name", width: 120 },
+        { id: "sessionid", name: "Sesssionid", field: "sessionid", width: 120 },
+        { id: "eventName", name: "Event Name", field: "eventName", width: 120 },
+      ]}
       data={smallSteps}
       onSelectedRowChange={onSelectedRowChange}
       selectedRowIndex={selectedRowIndex}/>;

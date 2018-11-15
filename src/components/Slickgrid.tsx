@@ -5,31 +5,20 @@ import * as React from "react";
 export interface SlickgridProps {
   data : Array<any>;
   selectedRowIndex? : number;
-  onSelectedRowChange: any
+  onSelectedRowChange: any;
+  columns:any;
+  options:any;
 }
 
 export class SlickgridComponent extends React.Component<SlickgridProps, {}> {
 
   private rootElement : HTMLDivElement;
-  private columns : any;
   public grid : any;  // this is a bit ugly
   private dataView : any;
-  private options : any;
   private semaphore : boolean;
 
   constructor(){
     super();
-    this.options = {
-      enableCellNavigation: true,
-      enableColumnReorder: false,
-      forceFitColumns : true
-    };
-    this.columns = [
-      { id: "scxmlName", name: "SCXML Name", field: "name", width: 120 },
-      //{ id: "docUrl", name: "URL", field: "docUrl", width: 120 },
-      { id: "sessionid", name: "Sesssionid", field: "sessionid", width: 120 },
-      { id: "eventName", name: "Event Name", field: "eventName", width: 120 },
-    ];
     this.semaphore = false;
   }
 
@@ -69,7 +58,7 @@ export class SlickgridComponent extends React.Component<SlickgridProps, {}> {
       this.grid.render();
     });
 
-    this.grid = new Slick.Grid(this.rootElement, this.dataView, this.columns, this.options);
+    this.grid = new Slick.Grid(this.rootElement, this.dataView, this.props.columns, this.props.options);
 
     this.grid.setSelectionModel(new Slick.RowSelectionModel());
 

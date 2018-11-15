@@ -31,12 +31,12 @@ class SchvizContainer extends React.PureComponent<SchvizContainerProps> {
         expandAllStatesByDefault={true}
         disableAnimation={true}
         urlToSCXML={urlToSCXML} 
-        layoutOptions={SCHVIZ.layouts.right} 
         configuration={currentRow.snapshot[0]}
         previousConfiguration={currentRow.previousConfiguration}
         statesForDefaultEntry={currentRow.defaultStatesEntered }
         transitionsEnabled={transitionsTaken}
         hideActions={true}
+        id="dashboard" 
         /> : 
       null;
   }
