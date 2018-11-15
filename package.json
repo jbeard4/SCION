@@ -1,5 +1,5 @@
 {
-  "name": "@scion-scxml/umio",
+  "name": "@scion-scxml/example-vanillajs-morse",
   "version": "1.1.19",
   "description": "Morse code parser implemented in SCXML",
   "scripts": {
