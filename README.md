@@ -17,8 +17,8 @@ SCXML provides a declarative markup for Statecharts, a powerful modelling langua
 Add the following script tags to your HTML:
 
 ```
-<script src="https://unpkg.com/babel-polyfill@6.23.0/dist/polyfill.min.js">
-<script src="https://unpkg.com/@scion-scxml/scxml@4.3.25/dist/scxml.min.js">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.8.3/polyfill.min.js>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/scion/5.0.4/scxml.min.js">
 ```
 
 Then SCION API available as global singleton object `scion.scxml`.
@@ -39,7 +39,7 @@ let scxml = require('scxml');
 # Quickstart
 
 ```javascript
-scxml.urlToModel("drag-and-drop.xml",function(err,model){
+scion.scxml.urlToModel("drag-and-drop.xml",function(err,model){
 
   if(err) throw err;
 
@@ -48,7 +48,7 @@ scxml.urlToModel("drag-and-drop.xml",function(err,model){
     if(err) throw err;
 
     //instantiate the interpreter
-    var sc = new scxml.core.Statechart(fnModel);
+    var sc = new scion.core.Statechart(fnModel);
 
     //start the interpreter
     sc.start();
@@ -62,7 +62,7 @@ scxml.urlToModel("drag-and-drop.xml",function(err,model){
 
 # API
 
-See the API docs [here](https://scion.io/modules/_workspace_scion_scxml_platform_projects_scion_tsd_index_d_.html).
+See the API docs [here](https://scion.scxml.io/modules/_workspace_scion_scxml_platform_projects_scion_tsd_index_d_.html).
 
 # Backwards-compatibility with `SCION@3.x`
 
