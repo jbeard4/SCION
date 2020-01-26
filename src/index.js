@@ -65,9 +65,9 @@ function iterateESLintModules(fn) {
   if (!found) {
     throw new Error(
       oneLine`
-        eslint-plugin-scharpie error: It seems that eslint is not loaded.
+        @scion-scxml/eslint-plugin error: It seems that eslint is not loaded.
         If you think it is a bug, please file a report at
-        https://github.com/scion-scxml/eslint-plugin-scharpie/issues
+        https://gitlab.com/scion-scxml/eslint-plugin/issues
       `
     )
   }
