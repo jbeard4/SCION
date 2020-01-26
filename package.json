@@ -5,10 +5,10 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/scion-scxml/eslint-plugin-scharpie"
+    "url": "https://gitlab.com/scion-scxml/eslint-plugin"
   },
-  "homepage": "https://gitlab.com/scion-scxml/eslint-plugin-scharpie",
-  "bugs": "https://gitlab.com/scion-scxml/eslint-plugin-scharpie/issues",
+  "homepage": "https://gitlab.com/scion-scxml/eslint-plugin",
+  "bugs": "https://gitlab.com/scion-scxml/eslint-plugin/issues",
   "keywords": [
     "eslint-plugin",
     "eslintplugin",
@@ -22,7 +22,7 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "eslint": "^4.7.0",
+    "eslint": "5.5.0",
     "eslint-config-benoitz-prettier": "^1.0.1",
     "jest": "^21.1.0",
     "prettier": "^1.7.4"
