@@ -1,4 +1,4 @@
 pages:
   script:
     - mkdir public
-    - cp -r * public/
+    - for i in *; do if [ $i != public ]; then cp -r $i public/$i; fi; done;
