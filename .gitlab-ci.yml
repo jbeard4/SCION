@@ -2,8 +2,6 @@ image: node
 
 pages:
   stage: deploy
-  before_script:
-  - npm
   script:
   - cd drag-and-drop-redux
   - npm install
