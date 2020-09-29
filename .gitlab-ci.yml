@@ -6,7 +6,7 @@ pages:
   - cd drag-and-drop-redux
   - npm install
   - mkdir ../public
-  - cp -r * public/
+  - cp -r * ../public/
   artifacts:
     paths:
     - public
