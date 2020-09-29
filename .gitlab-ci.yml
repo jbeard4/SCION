@@ -1,4 +1,13 @@
+image: alpine:latest
+
 pages:
+  stage: deploy
   script:
-    - mkdir public
-    - for i in *; do if [ $i != public ]; then cp -r $i public/$i; fi; done;
+  - mkdir .public
+  - cp -r * .public
+  - mv .public public
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
