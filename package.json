@@ -84,7 +84,8 @@
   "browser": {
     "fs": "./lib/runtime/platform-bootstrap/browser/fs",
     "jsdom": "./lib/runtime/platform-bootstrap/browser/jsdom",
-    "vm": "@scion-scxml/vm-browserify"
+    "vm": "@scion-scxml/vm-browserify",
+    "./lib/runtime/platform-bootstrap/node/module.js": "./lib/runtime/platform-bootstrap/browser/module.js"
   },
   "main": "./lib/runtime/facade",
   "scripts": {
