@@ -6,7 +6,7 @@ const path = require('path');
 const os = require('os');
 const corsMiddleware = require('restify-cors-middleware')
 const cheerio = require('cheerio')
-const monitorClientStr = fs.readFileSync(path.join(path.dirname(require.resolve('@scion-scxml/monitor-middleware')), 'dist/monitorClient.js'), 'utf8');
+const monitorClientStr = fs.readFileSync(path.join(__dirname, 'dist/monitorClient.js'), 'utf8');
 
 const cors = corsMiddleware({
   origins: ['*'],

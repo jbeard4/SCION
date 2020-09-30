@@ -19,7 +19,6 @@
   "homepage": "https://gitlab.com/scion-scxml/monitor-middleware",
   "dependencies": {
     "@scion-scxml/dashboard": "^1.0.21",
-    "@scion-scxml/monitor-middleware": "^1.0.19",
     "cheerio": "^1.0.0-rc.2",
     "licensezero-postinstall": "^1.0.0",
     "restify": "^6.3.4",

@@ -38,9 +38,10 @@ function init(scxml, options){
   const networkBroadcast = options.broadcast || defaultBroadcast;
   function broadcast(interpreter, messageName, messageData){
     const url = interpreter._model.docUrl;
-    const absPath = 
+    const fullyQualifiedUrlOrAbsPath = 
       path.isAbsolute(url) ? 
         url : 
+        (typeof window !== undefined ? window.origin : '') + 
         path.join(
           typeof window !== undefined ? 
             (
@@ -55,7 +56,7 @@ function init(scxml, options){
       {
         meta : {
           scName : path.basename(interpreter._model.docUrl, path.extname(interpreter._model.docUrl)), 
-          docUrl : absPath,
+          docUrl : fullyQualifiedUrlOrAbsPath,
           sessionid : interpreter.opts.sessionid,
           parentSessionIds : getParentSessionIds(interpreter),
           snapshot : interpreter.getSnapshot()
