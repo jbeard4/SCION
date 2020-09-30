@@ -14,6 +14,11 @@ build:node:10.8.0:
   image: node:10.8.0
   <<: *build_definition
 
-build:node:6.10.3:
-  image: node:6.10.3
+build:node:12.12.0:
+  image: node:12.12.0
   <<: *build_definition
+
+build:node:14.12.0:
+  image: node:14.12.0
+  <<: *build_definition
+
