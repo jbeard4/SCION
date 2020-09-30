@@ -319,7 +319,7 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
       let kgraph = new KGraph(idGenerator, this.svgRootElement, kgraphRoot);
       let allEdges = kgraph ? this._getAllEdges(kgraph) : [];
       let enabledEdges = this._getEnabledEdges(allEdges, props.transitionsEnabled);
-      const options = getDefaultLayoutOptions(props.layoutOptions)
+      const options = getDefaultLayoutOptions(props.layoutOptions, props.id)
       if(!this.props.disableAnimation) this.svgRootElement.pauseAnimations();
       //wait a tick here to give him time to render.
       //TODO: would be better to fix this by performing layout in a webworker thread.

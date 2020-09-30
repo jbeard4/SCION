@@ -28,6 +28,7 @@
     "ui-contextmenu": "^1.18.1"
   },
   "devDependencies": {
+    "@scion-scxml/test-framework": "^2.0.15",
     "@types/es6-shim": "0.31.33",
     "@types/jquery": "2.0.41",
     "@types/node": "7.0.12",

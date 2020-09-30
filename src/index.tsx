@@ -16,10 +16,18 @@ require('../test-integration/styles.css')
 require('../node_modules/jquery-ui-dist/jquery-ui.css')
 import _ = require('underscore');
 
-export function getDefaultLayoutOptions(layoutOptions){
-  return _.extend({}, constants.layouts.right, layoutOptions);
+function getStateKey(id){
+  return `schviz-layout:${id}`;
 }
 
+export function getDefaultLayoutOptions(layoutOptions, id){
+  const k = getStateKey(id);
+  const defaultLayoutOption = 
+    window.localStorage[k] ? 
+     JSON.parse(window.localStorage[k]) : 
+     constants.layouts.right;
+  return _.extend({}, defaultLayoutOption, layoutOptions);
+}
 
 export interface GraphRootProps {
   pathToSCXML? : string;
@@ -121,7 +129,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, SchvizSt
         var $target = ui.target;
         switch(ui.cmd){
           case "setLayout":
-            self.setState({layoutOptions : getDefaultLayoutOptions(constants.layouts[ui.item.text()])}); 
+            self.setLayoutState(constants.layouts[ui.item.text()]);
             break;
           case 'zoomToState':
             self.graphRoot.zoomToState(ui.extraData.nodeId);
@@ -138,6 +146,13 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, SchvizSt
 
   }
 
+  setLayoutState(o){
+    if(this.props.id){
+      window.localStorage[getStateKey(this.props.id)] = JSON.stringify(o);   //persist
+    }
+    this.setState({layoutOptions : getDefaultLayoutOptions(o, this.props.id)}); 
+  }
+
   refreshViewbox(){
     this.graphRoot.refreshViewbox();
   }
@@ -148,7 +163,7 @@ export default class SCHVIZ extends React.PureComponent<GraphRootProps, SchvizSt
 
   componentWillReceiveProps(props : GraphRootProps){
     if(props.layoutOptions !== this.props.layoutOptions){
-      this.setState({layoutOptions : props.layoutOptions});
+      this.setLayoutState(props.layoutOptions);
     }
   }
 

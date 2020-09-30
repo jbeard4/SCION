@@ -1,10 +1,8 @@
 import * as React from "react";
 import {SCState, ModelFactory, Event} from '@scion-scxml/core-base' //TODO: we should not need to require these directly, but typescript does not seem to like the reference to scxml.scion
-import {Statechart} from '@scion-scxml/core'
-import scxml = require('@scion-scxml/scxml');    //TODO: make scxml an es6 module
-                                    //TODO: expose SCJSON object type, so we do not need to use "any" type
-import SCHVIZ from '@scion-scxml/schviz';
 import Console from '@scion-scxml/console-component';
+
+const { core : { Statechart }, scxml, schviz : SCHVIZ } = window['scion'];
 
 interface AppComponentState {
   pathToSCXML? : string;
@@ -19,7 +17,7 @@ interface AppComponentState {
   layoutOptions? : any;
   redraw? : boolean;
   disableAnimation? : boolean;
-  interpreter : Statechart;
+  interpreter : any;
   configuration? : string[];
 }
 
@@ -234,7 +232,7 @@ export default class AppComponent extends React.Component<{}, AppComponentState>
         this.stopInterpreter();
       }else{
 
-        const handleModelFactoryFactory = (err, model : scxml.ModelFactoryFactory) => {
+        const handleModelFactoryFactory = (err, model : any) => {
           if(err) throw err;
           model.prepare((err, modelFactory : ModelFactory) => {
             if(err) throw err;

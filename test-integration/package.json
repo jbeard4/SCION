@@ -45,9 +45,14 @@
   "browserify": {
     "transform": [
       [
-        "browserify-css"
+        "browserify-css",
+        "browserify-shim"
       ]
     ]
+  },
+  "browserify-shim": {
+    "react": "global:React",
+    "react-dom": "global:ReactDOM"
   },
   "keywords": [
     "scxml"
