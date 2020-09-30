@@ -11,7 +11,10 @@ function createWindow () {
 
   // Create the browser window.
   let window = new BrowserWindow({
-    title: 'SCION Monitor'
+    title: 'SCION Monitor',
+    webPreferences: {
+      webSecurity: false
+    }
   })
 
   // and load the index.html of the app.
