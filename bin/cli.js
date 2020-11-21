@@ -71,7 +71,7 @@ require('yargs') // eslint-disable-line
       interpreter.start();
       console.log(interpreter.getConfiguration());
 
-      function processEvent(cmd,dontKnow,alsoDontKnow,callback){
+      function processEvent(cmd, context, filename, callback){
         cmd = cmd.trim();
         if(cmd === 'getSnapshot()'){
           callback(null,interpreter.getSnapshot());
@@ -83,7 +83,12 @@ require('yargs') // eslint-disable-line
       }
 
       //start
-      repl.start('#',process.stdin,processEvent);
+      repl.start({
+        prompt: '#',
+        input: process.stdin,
+        output: process.stdout,
+        eval: processEvent
+      });
     }
   })
   .command('execute [filename]', 'execute an SCXML file (without the repl)', (yargs) => {
