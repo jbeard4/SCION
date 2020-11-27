@@ -76,7 +76,13 @@ require('yargs') // eslint-disable-line
         if(cmd === 'getSnapshot()'){
           callback(null,interpreter.getSnapshot());
         }else{
-          interpreter.gen({name : cmd});
+          let evt;
+          try {
+            evt = JSON.parse(cmd);
+          } catch (e){
+            evt = {name : cmd}
+          }
+          interpreter.gen(evt);
           var conf = interpreter.getConfiguration();
           callback(null,conf);
         }
