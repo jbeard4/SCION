@@ -26,7 +26,7 @@
   },
   "homepage": "https://gitlab.com/scion-scxml/core",
   "dependencies": {
-    "@scion-scxml/core-base": "^1.0.24"
+    "@scion-scxml/core-base": "git@gitlab.com:scion-scxml/core-base.git#2f3bac6ddd2121b6fda3e1a4e896751e3dca2eaf"
   },
   "devDependencies": {
     "@scion-scxml/core-test-framework": "^1.0.24",
