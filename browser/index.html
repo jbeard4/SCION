@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="/socket.io/socket.io.js"></script>
     <script src="./polyfill.js"></script>
     <script src="./react.js"></script>
     <script src="./react-dom.js"></script>
@@ -33,12 +32,13 @@
         );
       }
 
-      this.socket = window.io();
-      this.socket.on('connect', () => {
-        // Do nothing
-      });
-      this.socket.on('scxml.update', (value) => {
-        render(value);
+      window.addEventListener('message', event => {
+          const message = event.data; // The json data that the extension sent
+          switch (message.command) {
+              case 'scxml.update':
+                  render(message.scxmlContent);
+                  break;
+          }
       });
     </script>
   </body>
