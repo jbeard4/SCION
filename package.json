@@ -1,6 +1,6 @@
 {
   "name": "vscode-scxml-preview",
-  "version": "0.0.26",
+  "version": "0.0.28",
   "publisher": "JacobeanResearchandDevelopmentLLC",
   "engines": {
     "vscode": "^1.47.0"
