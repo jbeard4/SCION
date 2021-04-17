@@ -14,8 +14,6 @@
     "bundle": "cd dist; browserify -t browserify-css --exclude electron index.js -d  -o scion-scxml-dashboard.js -v; sorcery -i scion-scxml-dashboard.js",
     "minify": "cd dist; uglifyjs scion-scxml-dashboard.js --in-source-map scion-scxml-dashboard.js.map  --source-map  -o scion-scxml-dashboard.min.js",
     "clean": "rm -rf dist/*",
-    "server": "node grunt/server.js",
-    "harness": "opn http://localhost:3001/test-integration/index.html",
     "postinstall": "licensezero-postinstall && node scripts/postinstall.js"
   },
   "license": "SEE LICENSE IN LICENSE",
