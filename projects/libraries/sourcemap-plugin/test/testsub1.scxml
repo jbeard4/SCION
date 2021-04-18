@@ -1,0 +1,17 @@
+<scxml initial="sub0" version="1.0" datamodel="ecmascript">
+ <datamodel>
+   <data id="z"/>
+ </datamodel>
+ <state id="sub0">
+   <onentry>
+     <log label="z" expr="z"/>
+     <script>
+        for(var i = 0; i &lt; z; i++){
+          console.log('z', i);
+        } 
+     </script>
+   </onentry>
+   <transition target="subFinal"/>
+ </state>
+ <final id="subFinal"/>
+</scxml>
