@@ -15,7 +15,6 @@
     "projects/libraries/scxml-test-framework",
     "projects/libraries/eslint",
     "projects/libraries/jsondiffpatch",
-    "projects/libraries/react-codemirror",
     "projects/libraries/react-collapsible",
     "projects/libraries/xmllint",
     "projects/libraries/monitor-middleware",
