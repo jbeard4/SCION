@@ -1,0 +1,57 @@
+<scxml 
+    datamodel="ecmascript"
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0">
+    <parallel id="p">
+    	<state id="1">
+      	<invoke id="session_1">
+        	<content>
+            <scxml 
+              datamodel="ecmascript"
+              xmlns="http://www.w3.org/2005/07/scxml"
+              version="1.0">
+                <state id="session-1-foo">
+                  <onentry>
+                  	<log label="here1"/>
+                    <send event="ping-from-1" delay="2s" target="#_session_2"/>
+                  </onentry>
+                  <transition event="ping-from-2" target="session-1-bar"/>
+                </state>
+                <state id="session-1-bar">
+                  <onentry>
+                  	<log label="here3"/>
+                    <send event="pong-from-1" delay="2s"  target="#_session_2"/>
+                  </onentry>    
+                  <transition event="pong-from-2" target="session-1-foo"/>    
+                </state>              
+            </scxml>
+          </content>
+        </invoke>
+      </state>
+      <state id="2">
+      	<invoke id="session_2">
+        	<content>
+            <scxml 
+              datamodel="ecmascript"
+              xmlns="http://www.w3.org/2005/07/scxml"
+              version="1.0">
+                <state id="session-2-foo">
+                  <onentry>
+                  	<log label="here2"/>
+                    <send event="ping-from-2" delay="2s" target="#_session_1"/>
+                  </onentry>
+                  <transition event="ping-from-1" target="session-2-bar"/>
+                </state>
+                <state id="session-2-bar">
+                  <onentry>
+                  	<log label="here4"/>
+                    <send event="pong-from-2" delay="2s"  target="#_session_1"/>
+                  </onentry>    
+                  <transition event="pong-from-1" target="session-2-foo"/>    
+                </state>              
+            </scxml>
+          </content>
+        </invoke>      
+      </state>
+    </parallel>
+</scxml>
