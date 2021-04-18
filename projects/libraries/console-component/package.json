@@ -1,0 +1,24 @@
+{
+  "name": "@scion-scxml/console-component",
+  "version": "1.0.27",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "dependencies": {
+    "react": "15.6.1"
+  },
+  "devDependencies": {
+    "@types/react": "15.6.1",
+    "typescript": "2.3.3"
+  },
+  "scripts": {
+    "watch": "tsc -p . --outDir dist/ -w",
+    "build": "mkdir -p dist && npm run transpile",
+    "transpile": "tsc -p . --outDir dist/",
+    "clean": "rm -rf dist/*",
+    "postversion": "git push && npm publish"
+  },
+  "author": "Jacob Beard <jake@jacobeanrnd.com>",
+  "license": "Apache-2.0",
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+}
