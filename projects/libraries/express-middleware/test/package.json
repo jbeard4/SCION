@@ -1,5 +1,5 @@
 {
-  "name": "test",
+  "name": "@scion-scxml/express-middleware-test",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -12,5 +12,6 @@
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
     "morgan": "~1.9.1"
-  }
+  },
+  "private": true
 }
