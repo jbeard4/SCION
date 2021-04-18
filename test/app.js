@@ -1,0 +1,81 @@
+var path = require('path')
+var createError = require('http-errors');
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
+
+var scxml = require('@scion-scxml/scxml')
+var scionMiddleware = require('..')
+
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/users');
+
+//create an express server
+var app = express();
+
+
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
+
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+
+
+//init the scion middleware
+scionMiddleware({
+  app,
+  scxml,
+  pathToScxmlSrcDir: path.join(__dirname, 'scxml')
+})
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  next(createError(404));
+});
+
+// error handler
+app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
+});
+
+
+//init an SCXML file and simulate it
+scxml.pathToModel(path.join(__dirname,'scxml', 'doc.scxml'), function(err,model){
+  if(err) throw err;
+  model.prepare((err, fnModel) => {
+    if(err) throw err;
+
+    //instantiate the interpreter
+    const rootSession = new scxml.core.Statechart(fnModel);
+
+    rootSession.on('onInvokedSessionInitialized', function(invokedInterpreter){
+      invokedInterpreter._scriptingContext = rootSession._scriptingContext; //FIXME: workaround for bug in inter-session communication: https://gitlab.com/scion-scxml/scion/issues/3
+    });
+
+    //start the machine
+    rootSession.start();    
+
+  }, {
+    console: console,
+  })
+})
+
+
+
+module.exports = app;
