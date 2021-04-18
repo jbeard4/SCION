@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "bulk-require": "^0.2.1",
+    "browserify-css": "^0.10.0",
     "codeclimate-test-reporter": "0.0.3",
     "expect.js": "~0.3.1",
     "fiberglass": "0.0.22",
