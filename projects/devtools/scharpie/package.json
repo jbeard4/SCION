@@ -1,0 +1,35 @@
+{
+  "name": "@scion-scxml/scharpie",
+  "version": "1.0.22",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "licensezero-postinstall"
+  },
+  "author": "Jacob Beard <jake@jacobeanrnd.com>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@scion-scxml/xmllint": "^0.1.25",
+    "licensezero-postinstall": "^1.0.0",
+    "xml2js": "^0.4.19"
+  },
+  "bin": {
+    "scharpie": "index.js"
+  },
+  "devDependencies": {
+    "brfs": "^1.4.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/scion-scxml/scharpie.git"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "brfs"
+      ]
+    ]
+  },
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+}

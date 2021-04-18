@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.w3.org/2005/07/scxml"
+    xmlns="http://www.w3.org/2005/07/scxml"
+    elementFormDefault="qualified">
+
+	<xsd:annotation>
+		<xsd:documentation>
+        XML Schema datatypes for SCXML
+
+        Defines containers for the SCXML datatypes, many of these
+        imported from other specifications and standards.
+
+		</xsd:documentation>
+		<xsd:documentation source="scxml-copyright.xsd"/>
+	</xsd:annotation>
+
+	<xsd:simpleType name="Exmode.datatype">
+		<xsd:annotation>
+			<xsd:documentation>
+            Describes the processor execution mode for this document, being
+            either "lax" or "strict".     
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:NMTOKEN">
+			<xsd:enumeration value="lax"/>
+			<xsd:enumeration value="strict"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="Binding.datatype">
+		<xsd:annotation>
+			<xsd:documentation>
+            The binding type in use for the SCXML document.     
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:NMTOKEN">
+			<xsd:enumeration value="early"/>
+			<xsd:enumeration value="late"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+
+	<xsd:simpleType name="HistoryType.datatype">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="shallow"/>
+			<xsd:enumeration value="deep"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="TransitionType.datatype">
+		<xsd:annotation>
+			<xsd:documentation>
+            The type of the transition i.e. internal or external. 
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:NMTOKEN">
+			<xsd:enumeration value="internal"/>
+			<xsd:enumeration value="external"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="Boolean.datatype">
+		<xsd:annotation>
+			<xsd:documentation>
+            Boolean: true or false only
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:NMTOKENS">
+			<xsd:enumeration value="true"/>
+			<xsd:enumeration value="false"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="AssignType.datatype">
+		<xsd:annotation>
+			<xsd:documentation>
+            The assign type that allows for precise manipulation of the
+            datamodel location. Types are:
+                 replacechildren (default),
+                 firstchild, lastchild,
+                 previoussibling, nextsibling,
+                 replace, delete,
+                 addattribute
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:NMTOKEN">
+			<xsd:enumeration value="replacechildren"/>
+			<xsd:enumeration value="firstchild"/>
+			<xsd:enumeration value="lastchild"/>
+			<xsd:enumeration value="previoussibling"/>
+			<xsd:enumeration value="nextsibling"/>
+			<xsd:enumeration value="replace"/>
+			<xsd:enumeration value="delete"/>
+			<xsd:enumeration value="addattribute"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="URI.datatype">
+		<xsd:annotation>
+			<xsd:documentation>
+            The xsd:anyURI type and thus URI references in SCXML
+            documents may contain a wide array of international
+            characters. Implementers should reference RFC 3987 and
+            the "Character Model for the World Wide Web 1.0:
+            Resource Identifiers" in order to provide appropriate
+            support for these characters in VoiceXML documents and
+            when processing values of this type or mapping them to
+            URIs.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:anyURI"/>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="Integer.datatype">
+		<xsd:annotation>
+			<xsd:documentation>Non-negative integer</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:nonNegativeInteger"/>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="Duration.datatype">
+		<xsd:annotation>
+			<xsd:documentation>
+            Duration allowing positive values ranging from milliseconds
+            to days. 
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="\d*(\.\d+)?(ms|s|m|h|d)"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+
+	<xsd:simpleType name="EventType.datatype">
+		<xsd:annotation>
+			<xsd:documentation>
+            EventType is the name of an event.
+            Example legal values:
+            	foo
+            	foo.bar
+            	foo.bar.baz
+            </xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:token">
+			<xsd:pattern value="(\i|\d|\-)+(\.(\i|\d|\-)+)*"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="EventTypes.datatype">
+		<xsd:annotation>
+			<xsd:documentation>
+			Custom datatype for the event attribute in SCXML based on xsd:token.
+			Example legal values:
+				*
+				foo
+				foo.bar
+				foo.*
+				foo.bar.*
+				foo bar baz
+				foo.bar bar.* baz.foo.*
+            </xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:token">
+			<xsd:pattern value="\.?\*|(\i|\d|\-)+(\.(\i|\d|\-)+)*(\.\*)?(\s(\i|\d|\-)+(\.(\i|\d|\-)+)*(\.\*)?)*"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<!-- Defines the  default CondLang datatype.        -->
+	<xsd:simpleType name="CondLang.datatype">
+		<xsd:annotation>
+			<xsd:documentation>
+		    Conditional language is expression 
+		    which must evaluate to Boolean True or False. 
+		    The expression language must define In(stateID) 
+		    as a valid expression.
+            </xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string"/>
+	</xsd:simpleType>
+
+	<!-- Defines the  default LocLang datatype.         -->
+	<xsd:simpleType name="LocLang.datatype">
+		<xsd:annotation>
+			<xsd:documentation>
+	        Location language is expression
+		    identifying a location in the datamodel.  
+	        </xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string"/>
+	</xsd:simpleType>
+
+	<!-- Defines the default ValueLang datatype.       -->
+	<xsd:simpleType name="ValueLang.datatype">
+		<xsd:annotation>
+			<xsd:documentation>
+		    Value language is expression
+		    return a value.
+            </xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string"/>
+	</xsd:simpleType>
+</xsd:schema>
