@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml 
+    datamodel="ecmascript"
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0">
+
+    <state id="A">
+      <transition event="e">
+        <script> console.log('do some stuff here'); </script>
+      </transition>
+      <state id="a1">
+      </state>
+      <state id="a2"/>
+    </state>
+
+</scxml>
+
+

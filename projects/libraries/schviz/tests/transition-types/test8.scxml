@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml 
+    datamodel="ecmascript"
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0">
+
+    <parallel id="P">
+      <transition event="e" target="a1 b2"></transition>
+      <state id="A">
+        <state id="a1">
+        </state>
+        <state id="a2">
+        </state>
+      </state>
+      <state id="B">
+        <state id="b1">
+        </state>
+        <state id="b2">
+        </state>
+      </state>
+    </parallel>
+
+</scxml>
