@@ -1,0 +1,51 @@
+{
+  "name": "@scion-scxml/test-framework",
+  "version": "2.0.15",
+  "description": "A set of SCXML tests, and an HTTP client test runner for testing against SCXML HTTP test servers.",
+  "keywords": [
+    "scxml",
+    "statecharts",
+    "w3c",
+    "javascript"
+  ],
+  "maintainers": [
+    {
+      "name": "Jacob Beard",
+      "email": "jbeard4@cs.mcgill.ca",
+      "url": "http://echo-flow.com"
+    }
+  ],
+  "bugs": {
+    "email": "jbeard4@cs.mcgill.ca",
+    "url": "https://github.com/jbeard4/scxml-test-framework/issues"
+  },
+  "author": "Jacob Beard <jake@jacobeanrnd.com>",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "https://github.com/jbeard4/scxml-test-framework/blob/master/LICENSE.txt"
+    }
+  ],
+  "repository": [
+    {
+      "type": "git",
+      "url": "git://github.com/jbeard4/scxml-test-framework.git"
+    }
+  ],
+  "engines": {
+    "node": ">=4.2.2"
+  },
+  "main": "./lib/test-client",
+  "dependencies": {
+    "cli-table": "^0.3.1",
+    "github": "^2.4.1",
+    "grunt": "^1.0.1",
+    "grunt-release": "^0.14.0",
+    "load-grunt-tasks": "^3.5.2",
+    "node-static": "^0.7.8",
+    "nopt": "^3.0.6",
+    "request": "^2.74.0",
+    "underscore": "^1.8.3"
+  },
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+}

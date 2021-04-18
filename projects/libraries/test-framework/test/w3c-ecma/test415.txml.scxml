@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Test that the state machine halts when it enters a top-level final state.  Since
+ the initial state is a final state, this machine should halt immediately without
+ processing "event1" which is raised in the final state's on-entry handler.  This
+ is a manual test since there is no platform-independent way to test that event1
+ is not processed --><scxml xmlns="http://www.w3.org/2005/07/scxml" xmlns:conf="http://www.w3.org/2005/scxml-conformance" initial="final" version="1.0" datamodel="ecmascript">
+  <final id="final">
+    <onentry>
+      <raise event="event1"/>
+      </onentry>
+   </final>
+
+</scxml>

@@ -1,0 +1,10 @@
+{
+    "initialConfiguration" : ["s0"],
+    "events" : [
+        {
+            "after" : 3100,
+            "event" : { "name" : "t1" },
+            "nextConfiguration" : ["pass"]
+        }
+    ]
+}
