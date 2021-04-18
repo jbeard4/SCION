@@ -10,7 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "fix-global": "sed -i -e 's/g.monitorClient = f()/g.scion = g.scion || {}; g.scion.monitorClient = f();/' dist/monitorClient.js",
     "bundle": "browserify client.js -d  -o dist/monitorClient.js -s monitorClient -v",
-    "build": "npm run bundle && npm run fix-global",
+    "build": "mkdir -p dist && npm run bundle && npm run fix-global",
     "postinstall": "licensezero-postinstall"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
