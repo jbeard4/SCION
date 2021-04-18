@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+  - 4.8.2
+before_script:
+  - npm install grunt-cli -g
+addons:
+  sauce_connect:
+    username: "jbeard43"
+  jwt:
+    secure: gj7f0pJiRSmKguXfQh/Rj+A7r7sOCbrlbCAz0JjhoV4J1GH8fLfqkQtH3zZFeFADOvJzVEP5Kpa4EvAtjKm/iD8v+zg3F69FIg//MfH0EeC6sc3Gd7qYg6iEo2bRO6KtavfWigFJzIryjqYodjYnuqHfqO7kyRLlGnJHFGENVJU=
