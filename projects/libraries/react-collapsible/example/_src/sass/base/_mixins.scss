@@ -1,0 +1,11 @@
+@function strip-unit($num) {
+  @return $num / ($num * 0 + 1);
+}
+
+
+@function rem($sizeValue: 1.6) {
+  
+  $value: strip-unit($sizeValue / $BASE_FONT_SIZE);
+
+  @return $value + rem;
+}
