@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "licensezero": [
+    {
+      "agentSignature": "bf6e75f37ca1d084e4a0a5a3305e1b3638230b7fb5641d4ee9808fb7c101dc90fd6d21c6eabb1842e3f7e0d87adb89454857a99faaa76912fc9069cd751c5d0f",
+      "license": {
+        "homepage": "https://www.npmjs.com/package/@scion-scxml/dashboard",
+        "jurisdiction": "US-DE",
+        "name": "Jacobean Research and Development",
+        "projectID": "e5b546f8-04c6-4a14-8ae4-9413a491c8b5",
+        "publicKey": "5c9441fef36e5952d1906de3951b423a2e258c71cc9f5aea154a0319f5d73a10",
+        "terms": "parity",
+        "version": "3.0.0"
+      },
+      "licensorSignature": "bd827c1e01cc354f159a553e8231adc2897efead7f99a30667b0223398cc2d194bbad3ac1b93f6c22f6b906126c8a0d58a1c86407ce79093abee82b33185890d"
+    }
+  ]
+}
