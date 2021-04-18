@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" href="./node_modules/jquery-ui-dist/jquery-ui.css">
+  </head>
+  <body class="flex">
+    <div class="app flex grow"></div>
+    <script src="./node_modules/whatwg-fetch/fetch.js"></script>
+    <script src="./node_modules/jquery/dist/jquery.js"></script>
+    <script src="./node_modules/jquery-ui-dist/jquery-ui.js"></script>
+    <script src="./node_modules/ui-contextmenu/jquery.ui-contextmenu.js"></script>
+    <script src="./node_modules/babel-polyfill/dist/polyfill.js"></script>
+    <script src="./node_modules/react/dist/react.js"></script>
+    <script src="./node_modules/react-dom/dist/react-dom.js"></script>
+    <script src="/node_modules/@scion-scxml/scxml/dist/scxml.min.js"></script>
+    <script src="/dist/schviz.js"></script>
+    <script>
+      let app = ReactDOM.render(
+        React.createElement(window.scion.schviz, { 
+          urlToSCXML: '/tests/transition-types/test10.scxml',
+          //scxmlDocumentString: this.state.scxmlDocumentString,
+          //scjson: this.state.scjson,
+          //layoutOptions: this.state.layoutOptions,
+          //redraw: true,
+          //configuration: [],
+          //disableAnimation: true
+        }),
+        document.querySelector('.app')
+      );
+    </script>
+  </body>
+</html>
+

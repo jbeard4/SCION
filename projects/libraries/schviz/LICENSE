@@ -1,0 +1,59 @@
+The Parity Public License 3.0.0
+
+Copyright Notice: Jacobean Research and Development
+
+Source Notice: https://www.npmjs.com/package/@scion-scxml/schviz
+
+This license lets you use and share this software for free, as
+long as you contribute software you make with it. Specifically:
+
+If you follow the rules below, you may do everything with this
+software that would otherwise infringe either my copyright in it,
+any patent claim I can license that covers this software as of my
+latest contribution, or both.
+
+1. Contribute source code for changes you make to this software.
+
+2. If you run or combine this software with other software in any
+   larger program, contribute all source code for that program.
+
+3. Contribute all source code for software you develop, deploy,
+   monitor, or run with this software.
+
+4. Ensure everyone who gets a copy of this software from you,
+   in source code or any other form, gets the text of this
+   license and the copyright and source notices above.
+
+5. Do not make any legal claim against anyone for infringing
+   any patent claim they would infringe by using this software
+   alone, accusing this software, with or without changes,
+   alone or as part of a larger program.
+
+To contribute source code, publish the preferred form for making
+changes through a freely accessible distribution system widely
+used for similar source code, and license contributions not
+already licensed to the public on terms as permissive as this
+license accordingly.
+
+You are excused for unknowingly breaking 1, 2, or 3 if you
+contribute source code, or stop doing anything requiring this
+license, within 30 days of learning you broke the rule.
+
+**This software comes as is, without any warranty at all. As far
+as the law allows, I will not be liable for any damages related
+to this software or this license, for any kind of legal claim.**
+
+
+---
+
+Licensor Signature (Ed25519):
+
+5c409c5af21892194cc68f296f4b763ca294b8a4e442b97dc63d4e5ee078a2ea
+61ab23c00887e6b5f04e156f32c7a74eee43b28f33fc513d540d3cd5b2cbbb03
+
+---
+
+Agent Signature (Ed25519):
+
+2e8613a0a981652e3d30d69db04e71e11f50354e033fbcc87bd0f9be42b8e235
+2916d43239eb86596dccd265d5d436101c4b87d14945b4ed377b6679acfcf30e
