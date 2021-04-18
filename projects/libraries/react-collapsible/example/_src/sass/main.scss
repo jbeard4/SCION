@@ -1,0 +1,13 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,700,700italic,400italic);
+@import "base/variables";
+@import "base/mixins";
+
+
+body {
+  background-color: $grey;
+  font-family: 'Roboto', sans-serif;
+  padding-top: 50px;
+}
+
+
+@import "components/Collapsible";
