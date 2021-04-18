@@ -1,0 +1,26 @@
+{
+  "name": "@scion-scxml/sourcemap-plugin",
+  "version": "1.0.23",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jacob Beard <jake@jacobeanrnd.com>",
+  "license": "SEE LICENSE IN LICENSE",
+  "dependencies": {
+    "@scion-scxml/vm-browserify": "0.0.6",
+    "esprima": "^4.0.0",
+    "licensezero-postinstall": "^1.0.0",
+    "source-map": "^0.6.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/scion-scxml/sourcemap-plugin.git"
+  },
+  "homepage": "https://gitlab.com/scion-scxml/sourcemap-plugin",
+  "browser": {
+    "vm": "@scion-scxml/vm-browserify"
+  },
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+}
