@@ -11,7 +11,7 @@
     "postversion": "git push --follow-tags && npm publish",
     "build": "npm run transpile && npm run bundle && npm run minify",
     "transpile": "tsc -p . --outDir dist/",
-    "bundle": "cd dist; browserify -t browserify-css --exclude electron index.js -d  -o scion-scxml-dashboard.js -v; sorcery -i scion-scxml-dashboard.js",
+    "bundle": "cd dist; browserify -t browserify-css -t concatenify --exclude electron index.js -d  -o scion-scxml-dashboard.js -v; sorcery -i scion-scxml-dashboard.js",
     "minify": "cd dist; uglifyjs scion-scxml-dashboard.js --in-source-map scion-scxml-dashboard.js.map  --source-map  -o scion-scxml-dashboard.min.js",
     "clean": "rm -rf dist/*",
     "postinstall": "licensezero-postinstall && node scripts/postinstall.js"
@@ -56,7 +56,8 @@
           ]
         }
       ],
-      "browserify-css"
+      "browserify-css",
+      "concatenify"
     ]
   },
   "devDependencies": {
@@ -82,6 +83,7 @@
     "bootstrap": "^3.3.7",
     "browserify": "^14.5.0",
     "browserify-css": "^0.10.0",
+    "concatenify": "^1.0.1",
     "electron-devtools-installer": "^2.2.1",
     "exorcist": "^0.4.0",
     "expect": "^1.8.0",

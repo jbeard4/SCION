@@ -1,18 +1,13 @@
-import 'babel-polyfill';
-import * as React from "react";
-import { render } from 'react-dom';
-import { Provider } from 'react-redux';
-import App from './containers/App';
-import configureStore from './store/configureStore';
-require("../node_modules/font-awesome/css/font-awesome.css")
-require("../node_modules/slickgrid/slick.grid.css")
-require("../node_modules/slickgrid/slick-default-theme.css")
-require("../node_modules/@scion-scxml/jsondiffpatch/public/formatters-styles/html.css")
+const concatenify = require('concatenify');
 
-const store = configureStore();
+window['$'] = window['jQuery'] = require("jquery")
+concatenify("../node_modules/jquery-ui-dist/jquery-ui.js")
+concatenify("../node_modules/ui-contextmenu/jquery.ui-contextmenu.js")
+concatenify("../node_modules/react-ui-layout/jquery.layout-latest.js")
+concatenify("../node_modules/slickgrid/lib/jquery.event.drag-2.3.0.js")
+concatenify("../node_modules/slickgrid/slick.core.js")
+concatenify("../node_modules/slickgrid/slick.grid.js")
+concatenify("../node_modules/slickgrid/slick.dataview.js")
+concatenify("../node_modules/slickgrid/plugins/slick.rowselectionmodel.js")
 
-render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  document.getElementById('root'));
+require('./main')
