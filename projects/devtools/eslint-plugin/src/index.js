@@ -1,0 +1,321 @@
+"use strict"
+
+const path = require("path")
+const fs = require('fs');
+const extract = require("./extract")
+const utils = require("./utils")
+const oneLine = utils.oneLine
+const splatSet = utils.splatSet
+const getSettings = require("./settings").getSettings
+const scharpie = require('@scion-scxml/scharpie');
+
+const BOM = "\uFEFF"
+const GET_SCOPE_RULE_NAME = "__eslint-plugin-scxml-get-scope"
+const DECLARE_VARIABLES_RULE_NAME = "__eslint-plugin-scxml-declare-variables"
+const scxmlGlobalPlatformVariables = ['_x','_sessionid','_ioprocessors','In']
+const scxmlLocalPlatformVariables = ['_event']
+
+// Disclaimer:
+//
+// This is not a long term viable solution. ESLint needs to improve its processor API to
+// provide access to the configuration before actually preprocess files, but it's not
+// planed yet. This solution is quite ugly but shouldn't alter eslint process.
+//
+// Related github issues:
+// https://github.com/eslint/eslint/issues/3422
+// https://github.com/eslint/eslint/issues/4153
+
+const needle = path.join("lib", "linter.js")
+
+iterateESLintModules(patch)
+
+function getModuleFromRequire() {
+  return require("eslint/lib/linter") //TODO: find a better solution to this
+}
+
+function getModuleFromCache(key) {
+  if (!key.endsWith(needle)) return
+
+  const module = require.cache[key]
+  if (!module || !module.exports) return
+
+  const Linter = module.exports
+  if (typeof Linter.prototype.verify !== "function") return
+
+  return Linter
+}
+
+function iterateESLintModules(fn) {
+  if (!require.cache || Object.keys(require.cache).length === 0) {
+    // Jest is replacing the node "require" function, and "require.cache" isn't available here.
+    fn(getModuleFromRequire())
+    return
+  }
+
+  let found = false
+
+  for (const key in require.cache) {
+    const Linter = getModuleFromCache(key)
+    if (Linter) {
+      fn(Linter)
+      found = true
+    }
+  }
+
+  if (!found) {
+    throw new Error(
+      oneLine`
+        @scion-scxml/eslint-plugin error: It seems that eslint is not loaded.
+        If you think it is a bug, please file a report at
+        https://gitlab.com/scion-scxml/eslint-plugin/issues
+      `
+    )
+  }
+}
+
+function patch(Linter) {
+  const verify = Linter.prototype.verify
+  Linter.prototype.verify = function(
+    textOrSourceCode,
+    config,
+    filenameOrOptions,
+    saveState
+  ) {
+    const localVerify = code =>
+      verify.call(this, code, config, filenameOrOptions, saveState)
+
+    let messages
+    const filename =
+      typeof filenameOrOptions === "object"
+        ? filenameOrOptions.filename
+        : filenameOrOptions
+    const extension = path.extname(filename || "")
+
+    const pluginSettings = getSettings(config.settings || {})
+    const isSCXML = pluginSettings.scxmlExtensions.indexOf(extension) >= 0;
+
+    if (typeof textOrSourceCode === "string" && isSCXML) {
+      messages = []
+
+      //first, run him through scharpie
+      const xmllintErrors = scharpie.validateSCXML(textOrSourceCode).errors;
+      if(xmllintErrors){
+        //example errors:
+        //file_0.xml:24: element script: Schemas validity error : Element \'{http://www.w3.org/2005/07/scxml}script\': This element is not expected.
+        //file_0.xml:25: parser error : Opening and ending tag mismatch: state line 23 and scxml
+        const re = /^file_0.xml:(\d+): (.*)$/
+        const lines = textOrSourceCode.split('\n');
+        const messages = xmllintErrors.map( line => {
+          const match = line.match(re)
+          if(match){
+            const lineNum = parseInt(match[1]);
+            const selectedLine = lines[lineNum];
+            if(typeof selectedLine !== 'undefined'){
+              const endColumn = selectedLine.length;
+              return {
+                ruleId: 'xml-validation',
+                severity: 2,
+                message: match[2],
+                line: lineNum,
+                column: 0,
+                nodeType: 'XmlFragment',
+                source: selectedLine,
+                endLine: lineNum,
+                endColumn: endColumn
+              };
+            }
+          }
+        }).filter( message => message )
+
+        //transform xmllint errors to eslint messages
+        return messages;
+      }
+
+      const pushMessages = (localMessages, code) => {
+        messages.push.apply(
+          messages,
+          remapMessages(localMessages, textOrSourceCode.startsWith(BOM), code)
+        )
+      }
+
+      const currentInfos = extract(
+        textOrSourceCode,
+        pluginSettings.indent,
+        isSCXML,
+        pluginSettings.isJavaScriptMIMEType
+      )
+ 
+      if (pluginSettings.reportBadIndent) {
+        currentInfos.badIndentationLines.forEach(line => {
+          messages.push({
+            message: "Bad line indentation.",
+            line,
+            column: 1,
+            ruleId: "(scxml plugin)",
+            severity: pluginSettings.reportBadIndent,
+          })
+        })
+      }
+
+      verifyWithScxmlScopes.call(
+        this,
+        filename,
+        localVerify,
+        config,
+        currentInfos,
+        pushMessages
+      )
+
+      messages.sort((ma, mb) => {
+        return ma.line - mb.line || ma.column - mb.column
+      })
+    } else {
+      messages = localVerify(textOrSourceCode)
+    }
+
+    return messages
+  }
+}
+
+module.exports = patch;
+
+function verifyWithScxmlScopes(
+  filename,
+  localVerify,
+  config,
+  currentInfos,
+  pushMessages
+) {
+
+  const originalRules = config.rules
+
+  // First pass: collect needed globals and declared globals for each root script tags.
+  const firstPassValues = []
+  config.rules = { [GET_SCOPE_RULE_NAME]: "error" }
+
+  for (const code of currentInfos.code) {
+    this.rules.define(GET_SCOPE_RULE_NAME, context => {
+      return {
+        Program() {
+
+          const scope = context.getScope()
+          scope.through = scope.through.filter(variable => {
+            return currentInfos.datamodelDeclarations.indexOf(variable.identifier.name) === -1
+          })
+
+          firstPassValues.push({
+            code,
+            sourceCode: context.getSourceCode(),
+            exportedGlobals: scope.through.map(node => node.identifier.name),
+            declaredGlobals: scope.childScopes[0].variables.filter(variable => variable.name !== 'arguments').map(variable => variable.name),
+            isRootScript : code.isRootScript
+          })
+        },
+      }
+    })
+
+    if(code.src){
+      //TODO: make this work in the browser
+      const pathToFile = path.resolve(path.dirname(filename), code.src);
+      //Run localverify, just to get globals from the script src. 
+      //We don't want to run lint on it.
+      localVerify(fs.readFileSync(pathToFile, 'utf8'));
+    }else{
+      pushMessages(localVerify(String(code)), code);
+    }
+  }
+
+  config.rules = Object.assign(
+    { [DECLARE_VARIABLES_RULE_NAME]: "error" },
+    originalRules
+  )
+
+  for (let i = 0; i < firstPassValues.length; i++) {
+    this.rules.define(DECLARE_VARIABLES_RULE_NAME, context => {
+      return {
+        Program() {
+          const exportedGlobals = splatSet(
+            firstPassValues
+              .slice(i + 1)
+              .map(nextValues => nextValues.exportedGlobals)
+          )
+          //console.log('exportedGlobals', exportedGlobals);
+          for (const name of exportedGlobals) {
+            context.markVariableAsUsed(name)
+          }
+
+          const declaredGlobals = splatSet(
+            firstPassValues
+              .slice(0, i)
+              .filter(code => code.isRootScript)
+              .map(previousValues => previousValues.declaredGlobals)
+              .concat(currentInfos.datamodelDeclarations)
+              .concat(scxmlGlobalPlatformVariables)
+              .concat(!values.isRootScript ? scxmlLocalPlatformVariables : [])
+          )
+          //console.log('declaredGlobals', declaredGlobals);
+
+          const scope = context.getScope()
+          scope.through = scope.through.filter(variable => {
+            //console.log('variable.identifier.name',variable.identifier.name);
+            return !declaredGlobals.has(variable.identifier.name)
+          })
+        }
+      }
+    })
+
+    const values = firstPassValues[i]
+    //console.log('values.code',String(values.code));
+    //console.log('values.isRootScript',values.isRootScript);
+    if(!values.code.src) pushMessages(localVerify(values.sourceCode), values.code)
+  }
+
+  config.rules = originalRules;
+}
+
+function remapMessages(messages, hasBOM, code) {
+  const newMessages = []
+  const bomOffset = hasBOM ? -1 : 0
+
+  for (const message of messages) {
+    const location = code.originalLocation({
+      line: message.line,
+      // eslint-plugin-eslint-comments is raising message with column=0 to bypass ESLint ignore
+      // comments. Since messages are already ignored at this time, just reset the column to a valid
+      // number. See https://github.com/BenoitZugmeyer/eslint-plugin-html/issues/70
+      column: message.column || 1,
+    })
+
+    // Ignore messages if they were in transformed code
+    if (location) {
+      Object.assign(message, location)
+      message.source = code.getOriginalLine(location.line)
+
+      // Map fix range
+      if (message.fix && message.fix.range) {
+        message.fix.range = [
+          code.originalIndex(message.fix.range[0]) + bomOffset,
+          // The range end is exclusive, meaning it should replace all characters  with indexes from
+          // start to end - 1. We have to get the original index of the last targeted character.
+          code.originalIndex(message.fix.range[1] - 1) + 1 + bomOffset,
+        ]
+      }
+
+      // Map end location
+      if (message.endLine && message.endColumn) {
+        const endLocation = code.originalLocation({
+          line: message.endLine,
+          column: message.endColumn,
+        })
+        if (endLocation) {
+          message.endLine = endLocation.line
+          message.endColumn = endLocation.column
+        }
+      }
+
+      newMessages.push(message)
+    }
+  }
+
+  return newMessages
+}
