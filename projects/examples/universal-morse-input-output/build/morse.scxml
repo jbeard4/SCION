@@ -1,0 +1,651 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" name="morse" datamodel="ecmascript" version="1.0">
+  <parallel id="main">
+    <transition event="error.*">
+      <log label="uncaught error" expr="_event.data.message + '\n' + _event.data.stack"/>
+    </transition>
+    <state id="event_processor">
+      <datamodel>
+        <data id="dit_duration" expr="100"/>
+        <data id="dash_duration" expr="dit_duration * 3"/>
+      </datamodel>
+      <state id="released">
+        <state id="initial">
+          <onentry>
+            <send id="short_pause_timeout" event="short_pause_timeout" delayexpr="dash_duration + 'ms'"/>
+          </onentry>
+          <onexit>
+            <cancel sendid="short_pause_timeout"/>
+          </onexit>
+          <transition event="short_pause_timeout" target="short_pause">
+          </transition>
+          <transition event="device.press" target="pressed">
+          </transition>
+        </state>
+        <state id="short_pause">
+          <onentry>
+            <send id="long_pause_timeout" event="long_pause_timeout" delayexpr="dit_duration * 7 + 'ms'"/>
+            <send event="short_pause"/>
+          </onentry>
+          <onexit>
+            <cancel sendid="long_pause_timeout"/>
+          </onexit>
+          <transition event="long_pause_timeout" target="long_pause"/>
+          <transition event="device.press" target="pressed"/>
+        </state>
+        <state id="long_pause">
+          <onentry>
+            <send event="long_pause"/>
+          </onentry>
+          <transition event="device.press" target="pressed"/>
+        </state>
+      </state>
+      <state id="pressed">
+        <state id="sending_dot">
+          <onentry>
+            <send id="dash-timeout" event="dash-timeout" delayexpr="dash_duration + 'ms'"/>
+          </onentry>
+          <onexit>
+            <cancel sendid="dash-timeout"/>
+          </onexit>
+          <transition event="dash-timeout" target="sending_dash"/>
+          <transition event="device.release" target="released">
+            <send event="dot"/>
+          </transition>
+        </state>
+        <state id="sending_dash">
+          <onentry>
+            <send id="long_press_timeout" event="long_press_timeout" delayexpr="dit_duration * 4 + 'ms'"/>
+          </onentry>
+          <onexit>
+            <cancel sendid="long_press_timeout"/>
+          </onexit>
+          <transition event="device.release" target="released">
+            <send event="dash"/>
+          </transition>
+        </state>
+      </state>
+    </state>
+    <state id="parse_trie">
+      <datamodel>
+        <data id="buffer"/>
+      </datamodel>
+      <onentry>
+        <script>
+          buffer = '';
+        </script>
+      </onentry>
+      <state id="idle">
+        <transition target="dash" event="dash"/>
+        <transition target="dot" event="dot"/>
+        <transition target="idle" event="long_pause">
+            </transition>
+      </state>
+      <state id="dash">
+        <transition target="dashdash" event="dash"/>
+        <transition target="dashdot" event="dot"/>
+        <transition target="t" event="short_pause"/>
+      </state>
+      <state id="dashdash">
+        <transition target="dashdashdash" event="dash"/>
+        <transition target="dashdashdot" event="dot"/>
+        <transition target="m" event="short_pause"/>
+      </state>
+      <state id="dashdashdash">
+        <transition target="dashdashdashdash" event="dash"/>
+        <transition target="dashdashdashdot" event="dot"/>
+        <transition target="o" event="short_pause"/>
+      </state>
+      <state id="dashdashdashdash">
+        <transition target="dashdashdashdashdash" event="dash"/>
+        <transition target="dashdashdashdashdot" event="dot"/>
+      </state>
+      <state id="dashdashdashdashdash">
+        <transition target="zero" event="short_pause"/>
+      </state>
+      <state id="zero">
+        <onentry>
+          <script>
+                buffer += "0";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dashdashdashdashdot">
+        <transition target="nine" event="short_pause"/>
+      </state>
+      <state id="nine">
+        <onentry>
+          <script>
+                buffer += "9";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dashdashdashdot">
+        <transition target="dashdashdashdotdot" event="dot"/>
+      </state>
+      <state id="dashdashdashdotdot">
+        <transition target="eight" event="short_pause"/>
+      </state>
+      <state id="eight">
+        <onentry>
+          <script>
+                buffer += "8";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="o">
+        <onentry>
+          <script>
+                buffer += "o";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dashdashdot">
+        <transition target="dashdashdotdot" event="dot"/>
+        <transition target="g" event="short_pause"/>
+        <transition target="dashdashdotdash" event="dash"/>
+      </state>
+      <state id="dashdashdotdot">
+        <transition target="dashdashdotdotdot" event="dot"/>
+        <transition target="z" event="short_pause"/>
+        <transition target="dashdashdotdotdash" event="dash"/>
+      </state>
+      <state id="dashdashdotdotdot">
+        <transition target="seven" event="short_pause"/>
+      </state>
+      <state id="seven">
+        <onentry>
+          <script>
+                buffer += "7";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="z">
+        <onentry>
+          <script>
+                buffer += "z";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dashdashdotdotdash">
+        <transition target="dashdashdotdotdashdash" event="dash"/>
+      </state>
+      <state id="dashdashdotdotdashdash">
+        <transition target="comma" event="short_pause"/>
+      </state>
+      <state id="comma">
+        <onentry>
+          <script>
+                buffer += ",";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="g">
+        <onentry>
+          <script>
+                buffer += "g";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dashdashdotdash">
+        <transition target="q" event="short_pause"/>
+      </state>
+      <state id="q">
+        <onentry>
+          <script>
+                buffer += "q";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="m">
+        <onentry>
+          <script>
+                buffer += "m";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dashdot">
+        <transition target="dashdotdot" event="dot"/>
+        <transition target="dashdotdash" event="dash"/>
+        <transition target="n" event="short_pause"/>
+      </state>
+      <state id="dashdotdot">
+        <transition target="dashdotdotdot" event="dot"/>
+        <transition target="d" event="short_pause"/>
+        <transition target="dashdotdotdash" event="dash"/>
+      </state>
+      <state id="dashdotdotdot">
+        <transition target="dashdotdotdotdot" event="dot"/>
+        <transition target="b" event="short_pause"/>
+      </state>
+      <state id="dashdotdotdotdot">
+        <transition target="six" event="short_pause"/>
+        <transition target="dashdotdotdotdotdash" event="dash"/>
+      </state>
+      <state id="six">
+        <onentry>
+          <script>
+                buffer += "6";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dashdotdotdotdotdash">
+        <transition target="hyphen" event="short_pause"/>
+      </state>
+      <state id="hyphen">
+        <onentry>
+          <script>
+                buffer += "-";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="b">
+        <onentry>
+          <script>
+                buffer += "b";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="d">
+        <onentry>
+          <script>
+                buffer += "d";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dashdotdotdash">
+        <transition target="x" event="short_pause"/>
+        <transition target="dashdotdotdashdot" event="dot"/>
+      </state>
+      <state id="x">
+        <onentry>
+          <script>
+                buffer += "x";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dashdotdotdashdot">
+        <transition target="slash" event="short_pause"/>
+      </state>
+      <state id="slash">
+        <onentry>
+          <script>
+                buffer += "/";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dashdotdash">
+        <transition target="dashdotdashdot" event="dot"/>
+        <transition target="k" event="short_pause"/>
+        <transition target="dashdotdashdash" event="dash"/>
+      </state>
+      <state id="dashdotdashdot">
+        <transition target="c" event="short_pause"/>
+        <transition target="dashdotdashdotdash" event="dash"/>
+      </state>
+      <state id="c">
+        <onentry>
+          <script>
+                buffer += "c";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dashdotdashdotdash">
+        <transition target="dashdotdashdotdashdash" event="dash"/>
+      </state>
+      <state id="dashdotdashdotdashdash">
+        <transition target="exclamation-mark" event="short_pause"/>
+      </state>
+      <state id="exclamation-mark">
+        <onentry>
+          <script>
+                buffer += "!";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="k">
+        <onentry>
+          <script>
+                buffer += "k";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dashdotdashdash">
+        <transition target="y" event="short_pause"/>
+        <transition target="dashdotdashdashdot" event="dot"/>
+      </state>
+      <state id="y">
+        <onentry>
+          <script>
+                buffer += "y";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dashdotdashdashdot">
+        <transition target="open-parens" event="short_pause"/>
+        <transition target="dashdotdashdashdotdash" event="dash"/>
+      </state>
+      <state id="open-parens">
+        <onentry>
+          <script>
+                buffer += "(";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dashdotdashdashdotdash">
+        <transition target="close-parens" event="short_pause"/>
+      </state>
+      <state id="close-parens">
+        <onentry>
+          <script>
+                buffer += ")";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="n">
+        <onentry>
+          <script>
+                buffer += "n";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="t">
+        <onentry>
+          <script>
+                buffer += "t";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dot">
+        <transition target="dotdash" event="dash"/>
+        <transition target="dotdot" event="dot"/>
+        <transition target="e" event="short_pause"/>
+      </state>
+      <state id="dotdash">
+        <transition target="dotdashdash" event="dash"/>
+        <transition target="a" event="short_pause"/>
+        <transition target="dotdashdot" event="dot"/>
+      </state>
+      <state id="dotdashdash">
+        <transition target="dotdashdashdash" event="dash"/>
+        <transition target="dotdashdashdot" event="dot"/>
+        <transition target="w" event="short_pause"/>
+      </state>
+      <state id="dotdashdashdash">
+        <transition target="dotdashdashdashdash" event="dash"/>
+        <transition target="j" event="short_pause"/>
+      </state>
+      <state id="dotdashdashdashdash">
+        <transition target="one" event="short_pause"/>
+      </state>
+      <state id="one">
+        <onentry>
+          <script>
+                buffer += "1";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="j">
+        <onentry>
+          <script>
+                buffer += "j";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dotdashdashdot">
+        <transition target="p" event="short_pause"/>
+        <transition target="dotdashdashdotdash" event="dash"/>
+      </state>
+      <state id="p">
+        <onentry>
+          <script>
+                buffer += "p";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dotdashdashdotdash">
+        <transition target="dotdashdashdotdashdot" event="dot"/>
+      </state>
+      <state id="dotdashdashdotdashdot">
+        <transition target="at" event="short_pause"/>
+      </state>
+      <state id="at">
+        <onentry>
+          <script>
+                buffer += "@";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="w">
+        <onentry>
+          <script>
+                buffer += "w";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="a">
+        <onentry>
+          <script>
+                buffer += "a";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dotdashdot">
+        <transition target="dotdashdotdot" event="dot"/>
+        <transition target="r" event="short_pause"/>
+        <transition target="dotdashdotdash" event="dash"/>
+      </state>
+      <state id="dotdashdotdot">
+        <transition target="l" event="short_pause"/>
+      </state>
+      <state id="l">
+        <onentry>
+          <script>
+                buffer += "l";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="r">
+        <onentry>
+          <script>
+                buffer += "r";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dotdashdotdash">
+        <transition target="dotdashdotdashdot" event="dot"/>
+      </state>
+      <state id="dotdashdotdashdot">
+        <transition target="dotdashdotdashdotdash" event="dash"/>
+      </state>
+      <state id="dotdashdotdashdotdash">
+        <transition target="period" event="short_pause"/>
+      </state>
+      <state id="period">
+        <onentry>
+          <script>
+                buffer += ".";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dotdot">
+        <transition target="dotdotdash" event="dash"/>
+        <transition target="dotdotdot" event="dot"/>
+        <transition target="i" event="short_pause"/>
+      </state>
+      <state id="dotdotdash">
+        <transition target="dotdotdashdash" event="dash"/>
+        <transition target="dotdotdashdot" event="dot"/>
+        <transition target="u" event="short_pause"/>
+      </state>
+      <state id="dotdotdashdash">
+        <transition target="dotdotdashdashdash" event="dash"/>
+        <transition target="dotdotdashdashdot" event="dot"/>
+      </state>
+      <state id="dotdotdashdashdash">
+        <transition target="two" event="short_pause"/>
+      </state>
+      <state id="two">
+        <onentry>
+          <script>
+                buffer += "2";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dotdotdashdashdot">
+        <transition target="dotdotdashdashdotdot" event="dot"/>
+      </state>
+      <state id="dotdotdashdashdotdot">
+        <transition target="question-mark" event="short_pause"/>
+      </state>
+      <state id="question-mark">
+        <onentry>
+          <script>
+                buffer += "?";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dotdotdashdot">
+        <transition target="f" event="short_pause"/>
+      </state>
+      <state id="f">
+        <onentry>
+          <script>
+                buffer += "f";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="u">
+        <onentry>
+          <script>
+                buffer += "u";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dotdotdot">
+        <transition target="dotdotdotdash" event="dash"/>
+        <transition target="dotdotdotdot" event="dot"/>
+        <transition target="s" event="short_pause"/>
+      </state>
+      <state id="dotdotdotdash">
+        <transition target="dotdotdotdashdash" event="dash"/>
+        <transition target="v" event="short_pause"/>
+      </state>
+      <state id="dotdotdotdashdash">
+        <transition target="three" event="short_pause"/>
+      </state>
+      <state id="three">
+        <onentry>
+          <script>
+                buffer += "3";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="v">
+        <onentry>
+          <script>
+                buffer += "v";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dotdotdotdot">
+        <transition target="dotdotdotdotdash" event="dash"/>
+        <transition target="dotdotdotdotdot" event="dot"/>
+        <transition target="h" event="short_pause"/>
+      </state>
+      <state id="dotdotdotdotdash">
+        <transition target="four" event="short_pause"/>
+      </state>
+      <state id="four">
+        <onentry>
+          <script>
+                buffer += "4";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="dotdotdotdotdot">
+        <transition target="five" event="short_pause"/>
+      </state>
+      <state id="five">
+        <onentry>
+          <script>
+                buffer += "5";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="h">
+        <onentry>
+          <script>
+                buffer += "h";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="s">
+        <onentry>
+          <script>
+                buffer += "s";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="i">
+        <onentry>
+          <script>
+                buffer += "i";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+      <state id="e">
+        <onentry>
+          <script>
+                buffer += "e";
+              </script>
+        </onentry>
+        <transition target="idle"/>
+      </state>
+    </state>
+  </parallel>
+</scxml>
