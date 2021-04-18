@@ -20,6 +20,7 @@
     "projects/libraries/xmllint",
     "projects/libraries/monitor-middleware",
     "projects/libraries/dashboard",
+    "projects/libraries/express-middleware",
     "projects/devtools/debug",
     "projects/devtools/scharpie",
     "projects/devtools/eslint-plugin",
