@@ -1,0 +1,81 @@
+<scxml xmlns="http://www.w3.org/2005/07/scxml"
+  version="1.0"
+  initial="uber">
+
+<script>
+// intentional semantic error
+function doError() {
+  var x = y;
+  return x;
+}
+
+function checkErrorData(err, expected) {
+  var ret = false;
+  if (err.tagname !== expected.tagname) {
+    return false;
+  }
+
+  if (isNaN(err.line)) {
+    return false;
+  }
+
+  if (isNaN(err.column)) {
+    return false;
+  }
+
+  if (typeof err.reason !== 'string' || !err.reason.length) {
+    return false;
+  }
+
+  return true;
+}
+</script>
+
+<state id="uber">
+  <!-- cond returned false; fail -->
+  <transition event="error.execution" target="fail">
+    <log expr="'Unexpected ' + JSON.stringify(_event)" label="TEST"/>
+  </transition>
+
+  <transition event="fail" target="fail"/>
+
+  <transition event="*">
+    <log expr="'Ignoring unhandled ' + JSON.stringify(_event)" label="TEST"/>
+  </transition>
+
+  <state id="s1">
+    <transition event="e1">
+      <log expr="doError()" label="TEST"/>
+    </transition>
+    <transition event="error.execution"
+      cond="checkErrorData(_event.data, {tagname: 'log'})" target="s2">
+      <log expr="JSON.stringify(_event)" label="TEST"/>
+    </transition>
+  </state>
+
+  <state id="s2">
+    <onentry>
+      <script>
+      undefinedFunction();
+      </script>
+    </onentry>
+    <transition event="error.execution"
+      cond="checkErrorData(_event.data, {tagname: 'script'})" target="pass">
+      <log expr="JSON.stringify(_event)" label="TEST"/>
+    </transition>
+  </state>
+</state>
+
+<final id="pass">
+  <onentry>
+    <log expr="'RESULT: pass'" label="TEST"/>
+  </onentry>
+</final>
+
+<final id="fail">
+  <onentry>
+    <log expr="'RESULT: fail'" label="TEST"/>
+  </onentry>
+</final>
+
+</scxml>
