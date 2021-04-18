@@ -1,0 +1,30 @@
+{
+  "name": "@scion-scxml/core-test-framework",
+  "version": "1.0.24",
+  "description": "Test harness for modules that implement scion.Statechart interface.",
+  "main": "./lib/harness/common/setup-nodeunit-tests.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "keywords": [
+    "SCION",
+    "SCXML"
+  ],
+  "author": "Jacob Beard <jake@jacobeanrnd.com>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "async": "^2.6.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/scion-scxml/core-test-framework.git"
+  },
+  "homepage": "https://gitlab.com/scion-scxml/core-test-framework",
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-browserify": "^5.0.0",
+    "load-grunt-tasks": "^3.5.0",
+    "underscore": "^1.9.0"
+  },
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+}
