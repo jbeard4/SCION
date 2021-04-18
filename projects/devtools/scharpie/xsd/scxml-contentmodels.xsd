@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.w3.org/2005/07/scxml"
+    xmlns="http://www.w3.org/2005/07/scxml"
+    elementFormDefault="qualified">
+	<xsd:annotation>
+		<xsd:documentation>
+         XML Schema content models for SCXML
+         * scxml.extra.content 
+         * content
+         * scxml.extra.attribs
+         Defines SCXML shared content models.
+        </xsd:documentation>
+		<xsd:documentation source="scxml-copyright.xsd"/>
+	</xsd:annotation>
+	
+	<xsd:attributeGroup name="scxml.extra.attribs">
+		<xsd:annotation>
+			<xsd:documentation>group allowing attributes from other namespaces</xsd:documentation>
+		</xsd:annotation>
+		<xsd:anyAttribute namespace="##other" processContents="lax"/>
+	</xsd:attributeGroup>
+	
+	<xsd:group name="scxml.extra.content">
+		<xsd:annotation>
+			<xsd:documentation>
+				group allowing elements from other namespaces
+                        </xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	
+</xsd:schema>

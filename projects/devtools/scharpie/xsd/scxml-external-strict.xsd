@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.w3.org/2005/07/scxml"
+    xmlns="http://www.w3.org/2005/07/scxml"
+    elementFormDefault="qualified">
+	<xsd:annotation>
+		<xsd:documentation>
+        This is the XML Schema external module for SCXML
+        * send 
+        * cancel
+        * invoke
+        * finalize 
+        The external module defines these elements and their
+        attributes.
+        </xsd:documentation>
+		<xsd:documentation source="scxml-copyright.xsd"/>
+	</xsd:annotation>
+
+	<xsd:include schemaLocation="scxml-datatypes.xsd">
+		<xsd:annotation>
+			<xsd:documentation>
+            This module defines SCXML Attribute DataTypes
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:include>
+
+	<xsd:include schemaLocation="scxml-attribs.xsd">
+		<xsd:annotation>
+			<xsd:documentation>
+            This module defines Common attributes for SCXML
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:include>
+
+	<xsd:include schemaLocation="scxml-contentmodels.xsd">
+		<xsd:annotation>
+			<xsd:documentation>
+            This module defines Common content model extensions  for SCXML
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:include>
+
+<!-- send -->
+	<xsd:attributeGroup name="scxml.send.attlist">
+		<xsd:attribute name="event" type="EventType.datatype"/>
+		<xsd:attribute name="eventexpr" type="ValueLang.datatype"/>
+		<xsd:attribute name="target" type="URI.datatype"/>
+		<xsd:attribute name="targetexpr" type="ValueLang.datatype"/>
+		<xsd:attribute name="type" type="xsd:string" default="scxml"/>
+		<xsd:attribute name="typeexpr" type="ValueLang.datatype"/>
+		<xsd:attribute name="id" type="xsd:ID"/>
+		<xsd:attribute name="idlocation" type="LocLang.datatype"/>
+		<xsd:attribute name="delay" type="Duration.datatype" default="0s"/>
+		<xsd:attribute name="delayexpr" type="ValueLang.datatype"/>
+		<xsd:attribute name="namelist" type="xsd:string"/>
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.send.mix">
+		<xsd:choice>
+			<xsd:element ref="content" minOccurs="0" maxOccurs="1"/>
+			<xsd:element ref="param" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:group ref="scxml.extra.content" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+	</xsd:group>
+	<xsd:group name="scxml.send.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.send.mix" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.send.type">
+		<xsd:group ref="scxml.send.content"/>
+		<xsd:attributeGroup ref="scxml.send.attlist"/>
+		<xsd:assert test="(@event or @eventexpr or content) and not(@expr and @eventexpr)" xpathDefaultNamespace="##targetNamespace"/>
+		<xsd:assert test="not(@namelist and (param | content))" xpathDefaultNamespace="##targetNamespace"/>
+		<xsd:assert test="not(@target and @targetexpr)" xpathDefaultNamespace="##targetNamespace"/>
+		<xsd:assert test="not(@id and @idlocation)" xpathDefaultNamespace="##targetNamespace"/>
+		<xsd:assert test="not(@type and @typeexpr)" xpathDefaultNamespace="##targetNamespace"/>
+		<xsd:assert test="not(@delay and @delayexpr)" xpathDefaultNamespace="##targetNamespace"/>
+		<xsd:assert test="if(@delay or @delayexpr) then (not(@target eq '_internal')) else true()" xpathDefaultNamespace="##targetNamespace"/>
+	</xsd:complexType>
+	<xsd:element name="send" type="scxml.send.type"/>
+	
+	<!-- cancel -->
+	<xsd:attributeGroup name="scxml.cancel.attlist">
+		<xsd:attribute name="sendid" type="xsd:IDREF"/>
+		<xsd:attribute name="sendidexpr" type="ValueLang.datatype"/>
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+		<xsd:group name="scxml.cancel.mix">
+		<xsd:sequence>
+			<xsd:group ref="scxml.extra.content" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:group name="scxml.cancel.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.cancel.mix" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.cancel.type">
+		<xsd:group ref="scxml.cancel.content"/>
+		<xsd:attributeGroup ref="scxml.cancel.attlist"/>
+	<xsd:assert test="(@sendid or @sendidexpr) and not(@sendid and @sendidexpr)" xpathDefaultNamespace="##targetNamespace"/>
+	</xsd:complexType>
+	<xsd:element name="cancel" type="scxml.cancel.type"/>
+	
+		
+
+	<!-- invoke -->
+	<xsd:attributeGroup name="scxml.invoke.attlist">
+		<xsd:attribute name="type" type="xsd:string" default="scxml"/>
+		<xsd:attribute name="typeexpr" type="ValueLang.datatype"/>
+		<xsd:attribute name="src" type="URI.datatype"/>
+		<xsd:attribute name="srcexpr" type="ValueLang.datatype"/>
+		<xsd:attribute name="id" type="xsd:ID"/>
+		<xsd:attribute name="idlocation" type="LocLang.datatype"/>
+		<xsd:attribute name="namelist" type="xsd:string"/>
+		<xsd:attribute name="autoforward" type="Boolean.datatype" use="optional" default="false"/>
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.invoke.mix">
+		<xsd:sequence>
+			<xsd:element ref="content" minOccurs="0" maxOccurs="1"/>
+			<xsd:element ref="param" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="finalize" minOccurs="0" maxOccurs="1"/>
+			<xsd:group ref="scxml.extra.content" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:group name="scxml.invoke.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.invoke.mix" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.invoke.type">
+		<xsd:group ref="scxml.invoke.content"/>
+		<xsd:attributeGroup ref="scxml.invoke.attlist"/>
+	<xsd:assert test=" not(@type and @typeexpr)" xpathDefaultNamespace="##targetNamespace"/>
+	<xsd:assert test=" not(@src and @srcexpr)" xpathDefaultNamespace="##targetNamespace"/>
+	<xsd:assert test=" not((@src or @srcexpr) and (content | param))" xpathDefaultNamespace="##targetNamespace"/>
+	<xsd:assert test=" not(@id and @idlocation)" xpathDefaultNamespace="##targetNamespace"/>
+	<xsd:assert test=" not(@namelist and param)" xpathDefaultNamespace="##targetNamespace"/>
+	<xsd:assert test=" not(param and content)" xpathDefaultNamespace="##targetNamespace"/>
+	<xsd:assert test=" not(content[2])" xpathDefaultNamespace="##targetNamespace"/>
+	</xsd:complexType>
+	<xsd:element name="invoke" type="scxml.invoke.type"/>
+
+	<!-- finalize -->
+	<xsd:attributeGroup name="scxml.finalize.attlist">
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.finalize.mix">
+		<xsd:sequence>
+			<xsd:group ref="scxml.core.executablecontent"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:group name="scxml.finalize.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.finalize.mix" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.finalize.type">
+		<xsd:group ref="scxml.finalize.content"/>
+		<xsd:attributeGroup ref="scxml.finalize.attlist"/>
+	<xsd:assert test=" not(send | raise)" xpathDefaultNamespace="##targetNamespace"/>
+	</xsd:complexType>
+	<xsd:element name="finalize" type="scxml.finalize.type"/>
+
+
+</xsd:schema>

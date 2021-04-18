@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.w3.org/2005/07/scxml"
+    xmlns="http://www.w3.org/2005/07/scxml"
+    elementFormDefault="qualified">
+	<xsd:annotation>
+		<xsd:documentation>
+            This is the XML Schema data module for SCXML
+            * datamodel 
+            * data
+            * assign
+            * param
+            * script
+            * content
+            The data module defines these elements and their
+            attributes.
+        </xsd:documentation>
+		<xsd:documentation source="scxml-copyright.xsd"/>
+	</xsd:annotation>
+
+	<xsd:include schemaLocation="scxml-datatypes.xsd">
+		<xsd:annotation>
+			<xsd:documentation>
+                This module defines SCXML Attribute DataTypes
+            </xsd:documentation>
+		</xsd:annotation>
+	</xsd:include>
+
+	<xsd:include schemaLocation="scxml-attribs.xsd">
+		<xsd:annotation>
+			<xsd:documentation>
+                This module defines Common attributes for SCXML
+            </xsd:documentation>
+		</xsd:annotation>
+	</xsd:include>
+
+	<xsd:include schemaLocation="scxml-contentmodels.xsd">
+		<xsd:annotation>
+			<xsd:documentation>
+                This module defines Common content model extensions  for SCXML
+            </xsd:documentation>
+		</xsd:annotation>
+	</xsd:include>
+
+	<!-- datamodel -->
+	<xsd:attributeGroup name="scxml.datamodel.attlist">
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.datamodel.content">
+		<xsd:sequence>
+			<xsd:element ref="data" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:group ref="scxml.extra.content" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.datamodel.type">
+		<xsd:group ref="scxml.datamodel.content"/>
+		<xsd:attributeGroup ref="scxml.datamodel.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="datamodel" type="scxml.datamodel.type"/>
+
+	<!-- data -->
+	<xsd:attributeGroup name="scxml.data.attlist">
+		<xsd:attribute name="id" type="xsd:ID" use="required"/>
+		<xsd:attribute name="src" type="URI.datatype"/>
+		<xsd:attribute name="expr" type="ValueLang.datatype"/>
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.data.content">
+		<xsd:sequence>
+			<xsd:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.data.type" mixed="true">
+		<xsd:group ref="scxml.data.content"/>
+		<xsd:attributeGroup ref="scxml.data.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="data" type="scxml.data.type"/>
+
+	
+
+	<!-- param -->
+	<xsd:attributeGroup name="scxml.param.attlist">
+		<xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+		<xsd:attribute name="expr" type="ValueLang.datatype"/>
+		<xsd:attribute name="location" type="LocLang.datatype"/>
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.param.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.extra.content" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.param.type">
+		<xsd:group ref="scxml.param.content"/>
+		<xsd:attributeGroup ref="scxml.param.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="param" type="scxml.param.type"/>
+
+<!--  assign  -->
+	<xsd:attributeGroup name="scxml.assign.attlist">
+		<xsd:attribute name="location" type="LocLang.datatype" use="required"/>
+		<xsd:attribute name="expr" type="ValueLang.datatype"/>
+		<xsd:attribute name="type" type="AssignType.datatype" default="replacechildren"/>
+		<xsd:attribute name="attr" type="xsd:NMTOKEN"/>
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.assign.content">
+		<xsd:sequence>
+			<xsd:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.assign.type" mixed="true">
+		<xsd:group ref="scxml.assign.content"/>
+		<xsd:attributeGroup ref="scxml.assign.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="assign" type="scxml.assign.type"/>
+
+	
+<!-- script -->	
+	<xsd:attributeGroup name="scxml.script.attlist">
+		<xsd:attribute name="src" type="URI.datatype"/>
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.script.content">
+		<xsd:sequence>
+			<xsd:group ref="scxml.extra.content" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.script.type" mixed="true">
+		<xsd:group ref="scxml.script.content"/>
+		<xsd:attributeGroup ref="scxml.script.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="script" type="scxml.script.type"/>
+
+	<!-- content -->
+	<xsd:attributeGroup name="scxml.content.attlist">
+		<xsd:attributeGroup ref="scxml.extra.attribs"/>
+		<xsd:attribute name="expr" type="ValueLang.datatype"/>
+	</xsd:attributeGroup>
+	<xsd:group name="scxml.content.content">
+		<xsd:sequence>
+		<xsd:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="scxml.content.type" mixed="true">
+		<xsd:group ref="scxml.content.content"/>
+		<xsd:attributeGroup ref="scxml.content.attlist"/>
+	</xsd:complexType>
+	<xsd:element name="content" type="scxml.content.type"/>
+	
+</xsd:schema>

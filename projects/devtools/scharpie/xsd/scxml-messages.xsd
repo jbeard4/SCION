@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    XML Schema for sending messages to SCXML processors.
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.w3.org/2005/07/scxml"
+    xmlns="http://www.w3.org/2005/07/scxml"
+    elementFormDefault="qualified">
+
+	<xsd:include schemaLocation="scxml-message.xsd"/>
+
+	<xsd:annotation>
+		<xsd:documentation xml:lang="en">
+			XML Schema for sending messages to SCXML processors.
+			Version 1.0
+		</xsd:documentation>
+		<xsd:documentation source="scxml-copyright.xsd" />
+	</xsd:annotation>
+
+	<xsd:attributeGroup name="scxmlmessages.extra.attribs">
+		<xsd:annotation>
+			<xsd:documentation>
+				Group allowing attributes from other namespaces
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:anyAttribute namespace="##other" processContents="lax" />
+	</xsd:attributeGroup>
+
+	<xsd:attributeGroup name="scxmlmessages.messages.attlist">
+		<xsd:attribute name="version" type="xsd:string" fixed="1.0"
+			use="required" />
+		<xsd:attributeGroup ref="scxmlmessages.extra.attribs" />
+	</xsd:attributeGroup>
+
+	<xsd:group name="scxmlmessages.messages.content">
+		<xsd:sequence>
+			<xsd:element ref="message" minOccurs="1"
+				maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:group>
+
+	<xsd:complexType name="scxmlmessages.messages.type">
+		<xsd:group ref="scxmlmessages.messages.content" />
+		<xsd:attributeGroup ref="scxmlmessages.messages.attlist" />
+	</xsd:complexType>
+
+	<xsd:element name="messages" type="scxmlmessages.messages.type" />
+
+</xsd:schema>
