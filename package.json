@@ -61,6 +61,7 @@
   },
   "devDependencies": {
     "@types/es6-shim": "0.31.33",
+    "@types/node": "7.0.12",
     "@types/react": "15.6.1",
     "@types/react-dom": "0.14.23",
     "@types/react-redux": "^4.4.40",
