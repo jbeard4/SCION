@@ -1,0 +1,24 @@
+before_script:
+   - npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
+   - npm install
+
+.build_template: &build_definition
+  script:
+   - npm run test
+
+build:node:8.11.4:
+  image: node:8.11.4
+  <<: *build_definition
+
+build:node:10.8.0:
+  image: node:10.8.0
+  <<: *build_definition
+
+build:node:12.12.0:
+  image: node:12.12.0
+  <<: *build_definition
+
+build:node:14.12.0:
+  image: node:14.12.0
+  <<: *build_definition
+

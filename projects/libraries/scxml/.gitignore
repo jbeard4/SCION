@@ -1,0 +1,6 @@
+node_modules
+out*
+*.sublime-*
+log.md
+dist/es5
+dist

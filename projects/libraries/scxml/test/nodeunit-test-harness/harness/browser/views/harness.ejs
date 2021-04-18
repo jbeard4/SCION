@@ -1,0 +1,34 @@
+<html>
+  <link rel="stylesheet" src="lib/nodeunit.css">
+  <script src="lib/jquery.js"></script>
+  <script src="lib/nodeunit.js"></script>
+  <script src="/node_modules/babel-polyfill/dist/polyfill.js"></script>
+  <script>
+
+    var testPairs = <%- JSON.stringify(scxmlTests) %>;
+  </script>
+  <script src="nodeunit-runner.js"></script>
+  <% if(env === 'development'){ %>
+  <script src="/dist/scxml.js"></script>
+  <% } %>
+  <% if(env === 'production'){ %>
+  <script src="/dist/scxml.min.js"></script>
+  <% } %>
+  <% if(env === 'development' || env === 'production'){ %>
+  <script>
+    //vanilla module load
+    start(window.scxml);
+  </script>
+  <% } %>
+  <% if(env === 'production-require'){ %>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js"></script>
+  <script>
+    require(['/dist/scxml.min.js'], start); 
+  </script>
+  <% } %>
+  <body>
+    <% if(env === 'development'){ %>
+      <script src="//localhost:35729/livereload.js"></script>
+    <% } %>
+  </body>
+</html>
