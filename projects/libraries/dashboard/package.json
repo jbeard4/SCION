@@ -1,14 +1,14 @@
 {
   "name": "@scion-scxml/dashboard",
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "version": "1.0.21",
+  "version": "1.0.24",
   "description": "Web dashboard for SCION monitor",
   "main": "./dist/containers/App",
   "scripts": {
     "start": "electron .",
     "watch": "tsc -p . --outDir dist/ -w & ( cd dist; watchify --exclude electron index.js -d  -o 'cat > scion-scxml-dashboard.js; sorcery -i scion-scxml-dashboard.js' -v )",
     "preversion": "npm run build",
-    "postversion": "git push --follow-tags && npm publish",
+    "postversion": "npm publish",
     "build": "npm run transpile && npm run bundle && npm run minify",
     "transpile": "tsc -p . --outDir dist/",
     "bundle": "cd dist; browserify -t browserify-css -t concatenify --exclude electron index.js -d  -o scion-scxml-dashboard.js -v; sorcery -i scion-scxml-dashboard.js",
