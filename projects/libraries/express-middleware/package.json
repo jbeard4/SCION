@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@scion-scxml/core": "^2.6.22",
-    "@scion-scxml/dashboard": "^1.0.21",
+    "@scion-scxml/dashboard": "^1.0.24",
     "@scion-scxml/monitor-middleware": "^1.0.19",
     "@scion-scxml/scxml": "^4.3.25",
     "express": "^4.17.1"
