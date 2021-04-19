@@ -12,15 +12,20 @@
     "inlineSourceMap": true,
     "jsx" : "react",
     "target": "es5",
-    "removeComments": false
+    "removeComments": false,
+    "skipLibCheck": true
   },
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "node_modules/electron/*"
   ],
   "compileOnSave": false,
   "files": [
-    "./src/index.tsx"
+    "./src/main.tsx",
+    "./src/index.tsx",
+    "./src/components/RunButton.tsx",
+    "./src/components/AppComponent.tsx"
   ]
 }
 

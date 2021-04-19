@@ -2,11 +2,7 @@ import * as React from "react";
 import SCHVIZ from '@scion-scxml/schviz';
 import scxml = require('@scion-scxml/scxml');
 import scion = require('@scion-scxml/core');
-import electron = require('electron');
 import {handleError, clear} from '../handle-errors';
-
-const remote = electron.remote;
-const {Menu, MenuItem} = remote;
 
 import fs = require('fs');
 
