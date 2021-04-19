@@ -27,7 +27,10 @@ function createWindow (scxmlFile) {
 
   // Create the browser window.
   let window = new BrowserWindow({
-    title: 'scxml://' + scxmlFile
+    title: 'scxml://' + scxmlFile,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js')
+    }
   })
 
   // and load the index.html of the app.

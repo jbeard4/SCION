@@ -1,17 +1,13 @@
-import ReactDOM = require('react-dom');
-import * as React from "react";
+const concatenify = require('concatenify');
 
-import AppComponent from './components/AppComponent';
+window.addEventListener('DOMContentLoaded', () => {
+  window['$'] = window['jQuery'] = require("jquery")
+  concatenify("../node_modules/jquery-ui-dist/jquery-ui.js")
+  concatenify("../node_modules/ui-contextmenu/jquery.ui-contextmenu.js")
 
-const params = getQueryParameters(); 
-const pathToScxml = params.scxmlFile;
-const hideActions = params.hideActions === 'true';
+  require('../index.css')
+  require('../node_modules/jquery-ui-dist/jquery-ui.css')
+  require('../node_modules/toastr/build/toastr.css')
 
-let app = ReactDOM.render(
-  <AppComponent scxmlPath={pathToScxml} hideActions={hideActions}/>,
-  document.querySelector('.app')
-) as AppComponent;
-
-function getQueryParameters() : any{
-  return document.location.search.replace(/(^\?)/,'').split("&").map(function(n){return n = n.split("="),this[n[0]] = n[1],this}.bind({}))[0];
-}
+  require('./main')
+})
