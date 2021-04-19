@@ -549,8 +549,8 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
     }
   }
 
-  getOriginalViewbox(kgraph){
-    return {x : 0, y : 0, width : kgraph.root.width, height : kgraph.root.height}
+  getOriginalViewbox(kgraph): DOMRect{
+    return {x : 0, y : 0, width : kgraph.root.width, height : kgraph.root.height} as DOMRect
   }
 
   public refreshViewbox(){
@@ -586,7 +586,7 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
   render(){
     const viewBox = this.state.kgraph ? 
                         this.getOriginalViewbox(this.state.kgraph) : 
-                        {x : 0, y : 0, width : 0, height : 0}
+                        {x : 0, y : 0, width : 0, height : 0} as DOMRect
     const transform = this.getTransformString(viewBox, viewBox, this.htmlRootElement ? this.htmlRootElement.getBoundingClientRect() : {x : 0, y : 0, width : 0, height : 0})
     return <div style={{width:'100%', height:'100%'}} ref={(e: HTMLDivElement) => { this.htmlRootElement = e; }} tabIndex={this.props.tabIndex || 0}>
         {  
@@ -890,7 +890,7 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
     this.zoomToViewbox(this.getOriginalViewbox(this.state.kgraph));
   }
 
-  private svgRectToViewBox(rect : SVGRect){
+  private svgRectToViewBox(rect : DOMRect){
     return `${rect.x} ${rect.y} ${rect.width} ${rect.height}`;
   }
 }

@@ -9,8 +9,5 @@ declare interface SVGAnimationElement
   extends SVGElement,
     SVGTests,
     ElementTimeControl{
-  getStartTime:number;
-  getCurrentTime:number ;
-  getSimpleDuration:number;
 }
 

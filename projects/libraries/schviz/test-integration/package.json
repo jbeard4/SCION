@@ -26,7 +26,7 @@
     "react": "^15.6.2",
     "react-dom": "^15.6.2",
     "sorcery": "^0.10.0",
-    "typescript": "^2.2.2",
+    "typescript": "4.2.4",
     "uglify-js": "^2.8.21",
     "ui-contextmenu": "^1.18.1",
     "watchify": "^3.9.0"

@@ -100,7 +100,7 @@
     "style-loader": "^0.12.3",
     "todomvc-app-css": "^2.0.1",
     "tsify": "^2.0.8",
-    "typescript": "2.3.3",
+    "typescript": "4.2.4",
     "uglify-js": "^2.8.21",
     "uglifyify": "^3.0.4",
     "watchify": "^3.9.0"
