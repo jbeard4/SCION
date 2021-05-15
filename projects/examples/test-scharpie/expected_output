@@ -1,0 +1,20 @@
+
+
+
+
+
+
+/Users/jbeard4/workspace/scion-scxml-platform/projects/examples/test-scharpie/tests/js_fail.scxml
+  23:48  error  Parsing error: Unexpected character '@'
+
+/Users/jbeard4/workspace/scion-scxml-platform/projects/examples/test-scharpie/tests/js_fail2.scxml
+  25:13  error  'x' is not defined    no-undef
+  25:17  error  'foo' is not defined  no-undef
+
+/Users/jbeard4/workspace/scion-scxml-platform/projects/examples/test-scharpie/tests/js_fail3.scxml
+  25:13  error  Parsing error: Unexpected character '@'
+
+/Users/jbeard4/workspace/scion-scxml-platform/projects/examples/test-scharpie/tests/schema_fail.scxml
+  24:0  error  element data: Schemas validity error : Element '{http://www.w3.org/2005/07/scxml}data': This element is not expected  xml-validation
+
+✖ 5 problems (5 errors, 0 warnings)
