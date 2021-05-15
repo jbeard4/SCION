@@ -1,0 +1,17 @@
+{
+  "name": "@scion-scxml/example-vanillajs-lightswitch",
+  "version": "1.0.0",
+  "description": "VanillaJS light switch example",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "scion-scxml-monitor",
+    "deploy": "couchapp push node.couchapp.js $COUCH_URL"
+  },
+  "devDependencies": {
+    "@scion-scxml/monitor-middleware": "^1.0.19",
+    "couchapp": "^0.11.0"
+  },
+  "author": "Jacob Beard <jake@jacobeanrnd.com>",
+  "license": "Apache-2.0"
+}

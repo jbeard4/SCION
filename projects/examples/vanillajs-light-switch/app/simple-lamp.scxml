@@ -1,0 +1,11 @@
+<scxml 
+  xmlns="http://www.w3.org/2005/07/scxml"
+  version="1.0"
+  name="simpleLamp">
+  <state id="off">
+    <transition event="touch" target="on"/>
+  </state>
+  <state id="on">
+    <transition event="touch" target="off"/>
+  </state>
+</scxml>
