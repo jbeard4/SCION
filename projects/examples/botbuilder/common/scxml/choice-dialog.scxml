@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" initial="initial-default" version="1.0" datamodel="ecmascript">
+  <transition event="error">
+    <log label="error" expr="_event"/>
+  </transition>
+  <datamodel>
+    <!-- these passed in as params --> 
+    <data id="messageBuffer"/>
+    <data id="prompt"/>
+    <data id="choices"/>
+    <data id="initialEvent"/>
+    <data id="type"/>
+
+    <data id="parsers" expr="{
+      text : parseTextEventData,
+      choice : parseChoiceEventData,
+      number : parseNumberEventData
+    }"/>
+    <data id="parseMessageText" expr="parsers[type]"/>
+    <data id="lastMessage"/>
+    <data id="max_retries" expr="3"/>
+    <data id="cur_retries" expr="0"/>
+  </datamodel>
+  <script src="./send-common.js"></script>
+  <script>
+    function parseTextEventData(text){
+      return text;
+    }
+
+    function parseChoiceEventData(text){
+      let textRegex = new RegExp('\\b' + text + '\\b');
+      let idx = parseNumberEventData(text)  - 1;
+      let choice = null;
+      if(idx &lt; choices.length){
+        choice = idx; 
+      } else {
+        let textMatches = choices.filter(function(choice){
+          return choice.match(textRegex);
+        });
+        if (textMatches.length) {
+          let firstTextMatch = textMatches[0];
+          choice = choices.indexOf(firstTextMatch);
+        }
+        return null;
+      }
+      return choice;
+    }
+
+    function parseNumberEventData(text){
+      let numberRegex = /\b\d+\b/;
+      let numberMatch = text.match(numberRegex);
+      if(numberMatch){
+        let idx = parseInt(numberMatch[0]);
+        return idx;
+      }
+      return null;
+    }
+  </script>
+  <script>
+    function formatPrompt(prompt, choices){
+      return prompt + '\n\n' + choices.map( function(choice, i){ return '  ' + (i+1) + '. ' + choice;}).join('\n');
+    }
+  </script>
+  <state id="initial-default">
+    <onentry>
+      <script>
+        send.call(this, initialEvent.data.message, type === 'choice' ? formatPrompt(prompt, choices) : prompt );
+      </script>
+    </onentry>
+    <transition target="message-received" event="message"/>
+  </state>
+  <state id="message-received">
+    <!-- validate message --> 
+    <!-- for choice - match him against the choice. either substring of choice, or number option -->  
+    <onentry>
+      <assign location="lastMessage" expr="_event"/>
+      <script>
+        let entity = parseMessageText(_event.data.message.text);
+        if(typeof entity !== 'undefined' &amp;&amp; entity !== null){
+          this.raise({name : 'valid', data : entity});
+        }else{
+          this.raise({name : 'not.valid'});
+        }
+      </script>
+    </onentry>
+    <transition event="valid"  target="valid-done" />
+    <transition event="not.valid" target="invalid-try-again" cond="cur_retries &lt; max_retries"/>
+    <transition event="not.valid" target="invalid-done"/>
+  </state>
+  <state id="invalid-try-again">
+    <onentry>
+      <assign location="cur_retries" expr="cur_retries+1"/>
+      <script>
+        send.call(this, lastMessage.data.message, "I didn't understand." + ( type === 'choice' ? " Please choose an option from the list" : ''));
+      </script>
+    </onentry>
+    <transition target="message-received" event="message"/>
+  </state>
+  <final id="valid-done">
+    <donedata>
+      <!-- return what he chose -->   
+      <content expr="_event.data"/>
+    </donedata>
+  </final>
+  <final id="invalid-done">
+    <donedata>
+      <content expr="false"/>
+    </donedata>
+  </final>
+</scxml>

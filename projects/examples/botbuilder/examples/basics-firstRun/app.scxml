@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" xmlns:conf="http://www.w3.org/2005/scxml-conformance" initial="initial-default" version="1.0" datamodel="ecmascript">
+  <datamodel>
+    <data id="userData" expr="{ name : null }"/>
+    <data id="messageBuffer"/>
+  </datamodel>
+  <script src="./node_modules/@scion-scxml/botbuilder-common-scxml-components/send-common.js"></script>
+  <transition event="error">
+    <log label="error" expr="_event"/>
+  </transition>
+  <state>
+    <state id="initial-default">
+      <transition cond="!userData.name" target="home" event="message"/>
+      <transition cond="userData.name" target="echo" event="message"/>
+    </state>
+    <state id="home">
+      <onentry>
+        <script>
+          send.call(this, _event.data.message, "Hello... What's your name?");
+        </script>
+      </onentry>
+      <state id="prompt">
+        <state id="prompt1">
+          <transition target="prompt2" event="message" cond="!_event.data.message.text"/>
+        </state>
+        <state id="prompt2">
+          <onentry>
+            <script>
+              send.call(this, _event.data.message, "Sorry... We need some information from you first.");
+            </script>
+          </onentry>
+          <transition target="prompt2" event="message"/>
+        </state>
+        <transition target="name-received" event="message" cond="_event.data.message.text"/>
+      </state>
+    </state>
+    <state id="name-received">
+      <onentry>
+        <assign location="userData.name" expr="_event.data.message.text"/>
+        <script>
+          send.call(this, _event.data.message, "Hi %s, say something to me and I'll echo it back.", userData.name);
+        </script>
+      </onentry>
+      <transition target="echo" event="message" cond="_event.data.message.text"/>
+    </state>
+    <state id="echo">
+      <onentry>
+        <script>
+          send.call(this, _event.data.message, "%s, I heard: %s", userData.name, _event.data.message.text);
+          send.call(this, _event.data.message, "Say 'help' or something else...");
+        </script>
+      </onentry>
+      <transition target="echo" event="message" cond="_event.data.message.text &amp;&amp; _event.data.message.text !== 'help'"/>
+    </state>
+    <transition target="initial-default" cond="_event.data.message.text === 'help'" event="message">
+      <script>
+        send.call(this, _event.data.message, "I'm a simple echo bot.");
+      </script>
+    </transition>
+  </state>
+</scxml>
+
