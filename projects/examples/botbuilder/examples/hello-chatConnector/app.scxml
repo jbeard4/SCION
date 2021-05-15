@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" initial="echo-test" version="1.0" datamodel="ecmascript">
+  <state id="echo-test">
+    <transition target="echo-test" event="message">
+      <script>
+        let message1 = {
+            "type": _event.data.type,
+            "agent": "botbuilder",
+            "source": _event.data.source,
+            "textLocale": _event.data.textLocale,
+            "address": _event.data.address,
+            "text": _event.data.text
+        }, message2 = {
+            "type": _event.data.type,
+            "agent": "botbuilder",
+            "source": _event.data.source,
+            "textLocale": _event.data.textLocale,
+            "address": _event.data.address,
+            "text": _event.data.text
+        };
+        connector.send([message1, message2], function(err, addresses){
+          if(err) this.send(err);
+          //TODO: do something with the addresses, maybe?
+        });
+      </script>
+    </transition>
+  </state>
+</scxml>
+

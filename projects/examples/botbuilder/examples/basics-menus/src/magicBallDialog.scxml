@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" initial="initial-default" version="1.0" datamodel="ecmascript">
+  <transition event="error">
+    <log label="error" expr="_event"/>
+  </transition>
+  <datamodel>
+    <!-- these passed in as params --> 
+    <data id="messageBuffer"/>
+    <data id="initialEvent"/>
+
+    <data id="lastMessage"/>
+    <data id="answers" expr="[
+        'It is certain',
+        'It is decidedly so',
+        'Without a doubt',
+        'Yes, definitely',
+        'You may rely on it',
+        'As I see it, yes',
+        'Most likely',
+        'Outlook good',
+        'Yes',
+        'Signs point to yes',
+        'Reply hazy try again',
+        'Ask again later',
+        'Better not tell you now',
+        'Cannot predict now',
+        'Concentrate and ask again',
+        'Don\'t count on it',
+        'My reply is no',
+        'My sources say no',
+        'Outlook not so good',
+        'Very doubtful'
+      ]"/>
+  </datamodel>
+  <script src="../node_modules/@scion-scxml/botbuilder-common-scxml-components/send-common.js"></script>
+  <state id="initial-default">
+    <transition event="message">
+      <assign location="lastMessage" expr="_event"/>
+    </transition>
+    <invoke type="http://www.w3.org/TR/scxml/" src="file:../node_modules/@scion-scxml/botbuilder-common-scxml-components/choice-dialog.scxml" autoforward="true">
+      <param name="messageBuffer" expr="messageBuffer"/>
+      <param name="prompt" expr="'What is your question?'"/>
+      <param name="initialEvent" expr="initialEvent"/>
+      <param name="type" expr="'text'"/>
+    </invoke>
+    <transition target="done" event="done.invoke"/>
+  </state>
+  <final id="done">
+    <onentry>
+      <script>
+        send.call(this, lastMessage.data.message, answers[Math.floor(Math.random() * answers.length)]);
+      </script>
+    </onentry>
+  </final>
+</scxml>
+
+
+
+

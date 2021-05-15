@@ -1,0 +1,21 @@
+{
+  "name": "@scion-scxml/botbuilder-hello-chatconnector",
+  "version": "1.0.18",
+  "description": "Example of SCION Botbuilder integration, based on the botbuilder-hello-chatconnector example",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "Jacob Beard <jake@jacobeanrnd.com>",
+  "license": "MIT",
+  "keywords": [
+    "botbuilder",
+    "bots",
+    "chatbots",
+    "botbuilder-samples"
+  ],
+  "dependencies": {
+    "@scion-scxml/botbuilder-common": "^1.0.19",
+    "@scion-scxml/botbuilder-common-scxml-components": "1.0.0"
+  },
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+}

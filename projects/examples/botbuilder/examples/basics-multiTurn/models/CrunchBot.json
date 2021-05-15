@@ -1,0 +1,452 @@
+{
+  "luis_schema_version": "1.2.0",
+  "name": "CrunchBot",
+  "desc": "Bot designed to answer questions from crunchbase.",
+  "culture": "en-us",
+  "intents": [
+    {
+      "Name": "None",
+      "Children": []
+    },
+    {
+      "Name": "Description",
+      "Children": []
+    },
+    {
+      "Name": "Acquisitions",
+      "Children": []
+    },
+    {
+      "Name": "IpoDate",
+      "Children": []
+    },
+    {
+      "Name": "Help",
+      "Children": []
+    },
+    {
+      "Name": "Website",
+      "Children": []
+    },
+    {
+      "Name": "Founders",
+      "Children": []
+    },
+    {
+      "Name": "Headquarters",
+      "Children": []
+    }
+  ],
+  "entities": [
+    {
+      "Name": "CompanyName",
+      "Children": []
+    }
+  ],
+  "bing_entities": [],
+  "actions": [],
+  "model_features": [],
+  "regex_features": [],
+  "utterances": [
+    {
+      "text": "what was the date of their ipo",
+      "intent": "IpoDate",
+      "entities": []
+    },
+    {
+      "text": "tell me their founders",
+      "intent": "Founders",
+      "entities": []
+    },
+    {
+      "text": "who started amazon",
+      "intent": "Founders",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "whats their website",
+      "intent": "Website",
+      "entities": []
+    },
+    {
+      "text": "when did google ipo?",
+      "intent": "IpoDate",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "id like a sandwich",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "whats the website for amazon?",
+      "intent": "Website",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "when did they go public?",
+      "intent": "IpoDate",
+      "entities": []
+    },
+    {
+      "text": "where is amazons corp headquarters?",
+      "intent": "Headquarters",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "who created google",
+      "intent": "Founders",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "when did amazon go public?",
+      "intent": "IpoDate",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "where is amazon headquartered?",
+      "intent": "Headquarters",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "what does apple build?",
+      "intent": "Description",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "who started apple?",
+      "intent": "Founders",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "how many companies has amazon bought?",
+      "intent": "Acquisitions",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "how do i contact microsoft?",
+      "intent": "Website",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "how many companies have they bought?",
+      "intent": "Acquisitions",
+      "entities": []
+    },
+    {
+      "text": "random",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "what's the list of microsoft founders?",
+      "intent": "Founders",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "how many acquisitions has microsoft made?",
+      "intent": "Acquisitions",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "did amazon buy anyone last year?",
+      "intent": "Acquisitions",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 1,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "are they in seattle?",
+      "intent": "Headquarters",
+      "entities": []
+    },
+    {
+      "text": "what does apple do?",
+      "intent": "Description",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "is microsoft public?",
+      "intent": "IpoDate",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 1,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "tell me about google",
+      "intent": "Description",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "has microsoft bought anyone?",
+      "intent": "Acquisitions",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 1,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "where are they located?",
+      "intent": "Headquarters",
+      "entities": []
+    },
+    {
+      "text": "is their headquarters in washington?",
+      "intent": "Headquarters",
+      "entities": []
+    },
+    {
+      "text": "what do they do?",
+      "intent": "Description",
+      "entities": []
+    },
+    {
+      "text": "how many companies has apple bought?",
+      "intent": "Acquisitions",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "how many investments has google made?",
+      "intent": "Acquisitions",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "how many companies have they invested in?",
+      "intent": "Acquisitions",
+      "entities": []
+    },
+    {
+      "text": "what can i say?",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "what kind of things can i ask?",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "hello",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "greetings",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "what's up?",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "what do you do?",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "how do i ask questions about microsoft?",
+      "intent": "Help",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "how can i contact google?",
+      "intent": "Website",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "tell me about microsoft",
+      "intent": "Description",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "tell me about amazon",
+      "intent": "Description",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "when did they go public",
+      "intent": "IpoDate",
+      "entities": []
+    },
+    {
+      "text": "who were the founders",
+      "intent": "Founders",
+      "entities": []
+    },
+    {
+      "text": "who founded them",
+      "intent": "Founders",
+      "entities": []
+    },
+    {
+      "text": "who started them?",
+      "intent": "Founders",
+      "entities": []
+    },
+    {
+      "text": "what about amazon",
+      "intent": "Description",
+      "entities": [
+        {
+          "entity": "CompanyName",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "how can i contact them?",
+      "intent": "Website",
+      "entities": []
+    },
+    {
+      "text": "who was the founder",
+      "intent": "Founders",
+      "entities": []
+    },
+    {
+      "text": "how many companies have they bought",
+      "intent": "Acquisitions",
+      "entities": []
+    }
+  ]
+}

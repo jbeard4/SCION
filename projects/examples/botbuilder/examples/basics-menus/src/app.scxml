@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" xmlns:conf="http://www.w3.org/2005/scxml-conformance" initial="initial-default" version="1.0" datamodel="ecmascript">
+  <transition event="error">
+    <log label="error" expr="_event"/>
+  </transition>
+  <datamodel>
+    <!-- via param --> 
+    <data id="messageBuffer"/>
+
+    <data id="lastMessage"/>
+    <data id="firstMessage"/>
+  </datamodel>
+  <script src="../node_modules/@scion-scxml/botbuilder-common-scxml-components/send-common.js"></script>
+  <state id="initial-default">
+    <transition target="prompt" event="message"/>
+  </state>
+  <state id="prompt">
+    <onentry>
+      <assign location="firstMessage" expr="_event"/>
+      <assign location="lastMessage" expr="_event"/>
+    </onentry>
+    <transition event="message">
+      <assign location="lastMessage" expr="_event"/>
+    </transition>
+    <datamodel>
+      <data id="choices" expr="['Flip A Coin','Roll Dice','Magic 8-Ball','Quit']"/>
+    </datamodel>
+    <invoke type="http://www.w3.org/TR/scxml/" src="file:../node_modules/@scion-scxml/botbuilder-common-scxml-components/choice-dialog.scxml" autoforward="true">
+      <param name="messageBuffer" expr="messageBuffer"/>
+      <param name="prompt" expr="'Choose an option:'"/>
+      <param name="choices" expr="choices"/>
+      <param name="initialEvent" expr="_event"/>
+      <param name="type" expr="'choice'"/>
+    </invoke>
+    <transition target="flip-coin-prompt" event="done.invoke.prompt" cond="_event.data === 0"/>
+    <transition target="roll-dice-prompt" event="done.invoke.prompt" cond="_event.data === 1"/>
+    <transition target="magic-ball-prompt" event="done.invoke.prompt" cond="_event.data === 2"/>
+    <transition target="end-conversation" event="done.invoke.prompt" cond="_event.data === 3"/>
+  </state>
+  <state>
+    <state id="flip-coin-prompt">
+      <invoke type="http://www.w3.org/TR/scxml/" src="file:flipCoinDialog.scxml" autoforward="true">
+        <param name="messageBuffer" expr="messageBuffer"/>
+        <param name="initialEvent" expr="lastMessage"/>
+      </invoke>
+    </state>
+    <state id="roll-dice-prompt">
+      <invoke type="http://www.w3.org/TR/scxml/" src="file:rollDiceDialog.scxml" autoforward="true">
+        <param name="messageBuffer" expr="messageBuffer"/>
+        <param name="initialEvent" expr="lastMessage"/>
+      </invoke>
+    </state>
+    <state id="magic-ball-prompt">
+      <invoke type="http://www.w3.org/TR/scxml/" src="file:magicBallDialog.scxml" autoforward="true">
+        <param name="messageBuffer" expr="messageBuffer"/>
+        <param name="initialEvent" expr="lastMessage"/>
+      </invoke>
+    </state>
+    <transition target="prompt" event="message.cached"/> <!-- transition using the cached/proxied event --> 
+    <transition event="done.invoke"> <!-- send the cached event --> 
+      <send event="message.cached">
+        <content expr="firstMessage.data"/>
+      </send>
+    </transition>
+  </state>
+  <final id="end-conversation">
+    <onentry>
+      <script>
+        send.call(this, lastMessage.data.message, "Goodbye until next time...");
+      </script>
+    </onentry>
+  </final>
+</scxml>
+

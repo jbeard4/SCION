@@ -1,0 +1,13 @@
+{
+  "name": "@scion-scxml/botbuilder-common-scxml-components",
+  "version": "1.0.17",
+  "description": "A set of scripts to help integrate SCION with the Microsoft Botbuilder framework - to be included from within a <script> tag inside of an SCXML file",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "https://gitlab.com/scion-scxml/example-botbuilder.git",
+  "homepage": "https://gitlab.com/scion-scxml/example-botbuilder/tree/master/common/scxml",
+  "author": "Jacob Beard <jake@jacobeanrnd.com>",
+  "license": "MIT",
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+}

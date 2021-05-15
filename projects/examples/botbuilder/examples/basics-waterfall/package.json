@@ -1,0 +1,18 @@
+{
+  "name": "scxml-botbuilder-sample-firstRun",
+  "version": "1.0.0",
+  "description": "Bot Builder Sample - FirstRun",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "Jacob Beard",
+  "license": "Apache-2.0",
+  "keywords": [
+    "botbuilder",
+    "bots",
+    "chatbots",
+    "botbuilder-samples"
+  ],
+  "dependencies": {
+  }
+}
