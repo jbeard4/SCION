@@ -17,7 +17,7 @@
   "homepage": "https://gitlab.com/scion-scxml/example-botbuilder/tree/master/examples/basics-firstRun",
   "dependencies": {
     "@scion-scxml/botbuilder-common": "^1.0.19",
-    "@scion-scxml/botbuilder-common-scxml-components": "1.0.0"
+    "@scion-scxml/botbuilder-common-scxml-components": "1.0.17"
   },
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }
