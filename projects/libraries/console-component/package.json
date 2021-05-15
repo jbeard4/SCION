@@ -15,8 +15,7 @@
     "watch": "tsc -p . --outDir dist/ -w",
     "build": "mkdir -p dist && npm run transpile",
     "transpile": "tsc -p . --outDir dist/",
-    "clean": "rm -rf dist/*",
-    "postversion": "git push && npm publish"
+    "clean": "rm -rf dist/*"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "Apache-2.0",
