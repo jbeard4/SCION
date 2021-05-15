@@ -1,0 +1,3 @@
+This is a project to create an executable model of the behaviour of the vi text editor using Statecharts. An SVG-based editing environment is also provided as a reference implementation of a scriptable editing environment.
+
+This is a work in progress and is not yet stable or ready for general use.

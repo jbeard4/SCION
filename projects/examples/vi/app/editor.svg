@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+<!--
+Copyright (C) 2011 Jacob Beard
+Released under GNU GPL, read the file 'COPYING' for more information
+-->
+
+<html>
+  <head>
+  </head>
+  <body>
+<svg width="200" height="300">
+  <style type="text/css">
+    text,tspan {
+      font-family: "Nimbus Mono L", "Courier New", Courier, monospace;
+    }
+    text#main,tspan {
+      dominant-baseline: text-before-edge;
+    }
+    text#mode-text {
+      dominant-baseline: text-after-edge;
+    }
+  </style>
+  <rect x="0" y="0" width="100%" height="100%" stroke="blue" fill="white"/>
+  <g id="selectionParent" stroke="none" fill="gray"/>
+  <text id="main" x="0" y="0" stroke="none" fill="black" xml:space="preserve"></text>
+  <rect id="cursor" x="0" y="0" width="1" height="12pt" stroke="none" fill="black"/>
+  <text id="mode-text" x="0" y="100%" stroke="none" fill="black"></text>
+  <text id="command-text" x="0" stroke="none" fill="black" xml:space="preserve"></text>
+  <rect id="command-cursor" x="0" width="1" height="12pt" stroke="none" fill="black"/>
+  <text id="location-text" x="300" y="400"></text>
+</svg>
+<script>
+  window.svgNS = "http://www.w3.org/2000/svg";
+</script>
+<script href="editor.js"/>
+<script href="node_modules/babel-polyfill/dist/polyfill.js"/>
+<script href="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"/>
+<script href="node_modules/@jbeard/scxml/dist/scxml.js"/>
+<script>
+  function main(){
+    //here we pull this out of the document, but, thanks to clean design, 
+    //all text nodes and whatnot could be created dynamically to allow instantiation of multiple text editors in a single page
+    var root = document.documentElement;
+    var txt = document.getElementById("main")
+    var cursorNode = document.getElementById("cursor")
+    var modeText = document.getElementById("mode-text")
+    var locationText = document.getElementById("location-text")
+    var selectionParent = document.getElementById("selectionParent")
+    var commandText = document.getElementById("command-text")
+    var commandCursorNode = document.getElementById("command-cursor");
+      
+    //there may be a nicer way to do this, but we assume a fixed-width font, so here we create a character, insert it into DOM to get its dimensions, then remove it
+    var textExtent;
+    var tmptxt = document.createElementNS(svgNS,"text");
+    tmptxt.textContent="b";
+    document.documentElement.appendChild(tmptxt)
+    textExtent = tmptxt.getExtentOfChar(0)
+    document.documentElement.removeChild(tmptxt)
+    //console.log("textExtent",textExtent)
+
+    //TODO: figure out how to make this dynamic with width="100%"
+    var width = document.documentElement.width.baseVal.value;
+    var height = document.documentElement.height.baseVal.value;
+
+    txt.setAttributeNS(null,"y",-textExtent.height);
+    commandText.setAttributeNS(null,"y",height - (textExtent.height*2));
+    commandCursorNode.setAttributeNS(null,"y",height - textExtent.height);
+
+    scxml.urlToModel('editor-behaviour.xml',function(err,modelFactoryFactory){
+        if(err) throw err;
+
+        modelFactoryFactory.prepare(function(err,modelFactory){
+          const scInstance = new scxml.scion.Statechart(modelFactory);
+          var editor = SVGEditorFactory.createNewSVGEditorInstance(root,txt,cursorNode,commandCursorNode,modeText,locationText,commandText,selectionParent,textExtent,width,scInstance);
+          editor.install(); 
+        })
+    });
+
+  }
+
+  main();
+</script>
+</body>
+</html>
