@@ -36,8 +36,8 @@
     "projects/examples/botbuilder/examples/hello-chatConnector",
     "projects/examples/universal-morse-input-output",
     "projects/examples/vi",
-    "projects/examples/react-redux/drag-and-drop-redux",
-    "projects/examples/react-redux/drag-and-drop-redux-with-devtools",
+    "projects/examples/react-redux/drag-and-drop-redux/drag-and-drop-redux",
+    "projects/examples/react-redux/drag-and-drop-redux/drag-and-drop-redux-with-devtools",
     "projects/examples/test-scharpie"
   ],
   "version": "independent"
