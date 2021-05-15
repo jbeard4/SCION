@@ -1,0 +1,30 @@
+<scxml 
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0">
+
+    <datamodel>
+        <data id="eventStamp"/>
+        <data id="rectX" expr="0"/>
+        <data id="rectY" expr="0"/>
+        <data id="dx"/>
+        <data id="dy"/>
+    </datamodel>
+
+    <state id="idle">
+        <transition event="mousedown" target="dragging">
+            <assign location="eventStamp" expr="_event.data"/>
+        </transition>
+    </state>
+
+    <state id="dragging">
+        <transition event="mouseup" target="idle"/>
+        <transition event="mousemove" target="dragging">
+            <assign location="dx" expr="eventStamp.clientX - _event.data.clientX"/>
+            <assign location="dy" expr="eventStamp.clientY - _event.data.clientY"/>
+            <assign location="rectX" expr="rectX - dx"/>
+            <assign location="rectY" expr="rectY - dy"/>
+            <assign location="eventStamp" expr="_event.data"/>
+        </transition>
+    </state>
+
+</scxml>

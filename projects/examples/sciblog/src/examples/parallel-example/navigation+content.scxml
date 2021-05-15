@@ -1,0 +1,42 @@
+<scxml initial="loading">
+
+  <datamodel>
+    <data id="current-l1"/>
+  </datamodel>
+
+  <state id="loading">
+    <transition event="loaded" target="ready"/>
+  </state>
+
+  <parallel id="ready">
+
+    <state id="content" initial="animating">
+
+      <state id="content-idle">
+        <transition event="navigate" target="content-animating"/>
+      </state>
+
+      <state id="content-animating">
+        <transition event="done-antimating" target="content-idle"/>
+      </state>
+
+    </state>
+
+    <state id="nav" initial="nav-closed">
+
+      <state id="nav-closed">
+        <transition event="click-l1" target="nav-open"/>
+        <transition event="scroll-end" target="nav-open"/>
+        <transition event="top-swipe" target="nav-open"/>
+      </state>
+
+      <state id="nav-open">
+        <transition event="click-l1" cond="_event.data != current-l1" target="nav-closed"/>
+        <transition event="menu-off-canvas" target="nav-open"/>
+      </state>
+
+    </state>
+
+  </parallel>
+
+</scxml>
