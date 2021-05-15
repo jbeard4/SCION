@@ -27,7 +27,6 @@
     "projects/devtools/cli",
     "projects/devtools/vscode-preview",
     "projects/devtools/redux-devtools-scion-monitor",
-    "projects/examples/sciblog",
     "projects/examples/botbuilder/common/scxml",
     "projects/examples/botbuilder/common/server",
     "projects/examples/botbuilder/examples/basics-firstRun",
