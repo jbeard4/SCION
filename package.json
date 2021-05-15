@@ -7,11 +7,7 @@
     "bootstrap": "lerna bootstrap",
     "build": "npm run bootstrap && lerna run --sort build && npm run copy-dist",
     "copy-dist": "mkdir -p dist && cp projects/libraries/scxml/dist/scxml*.js dist/ && cp projects/devtools/debug/dist/scxml.debug.js dist/ && cp projects/libraries/core/dist/core.* dist/ && cp projects/libraries/schviz/dist/schviz.* dist/",
-    "version": "lerna version --no-git-tag-version --no-push",
-    "push": "lerna exec --concurrency 1 'pwd; git push origin'",
-    "commit": "lerna exec --concurrency 1 'if [ \"$( git status --porcelain )\" ]; then pwd; git diff | less; git commit -a; fi;'",
-    "commit-packages": "lerna exec --concurrency 1 'if [ \"$( git status --porcelain )\" ]; then pwd; git commit -a -m \"Update package version\"; fi;'",
-    "publish-deps": "bash scripts/publish.sh"
+    "version": "lerna version"
   },
   "author": "",
   "license": "See LICENSE in LICENSE",
