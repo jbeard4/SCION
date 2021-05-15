@@ -1,0 +1,17 @@
+image: node
+
+pages:
+  stage: deploy
+  script:
+  - cd drag-and-drop-redux
+  - npm install
+  - mkdir -p ../public/node_modules/jquery/dist/ ../public/node_modules/babel-polyfill/dist/ ../public/dist
+  - cp node_modules/jquery/dist/jquery.js ../public/node_modules/jquery/dist/
+  - cp node_modules/babel-polyfill/dist/polyfill.js ../public/node_modules/babel-polyfill/dist/
+  - cp dist/index.js ../public/dist/
+  - cp index.html ../public/
+  artifacts:
+    paths:
+    - public
+  only:
+  - master

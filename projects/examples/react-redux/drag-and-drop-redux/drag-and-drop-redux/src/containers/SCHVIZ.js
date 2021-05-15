@@ -1,0 +1,19 @@
+import { connect } from 'react-redux'
+import SCHVIZ from '@scion-scxml/schviz';
+import scjson from '../../dist/drag-and-drop.json'
+
+const mapStateToProps = ([configuration, history, isInFinalState, datamodel], ownProps) => {
+  return {
+    configuration,
+    scjson,
+    hideActions : true
+  }
+}
+
+let InteractiveSCHVIZ = connect(
+  mapStateToProps,
+  null
+)(SCHVIZ)
+
+export default InteractiveSCHVIZ  
+

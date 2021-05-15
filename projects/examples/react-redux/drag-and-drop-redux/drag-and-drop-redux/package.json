@@ -1,0 +1,40 @@
+{
+  "name": "@scion-scxml/drag-and-drop-redux",
+  "version": "0.0.21",
+  "license": "Apache-2.0",
+  "author": "Jacob Beard <jake@jacobeanrnd.com>",
+  "description": "Redux integration example",
+  "repository": "https://gitlab.com/scion-scxml/example-react-redux.git",
+  "homepage": "https://gitlab.com/scion-scxml/example-react-redux",
+  "devDependencies": {
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babelify": "^8.0.0",
+    "browserify": "^14.5.0",
+    "enzyme": "^2.4.1",
+    "react-addons-test-utils": "^15.3.0",
+    "react-scripts": "^0.9.3",
+    "redux-devtools-chart-monitor": "^1.7.0",
+    "sorcery": "^0.10.0"
+  },
+  "dependencies": {
+    "@scion-scxml/cli": "^1.0.37",
+    "@scion-scxml/core": "^2.6.22",
+    "@scion-scxml/schviz": "^3.2.25",
+    "babel-preset-react": "^6.24.1",
+    "jquery": "^3.3.1",
+    "prop-types": "^15.5.8",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "react-redux": "^4.4.8",
+    "redux": "^3.6.0"
+  },
+  "scripts": {
+    "compile-scxml": "scion compile ./src/reducers/drag-and-drop.scxml --format json -o dist/drag-and-drop.json && scion compile ./src/reducers/drag-and-drop.scxml --format module -o dist/drag-and-drop.js",
+    "bundle": "cd dist; browserify -d -t babelify ../src/index.js -o ./index.js; sorcery -i index.js",
+    "build": "mkdir -p dist; npm run compile-scxml && npm run bundle",
+    "watch": "cd dist; watchify -d -t babelify ../src/index.js -o 'cat > index.js; sorcery -i index.js' -v"
+  },
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+}
