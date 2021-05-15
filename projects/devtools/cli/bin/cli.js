@@ -106,6 +106,8 @@ require('yargs') // eslint-disable-line
       interpreter.start();
     });
   })
+  /*
+   * FIXME: lint command is temporarily disabled
   .command('lint', 'lint an SCXML file (this is an alias for "eslint --plugin @scion-scxml/eslint-plugin")', (yargs) => {
   }, (argv) => {
     const proc = require('child_process');
@@ -115,6 +117,7 @@ require('yargs') // eslint-disable-line
       process.exit(code)
     })
   })
+  */
   .command('monitor', 'start a monitor server', (yargs) => {
     yargs
       .option(OPTION, {
