@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<scxml xmlns="http://www.w3.org/2005/07/scxml" name="morse" datamodel="ecmascript" version="1.0"> 
+  <parallel id="main">
+    <transition event="error.*">
+      <log label="uncaught error" expr="_event.data.message + '\n' + _event.data.stack"/>
+    </transition>
+    <state id="event_processor">
+      <datamodel>
+        <data id="dit_duration" expr="100"/>
+        <data id="dash_duration" expr="dit_duration * 3"/>
+      </datamodel>
+      <state id="released">
+        <onentry>
+          <script>
+            //turn off the buzzer
+            //hardware.buzzer.write(0);
+          </script>
+          <send event="button.release"/>
+        </onentry>
+        <state id="initial">
+          <onentry>
+            <send id="short_pause_timeout" event="short_pause_timeout" delayexpr="dash_duration + 'ms'"/>
+          </onentry>
+          <onexit>
+            <cancel sendid="short_pause_timeout"/>
+          </onexit>
+          <transition event="short_pause_timeout" target="short_pause">
+          </transition>
+          <transition event="device.press" target="pressed">
+          </transition>
+        </state> 
+        <state id="short_pause">
+          <onentry>
+            <send id="long_pause_timeout" event="long_pause_timeout" delayexpr="dit_duration * 7 + 'ms'"/>
+            <send event="short_pause"/> 
+          </onentry>
+          <onexit>
+            <cancel sendid="long_pause_timeout"/>
+          </onexit>
+          <transition event="long_pause_timeout" target="long_pause"/>
+          <transition event="device.press" target="pressed"/>
+        </state> 
+        <state id="long_pause">
+          <onentry>
+            <send event="long_pause"/> 
+          </onentry>
+          <transition event="device.press" target="pressed"></transition>
+        </state> 
+      </state>
+      <state id="pressed">
+        <onentry>
+          <script>
+            //trigger the buzzer
+            //hardware.buzzer.write(1);
+          </script>
+          <send event="button.press"/>
+        </onentry>
+        <state id="sending_dot">
+          <onentry>
+            <send id="dash-timeout" event="dash-timeout" delayexpr="dash_duration + 'ms'"/>
+          </onentry>
+          <onexit>
+            <cancel sendid="dash-timeout"/>
+          </onexit>
+          <transition event="dash-timeout" target="sending_dash"/>
+          <transition event="device.release" target="released">
+            <send event="dot"/> 
+          </transition>
+        </state>
+        <state id="sending_dash">
+          <onentry>
+            <send id="long_press_timeout" event="long_press_timeout" delayexpr="dit_duration * 4 + 'ms'"/>
+          </onentry>
+          <onexit>
+            <cancel sendid="long_press_timeout"/>
+          </onexit>
+          <transition event="device.release" target="released">
+            <send event="dash"/> 
+          </transition>
+        </state>
+      </state> 
+    </state>
+    <state id="parse_trie">
+      <datamodel>
+        <data id="buffer"/>
+      </datamodel>
+      <onentry>
+        <script>
+          buffer = '';
+        </script>
+      </onentry>
+      <% states.map(function(state){ %>
+        <state id="<%= state.id %>"> 
+          <% if (state.emit){ %>
+            <onentry>
+              <script>
+                buffer += "<%= state.emit %>";
+              </script>
+            </onentry>
+            <transition target="idle"/>
+          <% } %>
+          <% state.transitions.map(function(t){ %>
+            <transition target="<%= t.target %>" event="<%= t.event %>"/> 
+          <% }) %>
+          <% if( state.id === 'idle' ){ %>
+            <transition target="idle" event="long_pause">
+            </transition>
+          <% } %>
+        </state> 
+      <% }) %>
+    </state>
+  </parallel>
+</scxml>
