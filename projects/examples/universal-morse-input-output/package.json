@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/example-vanillajs-morse",
-  "version": "1.1.19",
+  "version": "1.1.20",
   "description": "Morse code parser implemented in SCXML",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -21,11 +21,11 @@
   },
   "homepage": "https://gitlab.com/scion-scxml/example-universal-morse-input-output",
   "dependencies": {
-    "@scion-scxml/scxml": "^4.3.25",
+    "@scion-scxml/scxml": "^4.3.26",
     "babel-polyfill": "^6.26.0"
   },
   "devDependencies": {
-    "@scion-scxml/monitor-middleware": "^1.0.19",
+    "@scion-scxml/monitor-middleware": "^1.0.20",
     "couchapp": "^0.11.0"
   },
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"

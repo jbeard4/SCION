@@ -1,7 +1,7 @@
 {
   "name": "@scion-scxml/core",
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "version": "2.6.22",
+  "version": "2.6.23",
   "description": "StateCharts Interpretation and Optimization eNgine (SCION) CORE is an implementation of Statecharts in JavaScript.",
   "keywords": [
     "scxml",

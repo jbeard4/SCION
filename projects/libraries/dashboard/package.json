@@ -1,7 +1,7 @@
 {
   "name": "@scion-scxml/dashboard",
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "description": "Web dashboard for SCION monitor",
   "main": "./dist/containers/App",
   "scripts": {
@@ -20,8 +20,8 @@
   "dependencies": {
     "@scion-scxml/jsondiffpatch": "^0.2.29",
     "@scion-scxml/react-collapsible": "^2.0.30",
-    "@scion-scxml/schviz": "^3.2.25",
-    "@scion-scxml/scxml": "^4.3.25",
+    "@scion-scxml/schviz": "^3.2.26",
+    "@scion-scxml/scxml": "^4.3.26",
     "@types/jquery": "^1.10.33",
     "@types/slickgrid": "^2.1.25",
     "babel-plugin-transform-class-properties": "^6.24.1",

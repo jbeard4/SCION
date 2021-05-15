@@ -1,12 +1,12 @@
 {
   "name": "@scion-scxml/schviz",
-  "version": "3.2.25",
+  "version": "3.2.26",
   "description": "SCXML visualization library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
     "@scion-scxml/core-base": "1.0.24",
-    "@scion-scxml/scxml": "4.3.25",
+    "@scion-scxml/scxml": "^4.3.26",
     "babel-polyfill": "^6.23.0",
     "babel-preset-es2015": "^6.24.1",
     "classnames": "^2.2.5",
@@ -28,7 +28,7 @@
     "ui-contextmenu": "^1.18.1"
   },
   "devDependencies": {
-    "@scion-scxml/test-framework": "2.0.15",
+    "@scion-scxml/test-framework": "^2.0.16",
     "@types/es6-shim": "0.31.41",
     "@types/jquery": "2.0.41",
     "@types/node": "7.0.12",
