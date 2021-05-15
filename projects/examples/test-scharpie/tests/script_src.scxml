@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml 
+    datamodel="ecmascript"
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0">
+
+    <script src="./script_src.js"></script>
+
+    <state id="a">
+        <transition target="b" event="t1">
+          <script>
+            console.log(foo);
+          </script>
+        </transition>
+    </state>
+
+    <state id="b">
+        <onentry>
+            <script>
+              bar();
+            </script>
+        </onentry>
+        <transition target="a" event="t2"/>
+    </state>
+
+</scxml>
+
+
