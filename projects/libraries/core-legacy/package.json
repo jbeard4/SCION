@@ -26,10 +26,10 @@
   },
   "homepage": "https://gitlab.com/scion-scxml/core-legacy",
   "dependencies": {
-    "@scion-scxml/core-base": "1.0.0"
+    "@scion-scxml/core-base": "1.0.24"
   },
   "devDependencies": {
-    "@scion-scxml/core-test-framework": "1.0.0",
+    "@scion-scxml/core-test-framework": "1.0.24",
     "babel-plugin-transform-es2015-modules-umd": "^6.8.0",
     "babel-polyfill": "^6.9.1",
     "babel-preset-es2015": "^6.9.0",

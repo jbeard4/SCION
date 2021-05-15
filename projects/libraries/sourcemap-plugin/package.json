@@ -9,7 +9,7 @@
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
-    "@scion-scxml/vm-browserify": "0.0.6",
+    "@scion-scxml/vm-browserify": "0.0.30",
     "esprima": "^4.0.0",
     "licensezero-postinstall": "^1.0.0",
     "source-map": "^0.6.1"

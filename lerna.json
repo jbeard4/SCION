@@ -12,7 +12,7 @@
     "projects/libraries/schviz",
     "projects/libraries/schviz/test-integration",
     "projects/libraries/console-component",
-    "projects/libraries/scxml-test-framework",
+    "projects/libraries/test-framework",
     "projects/libraries/eslint",
     "projects/libraries/jsondiffpatch",
     "projects/libraries/react-collapsible",
