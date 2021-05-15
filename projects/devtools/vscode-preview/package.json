@@ -1,0 +1,73 @@
+{
+  "name": "vscode-scxml-preview",
+  "version": "0.0.28",
+  "publisher": "JacobeanResearchandDevelopmentLLC",
+  "engines": {
+    "vscode": "^1.47.0"
+  },
+  "homepage": "https://scion.scxml.io",
+  "license": "SEE LICENSE IN LICENSE",
+  "displayName": "SCXML Preview",
+  "description": "Preview SCXML files.",
+  "categories": [
+    "Languages"
+  ],
+  "keywords": [
+    "scion",
+    "scxml",
+    "preview"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "scxml.showPreview",
+        "title": "Show Preview",
+        "category": "SCXML"
+      }
+    ]
+  },
+  "activationEvents": [
+    "onCommand:scxml.showPreview"
+  ],
+  "devDependencies": {
+    "@scion-scxml/schviz": "^3.2.25",
+    "@scion-scxml/scxml": "^4.3.25",
+    "@types/socket.io-client": "^1.4.32",
+    "socket.io-client": "^2.0.4",
+    "tslint-language-service": "^0.9.6",
+    "@types/node": "^12.12.0",
+    "@types/vscode": "^1.47.0",
+    "@typescript-eslint/eslint-plugin": "^4.16.0",
+    "@typescript-eslint/parser": "^4.16.0",
+    "eslint": "^7.21.0",
+    "typescript": "^4.2.2"
+  },
+  "scripts": {
+    "copy-deps": "cp node_modules/babel-polyfill/dist/polyfill.js browser/ && cp node_modules/react/dist/react.js browser/ && cp node_modules/react-dom/dist/react-dom.js browser/ && cp node_modules/@scion-scxml/scxml/dist/scxml.js browser/ && cp node_modules/@scion-scxml/schviz/dist/schviz.js browser/",
+    "vscode:prepublish": "tsc -p ./ && npm run copy-deps",
+    "watch": "tsc -watch -p ./",
+    "compile": "npm run vscode:prepublish",
+    "build": "npm run compile",
+    "test": "node ./node_modules/vscode/bin/test"
+  },
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/scion-scxml/vscode-preview"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "q": "^1.5.1",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "socket.io": "^2.0.4"
+  },
+  "galleryBanner": {
+    "color": "#f78a30",
+    "theme": "dark"
+  },
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+}

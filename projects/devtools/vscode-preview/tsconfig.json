@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es2017",
+        "outDir": "out",
+        "lib": [
+            "es2017"
+        ],
+        "sourceMap": true,
+        "rootDir": ".",
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "plugins": [
+            {
+                "name": "tslint-language-service"
+            }
+        ]
+    },
+    "exclude": [
+        "node_modules",
+        ".vscode-test"
+    ]
+}
