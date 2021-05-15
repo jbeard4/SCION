@@ -1,0 +1,35 @@
+<scxml 
+    xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0"
+    profile="ecmascript">
+
+    <datamodel>
+        <data id="eventStampX"/>
+        <data id="eventStampY"/>
+        <data id="rectX" expr="0"/>
+        <data id="rectY" expr="0"/>
+    </datamodel>
+
+    <state id="idle">
+        <transition event="mousedown" target="dragging">
+            <assign location="eventStampX" expr="_event.data.screenX"/>
+            <assign location="eventStampY" expr="_event.data.screenY"/>
+        </transition>
+    </state>
+
+    <state id="dragging">
+        <transition event="mouseup" target="idle"/>
+
+        <transition event="mousemove" target="dragging">
+            <script>
+                var dx = eventStampX - _event.data.screenX;
+                var dy = eventStampY - _event.data.screenY;
+                rectX -= dx;
+                rectY -= dy;
+            </script>
+            <assign location="eventStampX" expr="_event.data.screenX"/>
+            <assign location="eventStampY" expr="_event.data.screenY"/>
+        </transition>
+    </state>
+
+</scxml>
