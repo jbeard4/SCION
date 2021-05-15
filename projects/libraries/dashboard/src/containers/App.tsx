@@ -39,7 +39,7 @@ class App extends React.Component<AppProps, {}> {
   }
 
   componentDidMount(){
-    this.myLayout = window['jQuery'](this.rootElement).layout({ 
+    this.myLayout = (window['jQuery'](this.rootElement) as any).layout({ 
       applyDefaultStyles: true, 
       south__onresize: (() => { 
         //this.slickgridComponent && this.slickgridComponent.grid.resizeCanvas()
