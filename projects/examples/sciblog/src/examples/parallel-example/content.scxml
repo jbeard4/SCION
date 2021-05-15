@@ -1,0 +1,11 @@
+<scxml initial="animating">
+
+  <state id="idle">
+    <transition event="navigate" target="animating"/>
+  </state>
+
+  <state id="animating">
+    <transition event="done-antimating" target="idle"/>
+  </state>
+
+</scxml>

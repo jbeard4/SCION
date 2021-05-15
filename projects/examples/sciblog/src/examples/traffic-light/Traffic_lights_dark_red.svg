@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg version="1.1" baseprofile="full" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://web.resource.org/cc/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns" width="130" height="330">
+	<title>red traffic lights</title>
+	<description>original image (http://commons.wikimedia.org/wiki/Image:Ampel.svg) written by Manuel Strehl (http://manuel-strehl.de/)</description>
+	<defs>
+		<radialGradient cx="0.5" cy="0.5" r="0.5" fx="0.5" fy="0.5" id="r">
+			<stop stop-color="#fc7474" offset="0" />
+			<stop stop-color="#d53a3a" offset="0.7" />
+			<stop stop-color="#af0000" offset="1" />
+		</radialGradient>
+		<radialGradient cx="0.5" cy="0.5" r="0.5" fx="0.5" fy="0.5" id="y">
+			<stop stop-color="#fcfc74" offset="0" />
+			<stop stop-color="#d4d53a" offset="0.7" />
+			<stop stop-color="#afa500" offset="1" />
+		</radialGradient>
+		<radialGradient cx="0.5" cy="0.5" r="0.5" fx="0.5" fy="0.5" id="g">
+			<stop stop-color="#74fc94" offset="0" />
+			<stop stop-color="#3ad55e" offset="0.7" />
+			<stop stop-color="#00af29" offset="1" />
+		</radialGradient>
+		<radialGradient cx="0.5" cy="0.5" r="0.5" fx="0.5" fy="0.5" id="b">
+			<stop stop-color="#4d4d4d" offset="0" />
+			<stop stop-color="#1a1a1a" offset="0.7" />
+			<stop stop-color="#000000" offset="1" />
+		</radialGradient>
+		<linearGradient x1="0" y1="0" x2="0" y2="1.05" id="rg">
+			<stop stop-color="#fff" stop-opacity="0.9;" offset="0" />
+			<stop stop-color="#fff" stop-opacity="0.2;" offset="0.7" />
+			<stop stop-color="#fff" stop-opacity="0.3;" offset="1" />
+		</linearGradient>
+	</defs>
+	<rect width="120" height="320" x="5" y="5" fill="#1A1A1A" stroke="black" stroke-width="10" />
+	<circle cx="65"  cy="65" r="44" fill="url(#r)" stroke="black" stroke-width="10" id="redlight" />
+	<circle cx="65" cy="165" r="44" fill="url(#b)" stroke="black" stroke-width="10" id="yellight" />
+	<circle cx="65" cy="265" r="44" fill="url(#b)" stroke="black" stroke-width="10" id="grelight" />
+</svg>

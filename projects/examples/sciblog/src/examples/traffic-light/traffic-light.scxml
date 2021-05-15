@@ -1,0 +1,37 @@
+<scxml>
+  
+  <datamodel>
+    <data id="interval" expr="0"/>
+    <data id="stop_t" expr="6"/>
+    <data id="warn_t" expr="2"/>
+    <data id="go_t" expr="8"/>
+  </datamodel>
+  
+  <state id="stop">
+    <transition event="tick" cond="interval < stop_t">
+      <assign location="interval" expr="interval + 1" />
+    </transition>
+    <transition event="tick" cond="interval == stop_t" target="go">
+      <assign location="interval" expr="0" />
+    </transition>
+  </state>
+  
+  <state id="warn">
+    <transition event="tick" cond="interval < warn_t">
+      <assign location="interval" expr="interval + 1" />
+    </transition>
+    <transition event="tick" cond="interval == warn_t" target="stop">
+      <assign location="interval" expr="0" />
+    </transition>
+  </state>
+  
+  <state id="go">
+    <transition event="tick" cond="interval < go_t">
+      <assign location="interval" expr="interval + 1" />
+    </transition>
+    <transition event="tick" cond="interval == go_t" target="warn">
+      <assign location="interval" expr="0" />
+    </transition>
+  </state>
+  
+</scxml>

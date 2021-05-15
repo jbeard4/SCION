@@ -1,0 +1,1 @@
+This repository contains the source code of [scion.io](http://scion.io). This is based on Gatsby starter project [gatsby-starter-blog-no-styles](https://github.com/noahg/gatsby-starter-blog-no-styles).
