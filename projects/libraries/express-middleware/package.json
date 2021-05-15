@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/express-middleware",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -9,10 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@scion-scxml/core": "^2.6.22",
-    "@scion-scxml/dashboard": "^1.0.24",
-    "@scion-scxml/monitor-middleware": "^1.0.19",
-    "@scion-scxml/scxml": "^4.3.25",
+    "@scion-scxml/core": "^2.6.23",
+    "@scion-scxml/dashboard": "^1.0.25",
+    "@scion-scxml/monitor-middleware": "^1.0.20",
+    "@scion-scxml/scxml": "^4.3.26",
     "express": "^4.17.1"
   }
 }

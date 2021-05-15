@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/monitor-middleware",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "SCION monitor server",
   "main": "index.js",
   "bin": {
@@ -18,7 +18,7 @@
   "repository": "https://gitlab.com/scion-scxml/monitor-middleware.git",
   "homepage": "https://gitlab.com/scion-scxml/monitor-middleware",
   "dependencies": {
-    "@scion-scxml/dashboard": "^1.0.21",
+    "@scion-scxml/dashboard": "^1.0.25",
     "cheerio": "^1.0.0-rc.2",
     "licensezero-postinstall": "^1.0.0",
     "restify": "^6.3.4",

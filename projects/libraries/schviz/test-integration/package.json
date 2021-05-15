@@ -1,13 +1,13 @@
 {
   "name": "@scion-scxml/schviz-test-framework",
-  "version": "2.2.20",
+  "version": "2.2.21",
   "description": "SCJSON to KGraph to SVG rendering library",
   "main": "dist/index.js",
   "devDependencies": {
-    "@scion-scxml/console-component": "^1.0.27",
-    "@scion-scxml/core": "^2.6.22",
-    "@scion-scxml/schviz": "^3.2.25",
-    "@scion-scxml/scxml": "^4.3.25",
+    "@scion-scxml/console-component": "^1.0.28",
+    "@scion-scxml/core": "^2.6.23",
+    "@scion-scxml/schviz": "^3.2.26",
+    "@scion-scxml/scxml": "^4.3.26",
     "@types/jquery": "^2.0.41",
     "@types/react": "15.6.1",
     "@types/react-dom": "0.14.23",
@@ -64,7 +64,7 @@
   },
   "homepage": "https://gitlab.com/scion-scxml/schviz",
   "dependencies": {
-    "@scion-scxml/test-framework": "2.0.15",
+    "@scion-scxml/test-framework": "^2.0.16",
     "whatwg-fetch": "^2.0.3"
   },
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
