@@ -1,0 +1,10 @@
+{
+    "extends": "tslint:latest",
+    "exclude": [
+        "node_modules"
+    ],
+    "rules": {
+        "one-line": false,
+        "trailing-comma": "never"
+    }
+}
