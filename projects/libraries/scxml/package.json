@@ -45,8 +45,8 @@
   },
   "devDependencies": {
     "@scion-scxml/core-legacy": "^1.0.23",
-    "@scion-scxml/test-framework": "2.0.0",
-    "@scion-scxml/vm-browserify": "0.0.6",
+    "@scion-scxml/test-framework": "2.0.15",
+    "@scion-scxml/vm-browserify": "0.0.30",
     "async": "^1.5.2",
     "babel": "^6.23.0",
     "babel-cli": "^6.24.1",
