@@ -6,8 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "bootstrap": "lerna bootstrap",
     "build": "npm run bootstrap && lerna run --sort build && npm run copy-dist",
-    "copy-dist": "mkdir -p dist && cp projects/libraries/scxml/dist/scxml*.js dist/ && cp projects/devtools/debug/dist/scxml.debug.js dist/ && cp projects/libraries/core/dist/core.* dist/ && cp projects/libraries/schviz/dist/schviz.* dist/",
-    "version": "lerna version"
+    "copy-dist": "mkdir -p dist && cp projects/libraries/scxml/dist/scxml*.js dist/ && cp projects/devtools/debug/dist/scxml.debug.js dist/ && cp projects/libraries/core/dist/core.* dist/ && cp projects/libraries/schviz/dist/schviz.* dist/"
   },
   "author": "",
   "license": "See LICENSE in LICENSE",
