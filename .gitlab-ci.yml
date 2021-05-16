@@ -4,9 +4,8 @@ before_script:
 
 .build_template: &build_definition
   script:
-   - npx lerna bootstrap
-   - cd projects/libraries/core && echo Running tests for core && npm run test
-   - cd projects/libraries/scxml && echo Running tests for scxml && npm run test
+   - cd projects/libraries/core && echo Running tests for core && npm ci && npm run test
+   - cd projects/libraries/scxml && echo Running tests for scxml && npm ci && npm run test
 
 build:node:12.12.0:
   image: node:12.12.0
