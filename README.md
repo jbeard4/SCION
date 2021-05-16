@@ -3,23 +3,23 @@
 [![Backers on Open Collective](https://opencollective.com/scion/backers/badge.svg)](#backers)
  [![Sponsors on Open Collective](https://opencollective.com/scion/sponsors/badge.svg)](#sponsors) 
 
-This module is the top-level git repository for the SCION SCXML System (SCION). SCION provides a complete system for developing with SCXML. All submodule that are part of SCION are in `projects/{devtools,examples,libraries}` directories as git submodules. 
+This module is the lerna mono-repo for the SCION SCXML System (SCION). SCION provides a complete system for developing with SCXML. All submodule that are part of SCION are in `projects/{devtools,examples,libraries}` directories. 
 
-This package (`scion`) is published to npm so that the bundled modules can be consumed and published by cdnjs for use in the browser. The bundled modules are in the `dist/` directory: 
+This package (`scion`) is published to npm so that the bundled modules can be consumed and published by [[cdnjs]](https://cdnjs.com/) for use in the browser. The bundled modules are in the `dist/` directory: 
 
-[core](https://gitlab.com/scion-scxml/core) (Statecharts interpreter):
+[core](https://gitlab.com/scion-scxml/scion/-/tree/main/projects/libraries/core) (Statecharts interpreter):
 
 * core.js
 * core.js.map
 * core.min.js
 
-[scxml](https://gitlab.com/scion-scxml/scxml) (SCXML compiler and runtime):
+[scxml](https://gitlab.com/scion-scxml/scion/-/tree/main/projects/libraries/scxml) (SCXML compiler and runtime):
 
 * scxml.js
 * scxml.min.js
 * scxml.debug.js (SCXML compiler with sourcemaps enabled)
 
-[schviz](https://gitlab.com/scion-scxml/schviz) (visualization):
+[schviz](https://gitlab.com/scion-scxml/scion/-/tree/main/projects/libraries/schviz) (visualization):
 
 * dist/schviz.js
 * dist/schviz.js.map
@@ -34,17 +34,16 @@ For more information on the SCION project, please visit [scion.scxml.io](https:/
 
 ## Developing
 
-Clone this repository and then update submodules:
-
-```
-git submodule init
-git submodule update
-```
-
-Install nodejs modules:
+Clone this repository, then install nodejs modules:
 
 ```
 npm install
+```
+
+Bootstrap lerna:
+
+```
+npx lerna bootstrap
 ```
 
 Build all packages:
@@ -52,11 +51,6 @@ Build all packages:
 ```
 npm run build
 ```
-
-Then run a sanity test using the cli module:
-
-
-
 
 ## Contributors
 
