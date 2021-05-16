@@ -1,3 +1,0 @@
-extends: ../package-json/package.json
-rules:
-    booya: 2

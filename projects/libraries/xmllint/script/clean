@@ -1,5 +1,0 @@
-#!/bin/bash
-
-rm -rf ./build
-rm -rf ./libxml2/compile
-rm -rf ./libxml2/m4
