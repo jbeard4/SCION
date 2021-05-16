@@ -13,7 +13,6 @@
     "projects/libraries/schviz/test-integration",
     "projects/libraries/console-component",
     "projects/libraries/test-framework",
-    "projects/libraries/eslint",
     "projects/libraries/jsondiffpatch",
     "projects/libraries/react-collapsible",
     "projects/libraries/xmllint",
