@@ -54,28 +54,5 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-
-//init an SCXML file and simulate it
-scxml.pathToModel(path.join(__dirname,'scxml', 'doc.scxml'), function(err,model){
-  if(err) throw err;
-  model.prepare((err, fnModel) => {
-    if(err) throw err;
-
-    //instantiate the interpreter
-    const rootSession = new scxml.core.Statechart(fnModel);
-
-    rootSession.on('onInvokedSessionInitialized', function(invokedInterpreter){
-      invokedInterpreter._scriptingContext = rootSession._scriptingContext; //FIXME: workaround for bug in inter-session communication: https://gitlab.com/scion-scxml/scion/issues/3
-    });
-
-    //start the machine
-    rootSession.start();    
-
-  }, {
-    console: console,
-  })
-})
-
-
-
 module.exports = app;
+
