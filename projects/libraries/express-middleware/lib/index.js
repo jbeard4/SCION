@@ -86,10 +86,7 @@ module.exports = function ({
     }
   }
 
-  function generateSessionid(){
-    return uuid.v4()
-  }
-
+  scxml.core.BaseInterpreter.generateSessionid = uuid.v4
 
   // API to init new session
   app.post('/scion/:scxmlName', (req, res, next) => {
@@ -100,7 +97,7 @@ module.exports = function ({
       if(err) throw err;
 
       //instantiate the interpreter
-      const sc1 = new scxml.core.Statechart(fnModel, {generateSessionid});
+      const sc1 = new scxml.core.Statechart(fnModel);
 
       sc1.start();
 
@@ -124,8 +121,6 @@ module.exports = function ({
 
     const evt = req.body
 
-    console.log('evt ', evt )
-
     //read the sessionId
     // TODO: handle error where sessionId does not exist
     const savedSnapshot = mockDb.getSession(sessionId)
@@ -136,7 +131,7 @@ module.exports = function ({
       if(err) throw err;
 
       //instantiate the interpreter
-      const sc1 = new scxml.core.Statechart(fnModel, {generateSessionid, snapshot : savedSnapshot});
+      const sc1 = new scxml.core.Statechart(fnModel, {snapshot : savedSnapshot});
 
       sc1.gen(evt)
 
