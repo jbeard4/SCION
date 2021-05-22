@@ -137,7 +137,7 @@ module.exports = function ({
         if(err) throw err;
 
         //instantiate the interpreter
-        const sc1 = new scxml.core.Statechart(fnModel, {snapshot});
+        const sc1 = new scxml.core.Statechart(fnModel, {snapshot, sessionid: sessionId});
         initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized(sc1, db)
 
         sc1.gen(evt)
