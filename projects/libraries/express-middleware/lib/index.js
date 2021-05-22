@@ -2,8 +2,10 @@ const path = require('path');
 const express = require('express')
 const monitorMiddlewareClient = require('@scion-scxml/monitor-middleware/client')
 const uuid = require('uuid')
-
-const mockDb = require('./mock-db')
+const {
+  deserializeAllSerializedSessions,
+  initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized
+} = require('./multilevel-state-machine-ser-des')
 
 /*
  * options: 
@@ -11,7 +13,8 @@ const mockDb = require('./mock-db')
 module.exports = function ({
   app,
   scxml,
-  pathToScxmlSrcDir
+  pathToScxmlSrcDir,
+  db
 }){
 
   //set the mime type
@@ -98,13 +101,13 @@ module.exports = function ({
 
       //instantiate the interpreter
       const sc1 = new scxml.core.Statechart(fnModel);
+      initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized(sc1, db)
 
       sc1.start();
 
       //save the snapshot to the database
       const snapshot = sc1.getSnapshot()
       const sessionId = sc1.opts.sessionid
-      mockDb.persistSession(sessionId, snapshot)
 
       res.json({
         sessionId,
@@ -123,25 +126,29 @@ module.exports = function ({
 
     //read the sessionId
     // TODO: handle error where sessionId does not exist
-    const savedSnapshot = mockDb.getSession(sessionId)
 
     //rehydrate the session
     initModelOrFetchFromCache(scxmlName, (err, fnModel) => {
       
       if(err) throw err;
 
-      //instantiate the interpreter
-      const sc1 = new scxml.core.Statechart(fnModel, {snapshot : savedSnapshot});
+      db.findOne({sessionid: sessionId}, (err, {snapshot}) => {
 
-      sc1.gen(evt)
+        if(err) throw err;
 
-      //save the snapshot to the database
-      const newSnapshot = sc1.getSnapshot()
-      mockDb.persistSession(sessionId, newSnapshot)
+        //instantiate the interpreter
+        const sc1 = new scxml.core.Statechart(fnModel, {snapshot});
+        initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized(sc1, db)
 
-      res.json({
-        sessionId,
-        snapshot : newSnapshot
+        sc1.gen(evt)
+
+        //save the snapshot to the database
+        const newSnapshot = sc1.getSnapshot()
+
+        res.json({
+          sessionId,
+          snapshot : newSnapshot
+        })
       })
     })
   })

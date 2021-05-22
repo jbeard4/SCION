@@ -14,6 +14,7 @@
     "@scion-scxml/monitor-middleware": "^1.0.20",
     "@scion-scxml/scxml": "^4.3.26",
     "express": "^4.17.1",
+    "mongodb": "^3.6.8",
     "uuid": "^8.3.2"
   }
 }
