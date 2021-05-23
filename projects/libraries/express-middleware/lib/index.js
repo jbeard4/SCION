@@ -149,15 +149,20 @@ module.exports = function ({
           invokeMap : serializedInvokeMap,
         }) => {
 
-        console.log('scxmlName, sessionId, docUrl, snapshot', scxmlName, sessionId, docUrl, snapshot)
+        // complete the stub session
+        if(parentSessionStub){
+          parentSessionStub.cancel = cancelSession
+        }
 
         if(err) return cb(err)
           
+        // populate the invoke map with stub sessions
         const invokeMap = {}
         if(serializedInvokeMap){
           Object.entries(serializedInvokeMap).map( ([key, value]) => {
             invokeMap[key] = new Promise((resolve, reject) => {
               console.log('value', value)
+              value.cancel = cancelSession
               resolve(value);
             });
           })
@@ -183,6 +188,15 @@ module.exports = function ({
       })
     })
   }
+
+  function cancelSession(){
+    // TODO: we would need to clear any timeout events. This means clearing any events with timeouts that are still on the queue originating from this session. Will add this when we have chosen an asynchronous queue. 
+    // for now, we just delete him in the database
+    db.deleteOne({sessionid: this.opts.sessionid}, (err) => {
+      if(err) throw err;
+    }) 
+  }
+
 
   // API to send event to session
   app.post('/scion/:scxmlName/:sessionId', (req, res) => {
