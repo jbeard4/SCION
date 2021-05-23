@@ -29,13 +29,16 @@ const invokeTypes = {
       throw new Error('Unable to find one of the following required attributes or children on <invoke> element: <content>, @src, @srcexpr' );
     }
 
+    const invokingSessionOpts = { ...invokingSession.opts }
+    delete invokingSessionOpts.sessionid
     return method(arg,
         cb,
         {
+          ...invokingSessionOpts,
           invokeid : invokeObj.id,
           params : invokeObj.params,
           parentSession : invokingSession,
-          docUrl : invokeObj.docUrl
+          docUrl : invokeObj.docUrl,
           //sessionid : //TODO: construct or generate a sessionid for invoked session
         },
         invokerExecutionContext);

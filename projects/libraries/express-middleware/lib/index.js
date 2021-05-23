@@ -1,11 +1,11 @@
 const path = require('path');
 const express = require('express')
 const monitorMiddlewareClient = require('@scion-scxml/monitor-middleware/client')
-const uuid = require('uuid')
 const {
   deserializeAllSerializedSessions,
   initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized
 } = require('./multilevel-state-machine-ser-des')
+const uuid = require('uuid')
 
 /*
  * options: 
@@ -91,16 +91,16 @@ module.exports = function ({
 
   scxml.core.BaseInterpreter.generateSessionid = uuid.v4
 
-  // API to init new session
-  app.post('/scion/:scxmlName', (req, res, next) => {
-    const scxmlName = req.params.scxmlName
+  // TODO write a custom invoker based on invokeNewSession
+  //core.InterpreterScriptingContext.invokers = customInvokeTypes;    //TODO: set up default invokers
 
+  function invokeNewSession(scxmlName, cb){
     initModelOrFetchFromCache(scxmlName, (err, fnModel) => {
 
-      if(err) throw err;
+      if(err) return cb(err);
 
       //instantiate the interpreter
-      const sc1 = new scxml.core.Statechart(fnModel);
+      const sc1 = new scxml.core.Statechart(fnModel, {doSend});
       initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized(sc1, db)
 
       sc1.start();
@@ -109,12 +109,80 @@ module.exports = function ({
       const snapshot = sc1.getSnapshot()
       const sessionId = sc1.opts.sessionid
 
+      cb(null, {sessionId, snapshot})
+    })
+  }
+
+  // API to init new session
+  app.post('/scion/:scxmlName', (req, res, next) => {
+    const scxmlName = req.params.scxmlName
+    invokeNewSession(scxmlName, (err, {sessionId, snapshot}) => {
       res.json({
         sessionId,
         snapshot 
       })
     })
   });
+
+
+  function doSend(session, event){
+    console.log('session', session)
+    const scxmlName = path.basename(session._model.docUrl, '.scxml')
+    handleScxmlEvent(scxmlName, session.opts.sessionid, event, (err, newSnapshot) => {
+      if(err) throw err
+      console.log('new snapshot for event', event, newSnapshot)
+    })
+  }
+
+  //TODO: use the database as an event queue to support multi-tenancy (horizontal scaling)
+  function handleScxmlEvent(scxmlName, sessionId, evt, cb){
+    initModelOrFetchFromCache(scxmlName, (err, fnModel) => {
+      
+      if(err) return cb(err)
+
+      db.findOne({sessionid: sessionId}, (err, {
+          sessionid, 
+          docUrl, 
+          invokeid, 
+          parentSession : parentSessionStub,
+          snapshot,
+          invokeMap : serializedInvokeMap,
+        }) => {
+
+        console.log('scxmlName, sessionId, docUrl, snapshot', scxmlName, sessionId, docUrl, snapshot)
+
+        if(err) return cb(err)
+          
+        const invokeMap = {}
+        if(serializedInvokeMap){
+          Object.entries(serializedInvokeMap).map( ([key, value]) => {
+            invokeMap[key] = new Promise((resolve, reject) => {
+              console.log('value', value)
+              resolve(value);
+            });
+          })
+        }
+
+        //instantiate the interpreter
+        const sc1 = new scxml.core.Statechart(fnModel, {
+          snapshot, 
+          sessionid: sessionId, 
+          doSend,
+          parentSession: parentSessionStub,
+          _invokeMap : invokeMap,
+          invokeid
+        });
+        initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized(sc1, db)
+
+        sc1.gen(evt)
+
+        //save the snapshot to the database
+        const newSnapshot = sc1.getSnapshot()
+
+        cb(null, newSnapshot)
+      })
+    })
+  }
 
   // API to send event to session
   app.post('/scion/:scxmlName/:sessionId', (req, res) => {
@@ -126,31 +194,17 @@ module.exports = function ({
 
     //read the sessionId
     // TODO: handle error where sessionId does not exist
+    handleScxmlEvent(scxmlName, sessionId, evt, (err, newSnapshot) => {
 
-    //rehydrate the session
-    initModelOrFetchFromCache(scxmlName, (err, fnModel) => {
-      
       if(err) throw err;
 
-      db.findOne({sessionid: sessionId}, (err, {snapshot}) => {
-
-        if(err) throw err;
-
-        //instantiate the interpreter
-        const sc1 = new scxml.core.Statechart(fnModel, {snapshot, sessionid: sessionId});
-        initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized(sc1, db)
-
-        sc1.gen(evt)
-
-        //save the snapshot to the database
-        const newSnapshot = sc1.getSnapshot()
-
-        res.json({
-          sessionId,
-          snapshot : newSnapshot
-        })
+      res.json({
+        sessionId,
+        snapshot : newSnapshot
       })
     })
+
+    //rehydrate the session
   })
 }
 
