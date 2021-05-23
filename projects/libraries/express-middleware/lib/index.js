@@ -90,6 +90,7 @@ module.exports = function ({
   }
 
   scxml.core.BaseInterpreter.generateSessionid = uuid.v4
+  scxml.core.BaseInterpreter.doSend = doSend
 
   // TODO write a custom invoker based on invokeNewSession
   //core.InterpreterScriptingContext.invokers = customInvokeTypes;    //TODO: set up default invokers
@@ -161,7 +162,6 @@ module.exports = function ({
         if(serializedInvokeMap){
           Object.entries(serializedInvokeMap).map( ([key, value]) => {
             invokeMap[key] = new Promise((resolve, reject) => {
-              console.log('value', value)
               value.cancel = cancelSession
               resolve(value);
             });
