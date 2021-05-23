@@ -10,12 +10,19 @@ function serializeInvokeMap(invokeMap){
     )
   ).then(invokedSessions => {
     const o = {}
-    invokedSessions.forEach( (session, index) => o[invokeIds[index]] = session.opts.sessionid )
+    invokedSessions.forEach( (session, index) => o[invokeIds[index]] = { 
+      opts : {
+        sessionid : session.opts.sessionid,
+      },
+      _model : { 
+        docUrl : session._model.docUrl
+      }
+    })
     return o
   })
 }
 
-function handleInterpreterBigStepEnd(interpreter, dbAdapter){
+function handleInterpreterBigStepEnd(parentSession, interpreter, dbAdapter){
   interpreter.on('onBigStepEnd',(e) => {
     if((e && e.name === "done.state.$generated-scxml-0") || interpreter.isFinal()) return;
     // persist the state machine state
@@ -30,11 +37,18 @@ function handleInterpreterBigStepEnd(interpreter, dbAdapter){
     //upsert
     const query = { sessionid };
     const update = { $set: {
+      parentSession: parentSession && {
+        opts : {
+          sessionid : parentSession.opts.sessionid,
+        },
+        _model : { 
+          docUrl : parentSession._model.docUrl
+        }
+      },
       sessionid,
       invokeid,
       snapshot,
       docUrl,
-      invokeMap : null  // invokeMap will be updated in onInvokedSessionInitialized
     }};
     const options = { upsert: true };
     dbAdapter.updateOne(query, update, options, (err, result) => {if(err) throw err;});
@@ -58,10 +72,10 @@ function handleInvokedSessionInitialized(rootSession, dbAdapter, invokedInterpre
         snapshot = rootSession.getSnapshot(),
         docUrl = rootSession._model.docUrl;
 
-
       //update invokeMap on the root session
       const query1 = { sessionid: rootSession.opts.sessionid };
       const update1 = { $set: { invokeMap : serializedInvokeMap }};
+      //console.log('query1, update1', query1, update1)
       dbAdapter.updateOne(query1, update1, {}, (err, result) => {if(err) throw err;});
 
       //upsert a session
@@ -74,15 +88,16 @@ function handleInvokedSessionInitialized(rootSession, dbAdapter, invokedInterpre
         invokeMap : serializedInvokeMap
       }};
       const options = { upsert: true };
+      //console.log('query2, update2', query2, update2)
       dbAdapter.updateOne(query2, update2, options, (err, result) => {if(err) throw err;});
     })
   })
 
-  handleInterpreterBigStepEnd(invokedInterpreter, dbAdapter)
+  handleInterpreterBigStepEnd(rootSession, invokedInterpreter, dbAdapter)
 }
 
 function initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized(rootSession, dbAdapter){
-  handleInterpreterBigStepEnd(rootSession, dbAdapter);
+  handleInterpreterBigStepEnd(null, rootSession, dbAdapter);
   rootSession.on('onInvokedSessionInitialized', handleInvokedSessionInitialized.bind(this, rootSession, dbAdapter));
 }
 

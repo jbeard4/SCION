@@ -147,6 +147,7 @@ class BaseInterpreter extends EventEmitter {
     this._isStepping = false;
 
     this._scriptingContext = this.opts.interpreterScriptingContext || (this.opts.InterpreterScriptingContext ? new this.opts.InterpreterScriptingContext(this) : {}); 
+    this._scriptingContext._invokeMap = this.opts._invokeMap || this._scriptingContext._invokeMap;
 
     this.opts.generateSessionid = this.opts.generateSessionid || BaseInterpreter.generateSessionid;
     this.opts.sessionid = this.opts.sessionid || this.opts.generateSessionid();
