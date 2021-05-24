@@ -102,7 +102,7 @@ module.exports = function ({
 
       //instantiate the interpreter
       const sc1 = new scxml.core.Statechart(fnModel, {doSend});
-      initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized(sc1, db)
+      initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized(null, sc1, db)
 
       sc1.start();
 
@@ -137,18 +137,26 @@ module.exports = function ({
 
   //TODO: use the database as an event queue to support multi-tenancy (horizontal scaling)
   function handleScxmlEvent(scxmlName, sessionId, evt, cb){
+    console.log('handleScxmlEvent, scxmlName, sessionId, evt', scxmlName, sessionId, evt)
     initModelOrFetchFromCache(scxmlName, (err, fnModel) => {
       
       if(err) return cb(err)
 
-      db.findOne({sessionid: sessionId}, (err, {
+      db.findOne({sessionid: sessionId}, (err, dbResult) => {
+
+        if(!dbResult){
+          console.error("Session not found", scxmlName, sessionId)
+          return cb(null, null)
+        }
+        
+        const {
           sessionid, 
           docUrl, 
           invokeid, 
           parentSession : parentSessionStub,
           snapshot,
           invokeMap : serializedInvokeMap,
-        }) => {
+        } = dbResult
 
         // complete the stub session
         if(parentSessionStub){
@@ -177,7 +185,7 @@ module.exports = function ({
           _invokeMap : invokeMap,
           invokeid
         });
-        initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized(sc1, db)
+        initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized(parentSessionStub, sc1, db)
 
         sc1.gen(evt)
 

@@ -51,6 +51,7 @@ function handleInterpreterBigStepEnd(parentSession, interpreter, dbAdapter){
       docUrl,
     }};
     const options = { upsert: true };
+    console.log('upsert onBigStepEnd', query, util.inspect(update, {depth: null}))
     dbAdapter.updateOne(query, update, options, (err, result) => {if(err) throw err;});
   })
 }
@@ -75,8 +76,8 @@ function handleInvokedSessionInitialized(rootSession, dbAdapter, invokedInterpre
       //update invokeMap on the root session
       const query1 = { sessionid: rootSession.opts.sessionid };
       const update1 = { $set: { invokeMap : serializedInvokeMap }};
-      //console.log('query1, update1', query1, update1)
       dbAdapter.updateOne(query1, update1, {}, (err, result) => {if(err) throw err;});
+      console.log('upsert 1 onInvokedSessionInitialized', query1, util.inspect(update1, {depth: null}))
 
       //upsert a session
       const query2 = { sessionid };
@@ -88,7 +89,7 @@ function handleInvokedSessionInitialized(rootSession, dbAdapter, invokedInterpre
         invokeMap : serializedInvokeMap
       }};
       const options = { upsert: true };
-      //console.log('query2, update2', query2, update2)
+      console.log('upsert 2 onInvokedSessionInitialized', query2, util.inspect(update2, {depth: null}))
       dbAdapter.updateOne(query2, update2, options, (err, result) => {if(err) throw err;});
     })
   })
@@ -96,9 +97,9 @@ function handleInvokedSessionInitialized(rootSession, dbAdapter, invokedInterpre
   handleInterpreterBigStepEnd(rootSession, invokedInterpreter, dbAdapter)
 }
 
-function initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized(rootSession, dbAdapter){
-  handleInterpreterBigStepEnd(null, rootSession, dbAdapter);
-  rootSession.on('onInvokedSessionInitialized', handleInvokedSessionInitialized.bind(this, rootSession, dbAdapter));
+function initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized(parentSession, session, dbAdapter){
+  handleInterpreterBigStepEnd(parentSession, session, dbAdapter);
+  session.on('onInvokedSessionInitialized', handleInvokedSessionInitialized.bind(this, session, dbAdapter));
 }
 
 module.exports = {
