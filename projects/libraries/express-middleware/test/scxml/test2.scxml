@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<scxml name="Scxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2005/07/scxml
+						https://www.w3.org/2011/04/SCXML/scxml.xsd"
+	xmlns="http://www.w3.org/2005/07/scxml"
+	xmlns:conf="http://www.w3.org/2005/scxml-conformance" datamodel="ecmascript" version="1.0">
+
+  <datamodel>
+    <data id="x" expr="0"/>
+  </datamodel>
+
+	<state>
+		<transition event="*">
+			<log expr="`test2 EVENT: ${_event.name}, ${JSON.stringify(_event.data)}`" label="INFO"/>
+		</transition>
+    <state id="m1">
+      <invoke id="test2sub1" type="http://www.w3.org/TR/scxml/" src="test2sub1.scxml"/>
+      <state id="m1.1">
+        <transition event="test2sub1.ready" target="m1.2"/>
+      </state>
+      <state id="m1.2">
+        <onentry>
+          <log label="x" expr="x"/>
+          <send target="#_test2sub1" event="foo" delay="1s">
+            <param name="x" expr="x+1"/>
+          </send>
+        </onentry>
+        <transition event="done.invoke.test2sub1" target="m1"/>
+      </state>
+    </state>
+  </state>
+</scxml>
