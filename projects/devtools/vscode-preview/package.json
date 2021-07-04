@@ -1,6 +1,6 @@
 {
   "name": "vscode-scxml-preview",
-  "version": "0.0.29",
+  "version": "0.0.30",
   "publisher": "JacobeanResearchandDevelopmentLLC",
   "engines": {
     "vscode": "^1.47.0"
@@ -31,8 +31,8 @@
     "onCommand:scxml.showPreview"
   ],
   "devDependencies": {
-    "@scion-scxml/schviz": "^3.2.26",
-    "@scion-scxml/scxml": "^4.3.26",
+    "@scion-scxml/schviz": "^3.2.27",
+    "@scion-scxml/scxml": "^4.3.27",
     "@types/node": "^12.12.0",
     "@types/socket.io-client": "^1.4.32",
     "@types/vscode": "^1.47.0",

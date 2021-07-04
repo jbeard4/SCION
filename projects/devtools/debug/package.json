@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/debug",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "main": "index.js",
   "scripts": {
     "fix-global": "sed -i -e 's/g.scxml = f()/g.scion = g.scion || {}; g.scion.scxml = f(); g.scion.core = g.scion.scxml.core;/' dist/scxml.debug.js",
@@ -13,9 +13,9 @@
     "browserify": "^16.2.2"
   },
   "dependencies": {
-    "@scion-scxml/monitor-middleware": "^1.0.20",
-    "@scion-scxml/scxml": "^4.3.26",
-    "@scion-scxml/sourcemap-plugin": "^1.0.24",
+    "@scion-scxml/monitor-middleware": "^1.0.21",
+    "@scion-scxml/scxml": "^4.3.27",
+    "@scion-scxml/sourcemap-plugin": "^1.0.25",
     "licensezero-postinstall": "^1.0.0"
   },
   "description": "Drop-in replacement for the SCION scxml compiler module, that automatically enables the sourcemap-plugin and monitor client",
