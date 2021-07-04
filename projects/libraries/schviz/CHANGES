@@ -1,0 +1,3 @@
+== 3.2.27 ==
+
+Add support for top-level property `hideTransitionConditions`, to hide transition conditions from visualzation.
