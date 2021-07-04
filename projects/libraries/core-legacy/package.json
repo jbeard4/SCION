@@ -1,7 +1,7 @@
 {
   "name": "@scion-scxml/core-legacy",
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "description": "Legacy semantics for SCION Statecharts",
   "keywords": [
     "scxml",
@@ -26,7 +26,7 @@
   },
   "homepage": "https://gitlab.com/scion-scxml/core-legacy",
   "dependencies": {
-    "@scion-scxml/core-base": "1.0.24"
+    "@scion-scxml/core-base": "^1.0.25"
   },
   "devDependencies": {
     "@scion-scxml/core-test-framework": "1.0.24",
