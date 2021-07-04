@@ -13,6 +13,7 @@ const TRANSITION_CONTAINER_PROPS = { "borderSpacing": 0, "spacing": 0, direction
 
 export interface TransformOptions {
   hideActions : boolean;
+  hideTransitionConditions : boolean;
   idPrefix: string;
 }
 
@@ -394,7 +395,8 @@ export default class SCJSONToKGraphTransformer {
       condExpr = transition.cond.expr;
     } 
     if(event || condExpr){
-      return `${event || ''}${condExpr ? `[${condExpr}]` : ''}${transition.onTransition && transition.onTransition.length && !options.hideActions ? '/' : ''}`
+
+      return `${event || ''}${!options.hideTransitionConditions && condExpr ? `[${condExpr}]` : ''}${transition.onTransition && transition.onTransition.length && !options.hideActions ? '/' : ''}`
     } else {
       return null;
     }

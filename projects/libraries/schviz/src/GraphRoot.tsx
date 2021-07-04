@@ -302,7 +302,7 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
         let idGenerator = new IdGenerator();
         let transformer = new SCJSONToKGraphTransformer(idGenerator, this);
         var newKlayToScjsonMap, newKgraphRoot; 
-        newKgraphRoot = transformer.transform(props.scjson, {hideActions : props.hideActions, idPrefix: props.id});
+        newKgraphRoot = transformer.transform(props.scjson, {hideActions : props.hideActions, hideTransitionConditions: props.hideTransitionConditions, idPrefix: props.id});
         this.setState({progress : this.state.progress.slice(0,-1).concat(this.state.progress[this.state.progress.length-1] + ` Done (${(new Date() as any) - tic}ms)`)}, () => {
           this.initKGraph(props, initialRender, idGenerator, newKgraphRoot);
         });

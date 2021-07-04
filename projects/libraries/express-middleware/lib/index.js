@@ -22,30 +22,14 @@ module.exports = function ({
 
   //serve static files
   const scxmlSrcDirExpressMountPath = '/scion/static/src'
-  app.use(scxmlSrcDirExpressMountPath, express.static(pathToScxmlSrcDir))
 
   const pathToDashboard = path.dirname(path.dirname(path.dirname(require.resolve('@scion-scxml/dashboard'))));
-  app.use('/scion/static/dashboard', express.static(pathToDashboard))
 
   //init sse
   monitorMiddlewareClient.init(scxml, {broadcast})
 
   let sseResponses = new Set();
   let messageCount = 0;
-
-  //TODO: prefix this with "scion"
-  app.get('/api/update-stream', function(req, res){
-     res.writeHead(200, {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive'
-    });
-    res.write('\n');
-    sseResponses.add(res);
-    req.on("close", function() {
-      sseResponses.delete(res);
-    });
-  });
 
   function broadcast(messageName, messageData){
     //rewrite the docUrl
@@ -60,7 +44,7 @@ module.exports = function ({
   const modelCache = {}
   const fnModelCache = {}
 
-  function initModel(scxmlName, cb){
+  function initModel({scxmlName, executionContext}, cb){
     scxml.pathToModel(`${pathToScxmlSrcDir}/${scxmlName}.scxml`, function(err, model){
       if(err){ 
         return cb(err);
@@ -72,13 +56,13 @@ module.exports = function ({
         }
         fnModelCache[scxmlName] = fnModel
         return cb(null, fnModel)
-      })
+      }, executionContext)
     })
   }
 
-  function initModelOrFetchFromCache(scxmlName, cb){
+  function initModelOrFetchFromCache({scxmlName, executionContext}, cb){
     if(!fnModelCache[scxmlName]){
-      initModel(scxmlName, (err, fnModel) => {
+      initModel({scxmlName, executionContext}, (err, fnModel) => {
         if(err) {
           return cb(err)
         }
@@ -95,13 +79,13 @@ module.exports = function ({
   // TODO write a custom invoker based on invokeNewSession
   //core.InterpreterScriptingContext.invokers = customInvokeTypes;    //TODO: set up default invokers
 
-  function invokeNewSession(scxmlName, cb){
-    initModelOrFetchFromCache(scxmlName, (err, fnModel) => {
+  function invokeNewSession({scxmlName, sessionid, executionContext }, cb){
+    initModelOrFetchFromCache({ scxmlName, executionContext },  (err, fnModel) => {
 
       if(err) return cb(err);
 
       //instantiate the interpreter
-      const sc1 = new scxml.core.Statechart(fnModel, {doSend});
+      const sc1 = new scxml.core.Statechart(fnModel, {doSend, sessionid});
       initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized(null, sc1, db)
 
       sc1.start();
@@ -114,31 +98,21 @@ module.exports = function ({
     })
   }
 
-  // API to init new session
-  app.post('/scion/:scxmlName', (req, res, next) => {
-    const scxmlName = req.params.scxmlName
-    invokeNewSession(scxmlName, (err, {sessionId, snapshot}) => {
-      res.json({
-        sessionId,
-        snapshot 
-      })
-    })
-  });
 
 
   function doSend(session, event){
-    console.log('session', session)
+    //console.log('session', session)
     const scxmlName = path.basename(session._model.docUrl, '.scxml')
     handleScxmlEvent(scxmlName, session.opts.sessionid, event, (err, newSnapshot) => {
       if(err) throw err
-      console.log('new snapshot for event', event, newSnapshot)
+      console.log('new snapshot for event', JSON.stringify(event,4,4), newSnapshot)
     })
   }
 
   //TODO: use the database as an event queue to support multi-tenancy (horizontal scaling)
   function handleScxmlEvent(scxmlName, sessionId, evt, cb){
-    console.log('handleScxmlEvent, scxmlName, sessionId, evt', scxmlName, sessionId, evt)
-    initModelOrFetchFromCache(scxmlName, (err, fnModel) => {
+    //console.log('handleScxmlEvent, scxmlName, sessionId, evt', scxmlName, sessionId, evt)
+    initModelOrFetchFromCache({scxmlName}, (err, fnModel) => {
       
       if(err) return cb(err)
 
@@ -205,28 +179,63 @@ module.exports = function ({
     }) 
   }
 
+	if(app){
+		app.use(scxmlSrcDirExpressMountPath, express.static(pathToScxmlSrcDir))
+		app.use('/scion/static/dashboard', express.static(pathToDashboard))
+		//TODO: prefix this with "scion"
+		app.get('/api/update-stream', function(req, res){
+			 res.writeHead(200, {
+				'Content-Type': 'text/event-stream',
+				'Cache-Control': 'no-cache',
+				'Connection': 'keep-alive',
+				'X-Accel-Buffering': 'no'
+			});
+			res.write('\n');
+			sseResponses.add(res);
+			req.on("close", function() {
+				sseResponses.delete(res);
+			});
+		});
 
-  // API to send event to session
-  app.post('/scion/:scxmlName/:sessionId', (req, res) => {
+		// API to init new session
+		app.post('/scion/:scxmlName', (req, res, next) => {
+			const scxmlName = req.params.scxmlName
+			invokeNewSession({scxmlName}, (err, {sessionId, snapshot}) => {
+				res.json({
+					sessionId,
+					snapshot 
+				})
+			})
+		});
 
-    const scxmlName = req.params.scxmlName,
-      sessionId = req.params.sessionId;
+		// API to send event to session
+		app.post('/scion/:scxmlName/:sessionId', (req, res) => {
 
-    const evt = req.body
+			const scxmlName = req.params.scxmlName,
+				sessionId = req.params.sessionId;
 
-    //read the sessionId
-    // TODO: handle error where sessionId does not exist
-    handleScxmlEvent(scxmlName, sessionId, evt, (err, newSnapshot) => {
+			const evt = req.body
 
-      if(err) throw err;
+			//read the sessionId
+			// TODO: handle error where sessionId does not exist
+			handleScxmlEvent(scxmlName, sessionId, evt, (err, newSnapshot) => {
 
-      res.json({
-        sessionId,
-        snapshot : newSnapshot
-      })
-    })
+				if(err) throw err;
 
-    //rehydrate the session
-  })
+				res.json({
+					sessionId,
+					snapshot : newSnapshot
+				})
+			})
+
+			//rehydrate the session
+		})
+	}
+
+	return {
+		invokeNewSession,
+		sendEvent: handleScxmlEvent,
+	}
+	
 }
 

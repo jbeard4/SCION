@@ -31,7 +31,7 @@ function handleInterpreterBigStepEnd(parentSession, interpreter, dbAdapter){
       snapshot = interpreter.getSnapshot(),
       docUrl = interpreter._model.docUrl;
 
-    console.log(sessionid, invokeid, interpreter.opts._invokeMap)
+    //console.log(sessionid, invokeid, interpreter.opts._invokeMap)
     //console.log('persist state machine snapshot', snapshot)
 
     //upsert
@@ -51,8 +51,8 @@ function handleInterpreterBigStepEnd(parentSession, interpreter, dbAdapter){
       docUrl,
     }};
     const options = { upsert: true };
-    console.log('upsert onBigStepEnd', query, util.inspect(update, {depth: null}))
-    dbAdapter.updateOne(query, update, options, (err, result) => {if(err) throw err;});
+    console.log('upsert onBigStepEnd', query, JSON.stringify(update, 4, 4))
+    dbAdapter.updateOne(query, JSON.parse(JSON.stringify(update)), options, (err, result) => {if(err) throw err;});
   })
 }
 
@@ -76,8 +76,8 @@ function handleInvokedSessionInitialized(rootSession, dbAdapter, invokedInterpre
       //update invokeMap on the root session
       const query1 = { sessionid: rootSession.opts.sessionid };
       const update1 = { $set: { invokeMap : serializedInvokeMap }};
-      dbAdapter.updateOne(query1, update1, {}, (err, result) => {if(err) throw err;});
-      console.log('upsert 1 onInvokedSessionInitialized', query1, util.inspect(update1, {depth: null}))
+      dbAdapter.updateOne(query1, JSON.parse(JSON.stringify(update1)), {}, (err, result) => {if(err) throw err;});
+      //console.log('upsert 1 onInvokedSessionInitialized', query1, util.inspect(update1, {depth: null}))
 
       //upsert a session
       const query2 = { sessionid };
@@ -89,8 +89,8 @@ function handleInvokedSessionInitialized(rootSession, dbAdapter, invokedInterpre
         invokeMap : serializedInvokeMap
       }};
       const options = { upsert: true };
-      console.log('upsert 2 onInvokedSessionInitialized', query2, util.inspect(update2, {depth: null}))
-      dbAdapter.updateOne(query2, update2, options, (err, result) => {if(err) throw err;});
+      //console.log('upsert 2 onInvokedSessionInitialized', query2, util.inspect(update2, {depth: null}))
+      dbAdapter.updateOne(query2, JSON.parse(JSON.stringify(update2)), options, (err, result) => {if(err) throw err;});
     })
   })
 
