@@ -1,0 +1,3 @@
+== 1.0.2 ==
+
+Added support for automatic serialization to secondary storage (mongodb) of multi-level state machine on processing event and creation of new state machine instance. 
