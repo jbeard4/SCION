@@ -147,6 +147,7 @@ class BaseInterpreter extends EventEmitter {
     this._isStepping = false;
 
     this._scriptingContext = this.opts.interpreterScriptingContext || (this.opts.InterpreterScriptingContext ? new this.opts.InterpreterScriptingContext(this) : {}); 
+    this._scriptingContext._invokeMap = this.opts._invokeMap || this._scriptingContext._invokeMap;
 
     this.opts.generateSessionid = this.opts.generateSessionid || BaseInterpreter.generateSessionid;
     this.opts.sessionid = this.opts.sessionid || this.opts.generateSessionid();
@@ -228,7 +229,7 @@ class BaseInterpreter extends EventEmitter {
   * @memberof BaseInterpreter.prototype
   */
   cancel(){
-    delete this.opts.parentSession;
+    setImmediate( () => delete this.opts.parentSession )  // run this asynchronously, as we still need a reference to the parent session to send the final <done> event
     if(this._isInFinalState) return;
     this._isInFinalState = true;
     this._log(`session cancelled ${this.opts.invokeid}`);
@@ -465,7 +466,7 @@ class BaseInterpreter extends EventEmitter {
   }
 
   _finishBigStep(e, allStatesEntered, allStatesExited, cb){
-      let statesToInvoke = Array.from(new Set([...allStatesEntered].filter(s => s.invokes && !allStatesExited.has(s)))).sort(sortInEntryOrder);
+      let statesToInvoke = Array.from(allStatesEntered).filter(s => s.invokes).sort(sortInEntryOrder);
 
       // Here we invoke whatever needs to be invoked. The implementation of 'invoke' is platform-specific
       statesToInvoke.forEach( s => {
@@ -1352,8 +1353,9 @@ class InterpreterScriptingContext{
         var timeoutHandle = setTimeout(function(){
           if (event.sendid) delete this._timeoutMap[event.sendid];
           this._timeouts.delete(timeoutOptions);
-          if(this._interpreter.opts.doSend){
-            this._interpreter.opts.doSend(session, event);
+          const _doSend = this._interpreter.opts.doSend || BaseInterpreter.doSend;
+          if(_doSend){
+            _doSend(session, event);
           }else{
             session[this._interpreter.opts.sendAsync ? 'genAsync' : 'gen'](event);
           }

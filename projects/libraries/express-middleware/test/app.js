@@ -1,3 +1,4 @@
+var MongoClient = require('mongodb').MongoClient;
 var path = require('path')
 var createError = require('http-errors');
 var express = require('express');
@@ -25,57 +26,45 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+const url = "mongodb://localhost:27017/";
+MongoClient.connect(url, function(err, db) {
+  if (err) throw err;
+  console.log("Database created!");
 
-//init the scion middleware
-scionMiddleware({
-  app,
-  scxml,
-  pathToScxmlSrcDir: path.join(__dirname, 'scxml')
-})
+  const dbo = db.db("mydb");
 
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
-
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
-
-
-//init an SCXML file and simulate it
-scxml.pathToModel(path.join(__dirname,'scxml', 'doc.scxml'), function(err,model){
-  if(err) throw err;
-  model.prepare((err, fnModel) => {
-    if(err) throw err;
-
-    //instantiate the interpreter
-    const rootSession = new scxml.core.Statechart(fnModel);
-
-    rootSession.on('onInvokedSessionInitialized', function(invokedInterpreter){
-      invokedInterpreter._scriptingContext = rootSession._scriptingContext; //FIXME: workaround for bug in inter-session communication: https://gitlab.com/scion-scxml/scion/issues/3
-    });
-
-    //start the machine
-    rootSession.start();    
-
-  }, {
-    console: console,
+  scionMiddleware({
+    app,
+    scxml,
+    pathToScxmlSrcDir: path.join(__dirname, 'scxml'),
+    db: dbo.collection('sessions')
   })
-})
+
+  app.use(express.static(path.join(__dirname, 'public')));
+
+  app.use('/', indexRouter);
+  app.use('/users', usersRouter);
+
+  // catch 404 and forward to error handler
+  app.use(function(req, res, next) {
+    next(createError(404));
+  });
+
+  // error handler
+  app.use(function(err, req, res, next) {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
+  });
+  
+});
+
 
 
 
 module.exports = app;
+

@@ -35,7 +35,7 @@ const invokeTypes = {
           invokeid : invokeObj.id,
           params : invokeObj.params,
           parentSession : invokingSession,
-          docUrl : invokeObj.docUrl
+          docUrl : invokeObj.docUrl,
           //sessionid : //TODO: construct or generate a sessionid for invoked session
         },
         invokerExecutionContext);

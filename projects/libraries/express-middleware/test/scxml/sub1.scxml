@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<scxml name="Scxml"
+	xmlns="http://www.w3.org/2005/07/scxml"
+	xmlns:conf="http://www.w3.org/2005/scxml-conformance" datamodel="ecmascript" version="1.0">
+
+	<state>
+		<transition event="*">
+			<log expr="`sub1 EVENT: ${_event.name}, ${_event.data}`" label="INFO"/>
+		</transition>
+
+		<transition event="error.*">
+			<log expr="_event" label="ERROR"/>
+		</transition>
+
+		<state id="start">
+			<onentry>
+				<log expr="`Entered sub1 start`" label="INFO"/>
+			</onentry>
+
+			<transition event="tick" cond="_event.data === 1" target="end"/>
+		</state>
+
+	</state>
+  <final id="end"/>
+</scxml>

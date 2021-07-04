@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<scxml name="Scxml"
+	xmlns="http://www.w3.org/2005/07/scxml"
+	xmlns:conf="http://www.w3.org/2005/scxml-conformance" datamodel="ecmascript" version="1.0">
+
+	<state>
+		<transition event="*">
+			<log expr="`test2sub1 EVENT: ${_event.name}, ${JSON.stringify(_event.data)}`" label="INFO"/>
+		</transition>
+    <state id="initial">
+      <onentry>
+        <send target="#_parent" event="test2sub1.ready" delay="1s"/>
+      </onentry>
+      <transition event="foo" target="end"/>
+    </state>
+  </state>
+
+  <final id="end"/>
+</scxml>
+

@@ -36,6 +36,7 @@ class SchvizContainer extends React.PureComponent<SchvizContainerProps> {
         statesForDefaultEntry={currentRow.defaultStatesEntered }
         transitionsEnabled={transitionsTaken}
         hideActions={true}
+        hideTransitionConditions={true}
         id="dashboard" 
         /> : 
       null;

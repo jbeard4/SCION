@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<scxml name="Scxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2005/07/scxml
+						https://www.w3.org/2011/04/SCXML/scxml.xsd"
+	xmlns="http://www.w3.org/2005/07/scxml"
+	xmlns:conf="http://www.w3.org/2005/scxml-conformance" datamodel="ecmascript" version="1.0">
+
+	<state>
+		<state id="m1">
+			<invoke id="sub1" type="http://www.w3.org/TR/scxml/" src="sub1.scxml" autoforward="true" />
+			<transition event="done.invoke.sub1" target="m2"/>
+		</state>
+
+		<state id="m2">
+			<invoke id="sub2" type="http://www.w3.org/TR/scxml/" src="sub2.scxml" autoforward="true" />
+			<transition event="done.invoke.sub2" target="m3"/>
+		</state>
+
+		<state id="m3">
+			<invoke id="sub3" type="http://www.w3.org/TR/scxml/" src="sub3.scxml" autoforward="true" />
+			<transition event="done.invoke.sub3" target="end"/>
+		</state>
+
+		<final id="end">
+			<onentry>
+				<log expr="'Done.'" label="INFO"/>
+			</onentry>
+		</final>
+
+	</state>
+</scxml>
