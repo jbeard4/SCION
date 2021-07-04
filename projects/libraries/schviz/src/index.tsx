@@ -45,6 +45,7 @@ export interface GraphRootProps {
   disableZoom? : boolean;
   disableZoomAnimation? : boolean;
   hideActions? : boolean;
+  hideTransitionConditions? : boolean;
   expandAllStatesByDefault? : boolean;
   tabIndex? : number;
   glContainer? : any;
