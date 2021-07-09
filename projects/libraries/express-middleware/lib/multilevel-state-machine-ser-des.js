@@ -22,8 +22,8 @@ function serializeInvokeMap(invokeMap){
   })
 }
 
-function handleInterpreterBigStepEnd(parentSession, interpreter, dbAdapter){
-  interpreter.on('onBigStepEnd',(e) => {
+function handleInterpreterBigStepEnd(parentSession, interpreter, dbAdapter, method, cb){
+  interpreter[method || 'on']('onBigStepEnd',(e) => {
     if((e && e.name === "done.state.$generated-scxml-0") || interpreter.isFinal()) return;
     // persist the state machine state
     const sessionid = interpreter.opts.sessionid,
@@ -52,7 +52,7 @@ function handleInterpreterBigStepEnd(parentSession, interpreter, dbAdapter){
     }};
     const options = { upsert: true };
     console.log('upsert onBigStepEnd', query, JSON.stringify(update, 4, 4))
-    dbAdapter.updateOne(query, JSON.parse(JSON.stringify(update)), options, (err, result) => {if(err) throw err;});
+    dbAdapter.updateOne(query, JSON.parse(JSON.stringify(update)), options, cb || ((err, result) => {if(err) throw err;}));
   })
 }
 
@@ -97,12 +97,13 @@ function handleInvokedSessionInitialized(rootSession, dbAdapter, invokedInterpre
   handleInterpreterBigStepEnd(rootSession, invokedInterpreter, dbAdapter)
 }
 
-function initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized(parentSession, session, dbAdapter){
-  handleInterpreterBigStepEnd(parentSession, session, dbAdapter);
+function initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized(parentSession, session, dbAdapter, handleParentSession){
+  if(handleParentSession) handleInterpreterBigStepEnd(parentSession, session, dbAdapter);
   session.on('onInvokedSessionInitialized', handleInvokedSessionInitialized.bind(this, session, dbAdapter));
 }
 
 module.exports = {
-  initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized
+  initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized,
+  handleInterpreterBigStepEnd
 }
 
