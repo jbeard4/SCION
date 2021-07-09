@@ -1,3 +1,8 @@
+== 1.0.3 ==
+
+Fix issue in scion express middleware: on initializing the new session, it was not waiting for the asynchronous database write to finish before calling the callback, so a subsequent event could be processed before the the serialized session was finished writing to the database
+
+
 == 1.0.2 ==
 
 Added support for automatic serialization to secondary storage (mongodb) of multi-level state machine on processing event and creation of new state machine instance. 
