@@ -2,8 +2,8 @@ const path = require('path');
 const express = require('express')
 const monitorMiddlewareClient = require('@scion-scxml/monitor-middleware/client')
 const {
-  deserializeAllSerializedSessions,
-  initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized
+  initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized,
+  handleInterpreterBigStepEnd
 } = require('./multilevel-state-machine-ser-des')
 const uuid = require('uuid')
 
@@ -87,14 +87,17 @@ module.exports = function ({
       //instantiate the interpreter
       const sc1 = new scxml.core.Statechart(fnModel, {doSend, sessionid});
       initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized(null, sc1, db)
+      handleInterpreterBigStepEnd(null, sc1, db, 'once', (err) => {
+        if(err) return cb(err)
+      
+        //save the snapshot to the database
+        const snapshot = sc1.getSnapshot()
+        const sessionId = sc1.opts.sessionid
+
+        cb(null, {sessionId, snapshot})
+      })
 
       sc1.start();
-
-      //save the snapshot to the database
-      const snapshot = sc1.getSnapshot()
-      const sessionId = sc1.opts.sessionid
-
-      cb(null, {sessionId, snapshot})
     })
   }
 
@@ -160,13 +163,17 @@ module.exports = function ({
           invokeid
         });
         initializeRootSessionToSerializeAutomaticallyOnBigStepEndAndInvokedSessionInitialized(parentSessionStub, sc1, db)
+        handleInterpreterBigStepEnd(parentSessionStub, sc1, db, 'once', (err) => {
+
+          if(err) return cb(err)
+
+          //save the snapshot to the database
+          const newSnapshot = sc1.getSnapshot()
+
+          cb(null, newSnapshot)
+        })
 
         sc1.gen(evt)
-
-        //save the snapshot to the database
-        const newSnapshot = sc1.getSnapshot()
-
-        cb(null, newSnapshot)
       })
     })
   }
