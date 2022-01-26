@@ -1,3 +1,7 @@
+== 2.0.0 ==
+
+Modify API handleScxmlEvent to accept kwArgs. Allow handleScxmlEvent to accept an optional executionContext param
+
 == 1.0.3 ==
 
 Fix issue in scion express middleware: on initializing the new session, it was not waiting for the asynchronous database write to finish before calling the callback, so a subsequent event could be processed before the the serialized session was finished writing to the database
