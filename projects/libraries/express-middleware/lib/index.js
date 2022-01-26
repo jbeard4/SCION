@@ -106,15 +106,15 @@ module.exports = function ({
   function doSend(session, event){
     //console.log('session', session)
     const scxmlName = path.basename(session._model.docUrl, '.scxml')
-    handleScxmlEvent(scxmlName, session.opts.sessionid, event, null, (err, newSnapshot) => {
+    handleScxmlEvent({scxmlName, sessionId: session.opts.sessionid, event, cb: (err, newSnapshot) => {
       if(err) throw err
       console.log('new snapshot for event', JSON.stringify(event,4,4), newSnapshot)
-    })
+    }})
   }
 
   //TODO: use the database as an event queue to support multi-tenancy (horizontal scaling)
-  function handleScxmlEvent(scxmlName, sessionId, evt, executionContext, cb){
-    //console.log('handleScxmlEvent, scxmlName, sessionId, evt', scxmlName, sessionId, evt)
+  function handleScxmlEvent({scxmlName, sessionId, executionContext, event, cb}){
+    //console.log('handleScxmlEvent, scxmlName, sessionId, event', scxmlName, sessionId, event)
     initModelOrFetchFromCache({scxmlName, executionContext}, (err, fnModel) => {
       
       if(err) return cb(err)
@@ -170,10 +170,10 @@ module.exports = function ({
           //save the snapshot to the database
           const newSnapshot = sc1.getSnapshot()
 
-          cb(null, newSnapshot)
+          if(cb) cb(null, newSnapshot)
         })
 
-        sc1.gen(evt)
+        sc1.gen(event)
       })
     })
   }
@@ -225,7 +225,7 @@ module.exports = function ({
 
 			//read the sessionId
 			// TODO: handle error where sessionId does not exist
-			handleScxmlEvent(scxmlName, sessionId, evt, null, (err, newSnapshot) => {
+			handleScxmlEvent({scxmlName, sessionId, event, cb: (err, newSnapshot) => {
 
 				if(err) throw err;
 
@@ -233,7 +233,7 @@ module.exports = function ({
 					sessionId,
 					snapshot : newSnapshot
 				})
-			})
+			}})
 
 			//rehydrate the session
 		})
