@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/basics-multiturn",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "description": "Example of SCION Botbuilder integration, based on the botbuilder-basics-multiturn example",
   "main": "index.js",
   "scripts": {
@@ -10,8 +10,8 @@
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "MIT",
   "dependencies": {
-    "@scion-scxml/botbuilder-common": "^1.0.21",
+    "@scion-scxml/botbuilder-common": "^1.0.22",
     "@scion-scxml/botbuilder-common-scxml-components": "^1.0.18"
   },
-  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
 }

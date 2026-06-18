@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/test-scharpie",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "description": "",
   "main": "index.js",
   "license": "ISC",
@@ -9,8 +9,12 @@
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "devDependencies": {
-    "@scion-scxml/eslint-plugin": "^4.0.24",
+    "@scion-scxml/eslint-plugin": "^4.0.25",
     "eslint": "^5.4.0"
   },
-  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
 }

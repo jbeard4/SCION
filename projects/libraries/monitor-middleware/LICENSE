@@ -1,59 +1,13 @@
-The Parity Public License 3.0.0
+Copyright 2026 Jacob Beard
 
-Copyright Notice: Jacobean Research and Development
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-Source Notice: https://www.npmjs.com/package/@scion-scxml/monitor-middleware
+   http://www.apache.org/licenses/LICENSE-2.0
 
-This license lets you use and share this software for free, as
-long as you contribute software you make with it. Specifically:
-
-If you follow the rules below, you may do everything with this
-software that would otherwise infringe either my copyright in it,
-any patent claim I can license that covers this software as of my
-latest contribution, or both.
-
-1. Contribute source code for changes you make to this software.
-
-2. If you run or combine this software with other software in any
-   larger program, contribute all source code for that program.
-
-3. Contribute all source code for software you develop, deploy,
-   monitor, or run with this software.
-
-4. Ensure everyone who gets a copy of this software from you,
-   in source code or any other form, gets the text of this
-   license and the copyright and source notices above.
-
-5. Do not make any legal claim against anyone for infringing
-   any patent claim they would infringe by using this software
-   alone, accusing this software, with or without changes,
-   alone or as part of a larger program.
-
-To contribute source code, publish the preferred form for making
-changes through a freely accessible distribution system widely
-used for similar source code, and license contributions not
-already licensed to the public on terms as permissive as this
-license accordingly.
-
-You are excused for unknowingly breaking 1, 2, or 3 if you
-contribute source code, or stop doing anything requiring this
-license, within 30 days of learning you broke the rule.
-
-**This software comes as is, without any warranty at all. As far
-as the law allows, I will not be liable for any damages related
-to this software or this license, for any kind of legal claim.**
-
-
----
-
-Licensor Signature (Ed25519):
-
-2bb8b394d0dda11ed7d6ba978022d0cc1a395478f6fee999d455648dea6a47c5
-dd47a8c9a503926e26290fa011de7bfd717bac389e93166f3511cd9a4b7ca102
-
----
-
-Agent Signature (Ed25519):
-
-146f0424ffe9fcbd333d82289aa529188451db425382f3d5f99c001d35ee6191
-e6f211982f44d87922c6d594bb31ad2fb7ed949c71f16f5f3118d8fd17725b09
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
