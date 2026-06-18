@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/monitor-middleware",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "description": "SCION monitor server",
   "main": "index.js",
   "bin": {
@@ -10,22 +10,20 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "fix-global": "sed -i -e 's/g.monitorClient = f()/g.scion = g.scion || {}; g.scion.monitorClient = f();/' dist/monitorClient.js",
     "bundle": "browserify client.js -d  -o dist/monitorClient.js -s monitorClient -v",
-    "build": "mkdir -p dist && npm run bundle && npm run fix-global",
-    "postinstall": "licensezero-postinstall"
+    "build": "mkdir -p dist && npm run bundle && npm run fix-global"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "Apache-2.0",
   "repository": "https://gitlab.com/scion-scxml/monitor-middleware.git",
   "homepage": "https://gitlab.com/scion-scxml/monitor-middleware",
   "dependencies": {
-    "@scion-scxml/dashboard": "^1.0.26",
+    "@scion-scxml/dashboard": "^1.0.27",
     "cheerio": "^1.0.0-rc.2",
-    "licensezero-postinstall": "^1.0.0",
     "restify": "^6.3.4",
     "restify-cors-middleware": "^1.1.1"
   },
   "devDependencies": {
     "browserify": "^14.3.0"
   },
-  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
 }

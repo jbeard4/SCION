@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/express-middleware",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -9,13 +9,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@scion-scxml/core": "^2.6.24",
-    "@scion-scxml/dashboard": "^1.0.26",
-    "@scion-scxml/monitor-middleware": "^1.0.21",
-    "@scion-scxml/scxml": "^4.3.27",
+    "@scion-scxml/core": "^2.6.25",
+    "@scion-scxml/dashboard": "^1.0.27",
+    "@scion-scxml/monitor-middleware": "^1.0.22",
+    "@scion-scxml/scxml": "^4.3.28",
     "express": "^4.17.1",
     "mongodb": "^3.6.8",
     "uuid": "^8.3.2"
   },
-  "gitHead": "25f3db4baa9a9aae69b014b07c7533a18b73fc8c"
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
 }

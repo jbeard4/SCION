@@ -4,14 +4,9 @@ before_script:
 
 .build_template: &build_definition
   script:
-   - cd projects/libraries/core && echo Running tests for core && npm ci && npm run test && cd -
-   - cd projects/libraries/scxml && echo Running tests for scxml && npm ci && npm run test && cd -
-
-build:node:12.12.0:
-  image: node:12.12.0
-  <<: *build_definition
+   - (cd projects/libraries/core && echo Running tests for core && npm ci && npm run test)
+   - (cd projects/libraries/scxml && echo Running tests for scxml && npm ci && npm run test)
 
 build:node:14.12.0:
   image: node:14.12.0
   <<: *build_definition
-
