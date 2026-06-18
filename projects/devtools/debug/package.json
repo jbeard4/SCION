@@ -1,25 +1,23 @@
 {
   "name": "@scion-scxml/debug",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "main": "index.js",
   "scripts": {
     "fix-global": "sed -i -e 's/g.scxml = f()/g.scion = g.scion || {}; g.scion.scxml = f(); g.scion.core = g.scion.scxml.core;/' dist/scxml.debug.js",
-    "build": "mkdir -p dist && browserify -d index.js -o dist/scxml.debug.js -s scxml -v && npm run fix-global",
-    "postinstall": "licensezero-postinstall"
+    "build": "mkdir -p dist && browserify -d index.js -o dist/scxml.debug.js -s scxml -v && npm run fix-global"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "Apache-2.0",
   "devDependencies": {
     "browserify": "^16.2.2"
   },
   "dependencies": {
-    "@scion-scxml/monitor-middleware": "^1.0.21",
-    "@scion-scxml/scxml": "^4.3.27",
-    "@scion-scxml/sourcemap-plugin": "^1.0.25",
-    "licensezero-postinstall": "^1.0.0"
+    "@scion-scxml/monitor-middleware": "^1.0.22",
+    "@scion-scxml/scxml": "^4.3.28",
+    "@scion-scxml/sourcemap-plugin": "^1.0.26"
   },
   "description": "Drop-in replacement for the SCION scxml compiler module, that automatically enables the sourcemap-plugin and monitor client",
   "repository": "https://gitlab.com/scion-scxml/debug.git",
   "homepage": "https://gitlab.com/scion-scxml/debug",
-  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
 }

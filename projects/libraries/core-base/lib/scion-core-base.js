@@ -229,7 +229,7 @@ class BaseInterpreter extends EventEmitter {
   * @memberof BaseInterpreter.prototype
   */
   cancel(){
-    setImmediate( () => delete this.opts.parentSession )  // run this asynchronously, as we still need a reference to the parent session to send the final <done> event
+    delete this.opts.parentSession;
     if(this._isInFinalState) return;
     this._isInFinalState = true;
     this._log(`session cancelled ${this.opts.invokeid}`);
@@ -466,7 +466,7 @@ class BaseInterpreter extends EventEmitter {
   }
 
   _finishBigStep(e, allStatesEntered, allStatesExited, cb){
-      let statesToInvoke = Array.from(allStatesEntered).filter(s => s.invokes).sort(sortInEntryOrder);
+      let statesToInvoke = Array.from(new Set([...allStatesEntered].filter(s => s.invokes && !allStatesExited.has(s)))).sort(sortInEntryOrder);
 
       // Here we invoke whatever needs to be invoked. The implementation of 'invoke' is platform-specific
       statesToInvoke.forEach( s => {
@@ -1353,11 +1353,15 @@ class InterpreterScriptingContext{
         var timeoutHandle = setTimeout(function(){
           if (event.sendid) delete this._timeoutMap[event.sendid];
           this._timeouts.delete(timeoutOptions);
+          const parentSessionOpts = this._interpreter.opts.parentSession && this._interpreter.opts.parentSession.opts;
           const _doSend = this._interpreter.opts.doSend || BaseInterpreter.doSend;
+          const sendAsync = typeof this._interpreter.opts.sendAsync === 'boolean' ?
+            this._interpreter.opts.sendAsync :
+            !!(parentSessionOpts && parentSessionOpts.sendAsync);
           if(_doSend){
             _doSend(session, event);
           }else{
-            session[this._interpreter.opts.sendAsync ? 'genAsync' : 'gen'](event);
+            session[sendAsync ? 'genAsync' : 'gen'](event);
           }
         }.bind(this), options.delay || 0);
 

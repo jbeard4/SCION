@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/core-base",
-  "version": "1.0.25",
+  "version": "1.0.26",
   "description": "Provide BaseInterpreter class and helper functions to modules that implement Statechart interface.",
   "main": "./lib/scion-core-base.js",
   "directories": {
@@ -39,5 +39,5 @@
     "babel-preset-es2015": "^6.9.0",
     "babelify": "^8.0.0"
   },
-  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
 }

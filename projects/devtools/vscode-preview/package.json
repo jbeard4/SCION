@@ -1,6 +1,6 @@
 {
   "name": "vscode-scxml-preview",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "publisher": "JacobeanResearchandDevelopmentLLC",
   "engines": {
     "vscode": "^1.47.0"
@@ -31,8 +31,8 @@
     "onCommand:scxml.showPreview"
   ],
   "devDependencies": {
-    "@scion-scxml/schviz": "^3.2.27",
-    "@scion-scxml/scxml": "^4.3.27",
+    "@scion-scxml/schviz": "^3.2.28",
+    "@scion-scxml/scxml": "^4.3.28",
     "@types/node": "^12.12.0",
     "@types/socket.io-client": "^1.4.32",
     "@types/vscode": "^1.47.0",
@@ -69,5 +69,5 @@
     "color": "#f78a30",
     "theme": "dark"
   },
-  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
 }
