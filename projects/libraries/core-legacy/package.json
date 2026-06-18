@@ -1,7 +1,7 @@
 {
   "name": "@scion-scxml/core-legacy",
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "version": "1.0.25",
+  "version": "1.0.26",
   "description": "Legacy semantics for SCION Statecharts",
   "keywords": [
     "scxml",
@@ -26,7 +26,7 @@
   },
   "homepage": "https://gitlab.com/scion-scxml/core-legacy",
   "dependencies": {
-    "@scion-scxml/core-base": "^1.0.25"
+    "@scion-scxml/core-base": "^1.0.26"
   },
   "devDependencies": {
     "@scion-scxml/core-test-framework": "1.0.24",
@@ -76,5 +76,5 @@
     "watch": "watchify -d lib/scion.js -o dist/scion.js -s scion",
     "docs": "typedoc --module commonjs  --includeDeclarations --out dist/docs/ ./tsd/scion-core-legacy.d.ts"
   },
-  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
 }
