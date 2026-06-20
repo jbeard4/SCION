@@ -23,6 +23,7 @@ export class VampireExample extends SCComponent {
         <tbody> 
           <tr>
             <Cell 
+              contentHeight="227.5px"
               showSourceCode={this.state.showSourceCode}
               sourceCode={ButtonsTxt}
               component={
@@ -33,6 +34,7 @@ export class VampireExample extends SCComponent {
               }
               />
             <Cell 
+              contentHeight="455px"
               prismLanguage="xml"
               showSourceCode={this.state.showSourceCode}
               sourceCode={_vampireScxml}
@@ -56,6 +58,7 @@ export class VampireExample extends SCComponent {
           </tr>
           <tr>
             <Cell 
+              contentHeight="227.5px"
               sourceCode={VampireImgTxt}
               showSourceCode={this.state.showSourceCode}
               component={

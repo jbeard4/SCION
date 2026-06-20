@@ -20,6 +20,7 @@ export class DragAndDropExample extends SCComponent {
         <tbody> 
           <tr>
             <Cell 
+              contentHeight="400px"
               showSourceCode={this.state.showSourceCode}
               sourceCode={DragAndDropDemoTxt} 
               component={
@@ -34,6 +35,7 @@ export class DragAndDropExample extends SCComponent {
               }
               />
             <Cell 
+              contentHeight="400px"
               showSourceCode={this.state.showSourceCode}
               sourceCode={dragAndDropScxml} 
               component={
@@ -59,4 +61,3 @@ export class DragAndDropExample extends SCComponent {
     </div>
   }
 }
-

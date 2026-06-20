@@ -22,6 +22,7 @@ export class LightSwitchExample extends SCComponent {
         <tbody> 
           <tr>
             <Cell 
+              contentHeight="200px"
               showSourceCode={this.state.showSourceCode}
               sourceCode={LampSwitchTxt}
               component={
@@ -32,6 +33,7 @@ export class LightSwitchExample extends SCComponent {
               }
               />
             <Cell 
+              contentHeight="400px"
               showSourceCode={this.state.showSourceCode}
               sourceCode={lampScxml}
               component={
@@ -53,6 +55,7 @@ export class LightSwitchExample extends SCComponent {
           </tr>
           <tr>
             <Cell 
+              contentHeight="200px"
               overflow="hidden"
               showSourceCode={this.state.showSourceCode}
               sourceCode={LampBulbTxt}
@@ -70,7 +73,6 @@ export class LightSwitchExample extends SCComponent {
     </div>
   }
 }
-
 
 
 

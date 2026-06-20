@@ -46,30 +46,40 @@ export class SCComponent extends React.Component{
   }
 }
 
-export const Cell = ({ component, caption, rowSpan, showSourceCode, prismLanguage, sourceCode, overflow = 'scroll' } ) => (
-  <td rowSpan={rowSpan} style={{border: '1px solid #eee'}}>
-    <div style={{width: '100%', height: '100%', position: 'relative'}}>
-      <div style={{width: '100%', height: '100%', position: 'absolute'}}>
-        <div style={{width: '100%', height: '100%', display:'flex', flexDirection: 'column'}}>
-          <div style={{ flexGrow: 1, position: 'relative'}}>
-            <div style={{width: '100%', height: '100%', position: 'absolute'}}>
-              <div style={{width: '100%', height: '100%', overflow: showSourceCode ? 'scroll' : overflow }}>
-                {
-                  showSourceCode ? 
-                    <PrismCode component="pre" className={`language-${prismLanguage || 'javascript'}`}>
-                      { sourceCode }
-                    </PrismCode> : 
-                    component
-                }
-              </div>
-            </div>
-          </div>
-          <div style={{textAlign: 'center'}}>{showSourceCode ? '' : caption}</div>
+export const Cell = ({
+  component,
+  caption,
+  rowSpan,
+  showSourceCode,
+  prismLanguage,
+  sourceCode,
+  overflow = 'scroll',
+  contentHeight = '400px'
+} ) => {
+  const captionHeight = showSourceCode ? '0px' : '2.5rem';
+  const viewportHeight = showSourceCode ? contentHeight : `calc(${contentHeight} - ${captionHeight})`;
+
+  return (
+  <td rowSpan={rowSpan} style={{border: '1px solid #eee', padding: 0, verticalAlign: 'top'}}>
+    <div style={{width: '100%'}}>
+      <div style={{height: viewportHeight, minHeight: 0, position: 'relative'}}>
+        <div style={{width: '100%', height: '100%', overflow: showSourceCode ? 'scroll' : overflow, position: 'relative' }}>
+          {
+            showSourceCode ? 
+              <PrismCode component="pre" className={`language-${prismLanguage || 'javascript'}`}>
+                { sourceCode }
+              </PrismCode> : 
+              component
+          }
         </div>
+      </div>
+      <div style={{height: captionHeight, textAlign: 'center', padding: showSourceCode ? 0 : '0.25rem 0.5rem', overflow: 'hidden'}}>
+        {showSourceCode ? '' : caption}
       </div>
     </div>
   </td>
 )
+}
 
 export class ToggleableSchviz extends React.Component{
   constructor(props){
