@@ -24,12 +24,14 @@ export class TrafficLightExample extends SCComponent {
         <tbody> 
           <tr>
             <Cell 
+              contentHeight="400px"
               showSourceCode={this.state.showSourceCode}
               sourceCode={TrafficLightTxt}
               component={<TrafficLight configuration={this.state.configuration} datamodel={this.state.datamodel} />}
               caption={<span>I am a <strong>traffic light</strong></span>}
               />
             <Cell 
+              contentHeight="400px"
               showSourceCode={this.state.showSourceCode}
               sourceCode={trafficLightScxml}
               component={
@@ -56,7 +58,6 @@ export class TrafficLightExample extends SCComponent {
     </div>
   }
 }
-
 
 
 

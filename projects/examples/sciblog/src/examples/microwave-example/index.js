@@ -19,6 +19,7 @@ export default class MicrowaveExample extends SCComponent {
         <tbody> 
           <tr>
             <Cell 
+              contentHeight="200px"
               showSourceCode={this.state.showSourceCode}
               sourceCode={ButtonsTxt}
               component={
@@ -29,6 +30,7 @@ export default class MicrowaveExample extends SCComponent {
               }
               />
             <Cell 
+              contentHeight="400px"
               showSourceCode={this.state.showSourceCode}
               sourceCode={this.props.microwaveScxml}
               component={
@@ -51,6 +53,7 @@ export default class MicrowaveExample extends SCComponent {
           </tr>
           <tr>
             <Cell 
+              contentHeight="200px"
               showSourceCode={this.state.showSourceCode}
               sourceCode={MicrowaveDemoTxt}
               component={
@@ -67,6 +70,5 @@ export default class MicrowaveExample extends SCComponent {
     </div>
   }
 }
-
 
 

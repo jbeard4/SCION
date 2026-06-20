@@ -18,6 +18,7 @@ export class HistoryExample extends SCComponent {
         <tbody> 
           <tr>
             <Cell 
+              contentHeight="400px"
               showSourceCode={this.state.showSourceCode}
               sourceCode={HistoryDemoTxt} 
               component={
@@ -31,6 +32,7 @@ export class HistoryExample extends SCComponent {
               }
               />
             <Cell 
+              contentHeight="400px"
               showSourceCode={this.state.showSourceCode}
               sourceCode={historyScxml} 
               component={
@@ -57,5 +59,4 @@ export class HistoryExample extends SCComponent {
     </div>
   }
 }
-
 

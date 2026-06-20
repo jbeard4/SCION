@@ -11,8 +11,6 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.2.0",
-    "@scion-scxml/schviz": "^3.2.19",
-    "@scion-scxml/scxml": "^4.3.19",
     "bootstrap": "^4.1.1",
     "disqus-react": "^1.0.5",
     "gatsby": "^1.8.12",
@@ -24,17 +22,14 @@
     "gatsby-plugin-preact": "^1.0.3",
     "gatsby-plugin-react-css-modules": "^1.0.15",
     "gatsby-plugin-react-helmet": "^1.0.3",
-    "gatsby-plugin-sharp": "^1.6.2",
     "gatsby-remark-autolink-headers": "^1.4.19",
     "gatsby-remark-copy-linked-files": "^1.5.2",
-    "gatsby-remark-images": "^1.5.4",
     "gatsby-remark-prismjs": "^1.2.1",
     "gatsby-remark-responsive-iframe": "^1.4.3",
     "gatsby-remark-smartypants": "^1.4.3",
     "gatsby-remark-toc": "^1.1.0",
     "gatsby-source-filesystem": "^1.4.3",
     "gatsby-transformer-remark": "^1.7.1",
-    "gatsby-transformer-sharp": "^1.6.1",
     "immutable": "^4.0.0-rc.9",
     "jquery": "^3.3.1",
     "lodash": "^4.15.0",
@@ -61,15 +56,15 @@
     "url": "git+https://gitlab.com/scion-scxml/sciblog.git"
   },
   "scripts": {
-    "dev": "gatsby develop",
+    "dev": "node ./node_modules/gatsby/dist/bin/gatsby.js develop",
     "lint": "./node_modules/.bin/eslint --ext .js,.jsx --ignore-pattern public .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --trailing-comma es5 --no-semi --single-quote --write 'src/**/*.js'",
-    "develop": "gatsby develop",
-    "build": "gatsby build",
-    "deploy": "gatsby build --prefix-paths && gh-pages -d public",
+    "develop": "node ./node_modules/gatsby/dist/bin/gatsby.js develop",
+    "build": "node ./node_modules/gatsby/dist/bin/gatsby.js build",
+    "deploy": "node ./node_modules/gatsby/dist/bin/gatsby.js build --prefix-paths && gh-pages -d public",
     "fix-semi": "eslint --quiet --ignore-pattern node_modules --ignore-pattern public --parser babel-eslint --no-eslintrc --rule '{\"semi\": [2, \"never\"], \"no-extra-semi\": [2]}' --fix gatsby-node.js",
-    "serve": "gatsby serve"
+    "serve": "node ./node_modules/gatsby/dist/bin/gatsby.js serve"
   },
   "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
 }

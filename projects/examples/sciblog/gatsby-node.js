@@ -4,6 +4,32 @@ const path = require('path')
 const { createFilePath } = require('gatsby-source-filesystem')
 const fs = require('fs');
 
+function copyDirRecursive(src, dest) {
+  if (!fs.existsSync(src)) return;
+  if (!fs.existsSync(dest)) {
+    fs.mkdirSync(dest, { recursive: true });
+  }
+
+  fs.readdirSync(src).forEach(entry => {
+    const srcPath = path.join(src, entry);
+    const destPath = path.join(dest, entry);
+    const stat = fs.statSync(srcPath);
+
+    if (stat.isDirectory()) {
+      copyDirRecursive(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  });
+}
+
+exports.onPreBootstrap = () => {
+  copyDirRecursive(
+    path.resolve(__dirname, 'src/docs/assets'),
+    path.resolve(__dirname, 'static/assets')
+  );
+}
+
 exports.createPages = ({ graphql, boundActionCreators }) => {
   const { createPage } = boundActionCreators
 
@@ -117,6 +143,12 @@ exports.onCreateNode = ({ node, boundActionCreators, getNode }) => {
 
 exports.modifyWebpackConfig = ({ config, stage }) => {
   config.merge({
+    resolve: {
+      alias: {
+        '@scion-scxml/scxml': path.resolve(__dirname, 'src/vendor/scxml.js'),
+        '@scion-scxml/schviz': path.resolve(__dirname, 'src/vendor/schviz.js')
+      }
+    },
     externals: {
       'module': 'module'
     }
