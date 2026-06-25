@@ -70,7 +70,7 @@ export default class GraphLabel extends React.PureComponent<GraphLabelProps, Gra
         }
         ref={(e: SVGTextElement) => { this.svgTextElement = e; }}
         textAnchor={this.props.label.$meta && this.props.label.$meta.textAnchor}
-        dominantBaseline={(this.props.label.$meta && this.props.label.$meta.dominantBaseline) || 'text-before-edge'}
+        dominantBaseline={this.props.label.$meta && this.props.label.$meta.dominantBaseline}
         x={this.props.disableAnimation ? this.state.to.x : undefined}
         y={this.props.disableAnimation ? this.state.to.y : undefined}
         opacity={this.props.disableAnimation ? 1 : 0}
@@ -131,4 +131,3 @@ export default class GraphLabel extends React.PureComponent<GraphLabelProps, Gra
   }
 
 }
-

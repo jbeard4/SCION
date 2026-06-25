@@ -75,6 +75,12 @@ export class KGraph {
           ) as GraphNodeLabel;
 
           const bbox = graphNodeLabel.svgTextElement.getBBox();  
+          node.$meta = _.extend({}, node.$meta, {
+            labelBBoxLeft: bbox.x,
+            labelBBoxRight: bbox.x + bbox.width,
+            labelBBoxTop: bbox.y,
+            labelBBoxBottom: bbox.y + bbox.height
+          });
 
           const isActionNode = node.$type === 'action';
           _.extend(node, { 
@@ -105,6 +111,12 @@ export class KGraph {
                 _.extend(label, { 
                   "width" : bbox.width,
                   "height" : bbox.height
+                });
+                label.$meta = _.extend({}, label.$meta, {
+                  bboxLeft: bbox.x,
+                  bboxRight: bbox.x + bbox.width,
+                  bboxTop: bbox.y,
+                  bboxBottom: bbox.y + bbox.height
                 });
                 //console.log(edge.id, 'bbox ', bbox );
               }))
@@ -152,6 +164,7 @@ export class KGraph {
 
           //if we don't have any transition action nodes, then we are done.
           if(!transtionActionNodeMatches.length){ 
+            normalizeEdgeLabelCoordinates.call(this, g);
             normalizeSelfLoopEdgeCoordinates.call(this, g);
             return cb(null, g);
           }
@@ -212,6 +225,7 @@ export class KGraph {
             options : options,
             success : ( g2 => {
 
+              normalizeEdgeLabelCoordinates.call(this, g2);
               normalizeSelfLoopEdgeCoordinates.call(this, g2);
 
               //7. then remove fake transition labels from the graph
@@ -301,27 +315,93 @@ export class KGraph {
     return kgraph;
 
 
-    //6. normalize self loop edge coordinates
+    //6. normalize edge label coordinates
+    function normalizeEdgeLabelCoordinates(rootNode){
+      const edgeLabelGap = 1.5;
+      const minY = 2.5;
+
+      function walk(node){
+        if(node.edges) node.edges.forEach(edge => {
+          if(edge.source === edge.target || !edge.labels) return;
+
+          edge.labels.forEach(label => {
+            const labelMeta = label.$meta || {};
+            const bboxLeft = labelMeta.bboxLeft;
+
+            if(typeof label.x === 'number' && typeof bboxLeft === 'number'){
+              label.x = label.x - bboxLeft;
+            }
+            offsetLabelFromEdge(edge, label);
+          });
+        });
+        if(node.children) node.children.forEach(walk.bind(this));
+      }
+
+      function offsetLabelFromEdge(edge, label){
+        const labelMeta = label.$meta || {};
+        if(typeof label.x !== 'number' || typeof label.y !== 'number') return;
+
+        const edgePoints = [edge.sourcePoint].concat(edge.bendPoints || [], edge.targetPoint).filter(point =>
+          point && typeof point.x === 'number' && typeof point.y === 'number'
+        );
+        if(edgePoints.length < 2) return;
+
+        const labelWidth = typeof label.width === 'number' ? label.width :
+          (typeof labelMeta.bboxLeft === 'number' && typeof labelMeta.bboxRight === 'number' ?
+            labelMeta.bboxRight - labelMeta.bboxLeft : 0);
+        const labelCenterX = label.x + labelWidth / 2;
+        const horizontalSegments = [];
+
+        for(let i = 1; i < edgePoints.length; i++){
+          const a = edgePoints[i - 1];
+          const b = edgePoints[i];
+          if(Math.abs(a.y - b.y) > 0.001) continue;
+
+          const segmentLeft = Math.min(a.x, b.x);
+          const segmentRight = Math.max(a.x, b.x);
+          if(labelCenterX >= segmentLeft && labelCenterX <= segmentRight){
+            horizontalSegments.push({y : a.y});
+          }
+        }
+
+        if(!horizontalSegments.length){
+          if(label.y < minY) label.y = minY;
+          return;
+        }
+
+        const nearestSegment = horizontalSegments.reduce((nearest, segment) =>
+          Math.abs(segment.y - label.y) < Math.abs(nearest.y - label.y) ? segment : nearest
+        );
+        const bboxBottom = typeof labelMeta.bboxBottom === 'number' ? labelMeta.bboxBottom : 0;
+        label.y = Math.max(minY, nearestSegment.y - edgeLabelGap - bboxBottom);
+      }
+
+      walk.call(this,rootNode);
+    }
+
     function normalizeSelfLoopEdgeCoordinates(rootNode){
       function walk(node){
         //fix edge label coordinates. Workaround for issue OpenKieler/klayjs#9, eclipse/elk#79
         if(node.edges) node.edges.forEach( (edge, i) => {
           if(edge.source === edge.target){
             edge.labels.forEach( (label, i) => {
+              const labelMeta = label.$meta || {};
+              const bboxTop = labelMeta.bboxTop;
+              const bboxBottom = labelMeta.bboxBottom;
+              const labelTop = edge.bendPoints[2].y + edge.labels.slice(0,i).reduce((a, b) => a + b.height,0);
               label.x = edge.bendPoints[2].x;
-              label.y = edge.bendPoints[2].y + edge.labels.slice(0,i).reduce((a, b) => a + b.height,0)
-              label.$meta = {};
+              label.$meta = _.extend({}, labelMeta);
               label.$meta.textAnchor = 'begin';
 
               //does the self edge loop up or down?
               if(edge.bendPoints[0].y < edge.bendPoints[1].y){
                 //line has positive slope
                 //goes below the slope
-                label.$meta.dominantBaseline = 'text-before-edge';
+                label.y = typeof bboxTop === 'number' ? labelTop - bboxTop : labelTop + label.height;
               }else {
                 //line has negative slope
                 //goes above the slope
-                label.$meta.dominantBaseline = 'text-after-edge';
+                label.y = typeof bboxBottom === 'number' ? labelTop - bboxBottom : labelTop;
               }
             });
           }
@@ -762,6 +842,7 @@ export class KGraphNode implements IKGraphNode {
   y?:number;
   $type? : string;
   properties? : any
+  $meta? : KGraphNodeMeta;
 }
 
 export class KGraphEdge implements IKGraphNode {
@@ -788,10 +869,20 @@ export class KGraphLabel implements IKGraphNode {
 export interface KGraphLabelMeta {
   textAnchor?: string;
   dominantBaseline?: string;
+  bboxLeft?: number;
+  bboxRight?: number;
+  bboxTop?: number;
+  bboxBottom?: number;
+}
+
+export interface KGraphNodeMeta {
+  labelBBoxLeft?: number;
+  labelBBoxRight?: number;
+  labelBBoxTop?: number;
+  labelBBoxBottom?: number;
 }
 
 export interface Point {
   x?:number;
   y?:number;
 }
-
