@@ -587,7 +587,8 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
     const viewBox = this.state.kgraph ? 
                         this.getOriginalViewbox(this.state.kgraph) : 
                         {x : 0, y : 0, width : 0, height : 0} as DOMRect
-    const transform = this.getTransformString(viewBox, viewBox, this.htmlRootElement ? this.htmlRootElement.getBoundingClientRect() : {x : 0, y : 0, width : 0, height : 0})
+    const transform = this.props.disableZoom ? undefined :
+      this.getTransformString(viewBox, viewBox, this.htmlRootElement ? this.htmlRootElement.getBoundingClientRect() : {x : 0, y : 0, width : 0, height : 0})
     return <div style={{width:'100%', height:'100%'}} ref={(e: HTMLDivElement) => { this.htmlRootElement = e; }} tabIndex={this.props.tabIndex || 0}>
         {  
           this.state.loading && 
@@ -621,7 +622,7 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
           onMouseUp={this.handleMouseUp.bind(this)}
           onMouseMove={this.handleMouseMove.bind(this)}
           viewBox={this.svgRectToViewBox(viewBox)}
-          preserveAspectRatio="none"
+          preserveAspectRatio={this.props.disableZoom ? "xMidYMid meet" : "none"}
         >
         <defs>
           { 
@@ -894,4 +895,3 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
     return `${rect.x} ${rect.y} ${rect.width} ${rect.height}`;
   }
 }
-
