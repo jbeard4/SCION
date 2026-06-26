@@ -1,56 +1,87 @@
-import * as React from "react";
-import { Tweet } from 'react-twitter-widgets'
+import React from 'react'
+import Link from 'gatsby-link'
+
+const resources = [
+  {
+    title: 'FAQ',
+    icon: 'fa-question-circle',
+    href: '/faq',
+    description: 'Start with short answers about state machines, statecharts, SCXML, and this site.'
+  },
+  {
+    title: 'Tutorial',
+    icon: 'fa-book',
+    href: '/tutorials/fundamentals',
+    description: 'Work through the SCXML tutorial and learn the core statechart concepts.'
+  },
+  {
+    title: 'Examples',
+    icon: 'fa-code',
+    href: '/examples',
+    description: 'Browse runnable examples powered by SCION. More SCXML examples will be added over time.'
+  },
+  {
+    title: 'Tooling',
+    icon: 'fa-wrench',
+    href: '/tooling',
+    description: 'Find editors, visualization tools, and SCION Studio information.'
+  }
+]
+
+const ResourceLink = ({ resource }) => (
+  <div className="col-md-3" style={{ marginBottom: '2rem' }}>
+    <Link to={resource.href} style={{ color: 'inherit', textDecoration: 'none' }}>
+      <div style={{ textAlign: 'center' }}>
+        <i className={`fas ${resource.icon} fa-4x`} aria-hidden="true"></i>
+        <h3 style={{ marginTop: '1rem' }}>{resource.title}</h3>
+        <p>{resource.description}</p>
+      </div>
+    </Link>
+  </div>
+)
 
 const Home = () => (
   <div className="container">
     <div className="jumbotron">
       <div className="container">
-        <h1> SCION </h1>
-        <h2> <em> n. </em>  A suite of scripts for SCXML/Statechart software system support. </h2>
+        <h1>SCXML.IO</h1>
+        <p className="lead">
+          An open source informational site about the W3C SCXML standard for
+          hierarchical state machines and statecharts.
+        </p>
+        <p>
+          This site is not affiliated with W3C. It is powered by{' '}
+          <a href="https://github.com/jbeard4/SCION">SCION</a>.
+        </p>
       </div>
     </div>
+
     <div className="container">
-      <div id="faq" className="container">
-        <div className="row">
-          <div className="col-md-4" style={{textAlign:'center'}}>
-            <div><i className="fa fa-cog fa-5x"></i></div><h3>What is SCXML?</h3>
-            <p>
-              <strong>Statecharts</strong> have been used since the 1960s to develop complex  
-              user interface behavior for safety-critical embedded systems.
-              &nbsp;<strong>SCXML</strong> is an XML application for Statecharts, developed as a
-              W3C standard.
-            </p>
-            <p>
-              This website provides a collection of resources (software
-              libraries, tools and examples) for development of Statecharts, particularly as
-              applied to rapid prototyping of <strong>robust user interfaces</strong>.
-            </p>
-          </div>
-          <div className="col-md-4" style={{textAlign:'center'}}>
-            <div><i className="fa fa-rocket fa-5x"></i></div><h3>Who is it for?</h3>
-            <p>
-              No matter whether you are a <strong>user experience
-              expert</strong>, <strong>an interaction designer</strong>, <strong>a web
-              front-end developer</strong>, or an <strong>embedded systems designer</strong>,
-              Statecharts allow you to use open web technology rapidly prototype complex user
-              interface behavior in your web browser.
-            </p>
-          </div>
-          <div className="col-md-4" style={{textAlign:'center'}}>
-            <div><i className="fa fa-heart fa-5x"></i></div><h3>Why you'll love it</h3>
-            <p>
-              Does your application have a notion of <strong>state</strong>?
-              Does it process <strong>events</strong>, and change state in response to those
-              events? Do you think about your application in terms of <strong>flows</strong>? 
-              Statecharts let you model the way states change in response to events,
-              graphically in your browser, and simulate the resulting UI, which
-              which makes designing complex user interface behavior easy.
-            </p>
-          </div>
+      <div className="row">
+        {
+          resources.map(resource => <ResourceLink key={resource.title} resource={resource} />)
+        }
+      </div>
+
+      <div className="row">
+        <div className="col-md-8 offset-md-2">
+          <h2>What is SCXML?</h2>
+          <p>
+            SCXML is an XML-based language for describing statecharts: state
+            machines with hierarchy, concurrency, events, and executable
+            actions. It is useful for modeling application behavior, workflows,
+            interaction logic, and other systems whose behavior changes in
+            response to events.
+          </p>
+          <p>
+            This site collects practical resources for learning SCXML and using
+            it with SCION. Later, we will add more SCXML examples. One day, we
+            will release SCION Studio as well.
+          </p>
         </div>
       </div>
     </div>
   </div>
 )
 
-export default Home;
+export default Home

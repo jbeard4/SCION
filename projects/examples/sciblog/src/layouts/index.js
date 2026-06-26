@@ -24,6 +24,15 @@ class Template extends React.Component {
           <li className={`nav-item ${location.pathname.match(/^\/tutorials/) ? 'active' : ''}`}>
             <Link className="nav-link" to="/tutorials/fundamentals">Tutorial</Link>
           </li>
+          <li className={`nav-item ${location.pathname.match(/^\/faq/) ? 'active' : ''}`}>
+            <Link className="nav-link" to="/faq">FAQ</Link>
+          </li>
+          <li className={`nav-item ${location.pathname.match(/^\/examples/) ? 'active' : ''}`}>
+            <Link className="nav-link" to="/examples">Examples</Link>
+          </li>
+          <li className={`nav-item ${location.pathname.match(/^\/tooling/) ? 'active' : ''}`}>
+            <Link className="nav-link" to="/tooling">Tooling</Link>
+          </li>
         </ul>
       </nav>
     );
