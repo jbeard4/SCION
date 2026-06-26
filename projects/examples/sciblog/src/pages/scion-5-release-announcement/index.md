@@ -186,9 +186,9 @@ My main concern is about how this will impact SCION's ability to build a communi
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 
-It's true that contributors to SCION will now need to sign a Contributor License Agreement where they assign their copyright to Jacobean Research and Development. Contributions to SCION have historically not required users to assign their copyright to the project. _I am concerned that this will create a barrier for new contributors._ 
+It's true that contributors to SCION will now need to sign a Contributor License Agreement where they assign their copyright to Minnow Software, LLC. Contributions to SCION have historically not required users to assign their copyright to the project. _I am concerned that this will create a barrier for new contributors._
 
-If you want to contribute to SCION, and you have concerns about licensing, please reach out to me on Gitter, or at [jake@jacobeanrnd.com](mailto:jake@jacobeanrnd.com), or leave a comment on this website. I sincerely look forward to having these conversations.
+If you want to contribute to SCION, and you have concerns about licensing, please reach out to me on Gitter, or at [jake@minnow.io](mailto:jake@minnow.io), or leave a comment on this website. I sincerely look forward to having these conversations.
 
 ## Intention to migrate from Github to Gitlab
 
