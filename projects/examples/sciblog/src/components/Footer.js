@@ -49,7 +49,7 @@ export default class Footer extends React.Component {
         right: 0
       }} 
       ref={ x => this.root = x }>
-      SCION is developed and maintained by <a href="https://minnow.io">Minnow Software, LLC</a>.
+      SCXML.IO is maintained by <a href="https://minnow.io">Minnow Software, LLC</a>.
     </footer>
   }
 }
