@@ -1,6 +1,6 @@
 {
   "name": "@scion-scxml/sciblog",
-  "description": "Source code to SCION homepage (scion.scxml.io)",
+  "description": "Source code for SCXML.IO (scxml.io)",
   "version": "1.0.14",
   "author": "Noah Glusenkamp <noah.glusenkamp@gmail.com>",
   "contributors": [

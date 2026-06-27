@@ -144,7 +144,7 @@ Here is a complete list of all modules and their associated licenses at the time
       <td colspan="4" style="text-align:center; font-weight:bold"> Examples </td>
     </tr>
     <tr><td> test-scharpie </td><td> ISC </td><td> Tests for scharpie (SCXML linter) </td><td> </td></tr>
-    <tr><td> <a href="https://gitlab.com/scion-scxml/sciblog"> sciblog </a></td><td> MIT </td><td> Source code to website hosted at <a href="http://scion.scxml.io"> scion.scxml.io </a> </td><td> <a href="https://github.com/noahg/gatsby-starter-blog-no-styles"> noahg/gatsby </a> </td></tr>
+    <tr><td> <a href="https://gitlab.com/scion-scxml/sciblog"> sciblog </a></td><td> MIT </td><td> Source code to website hosted at <a href="https://scxml.io"> scxml.io </a> </td><td> <a href="https://github.com/noahg/gatsby-starter-blog-no-styles"> noahg/gatsby </a> </td></tr>
     <tr><td> <a href="https://gitlab.com/scion-scxml/example-botbuilder"> botbuilder-sample-firstrun </a></td><td> MIT </td><td> Example of SCION Botbuilder integration, based on the botbuilder-sample-firstrun example </td><td>  </td></tr>
     <tr><td> <a href="https://gitlab.com/scion-scxml/example-botbuilder"> basics-menus </a></td><td> MIT </td><td> Example of SCION Botbuilder integration, based on the botbuilder-basics-menus example </td><td>  </td></tr>
     <tr><td> <a href="https://gitlab.com/scion-scxml/example-botbuilder"> botbuilder-hello-chatconnector </a></td><td> MIT </td><td> Example of SCION Botbuilder integration, based on the botbuilder-hello-chatconnector example </td><td>  </td></tr>
