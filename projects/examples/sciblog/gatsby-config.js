@@ -1,9 +1,9 @@
 module.exports = {
   siteMetadata: {
-    title: 'SCION',
+    title: 'SCXML.IO',
     author: 'Jacob Beard',
-    description: 'Writing about the SCION open source software project',
-    siteUrl: 'https://scion.io/',
+    description: 'Open source information and resources for W3C SCXML, state machines, and statecharts',
+    siteUrl: 'https://scxml.io/',
   },
   plugins: [
     {

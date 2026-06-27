@@ -12,7 +12,7 @@ class Template extends React.Component {
     let header = (
       <nav className="navbar navbar-expand navbar-dark bg-dark">
         <Link className="navbar-brand" exact to="/">
-          SCION
+          SCXML.IO
         </Link>
         <ul className="navbar-nav mr-auto">
           <li className={`nav-item ${location.pathname.match(/^\/blog/) ? 'active' : ''}`}>
