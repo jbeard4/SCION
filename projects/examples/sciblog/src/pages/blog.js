@@ -12,7 +12,7 @@ class BlogIndex extends React.Component {
     return (
       <div className="container">
         <Helmet title={siteTitle} />
-        <h1 style={{textAlign: 'center', padding: '1em 0'}}>SCION Blog</h1>
+        <h1 style={{textAlign: 'center', padding: '1em 0'}}>SCXML.IO Blog</h1>
         {posts.map(({ node }) => {
           const title = get(node, 'frontmatter.title') || node.fields.slug
           return (
