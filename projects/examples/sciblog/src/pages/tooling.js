@@ -1,47 +1,214 @@
 import React from 'react'
+import CodeMirror from '@scion-scxml/react-codemirror'
+import SCHVIZ from '@scion-scxml/schviz'
+import scharpie from '@scion-scxml/scharpie'
+import '@scion-scxml/codemirror/lib/codemirror.css'
+import './tooling.css'
 
-const tools = [
-  {
-    title: 'SCION',
-    href: 'https://github.com/jbeard4/SCION',
-    description: 'Runtime, compiler, visualization, and debugging libraries for working with SCXML in JavaScript.'
-  },
-  {
-    title: 'SCHVIZ',
-    href: 'https://www.npmjs.com/package/@scion-scxml/schviz',
-    description: 'A visualization component for rendering SCXML statecharts.'
-  },
-  {
-    title: 'VS Code Preview',
-    href: 'https://www.npmjs.com/package/@scion-scxml/vscode-preview',
-    description: 'A preview extension for visualizing SCXML while editing.'
-  },
-  {
-    title: 'SCION Studio',
-    href: 'https://scion.studio',
-    description: 'A future editor and tooling environment for SCXML and statecharts.'
+const initialSCXML = `<scxml
+  xmlns="http://www.w3.org/2005/07/scxml"
+  version="1.0"
+  initial="idle">
+  <state id="idle">
+    <transition event="cook" target="cooking" />
+  </state>
+  <state id="cooking">
+    <transition event="done" target="idle" />
+  </state>
+</scxml>`
+
+function getCodeMirrorInstance() {
+  if (typeof document === 'undefined') return null
+
+  const codeMirror = require('@scion-scxml/codemirror')
+  require('@scion-scxml/codemirror/mode/xml/xml')
+
+  return codeMirror
+}
+
+class Tooling extends React.Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      code: initialSCXML,
+      diagnostics: [],
+      visualizedCode: initialSCXML,
+    }
+
+    this.editorMarkers = []
+    this.errorLines = []
+    this.handleCodeChange = this.handleCodeChange.bind(this)
   }
-]
 
-const Tooling = () => (
-  <div className="container">
-    <h1 style={{ textAlign: 'center', padding: '1em 0' }}>Tooling</h1>
-    <p>
-      SCXML tooling should make it easier to edit, visualize, run, and debug
-      statecharts. This page will collect the editor and visualization resources
-      as they become ready.
-    </p>
-    <div className="row">
-      {
-        tools.map(tool => (
-          <div className="col-md-6" key={tool.title} style={{ marginBottom: '1.5rem' }}>
-            <h2><a href={tool.href}>{tool.title}</a></h2>
-            <p>{tool.description}</p>
+  componentDidMount() {
+    this.validateCode(this.state.code)
+  }
+
+  componentWillUnmount() {
+    window.clearTimeout(this.validationTimer)
+    this.clearEditorDiagnostics()
+  }
+
+  handleCodeChange(code) {
+    this.setState({ code })
+    window.clearTimeout(this.validationTimer)
+    this.validationTimer = window.setTimeout(() => this.validateCode(code), 250)
+  }
+
+  validateCode(code) {
+    const diagnostics = scharpie.lintSCXML(code)
+    const nextState = { diagnostics }
+
+    if (!diagnostics.length) {
+      nextState.visualizedCode = code
+    }
+
+    this.setState(nextState, () => this.updateEditorDiagnostics(diagnostics))
+  }
+
+  getEditor() {
+    return this.editorComponent && this.editorComponent.getCodeMirror()
+  }
+
+  clearEditorDiagnostics() {
+    const editor = this.getEditor()
+
+    this.editorMarkers.forEach(marker => marker.clear())
+    this.editorMarkers = []
+
+    if (editor) {
+      this.errorLines.forEach(line =>
+        editor.removeLineClass(line, 'background', 'tooling-editor__error-line')
+      )
+    }
+
+    this.errorLines = []
+  }
+
+  updateEditorDiagnostics(diagnostics) {
+    const editor = this.getEditor()
+    if (!editor) return
+
+    editor.operation(() => {
+      this.clearEditorDiagnostics()
+
+      diagnostics.forEach(diagnostic => {
+        const line = Math.max((diagnostic.line || 1) - 1, 0)
+        const column = Math.max((diagnostic.column || 1) - 1, 0)
+        const endColumn = Math.max(diagnostic.endColumn || column + 1, column + 1)
+
+        this.errorLines.push(line)
+        editor.addLineClass(line, 'background', 'tooling-editor__error-line')
+        this.editorMarkers.push(
+          editor.markText(
+            { line, ch: column },
+            { line, ch: endColumn },
+            {
+              className: 'tooling-editor__error-text',
+              title: diagnostic.message,
+            }
+          )
+        )
+      })
+    })
+  }
+
+  renderDiagnostics() {
+    if (!this.state.diagnostics.length) return null
+
+    return (
+      <div className="tooling-diagnostics">
+        {this.state.diagnostics.map((diagnostic, index) => (
+          <p className="tooling-diagnostics__item" key={`${diagnostic.line}-${index}`}>
+            <span className="tooling-diagnostics__location">
+              {diagnostic.line}:{diagnostic.column}
+            </span>
+            {diagnostic.message}
+          </p>
+        ))}
+      </div>
+    )
+  }
+
+  renderVisualizer() {
+    if (this.state.diagnostics.length) {
+      return (
+        <div className="tooling-empty-state">
+          Fix the validation errors to update the visualization.
+        </div>
+      )
+    }
+
+    return (
+      <div className="tooling-visualizer">
+        <SCHVIZ
+          scxmlDocumentString={this.state.visualizedCode}
+          disableZoomAnimation={true}
+          layoutOptions={SCHVIZ.layouts.right}
+          redraw={false}
+          id="sciblog-tooling-live"
+        />
+      </div>
+    )
+  }
+
+  render() {
+    const hasErrors = this.state.diagnostics.length > 0
+
+    return (
+      <div className="tooling-workspace">
+        <div className="tooling-workspace__header">
+          <h1>SCXML Tooling</h1>
+          <div
+            className={
+              hasErrors
+                ? 'tooling-workspace__status tooling-workspace__status--error'
+                : 'tooling-workspace__status'
+            }
+          >
+            {hasErrors
+              ? `${this.state.diagnostics.length} validation issue${this.state.diagnostics.length === 1 ? '' : 's'}`
+              : 'Valid SCXML'}
           </div>
-        ))
-      }
-    </div>
-  </div>
-)
+        </div>
+
+        <div className="tooling-workspace__grid">
+          <div className="tooling-panel">
+            <div className="tooling-panel__header">
+              <h2 className="tooling-panel__title">Editor</h2>
+            </div>
+            <div className="tooling-panel__body tooling-editor">
+              <CodeMirror
+                ref={component => {
+                  this.editorComponent = component
+                }}
+                value={this.state.code}
+                onChange={this.handleCodeChange}
+                codeMirrorInstance={getCodeMirrorInstance()}
+                options={{
+                  mode: 'application/xml',
+                  lineNumbers: true,
+                  lineWrapping: true,
+                  tabSize: 2,
+                }}
+              />
+            </div>
+            {this.renderDiagnostics()}
+          </div>
+
+          <div className="tooling-panel">
+            <div className="tooling-panel__header">
+              <h2 className="tooling-panel__title">Visualization</h2>
+            </div>
+            <div className="tooling-panel__body">
+              {this.renderVisualizer()}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
 
 export default Tooling

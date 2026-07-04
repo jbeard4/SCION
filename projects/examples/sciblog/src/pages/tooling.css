@@ -1,0 +1,139 @@
+.tooling-workspace {
+  min-height: calc(100vh - 170px);
+  padding: 0 15px 4rem;
+}
+
+.tooling-workspace__header {
+  align-items: center;
+  border-bottom: 1px solid #d9e1e8;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding: 0.75rem 0 1rem;
+}
+
+.tooling-workspace__header h1 {
+  font-size: 1.65rem;
+  margin: 0;
+}
+
+.tooling-workspace__status {
+  color: #2d6a4f;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-left: 1rem;
+}
+
+.tooling-workspace__status--error {
+  color: #a12222;
+}
+
+.tooling-workspace__grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 47%) minmax(360px, 1fr);
+  gap: 1rem;
+}
+
+.tooling-panel {
+  border: 1px solid #d9e1e8;
+  border-radius: 4px;
+  min-width: 0;
+}
+
+.tooling-panel__header {
+  align-items: center;
+  background: #f6f8fa;
+  border-bottom: 1px solid #d9e1e8;
+  display: flex;
+  height: 42px;
+  justify-content: space-between;
+  padding: 0 0.75rem;
+}
+
+.tooling-panel__title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.tooling-panel__body {
+  height: calc(100vh - 340px);
+  max-height: 620px;
+  min-height: 440px;
+  position: relative;
+}
+
+.tooling-editor,
+.tooling-editor .ReactCodeMirror,
+.tooling-editor .CodeMirror {
+  height: 100%;
+}
+
+.tooling-editor .CodeMirror {
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 13px;
+}
+
+.tooling-editor__error-line {
+  background: #fff0f0;
+}
+
+.tooling-editor__error-text {
+  border-bottom: 2px solid #d73939;
+}
+
+.tooling-visualizer {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.tooling-empty-state {
+  align-items: center;
+  color: #66707a;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
+}
+
+.tooling-diagnostics {
+  border-top: 1px solid #d9e1e8;
+  max-height: 160px;
+  overflow: auto;
+}
+
+.tooling-diagnostics__item {
+  border-bottom: 1px solid #edf0f2;
+  color: #4c5964;
+  font-size: 0.85rem;
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+}
+
+.tooling-diagnostics__location {
+  color: #a12222;
+  font-weight: 700;
+  margin-right: 0.5rem;
+}
+
+@media (max-width: 900px) {
+  .tooling-workspace__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .tooling-workspace__status {
+    margin: 0.5rem 0 0;
+  }
+
+  .tooling-workspace__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tooling-panel__body {
+    height: 480px;
+    min-height: 360px;
+  }
+}
