@@ -56,6 +56,11 @@ const toc = [
     path:"/tutorials/examples/microwave-parallel",
     by: <span>Ported from <a target="_blank" href="https://alexzhornyak.github.io/SCXML-tutorial/Examples/#microwave-example-using-parallel">Alex Zhornyak&apos;s SCXML tutorial collection</a>.</span>
   },
+  {
+    name : "W3C Calculator",
+    path:"/tutorials/examples/calculator",
+    by: <span>Ported from <a target="_blank" href="https://alexzhornyak.github.io/SCXML-tutorial/Examples/#calculator-example">Alex Zhornyak&apos;s SCXML tutorial collection</a>.</span>
+  },
 ];
 
 const TutorialPageWrapper = ({ Component, pathname }) => {
@@ -69,32 +74,37 @@ const TutorialPageWrapper = ({ Component, pathname }) => {
   const nextSection = pages[tocIdx + 1]
   return (
     <div className="container-fluid">
-      <div className="row">
-        <div className="col-md-3">
-          <ol>
-            {
-              toc.map( ({path, name, heading}, i) => heading ? 
-                <li key={heading} style={{listStyleType: 'none', margin: i === 0 ? '0 0 0.5rem' : '1rem 0 0.5rem', fontWeight: 'bold'}}>
-                  {heading}
-                </li> :
-                <li key={path}>
-                {
-                  path === curSection.path ? 
-                    <span>{name}</span> : 
-                    <Link to={path}>{name}</Link>
-                }
-              </li>)
-            }
-          </ol>
+      <div style={{ maxWidth: '1500px', margin: '0 auto', padding: '1rem 0' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <div>
+            <Link to="/tutorials">Tutorials</Link>
+            <span> / </span>
+            <Link to="/examples">Examples</Link>
+            <span> / {curSection.name}</span>
+          </div>
+          <div>
+            {prevSection &&
+              <Link to={prevSection.path} title={`Previous: ${prevSection.name}`} style={{ marginRight: '1rem' }}>
+                &larr;
+              </Link>}
+            {nextSection &&
+              <Link to={nextSection.path} title={`Next: ${nextSection.name}`}>
+                &rarr;
+              </Link>}
+          </div>
         </div>
-        <div className="col-md-9">
-          <Component sectionName={curSection.name} by={curSection.by} />
-          {prevSection &&
-            <Link to={prevSection.path}>&lt; Previous Page ({prevSection.name})</Link>}
-          {nextSection &&
-            <Link className="float-right" to={nextSection.path}>Next Page ({nextSection.name}) &gt;</Link>}
+        <Component sectionName={curSection.name} by={curSection.by} />
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '2rem' }}>
+          <div>
+            {prevSection &&
+              <Link to={prevSection.path}>&larr; {prevSection.name}</Link>}
+          </div>
+          <div>
+            {nextSection &&
+              <Link to={nextSection.path}>{nextSection.name} &rarr;</Link>}
+          </div>
         </div>
-      </div> 
+      </div>
     </div>
   );
 }
