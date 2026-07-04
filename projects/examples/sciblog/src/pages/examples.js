@@ -41,6 +41,11 @@ const sections = [
         title: 'W3C Microwave Parallel',
         href: '/tutorials/examples/microwave-parallel',
         description: 'A parallel-state microwave oven that separates engine and door behavior while keeping the HTML5 panel executable.'
+      },
+      {
+        title: 'W3C Calculator',
+        href: '/tutorials/examples/calculator',
+        description: 'A calculator statechart with a live keypad for digits, decimal points, operators, and result calculation.'
       }
     ]
   }
