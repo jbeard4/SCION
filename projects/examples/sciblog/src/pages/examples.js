@@ -36,6 +36,11 @@ const sections = [
         title: 'W3C Microwave',
         href: '/tutorials/examples/microwave',
         description: 'A live version of the W3C microwave oven statechart with SCHVIZ and an executable HTML5 appliance panel.'
+      },
+      {
+        title: 'W3C Microwave Parallel',
+        href: '/tutorials/examples/microwave-parallel',
+        description: 'A parallel-state microwave oven that separates engine and door behavior while keeping the HTML5 panel executable.'
       }
     ]
   }

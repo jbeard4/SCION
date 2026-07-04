@@ -85,9 +85,7 @@ exports.createPages = ({ graphql, boundActionCreators }) => {
               allFile {
                 edges {
                   node {
-                    fields {
-                      html
-                    }
+                    absolutePath
                     relativePath
                     internal { 
                       mediaType
@@ -108,7 +106,7 @@ exports.createPages = ({ graphql, boundActionCreators }) => {
                 path: edge.node.relativePath,
                 component: docsTemplate,
                 context: {
-                  html: edge.node.fields.html,
+                  html: fs.readFileSync(edge.node.absolutePath, 'utf8'),
                 },
               })
             }

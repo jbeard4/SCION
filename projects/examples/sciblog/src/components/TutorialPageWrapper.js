@@ -51,11 +51,16 @@ const toc = [
     path:"/tutorials/examples/microwave",
     by: <span>Ported from <a target="_blank" href="https://alexzhornyak.github.io/SCXML-tutorial/Examples/#microwave-example">Alex Zhornyak&apos;s SCXML tutorial collection</a>.</span>
   },
+  {
+    name : "W3C Microwave Parallel",
+    path:"/tutorials/examples/microwave-parallel",
+    by: <span>Ported from <a target="_blank" href="https://alexzhornyak.github.io/SCXML-tutorial/Examples/#microwave-example-using-parallel">Alex Zhornyak&apos;s SCXML tutorial collection</a>.</span>
+  },
 ];
 
 const TutorialPageWrapper = ({ Component, pathname }) => {
   const pages = toc.filter(o => o.path)
-  let tocIdx = pages.findIndex( (o) => pathname.indexOf(o.path) > -1 ) 
+  let tocIdx = pages.findIndex( (o) => pathname === o.path || pathname === `${o.path}/` ) 
   if(tocIdx === -1){
     tocIdx = 0;
   }
