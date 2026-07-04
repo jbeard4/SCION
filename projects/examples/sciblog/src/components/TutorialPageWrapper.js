@@ -6,6 +6,9 @@ const by = <span>Based on the tutorials by {thure}.</span>;
 
 const toc = [
   {
+    heading: "Thure tutorials",
+  },
+  {
     name : "Why state machines?",
     path:"/tutorials/fundamentals",
     by
@@ -40,25 +43,38 @@ const toc = [
     path:"/tutorials/another-example",
     by
   },
+  {
+    heading: "Ported SCXML tutorials",
+  },
+  {
+    name : "W3C Microwave",
+    path:"/tutorials/examples/microwave",
+    by: <span>Ported from <a target="_blank" href="https://alexzhornyak.github.io/SCXML-tutorial/Examples/#microwave-example">Alex Zhornyak&apos;s SCXML tutorial collection</a>.</span>
+  },
 ];
 
 const TutorialPageWrapper = ({ Component, pathname }) => {
-  let tocIdx = toc.findIndex( (o) => pathname.indexOf(o.path) > -1 ) 
+  const pages = toc.filter(o => o.path)
+  let tocIdx = pages.findIndex( (o) => pathname.indexOf(o.path) > -1 ) 
   if(tocIdx === -1){
     tocIdx = 0;
   }
-  const curSection = toc[tocIdx];
-  const prevSection = toc[tocIdx - 1]
-  const nextSection = toc[tocIdx + 1]
+  const curSection = pages[tocIdx];
+  const prevSection = pages[tocIdx - 1]
+  const nextSection = pages[tocIdx + 1]
   return (
     <div className="container-fluid">
       <div className="row">
         <div className="col-md-3">
           <ol>
             {
-              toc.map( ({path, name}, i) => <li key={i}>
+              toc.map( ({path, name, heading}, i) => heading ? 
+                <li key={heading} style={{listStyleType: 'none', margin: i === 0 ? '0 0 0.5rem' : '1rem 0 0.5rem', fontWeight: 'bold'}}>
+                  {heading}
+                </li> :
+                <li key={path}>
                 {
-                  i === tocIdx ? 
+                  path === curSection.path ? 
                     <span>{name}</span> : 
                     <Link to={path}>{name}</Link>
                 }
