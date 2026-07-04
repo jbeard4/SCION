@@ -18,7 +18,8 @@ const MicrowavePanel = ({ sc, configuration, datamodel }) => {
   const isCooking = states.indexOf('cooking') > -1
   const timer = datamodel && typeof datamodel.timer !== 'undefined' ? datamodel.timer : 0
   const cookTime = datamodel && datamodel.cook_time ? datamodel.cook_time : 5
-  const doorClosed = !datamodel || datamodel.door_closed !== false
+  const hasDoorRegion = states.indexOf('open') > -1 || states.indexOf('closed') > -1
+  const doorClosed = hasDoorRegion ? states.indexOf('closed') > -1 : !datamodel || datamodel.door_closed !== false
 
   return (
     <div style={{ padding: '1rem', height: '100%', background: '#f7f7f7' }}>
