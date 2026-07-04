@@ -146,7 +146,12 @@ exports.modifyWebpackConfig = ({ config, stage }) => {
     resolve: {
       alias: {
         '@scion-scxml/scxml': path.resolve(__dirname, 'src/vendor/scxml.js'),
-        '@scion-scxml/schviz': path.resolve(__dirname, 'src/vendor/schviz.js')
+        '@scion-scxml/schviz': path.resolve(__dirname, 'src/vendor/schviz.js'),
+        '@scion-scxml/react-codemirror': path.resolve(__dirname, '../../vendor/react-codemirror/lib/Codemirror.js'),
+        '@scion-scxml/codemirror': path.resolve(__dirname, '../react-redux/drag-and-drop-redux/drag-and-drop-redux-with-devtools/node_modules/codemirror'),
+        '@scion-scxml/scharpie': path.resolve(__dirname, 'src/vendor/scharpie-browser.js'),
+        'classnames': path.resolve(__dirname, '../react-redux/drag-and-drop-redux/drag-and-drop-redux-with-devtools/node_modules/classnames'),
+        'lodash.isequal': path.resolve(__dirname, 'node_modules/lodash/isEqual.js')
       }
     },
     externals: {
