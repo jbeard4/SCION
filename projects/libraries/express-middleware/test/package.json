@@ -12,5 +12,14 @@
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
     "morgan": "~1.9.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/libraries/express-middleware/test"
+  },
+  "bugs": {
+    "url": "https://github.com/jbeard4/scion/issues"
+  },
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/libraries/express-middleware/test#readme"
 }

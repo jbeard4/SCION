@@ -19,5 +19,14 @@
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "Apache-2.0",
-  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/libraries/console-component"
+  },
+  "bugs": {
+    "url": "https://github.com/jbeard4/scion/issues"
+  },
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/libraries/console-component#readme"
 }

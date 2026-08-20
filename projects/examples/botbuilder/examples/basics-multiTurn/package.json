@@ -13,5 +13,14 @@
     "@scion-scxml/botbuilder-common": "^1.0.22",
     "@scion-scxml/botbuilder-common-scxml-components": "^1.0.18"
   },
-  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/examples/botbuilder/examples/basics-multiTurn"
+  },
+  "bugs": {
+    "url": "https://github.com/jbeard4/scion/issues"
+  },
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/examples/botbuilder/examples/basics-multiTurn#readme"
 }

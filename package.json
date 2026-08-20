@@ -39,9 +39,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/scion-scxml/scion.git"
+    "url": "git+https://github.com/jbeard4/scion.git"
   },
-  "homepage": "https://scion.scxml.io",
+  "homepage": "https://github.com/jbeard4/scion#readme",
   "files": [
     "README.md",
     "dist/core.js",
@@ -58,5 +58,8 @@
   "collective": {
     "type": "opencollective",
     "url": "https://opencollective.com/SCION"
+  },
+  "bugs": {
+    "url": "https://github.com/jbeard4/scion/issues"
   }
 }

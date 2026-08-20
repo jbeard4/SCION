@@ -5,10 +5,13 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/scion-scxml/eslint-plugin"
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/devtools/eslint-plugin"
   },
-  "homepage": "https://gitlab.com/scion-scxml/eslint-plugin",
-  "bugs": "https://gitlab.com/scion-scxml/eslint-plugin/issues",
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/devtools/eslint-plugin#readme",
+  "bugs": {
+    "url": "https://github.com/jbeard4/scion/issues"
+  },
   "keywords": [
     "eslint-plugin",
     "eslintplugin",

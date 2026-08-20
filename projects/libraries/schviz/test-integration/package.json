@@ -60,12 +60,17 @@
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://gitlab.com/scion-scxml/schviz/issues"
+    "url": "https://github.com/jbeard4/scion/issues"
   },
-  "homepage": "https://gitlab.com/scion-scxml/schviz",
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/libraries/schviz/test-integration#readme",
   "dependencies": {
     "@scion-scxml/test-framework": "^2.0.16",
     "whatwg-fetch": "^2.0.3"
   },
-  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/libraries/schviz/test-integration"
+  }
 }

@@ -5,9 +5,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": "https://gitlab.com/scion-scxml/example-botbuilder.git",
-  "homepage": "https://gitlab.com/scion-scxml/example-botbuilder/tree/master/common/scxml",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/examples/botbuilder/common/scxml"
+  },
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/examples/botbuilder/common/scxml#readme",
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "MIT",
-  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731",
+  "bugs": {
+    "url": "https://github.com/jbeard4/scion/issues"
+  }
 }

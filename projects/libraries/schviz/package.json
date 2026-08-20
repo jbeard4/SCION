@@ -76,7 +76,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://gitlab.com/scion-scxml/schviz.git"
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/libraries/schviz"
   },
   "keywords": [
     "scxml"
@@ -84,8 +85,8 @@
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://gitlab.com/scion-scxml/schviz/issues"
+    "url": "https://github.com/jbeard4/scion/issues"
   },
-  "homepage": "https://gitlab.com/scion-scxml/schviz#readme",
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/libraries/schviz#readme",
   "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
 }

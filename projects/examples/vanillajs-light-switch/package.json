@@ -13,5 +13,14 @@
     "couchapp": "^0.11.0"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/examples/vanillajs-light-switch"
+  },
+  "bugs": {
+    "url": "https://github.com/jbeard4/scion/issues"
+  },
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/examples/vanillajs-light-switch#readme"
 }

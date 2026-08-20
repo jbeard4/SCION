@@ -103,7 +103,14 @@
     "uglifyify": "^3.0.4",
     "watchify": "^3.9.0"
   },
-  "repository": "git://git@gitlab.com:scion-scxml/dashboard.git",
-  "homepage": "https://gitlab.com/scion-scxml/dashboard",
-  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/libraries/dashboard"
+  },
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/libraries/dashboard#readme",
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5",
+  "bugs": {
+    "url": "https://github.com/jbeard4/scion/issues"
+  }
 }

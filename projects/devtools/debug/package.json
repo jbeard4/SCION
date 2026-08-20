@@ -17,7 +17,14 @@
     "@scion-scxml/sourcemap-plugin": "^1.0.26"
   },
   "description": "Drop-in replacement for the SCION scxml compiler module, that automatically enables the sourcemap-plugin and monitor client",
-  "repository": "https://gitlab.com/scion-scxml/debug.git",
-  "homepage": "https://gitlab.com/scion-scxml/debug",
-  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/devtools/debug"
+  },
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/devtools/debug#readme",
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5",
+  "bugs": {
+    "url": "https://github.com/jbeard4/scion/issues"
+  }
 }

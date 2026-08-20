@@ -17,14 +17,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/scion-scxml/core-test-framework.git"
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/libraries/core-test-framework"
   },
-  "homepage": "https://gitlab.com/scion-scxml/core-test-framework",
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/libraries/core-test-framework#readme",
   "devDependencies": {
     "grunt": "^1.0.1",
     "grunt-browserify": "^5.0.0",
     "load-grunt-tasks": "^3.5.0",
     "underscore": "^1.9.0"
   },
-  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731",
+  "bugs": {
+    "url": "https://github.com/jbeard4/scion/issues"
+  }
 }

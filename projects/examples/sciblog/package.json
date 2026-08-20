@@ -7,7 +7,7 @@
     "Jacob Beard <jake@minnow.io> (https://minnow.io)"
   ],
   "bugs": {
-    "url": "https://gitlab.com/scion-scxml/sciblog/issues"
+    "url": "https://github.com/jbeard4/scion/issues"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.2.0",
@@ -45,7 +45,7 @@
     "gh-pages": "^0.12.0",
     "prettier": "^1.6.1"
   },
-  "homepage": "https://gitlab.com/scion-scxml/sciblog#readme",
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/examples/sciblog#readme",
   "keywords": [
     "gatsby"
   ],
@@ -53,7 +53,8 @@
   "main": "n/a",
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/scion-scxml/sciblog.git"
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/examples/sciblog"
   },
   "scripts": {
     "dev": "node ./node_modules/gatsby/dist/bin/gatsby.js develop",

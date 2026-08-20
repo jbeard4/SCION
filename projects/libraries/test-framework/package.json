@@ -17,21 +17,20 @@
   ],
   "bugs": {
     "email": "jbeard4@cs.mcgill.ca",
-    "url": "https://github.com/jbeard4/scxml-test-framework/issues"
+    "url": "https://github.com/jbeard4/scion/issues"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "licenses": [
     {
       "type": "Apache-2.0",
-      "url": "https://github.com/jbeard4/scxml-test-framework/blob/master/LICENSE.txt"
+      "url": "https://github.com/jbeard4/scion/blob/master/LICENSE.txt"
     }
   ],
-  "repository": [
-    {
-      "type": "git",
-      "url": "git://github.com/jbeard4/scxml-test-framework.git"
-    }
-  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/libraries/test-framework"
+  },
   "engines": {
     "node": ">=4.2.2"
   },
@@ -47,5 +46,6 @@
     "request": "^2.74.0",
     "underscore": "^1.8.3"
   },
-  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731"
+  "gitHead": "0838a38c74a63ce40c48168e03c4e783e37c1731",
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/libraries/test-framework#readme"
 }
