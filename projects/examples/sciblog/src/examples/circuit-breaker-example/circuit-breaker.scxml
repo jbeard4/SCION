@@ -1,0 +1,83 @@
+<scxml datamodel="ecmascript"
+       initial="closed"
+       name="CircuitBreaker"
+       version="1.0"
+       xmlns="http://www.w3.org/2005/07/scxml">
+  <datamodel>
+    <data id="failureCount" expr="0"/>
+    <data id="failureThreshold" expr="3"/>
+    <data id="lastResult" expr="'none'"/>
+  </datamodel>
+
+  <state id="closed">
+    <onentry>
+      <send event="trace">
+        <content expr="'Circuit is closed: requests flow to the dependency.'"/>
+      </send>
+    </onentry>
+    <transition event="call.success">
+      <assign location="failureCount" expr="0"/>
+      <assign location="lastResult" expr="'success'"/>
+      <send event="trace">
+        <content expr="'Call succeeded; failure count reset.'"/>
+      </send>
+    </transition>
+    <transition event="call.failure" cond="failureCount + 1 &gt;= failureThreshold" target="open">
+      <assign location="failureCount" expr="failureCount + 1"/>
+      <assign location="lastResult" expr="'failure'"/>
+      <send event="trace">
+        <content expr="'Failure threshold reached; opening circuit.'"/>
+      </send>
+    </transition>
+    <transition event="call.failure">
+      <assign location="failureCount" expr="failureCount + 1"/>
+      <assign location="lastResult" expr="'failure'"/>
+      <send event="trace">
+        <content expr="'Call failed; failure count increased.'"/>
+      </send>
+    </transition>
+  </state>
+
+  <state id="open">
+    <onentry>
+      <send event="trace">
+        <content expr="'Circuit is open: calls fail fast.'"/>
+      </send>
+      <send event="cooldown.elapsed" delay="3000ms" id="cooldown"/>
+    </onentry>
+    <onexit>
+      <cancel sendid="cooldown"/>
+    </onexit>
+    <transition event="cooldown.elapsed" target="halfOpen"/>
+    <transition event="reset" target="closed">
+      <assign location="failureCount" expr="0"/>
+      <assign location="lastResult" expr="'manual reset'"/>
+    </transition>
+  </state>
+
+  <state id="halfOpen">
+    <onentry>
+      <send event="trace">
+        <content expr="'Circuit is half-open: allow one probe request.'"/>
+      </send>
+    </onentry>
+    <transition event="call.success" target="closed">
+      <assign location="failureCount" expr="0"/>
+      <assign location="lastResult" expr="'probe success'"/>
+      <send event="trace">
+        <content expr="'Probe succeeded; closing circuit.'"/>
+      </send>
+    </transition>
+    <transition event="call.failure" target="open">
+      <assign location="failureCount" expr="failureThreshold"/>
+      <assign location="lastResult" expr="'probe failure'"/>
+      <send event="trace">
+        <content expr="'Probe failed; reopening circuit.'"/>
+      </send>
+    </transition>
+    <transition event="reset" target="closed">
+      <assign location="failureCount" expr="0"/>
+      <assign location="lastResult" expr="'manual reset'"/>
+    </transition>
+  </state>
+</scxml>

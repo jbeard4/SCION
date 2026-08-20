@@ -21,6 +21,8 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
   private lastTransitionId : string;
   private cachedLastScjson : SCState;
   private handleResize : any;
+  private handleWheel : any;
+  private wheelOptions : any;
 
   constructor(props:GraphRootProps){
     super(props);
@@ -28,6 +30,8 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
     this.handleResize = () => {
       this.refreshViewbox();
     }
+    this.handleWheel = this.handleMouseWheel.bind(this);
+    this.wheelOptions = { passive: false };
 
     this.state = { 
       allEdges : [],
@@ -96,6 +100,13 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
 
   componentWillReceiveProps(props : GraphRootProps){
     this.checkProps(props);
+    if(this.htmlRootElement && props.disableZoom !== this.props.disableZoom){
+      if(props.disableZoom){
+        this.htmlRootElement.removeEventListener('wheel', this.handleWheel);
+      }else{
+        this.htmlRootElement.addEventListener('wheel', this.handleWheel, this.wheelOptions);
+      }
+    }
 
     //make it so that transitionsEnabled can update at any time
     if(props.transitionsEnabled && 
@@ -273,6 +284,9 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
 
   componentWillUnmount(){
     window.removeEventListener('resize', this.handleResize);
+    if(this.htmlRootElement){
+      this.htmlRootElement.removeEventListener('wheel', this.handleWheel);
+    }
   }
 
   private initCollapsedNodeMap(scjson){
@@ -560,6 +574,9 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
   componentDidMount(){
     window.addEventListener('resize', this.handleResize);
     document.addEventListener('keypress', this.handleKeypress.bind(this));
+    if(this.htmlRootElement && !this.props.disableZoom){
+      this.htmlRootElement.addEventListener('wheel', this.handleWheel, this.wheelOptions);
+    }
 
     this.checkProps(this.props);
     if( this.props.pathToSCXML ||
@@ -617,7 +634,6 @@ export class GraphRoot extends React.PureComponent<GraphRootProps, GraphRootAnim
         <svg width="100%" height="100%" 
           style={{transformOrigin : '0 0', transition : this.props.disableZoomAnimation ? undefined : 'transform .1s linear', transform }}
           ref={(e: SVGSVGElement) => { this.svgRootElement = e; }}
-          onWheel={this.props.disableZoom ? null : this.handleMouseWheel.bind(this)}
           onMouseDown={this.handleMouseDown.bind(this)}
           onMouseUp={this.handleMouseUp.bind(this)}
           onMouseMove={this.handleMouseMove.bind(this)}

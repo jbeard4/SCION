@@ -19,7 +19,6 @@ export default class W3CMicrowaveExample extends SCComponent {
             <SCHVIZ
               scxmlDocumentString={microwaveScxml}
               disableAnimation={true}
-              disableZoom={true}
               configuration={this.state && this.state.configuration}
               disableZoomAnimation={true}
               transitionsEnabled={this.state && this.state.transitionsEnabled}

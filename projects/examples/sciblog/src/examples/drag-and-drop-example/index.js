@@ -42,7 +42,6 @@ export class DragAndDropExample extends SCComponent {
                 <SCHVIZ 
                   scxmlDocumentString={dragAndDropScxml}
                   disableAnimation={true}
-                  disableZoom={true}
                   configuration={this.state && this.state.configuration}
                   disableZoomAnimation={true}
                   transitionsEnabled={this.state && this.state.transitionsEnabled} 

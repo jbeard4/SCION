@@ -1,0 +1,75 @@
+<scxml datamodel="ecmascript"
+       initial="I"
+       name="SimpleFtpClient"
+       version="1.0"
+       xmlns="http://www.w3.org/2005/07/scxml">
+  <datamodel>
+    <data id="commands" expr="['USER anonymous', 'PORT 127,0,0,1,12,34', 'RETR readme.txt']"/>
+    <data id="commandIndex" expr="0"/>
+    <data id="currentCommand" expr="''"/>
+    <data id="lastReply" expr="''"/>
+  </datamodel>
+
+  <state id="I">
+    <onentry>
+      <send event="trace"><content expr="'Initial state: connect to the FTP control channel.'"/></send>
+    </onentry>
+    <transition event="control.opened" target="B"/>
+  </state>
+
+  <state id="B" initial="B_check">
+    <state id="B_check">
+      <transition cond="commandIndex &gt;= commands.length" target="S"/>
+      <transition target="B_send"/>
+    </state>
+    <state id="B_send">
+      <onentry>
+        <assign location="currentCommand" expr="commands[commandIndex]"/>
+        <send event="submit.cmd"><content expr="currentCommand"/></send>
+      </onentry>
+      <transition target="W"/>
+    </state>
+  </state>
+
+  <state id="W">
+    <onentry>
+      <send event="trace"><content expr="'Waiting for server reply.'"/></send>
+    </onentry>
+    <transition event="reply.2xx" target="B">
+      <assign location="lastReply" expr="_event.data"/>
+      <assign location="commandIndex" expr="commandIndex + 1"/>
+    </transition>
+    <transition event="reply.3xx" target="P">
+      <assign location="lastReply" expr="_event.data"/>
+    </transition>
+    <transition event="reply.4xx reply.5xx" target="F">
+      <assign location="lastReply" expr="_event.data"/>
+    </transition>
+  </state>
+
+  <state id="P">
+    <onentry>
+      <assign location="currentCommand" expr="'PASS'"/>
+      <send event="submit.cmd"><content expr="'PASS'"/></send>
+    </onentry>
+    <transition event="reply.2xx" target="B">
+      <assign location="lastReply" expr="_event.data"/>
+      <assign location="commandIndex" expr="commandIndex + 1"/>
+    </transition>
+    <transition event="reply.4xx reply.5xx" target="F">
+      <assign location="lastReply" expr="_event.data"/>
+    </transition>
+  </state>
+
+  <final id="S">
+    <onentry>
+      <send event="trace"><content expr="'Success: command sequence completed.'"/></send>
+    </onentry>
+  </final>
+
+  <final id="F">
+    <onentry>
+      <send event="trace"><content expr="'Failure: FTP server returned an error.'"/></send>
+    </onentry>
+  </final>
+</scxml>

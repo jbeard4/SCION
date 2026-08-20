@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml"
+       version="1.0"
+       initial="Main"
+       datamodel="ecmascript">
+  <state id="Main" initial="Test1">
+    <state id="Test1" initial="Test1Sub1">
+      <onentry>
+        <send event="trace">
+          <content expr="'Inside Test1'"/>
+        </send>
+      </onentry>
+
+      <state id="Test1Sub1">
+        <onentry>
+          <send event="trace">
+            <content expr="'Inside Test1Sub1'"/>
+          </send>
+        </onentry>
+        <onexit>
+          <send event="trace">
+            <content expr="'Leaving Test1Sub1'"/>
+          </send>
+        </onexit>
+        <transition event="Event1" target="Test1Sub2"/>
+      </state>
+
+      <final id="Test1Sub2"/>
+
+      <transition event="done.state.Test1" target="Test2"/>
+
+      <onexit>
+        <send event="trace">
+          <content expr="'Leaving Test1'"/>
+        </send>
+      </onexit>
+    </state>
+
+    <state id="Test2" initial="Test2Sub1">
+      <state id="Test2Sub1">
+        <onentry>
+          <send event="trace">
+            <content expr="'Inside Test2Sub1'"/>
+          </send>
+        </onentry>
+        <transition event="Event2" target="Test2Sub2"/>
+      </state>
+
+      <final id="Test2Sub2"/>
+      <transition event="done.state.Test2" target="Test3"/>
+    </state>
+
+    <state id="Test3" initial="Test3Sub1">
+      <state id="Test3Sub1">
+        <onentry>
+          <send event="trace">
+            <content expr="'Inside Test3Sub1; waiting for Timer'"/>
+          </send>
+          <send event="Timer" delay="5s" id="Timer"/>
+        </onentry>
+        <transition event="Timer" target="Test4"/>
+        <onexit>
+          <send event="trace">
+            <content expr="'Leaving Test3Sub1'"/>
+          </send>
+        </onexit>
+      </state>
+
+      <onexit>
+        <send event="trace">
+          <content expr="'Leaving Test3'"/>
+        </send>
+      </onexit>
+    </state>
+
+    <state id="Test4" initial="Test4Sub1">
+      <onentry>
+        <send event="trace">
+          <content expr="'Inside Test4'"/>
+        </send>
+      </onentry>
+
+      <state id="Test4Sub1">
+        <onexit>
+          <send event="trace">
+            <content expr="'Leaving Test4Sub1'"/>
+          </send>
+        </onexit>
+        <transition target="Test5"/>
+      </state>
+    </state>
+
+    <state id="Test5" initial="Test5P">
+      <onentry>
+        <send event="trace">
+          <content expr="'Inside Test5; entering parallel state'"/>
+        </send>
+      </onentry>
+
+      <parallel id="Test5P">
+        <state id="Test5PSub1" initial="Test5PSub1Final">
+          <final id="Test5PSub1Final"/>
+        </state>
+        <state id="Test5PSub2" initial="Test5PSub2Final">
+          <final id="Test5PSub2Final"/>
+        </state>
+        <onexit>
+          <send event="trace">
+            <content expr="'All parallel states done'"/>
+          </send>
+        </onexit>
+      </parallel>
+
+      <transition event="done.state.Test5P" target="Test6"/>
+    </state>
+
+    <state id="Test6" initial="Dialing">
+      <datamodel>
+        <data id="dest" expr="'tel:+18315552020'"/>
+        <data id="src" expr="'helloworld2.vxml'"/>
+        <data id="formid" expr="'HelloWorld'"/>
+      </datamodel>
+
+      <state id="Dialing">
+        <onentry>
+          <send event="external.createcall">
+            <content expr="dest"/>
+          </send>
+        </onentry>
+        <transition event="external.connected" target="Prompting"/>
+      </state>
+
+      <state id="Prompting">
+        <onentry>
+          <send event="external.prompt">
+            <content expr="'Hello World!'"/>
+          </send>
+        </onentry>
+        <transition event="external.prompt.done" target="StartingSecondForm"/>
+      </state>
+
+      <state id="StartingSecondForm">
+        <onentry>
+          <send event="external.formstart">
+            <content expr="{src: src, id: formid}"/>
+          </send>
+        </onentry>
+        <transition event="external.second.done" target="Disconnecting"/>
+      </state>
+
+      <state id="Disconnecting">
+        <onentry>
+          <send event="external.disconnect"/>
+        </onentry>
+        <transition event="external.disconnected" target="Done"/>
+      </state>
+
+      <transition event="send.failed" target="Done">
+        <send event="trace">
+          <content expr="'External component failed'"/>
+        </send>
+      </transition>
+
+      <onexit>
+        <send event="trace">
+          <content expr="'Finished with external component'"/>
+        </send>
+      </onexit>
+    </state>
+
+    <final id="Done"/>
+  </state>
+</scxml>

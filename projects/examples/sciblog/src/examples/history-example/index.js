@@ -39,7 +39,6 @@ export class HistoryExample extends SCComponent {
                 <SCHVIZ 
                   scxmlDocumentString={historyScxml}
                   disableAnimation={true}
-                  disableZoom={true}
                   configuration={this.state && this.state.configuration}
                   disableZoomAnimation={true}
                   transitionsEnabled={this.state && this.state.transitionsEnabled} 

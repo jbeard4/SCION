@@ -25,7 +25,6 @@ const MultipleEventsPerTransition2 = () => (
           scxmlDocumentString={basic1}
           disableAnimation={true}
           configuration={['a']}
-          disableZoom={true}
           disableZoomAnimation={true}
           />
       </div>

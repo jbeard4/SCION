@@ -1,0 +1,162 @@
+<scxml datamodel="ecmascript"
+       initial="DiningPhilosophers"
+       name="DiningPhilosophers"
+       version="1.0"
+       xmlns="http://www.w3.org/2005/07/scxml">
+  <datamodel>
+    <data id="forks" expr="[0, 0, 0, 0, 0, 0]"/>
+    <data id="eatCount" expr="[0, 0, 0, 0, 0, 0]"/>
+  </datamodel>
+
+  <parallel id="DiningPhilosophers">
+    <state id="P1" initial="P1_Thinking">
+      <state id="P1_Thinking">
+        <transition event="hungry.1" target="P1_Hungry"/>
+      </state>
+      <state id="P1_Hungry">
+        <transition cond="forks[1] == 0" target="P1_HasFirst"/>
+        <transition event="done.* retry.1" cond="forks[1] == 0" target="P1_HasFirst"/>
+      </state>
+      <state id="P1_HasFirst">
+        <onentry>
+          <assign location="forks[1]" expr="1"/>
+          <send event="trace"><content expr="'Philosopher 1 picked up fork 1'"/></send>
+        </onentry>
+        <transition cond="forks[5] == 0" target="P1_Eating"/>
+        <transition event="done.* retry.1" cond="forks[5] == 0" target="P1_Eating"/>
+      </state>
+      <state id="P1_Eating">
+        <onentry>
+          <assign location="forks[5]" expr="1"/>
+          <assign location="eatCount[1]" expr="eatCount[1] + 1"/>
+          <send event="trace"><content expr="'Philosopher 1 is eating'"/></send>
+        </onentry>
+        <transition event="done.1" target="P1_Thinking">
+          <assign location="forks[1]" expr="0"/>
+          <assign location="forks[5]" expr="0"/>
+          <send event="trace"><content expr="'Philosopher 1 put down forks 1 and 5'"/></send>
+        </transition>
+      </state>
+    </state>
+
+    <state id="P2" initial="P2_Thinking">
+      <state id="P2_Thinking">
+        <transition event="hungry.2" target="P2_Hungry"/>
+      </state>
+      <state id="P2_Hungry">
+        <transition cond="forks[1] == 0" target="P2_HasFirst"/>
+        <transition event="done.* retry.2" cond="forks[1] == 0" target="P2_HasFirst"/>
+      </state>
+      <state id="P2_HasFirst">
+        <onentry>
+          <assign location="forks[1]" expr="2"/>
+          <send event="trace"><content expr="'Philosopher 2 picked up fork 1'"/></send>
+        </onentry>
+        <transition cond="forks[2] == 0" target="P2_Eating"/>
+        <transition event="done.* retry.2" cond="forks[2] == 0" target="P2_Eating"/>
+      </state>
+      <state id="P2_Eating">
+        <onentry>
+          <assign location="forks[2]" expr="2"/>
+          <assign location="eatCount[2]" expr="eatCount[2] + 1"/>
+          <send event="trace"><content expr="'Philosopher 2 is eating'"/></send>
+        </onentry>
+        <transition event="done.2" target="P2_Thinking">
+          <assign location="forks[1]" expr="0"/>
+          <assign location="forks[2]" expr="0"/>
+          <send event="trace"><content expr="'Philosopher 2 put down forks 1 and 2'"/></send>
+        </transition>
+      </state>
+    </state>
+
+    <state id="P3" initial="P3_Thinking">
+      <state id="P3_Thinking">
+        <transition event="hungry.3" target="P3_Hungry"/>
+      </state>
+      <state id="P3_Hungry">
+        <transition cond="forks[2] == 0" target="P3_HasFirst"/>
+        <transition event="done.* retry.3" cond="forks[2] == 0" target="P3_HasFirst"/>
+      </state>
+      <state id="P3_HasFirst">
+        <onentry>
+          <assign location="forks[2]" expr="3"/>
+          <send event="trace"><content expr="'Philosopher 3 picked up fork 2'"/></send>
+        </onentry>
+        <transition cond="forks[3] == 0" target="P3_Eating"/>
+        <transition event="done.* retry.3" cond="forks[3] == 0" target="P3_Eating"/>
+      </state>
+      <state id="P3_Eating">
+        <onentry>
+          <assign location="forks[3]" expr="3"/>
+          <assign location="eatCount[3]" expr="eatCount[3] + 1"/>
+          <send event="trace"><content expr="'Philosopher 3 is eating'"/></send>
+        </onentry>
+        <transition event="done.3" target="P3_Thinking">
+          <assign location="forks[2]" expr="0"/>
+          <assign location="forks[3]" expr="0"/>
+          <send event="trace"><content expr="'Philosopher 3 put down forks 2 and 3'"/></send>
+        </transition>
+      </state>
+    </state>
+
+    <state id="P4" initial="P4_Thinking">
+      <state id="P4_Thinking">
+        <transition event="hungry.4" target="P4_Hungry"/>
+      </state>
+      <state id="P4_Hungry">
+        <transition cond="forks[3] == 0" target="P4_HasFirst"/>
+        <transition event="done.* retry.4" cond="forks[3] == 0" target="P4_HasFirst"/>
+      </state>
+      <state id="P4_HasFirst">
+        <onentry>
+          <assign location="forks[3]" expr="4"/>
+          <send event="trace"><content expr="'Philosopher 4 picked up fork 3'"/></send>
+        </onentry>
+        <transition cond="forks[4] == 0" target="P4_Eating"/>
+        <transition event="done.* retry.4" cond="forks[4] == 0" target="P4_Eating"/>
+      </state>
+      <state id="P4_Eating">
+        <onentry>
+          <assign location="forks[4]" expr="4"/>
+          <assign location="eatCount[4]" expr="eatCount[4] + 1"/>
+          <send event="trace"><content expr="'Philosopher 4 is eating'"/></send>
+        </onentry>
+        <transition event="done.4" target="P4_Thinking">
+          <assign location="forks[3]" expr="0"/>
+          <assign location="forks[4]" expr="0"/>
+          <send event="trace"><content expr="'Philosopher 4 put down forks 3 and 4'"/></send>
+        </transition>
+      </state>
+    </state>
+
+    <state id="P5" initial="P5_Thinking">
+      <state id="P5_Thinking">
+        <transition event="hungry.5" target="P5_Hungry"/>
+      </state>
+      <state id="P5_Hungry">
+        <transition cond="forks[4] == 0" target="P5_HasFirst"/>
+        <transition event="done.* retry.5" cond="forks[4] == 0" target="P5_HasFirst"/>
+      </state>
+      <state id="P5_HasFirst">
+        <onentry>
+          <assign location="forks[4]" expr="5"/>
+          <send event="trace"><content expr="'Philosopher 5 picked up fork 4'"/></send>
+        </onentry>
+        <transition cond="forks[5] == 0" target="P5_Eating"/>
+        <transition event="done.* retry.5" cond="forks[5] == 0" target="P5_Eating"/>
+      </state>
+      <state id="P5_Eating">
+        <onentry>
+          <assign location="forks[5]" expr="5"/>
+          <assign location="eatCount[5]" expr="eatCount[5] + 1"/>
+          <send event="trace"><content expr="'Philosopher 5 is eating'"/></send>
+        </onentry>
+        <transition event="done.5" target="P5_Thinking">
+          <assign location="forks[4]" expr="0"/>
+          <assign location="forks[5]" expr="0"/>
+          <send event="trace"><content expr="'Philosopher 5 put down forks 4 and 5'"/></send>
+        </transition>
+      </state>
+    </state>
+  </parallel>
+</scxml>

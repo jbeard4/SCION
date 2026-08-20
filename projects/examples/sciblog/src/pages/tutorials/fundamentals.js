@@ -80,7 +80,6 @@ function changeState (action) {
     expandAllStatesByDefault={true}
     scxmlDocumentString={vampireScxml}
     disableAnimation={true}
-    disableZoom={true}
     id="vampire"
     />
 </div>

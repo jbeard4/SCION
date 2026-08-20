@@ -19,7 +19,6 @@ export default class W3CMicrowaveParallelExample extends SCComponent {
             <SCHVIZ
               scxmlDocumentString={microwaveParallelScxml}
               disableAnimation={true}
-              disableZoom={true}
               configuration={this.state && this.state.configuration}
               disableZoomAnimation={true}
               transitionsEnabled={this.state && this.state.transitionsEnabled}

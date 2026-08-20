@@ -42,7 +42,6 @@ export class VampireExample extends SCComponent {
                 <SCHVIZ 
                   scxmlDocumentString={_vampireScxml}
                   disableAnimation={true}
-                  disableZoom={true}
                   configuration={this.state && this.state.configuration}
                   disableZoomAnimation={true}
                   expandAllStatesByDefault={true}

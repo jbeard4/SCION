@@ -61,6 +61,22 @@ const Faq = () => (
       conditional logic.
     </p>
 
+    <h2>Why is SCXML relevant in the age of AI?</h2>
+    <p>
+      SCXML gives AI systems a smaller semantic target than general-purpose
+      code. Instead of asking an AI to generate a large amount of custom
+      workflow code, you can ask it to generate a specialized language whose
+      job is only to describe states, events, transitions, and actions.
+    </p>
+    <p>
+      That narrower target leaves less room for error. The result is usually
+      smaller, simpler, and easier for humans to inspect than spaghetti control
+      flow spread across application code. It is also easier to instrument:
+      an SCXML runtime can capture state, events, transitions, and timing as
+      structured telemetry, which makes debugging and AI-assisted trace
+      analysis more practical.
+    </p>
+
     <h2>What is SCION?</h2>
     <p>
       SCION is an open source JavaScript implementation and tooling ecosystem

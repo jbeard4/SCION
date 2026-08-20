@@ -1,0 +1,33 @@
+<scxml datamodel="ecmascript"
+       initial="inactive"
+       name="ToggleExample"
+       version="1.0"
+       xmlns="http://www.w3.org/2005/07/scxml">
+  <datamodel>
+    <data id="enabled" expr="false"/>
+    <data id="toggleCount" expr="0"/>
+  </datamodel>
+
+  <state id="inactive">
+    <onentry>
+      <assign location="enabled" expr="false"/>
+      <send event="trace"><content expr="'Toggle is inactive.'"/></send>
+    </onentry>
+    <transition event="TOGGLE SET_ACTIVE" target="active">
+      <assign location="toggleCount" expr="toggleCount + 1"/>
+    </transition>
+  </state>
+
+  <state id="active">
+    <onentry>
+      <assign location="enabled" expr="true"/>
+      <send event="trace"><content expr="'Toggle is active.'"/></send>
+    </onentry>
+    <transition event="TOGGLE SET_INACTIVE" target="inactive">
+      <assign location="toggleCount" expr="toggleCount + 1"/>
+    </transition>
+    <transition event="RESET" target="inactive">
+      <assign location="toggleCount" expr="0"/>
+    </transition>
+  </state>
+</scxml>

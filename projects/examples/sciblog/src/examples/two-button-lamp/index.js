@@ -41,7 +41,6 @@ export class TwoButtonLightSwitchExample extends SCComponent {
                 <SCHVIZ 
                   scxmlDocumentString={lampScxml}
                   disableAnimation={true}
-                  disableZoom={true}
                   configuration={this.state && this.state.configuration}
                   disableZoomAnimation={true}
                   transitionsEnabled={this.state && this.state.transitionsEnabled} 
