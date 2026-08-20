@@ -98,7 +98,6 @@ export class ToggleableSchviz extends React.Component{
             <SCHVIZ 
               scxmlDocumentString={this.props.scxmlDocumentString}
               disableAnimation={true}
-              disableZoom={true}
               disableZoomAnimation={true}
               id={this.props.id}
               />

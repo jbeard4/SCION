@@ -46,10 +46,21 @@ export default class Footer extends React.Component {
         position: this.state.position,
         bottom: 0,
         left: 0,
-        right: 0
+        right: 0,
+        padding: '0.75rem 1rem'
       }} 
       ref={ x => this.root = x }>
-      SCXML.IO is maintained by <a href="https://minnow.io">Minnow Software, LLC</a>.
+      <div style={{ marginBottom: '0.35rem' }}>
+        SCXML.IO is maintained by <a href="https://minnow.io">Minnow Software, LLC</a>.
+      </div>
+      <div style={{ display: 'inline-flex', alignItems: 'center', color: '#555', fontSize: '0.9rem' }}>
+        <span style={{ marginRight: '0.4rem' }}>Powered by SCION</span>
+        <img
+          src="/scion-scxml-logo.png"
+          alt="SCION SCXML"
+          style={{ width: '28px', height: '28px' }}
+        />
+      </div>
     </footer>
   }
 }

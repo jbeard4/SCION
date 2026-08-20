@@ -1,0 +1,111 @@
+<scxml datamodel="ecmascript"
+       initial="receiveOrder"
+       name="OrderFulfillmentProcess"
+       version="1.0"
+       xmlns="http://www.w3.org/2005/07/scxml">
+  <datamodel>
+    <data id="orderStatus" expr="'waiting for order'"/>
+    <data id="paymentStatus" expr="'not started'"/>
+    <data id="warehouseStatus" expr="'not started'"/>
+  </datamodel>
+
+  <state id="receiveOrder">
+    <onentry>
+      <assign location="orderStatus" expr="'waiting for order'"/>
+      <send event="trace"><content expr="'Start event: waiting for a customer order.'"/></send>
+    </onentry>
+    <transition event="order.received" target="validateOrder">
+      <assign location="orderStatus" expr="'received'"/>
+    </transition>
+  </state>
+
+  <state id="validateOrder">
+    <onentry>
+      <assign location="orderStatus" expr="'validating order'"/>
+      <send event="trace"><content expr="'Activity: validate order.'"/></send>
+    </onentry>
+    <transition event="order.valid" target="checkInventory"/>
+    <transition event="order.invalid" target="cancelled">
+      <assign location="orderStatus" expr="'invalid order'"/>
+    </transition>
+  </state>
+
+  <state id="checkInventory">
+    <onentry>
+      <assign location="orderStatus" expr="'checking inventory'"/>
+      <send event="trace"><content expr="'Exclusive gateway: inventory available?'"/></send>
+    </onentry>
+    <transition event="inventory.available" target="fulfillment"/>
+    <transition event="inventory.unavailable" target="backorder"/>
+  </state>
+
+  <state id="backorder">
+    <onentry>
+      <assign location="orderStatus" expr="'backordered'"/>
+      <send event="trace"><content expr="'Waiting for inventory or customer cancellation.'"/></send>
+    </onentry>
+    <transition event="inventory.available" target="fulfillment"/>
+    <transition event="customer.cancel" target="cancelled">
+      <assign location="orderStatus" expr="'cancelled by customer'"/>
+    </transition>
+  </state>
+
+  <parallel id="fulfillment">
+    <onentry>
+      <assign location="orderStatus" expr="'fulfilling order'"/>
+      <assign location="paymentStatus" expr="'authorizing'"/>
+      <assign location="warehouseStatus" expr="'picking and packing'"/>
+      <send event="trace"><content expr="'Parallel gateway: authorize payment and pick/pack order.'"/></send>
+    </onentry>
+
+    <transition event="payment.declined" target="cancelled">
+      <assign location="paymentStatus" expr="'declined'"/>
+      <assign location="orderStatus" expr="'payment declined'"/>
+    </transition>
+
+    <state id="payment" initial="authorizePayment">
+      <state id="authorizePayment">
+        <transition event="payment.approved" target="paymentComplete">
+          <assign location="paymentStatus" expr="'approved'"/>
+          <send event="trace"><content expr="'Payment approved.'"/></send>
+        </transition>
+      </state>
+      <final id="paymentComplete"/>
+    </state>
+
+    <state id="warehouse" initial="pickAndPack">
+      <state id="pickAndPack">
+        <transition event="package.ready" target="warehouseComplete">
+          <assign location="warehouseStatus" expr="'package ready'"/>
+          <send event="trace"><content expr="'Package ready.'"/></send>
+        </transition>
+      </state>
+      <final id="warehouseComplete"/>
+    </state>
+  </parallel>
+
+  <transition event="done.state.fulfillment" target="shipOrder"/>
+
+  <state id="shipOrder">
+    <onentry>
+      <assign location="orderStatus" expr="'ready to ship'"/>
+      <send event="trace"><content expr="'Activity: ship order.'"/></send>
+    </onentry>
+    <transition event="shipment.sent" target="completed">
+      <assign location="orderStatus" expr="'shipped'"/>
+    </transition>
+  </state>
+
+  <final id="completed">
+    <onentry>
+      <assign location="orderStatus" expr="'completed'"/>
+      <send event="trace"><content expr="'End event: order completed.'"/></send>
+    </onentry>
+  </final>
+
+  <final id="cancelled">
+    <onentry>
+      <send event="trace"><content expr="'End event: order cancelled.'"/></send>
+    </onentry>
+  </final>
+</scxml>

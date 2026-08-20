@@ -1,0 +1,131 @@
+<scxml datamodel="ecmascript"
+       name="ScxmlMorse"
+       version="1.0"
+       xmlns="http://www.w3.org/2005/07/scxml">
+  <datamodel>
+    <data expr="''" id="buffer"/>
+    <data expr="''" id="symbol"/>
+    <data id="codeReference">{
+      "-----"  : "0",
+      ".----"  : "1",
+      "..---"  : "2",
+      "...--"  : "3",
+      "....-"  : "4",
+      "....."  : "5",
+      "-...."  : "6",
+      "--..."  : "7",
+      "---.."  : "8",
+      "----."  : "9",
+      ".-"     : "a",
+      "-..."   : "b",
+      "-.-."   : "c",
+      "-.."    : "d",
+      "."      : "e",
+      "..-."   : "f",
+      "--."    : "g",
+      "...."   : "h",
+      ".."     : "i",
+      ".---"   : "j",
+      "-.-"    : "k",
+      ".-.."   : "l",
+      "--"     : "m",
+      "-."     : "n",
+      "---"    : "o",
+      ".--."   : "p",
+      "--.-"   : "q",
+      ".-."    : "r",
+      "..."    : "s",
+      "-"      : "t",
+      "..-"    : "u",
+      "...-"   : "v",
+      ".--"    : "w",
+      "-..-"   : "x",
+      "-.--"   : "y",
+      "--.."   : "z",
+      ".-.-.-" : ".",
+      "--..--" : ",",
+      "..--.." : "?",
+      "-.-.--" : "!",
+      "-....-" : "-",
+      "-..-."  : "/",
+      ".--.-." : "@",
+      "-.--."  : "(",
+      "-.--.-" : ")"
+    }</data>
+  </datamodel>
+
+  <state id="event_processor" initial="entry_point">
+    <transition event="input.restart" target="event_processor"/>
+
+    <state id="entry_point">
+      <onentry>
+        <assign expr="''" location="buffer"/>
+      </onentry>
+      <transition event="device.press" target="pressed"/>
+    </state>
+
+    <state id="released" initial="initial">
+      <transition event="device.press" target="pressed"/>
+      <state id="initial">
+        <onentry>
+          <send delay="300ms" event="short_pause_timeout" id="short_pause_timeout"/>
+        </onentry>
+        <onexit>
+          <cancel sendid="short_pause_timeout"/>
+        </onexit>
+        <transition event="short_pause_timeout" target="short_pause"/>
+      </state>
+
+      <state id="short_pause">
+        <onentry>
+          <send delay="700ms" event="long_pause_timeout" id="long_pause_timeout"/>
+          <send event="short_pause"/>
+        </onentry>
+        <onexit>
+          <cancel sendid="long_pause_timeout"/>
+        </onexit>
+        <transition event="long_pause_timeout" target="long_pause"/>
+      </state>
+
+      <state id="long_pause">
+        <onentry>
+          <script><![CDATA[
+symbol = codeReference[buffer]
+
+while (symbol === undefined && buffer.length) {
+    buffer = buffer.slice(0, -1)
+    symbol = codeReference[buffer]
+}
+          ]]></script>
+          <send event="out.symbol">
+            <content expr="symbol"/>
+          </send>
+          <assign expr="''" location="buffer"/>
+        </onentry>
+      </state>
+    </state>
+
+    <state id="pressed" initial="sending_dot">
+      <state id="sending_dot">
+        <onentry>
+          <send delay="300ms" event="dash-timeout" id="dash-timeout"/>
+        </onentry>
+        <onexit>
+          <cancel sendid="dash-timeout"/>
+        </onexit>
+        <transition event="dash-timeout" target="sending_dash"/>
+        <transition event="device.release" target="released">
+          <send event="dot"/>
+          <assign expr="buffer + '.'" location="buffer"/>
+        </transition>
+      </state>
+
+      <state id="sending_dash">
+        <transition event="device.release" target="released">
+          <send event="dash"/>
+          <assign expr="buffer + '-'" location="buffer"/>
+        </transition>
+      </state>
+    </state>
+  </state>
+</scxml>

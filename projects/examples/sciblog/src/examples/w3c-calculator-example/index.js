@@ -20,7 +20,6 @@ export default class W3CCalculatorExample extends SCComponent {
               <SCHVIZ
                 scxmlDocumentString={calculatorScxml}
                 disableAnimation={true}
-                disableZoom={true}
                 configuration={this.state && this.state.configuration}
                 disableZoomAnimation={true}
                 transitionsEnabled={this.state && this.state.transitionsEnabled}

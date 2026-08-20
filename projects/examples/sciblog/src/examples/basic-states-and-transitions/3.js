@@ -17,7 +17,6 @@ const StatesAndTransitions3 = () => (
           scxmlDocumentString={basic1}
           disableAnimation={true}
           configuration={['b']}
-          disableZoom={true}
           transitionsEnabled={new Map().set('a',new Set([0]))}
           disableZoomAnimation={true}
           />

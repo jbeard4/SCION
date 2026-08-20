@@ -38,7 +38,6 @@ export class TrafficLightExample extends SCComponent {
                 <SCHVIZ 
                   scxmlDocumentString={trafficLightScxml}
                   disableAnimation={true}
-                  disableZoom={true}
                   configuration={this.state && this.state.configuration}
                   disableZoomAnimation={true}
                   transitionsEnabled={this.state && this.state.transitionsEnabled} 

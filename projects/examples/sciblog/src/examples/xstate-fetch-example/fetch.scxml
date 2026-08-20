@@ -1,0 +1,60 @@
+<scxml datamodel="ecmascript"
+       initial="idle"
+       name="FetchExample"
+       version="1.0"
+       xmlns="http://www.w3.org/2005/07/scxml">
+  <datamodel>
+    <data id="attempts" expr="0"/>
+    <data id="message" expr="'Ready to fetch.'"/>
+  </datamodel>
+
+  <state id="idle">
+    <onentry>
+      <assign location="message" expr="'Ready to fetch.'"/>
+    </onentry>
+    <transition event="FETCH" target="loading">
+      <assign location="attempts" expr="attempts + 1"/>
+      <send event="trace"><content expr="'Fetch requested.'"/></send>
+    </transition>
+  </state>
+
+  <state id="loading">
+    <onentry>
+      <assign location="message" expr="'Loading remote data...'"/>
+      <send event="trace"><content expr="'Waiting for the async result.'"/></send>
+    </onentry>
+    <transition event="RESOLVE" target="success">
+      <assign location="message" expr="'Data loaded successfully.'"/>
+    </transition>
+    <transition event="REJECT" target="failure">
+      <assign location="message" expr="'Request failed.'"/>
+    </transition>
+    <transition event="CANCEL" target="idle">
+      <assign location="message" expr="'Fetch cancelled.'"/>
+    </transition>
+  </state>
+
+  <state id="success">
+    <onentry>
+      <send event="trace"><content expr="'Fetch resolved.'"/></send>
+    </onentry>
+    <transition event="FETCH" target="loading">
+      <assign location="attempts" expr="attempts + 1"/>
+    </transition>
+    <transition event="RESET" target="idle">
+      <assign location="attempts" expr="0"/>
+    </transition>
+  </state>
+
+  <state id="failure">
+    <onentry>
+      <send event="trace"><content expr="'Fetch rejected.'"/></send>
+    </onentry>
+    <transition event="RETRY" target="loading">
+      <assign location="attempts" expr="attempts + 1"/>
+    </transition>
+    <transition event="RESET" target="idle">
+      <assign location="attempts" expr="0"/>
+    </transition>
+  </state>
+</scxml>

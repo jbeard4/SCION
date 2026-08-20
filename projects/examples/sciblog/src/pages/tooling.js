@@ -2,6 +2,7 @@ import React from 'react'
 import CodeMirror from '@scion-scxml/react-codemirror'
 import SCHVIZ from '@scion-scxml/schviz'
 import scharpie from '@scion-scxml/scharpie'
+import SectionSidebar from '../components/SectionSidebar'
 import '@scion-scxml/codemirror/lib/codemirror.css'
 import './tooling.css'
 
@@ -16,6 +17,31 @@ const initialSCXML = `<scxml
     <transition event="done" target="idle" />
   </state>
 </scxml>`
+
+const sidebarItems = [
+  {
+    label: 'SCION',
+    href: '#scion',
+    items: [
+      {
+        label: 'Online Editor',
+        href: '#online-editor',
+      },
+      {
+        label: 'CLI',
+        href: 'https://www.npmjs.com/package/@scion-scxml/cli',
+      },
+      {
+        label: 'VS Code Plugin',
+        href: 'https://marketplace.visualstudio.com/items?itemName=JacobeanResearchandDevelopmentLLC.vscode-scxml-preview',
+      },
+      {
+        label: 'SCXML Editor',
+        href: 'https://alexzhornyak.github.io/ScxmlEditor-Tutorial/',
+      },
+    ],
+  },
+]
 
 function getCodeMirrorInstance() {
   if (typeof document === 'undefined') return null
@@ -173,37 +199,59 @@ class Tooling extends React.Component {
           </div>
         </div>
 
-        <div className="tooling-workspace__grid">
-          <div className="tooling-panel">
-            <div className="tooling-panel__header">
-              <h2 className="tooling-panel__title">Editor</h2>
-            </div>
-            <div className="tooling-panel__body tooling-editor">
-              <CodeMirror
-                ref={component => {
-                  this.editorComponent = component
-                }}
-                value={this.state.code}
-                onChange={this.handleCodeChange}
-                codeMirrorInstance={getCodeMirrorInstance()}
-                options={{
-                  mode: 'application/xml',
-                  lineNumbers: true,
-                  lineWrapping: true,
-                  tabSize: 2,
-                }}
-              />
-            </div>
-            {this.renderDiagnostics()}
-          </div>
+        <div className="section-page">
+          <SectionSidebar title="Tooling" items={sidebarItems} />
+          <div className="section-page__content">
+            <section className="tooling-section" id="scion">
+              <h2>SCION</h2>
 
-          <div className="tooling-panel">
-            <div className="tooling-panel__header">
-              <h2 className="tooling-panel__title">Visualization</h2>
-            </div>
-            <div className="tooling-panel__body">
-              {this.renderVisualizer()}
-            </div>
+              <section className="tooling-section__panel" id="online-editor">
+                <h3>Online Editor</h3>
+                <p>
+                  Edit SCXML on the left, validate it as you type, and inspect the live SCHVIZ rendering
+                  on the right.
+                </p>
+                <div className="tooling-workspace__grid">
+                  <div className="tooling-panel" id="editor">
+                    <div className="tooling-panel__header">
+                      <h4 className="tooling-panel__title">Editor</h4>
+                    </div>
+                    <div className="tooling-panel__body tooling-editor">
+                      <CodeMirror
+                        ref={component => {
+                          this.editorComponent = component
+                        }}
+                        value={this.state.code}
+                        onChange={this.handleCodeChange}
+                        codeMirrorInstance={getCodeMirrorInstance()}
+                        options={{
+                          mode: 'application/xml',
+                          lineNumbers: true,
+                          lineWrapping: true,
+                          tabSize: 2,
+                        }}
+                      />
+                    </div>
+                    {this.renderDiagnostics()}
+                  </div>
+
+                  <div className="tooling-panel" id="visualization">
+                    <div className="tooling-panel__header">
+                      <h4 className="tooling-panel__title">Visualization</h4>
+                    </div>
+                    <div className="tooling-panel__body">
+                      {this.renderVisualizer()}
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <div className="tooling-resource-list">
+                <a href="https://www.npmjs.com/package/@scion-scxml/cli">CLI</a>
+                <a href="https://marketplace.visualstudio.com/items?itemName=JacobeanResearchandDevelopmentLLC.vscode-scxml-preview">VS Code Plugin</a>
+                <a href="https://alexzhornyak.github.io/ScxmlEditor-Tutorial/">SCXML Editor</a>
+              </div>
+            </section>
           </div>
         </div>
       </div>
