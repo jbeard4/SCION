@@ -12,14 +12,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/scion-scxml/example-universal-morse-input-output.git"
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/examples/universal-morse-input-output"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://gitlab.com/scion-scxml/example-universal-morse-input-output/issues"
+    "url": "https://github.com/jbeard4/scion/issues"
   },
-  "homepage": "https://gitlab.com/scion-scxml/example-universal-morse-input-output",
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/examples/universal-morse-input-output#readme",
   "dependencies": {
     "@scion-scxml/scxml": "^4.3.28",
     "babel-polyfill": "^6.26.0"

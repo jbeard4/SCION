@@ -5,7 +5,7 @@
   "engines": {
     "vscode": "^1.47.0"
   },
-  "homepage": "https://scion.scxml.io",
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/devtools/vscode-preview#readme",
   "license": "SEE LICENSE IN LICENSE",
   "displayName": "SCXML Preview",
   "description": "Preview SCXML files.",
@@ -54,7 +54,8 @@
   "icon": "icon.png",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/scion-scxml/vscode-preview"
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/devtools/vscode-preview"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
@@ -69,5 +70,8 @@
     "color": "#f78a30",
     "theme": "dark"
   },
-  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5",
+  "bugs": {
+    "url": "https://github.com/jbeard4/scion/issues"
+  }
 }

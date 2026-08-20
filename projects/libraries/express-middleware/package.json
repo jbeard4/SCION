@@ -17,5 +17,14 @@
     "mongodb": "^3.6.8",
     "uuid": "^8.3.2"
   },
-  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/libraries/express-middleware"
+  },
+  "bugs": {
+    "url": "https://github.com/jbeard4/scion/issues"
+  },
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/libraries/express-middleware#readme"
 }

@@ -20,7 +20,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/scion-scxml/scharpie.git"
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/devtools/scharpie"
   },
   "browserify": {
     "transform": [
@@ -29,5 +30,9 @@
       ]
     ]
   },
-  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5",
+  "bugs": {
+    "url": "https://github.com/jbeard4/scion/issues"
+  },
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/devtools/scharpie#readme"
 }

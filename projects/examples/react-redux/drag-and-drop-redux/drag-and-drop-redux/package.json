@@ -4,8 +4,12 @@
   "license": "Apache-2.0",
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "description": "Redux integration example",
-  "repository": "https://gitlab.com/scion-scxml/example-react-redux.git",
-  "homepage": "https://gitlab.com/scion-scxml/example-react-redux",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/examples/react-redux/drag-and-drop-redux/drag-and-drop-redux"
+  },
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/examples/react-redux/drag-and-drop-redux/drag-and-drop-redux#readme",
   "devDependencies": {
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-polyfill": "^6.23.0",
@@ -36,5 +40,8 @@
     "build": "mkdir -p dist; npm run compile-scxml && npm run bundle",
     "watch": "cd dist; watchify -d -t babelify ../src/index.js -o 'cat > index.js; sorcery -i index.js' -v"
   },
-  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5",
+  "bugs": {
+    "url": "https://github.com/jbeard4/scion/issues"
+  }
 }

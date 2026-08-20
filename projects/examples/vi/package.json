@@ -13,8 +13,12 @@
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "Apache-2.0",
-  "repository": "https://gitlab.com/scion-scxml/example-vi.git",
-  "homepage": "https://gitlab.com/scion-scxml/example-vi",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/examples/vi"
+  },
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/examples/vi#readme",
   "dependencies": {
     "@scion-scxml/debug": "^1.0.22",
     "babel-polyfill": "^6.26.0"
@@ -23,5 +27,8 @@
     "@scion-scxml/monitor-middleware": "^1.0.22",
     "couchapp": "^0.11.0"
   },
-  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5",
+  "bugs": {
+    "url": "https://github.com/jbeard4/scion/issues"
+  }
 }

@@ -18,17 +18,18 @@
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "bugs": {
     "email": "jake@jacobeanrnd.com",
-    "url": "https://gitlab.com/scion-scxml/scxml/issues"
+    "url": "https://github.com/jbeard4/scion/issues"
   },
   "licenses": [
     {
       "type": "Apache-2.0",
-      "url": "https://gitlab.com/scion-scxml/scxml/blob/master/LICENSE.txt"
+      "url": "https://github.com/jbeard4/scion/blob/master/LICENSE.txt"
     }
   ],
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/scion-scxml/scxml.git"
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/libraries/scxml"
   },
   "implements": [
     "http://www.w3.org/TR/scxml/"
@@ -111,5 +112,6 @@
       ]
     ]
   },
-  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5",
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/libraries/scxml#readme"
 }

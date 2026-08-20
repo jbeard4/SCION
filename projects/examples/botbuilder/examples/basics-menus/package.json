@@ -20,7 +20,14 @@
     "@scion-scxml/eslint-plugin": "^4.0.25",
     "eslint": "^5.4.0"
   },
-  "repository": "https://gitlab.com/scion-scxml/example-botbuilder.git",
-  "homepage": "https://gitlab.com/scion-scxml/example-botbuilder/tree/master/examples/basics-menus",
-  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/examples/botbuilder/examples/basics-menus"
+  },
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/examples/botbuilder/examples/basics-menus#readme",
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5",
+  "bugs": {
+    "url": "https://github.com/jbeard4/scion/issues"
+  }
 }

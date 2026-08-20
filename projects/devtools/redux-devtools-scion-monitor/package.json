@@ -17,7 +17,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/scion-scxml/redux-devtools-scion-monitor.git"
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/devtools/redux-devtools-scion-monitor"
   },
   "keywords": [
     "scion",
@@ -36,9 +37,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://gitlab.com/scion-scxml/redux-devtools-scion-monitor/issues"
+    "url": "https://github.com/jbeard4/scion/issues"
   },
-  "homepage": "https://gitlab.com/scion-scxml/redux-devtools-scion-monitor",
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/devtools/redux-devtools-scion-monitor#readme",
   "devDependencies": {
     "babel-cli": "^6.3.15",
     "babel-core": "^6.1.20",

@@ -14,8 +14,12 @@
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
   "license": "Apache-2.0",
-  "repository": "https://gitlab.com/scion-scxml/monitor-middleware.git",
-  "homepage": "https://gitlab.com/scion-scxml/monitor-middleware",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/libraries/monitor-middleware"
+  },
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/libraries/monitor-middleware#readme",
   "dependencies": {
     "@scion-scxml/dashboard": "^1.0.27",
     "cheerio": "^1.0.0-rc.2",
@@ -25,5 +29,8 @@
   "devDependencies": {
     "browserify": "^14.3.0"
   },
-  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5"
+  "gitHead": "ab2f1c18646c2cabac9794d13892ea05257d0aa5",
+  "bugs": {
+    "url": "https://github.com/jbeard4/scion/issues"
+  }
 }

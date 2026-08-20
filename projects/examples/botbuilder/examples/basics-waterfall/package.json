@@ -16,5 +16,14 @@
   "dependencies": {
     "@scion-scxml/botbuilder-common": "^1.0.19",
     "@scion-scxml/botbuilder-common-scxml-components": "1.0.17"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbeard4/scion.git",
+    "directory": "projects/examples/botbuilder/examples/basics-waterfall"
+  },
+  "bugs": {
+    "url": "https://github.com/jbeard4/scion/issues"
+  },
+  "homepage": "https://github.com/jbeard4/scion/tree/master/projects/examples/botbuilder/examples/basics-waterfall#readme"
 }
