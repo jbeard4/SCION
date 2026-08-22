@@ -78,7 +78,7 @@ jobs:
         working-directory: projects/libraries/schviz
         run: |
           npm install --package-lock=false
-          npm install --package-lock=false --no-save typescript@4.2.4
+          npm install --package-lock=false --no-save typescript@4.2.4 react@15.6.2 react-dom@15.6.2
           npm run build
 
       - name: Install drag-and-drop example dependencies
