@@ -77,12 +77,13 @@ jobs:
       - name: Build schviz browser bundle
         working-directory: projects/libraries/schviz
         run: |
-          npm install
+          npm install --package-lock=false
+          npm install --package-lock=false --no-save typescript@4.2.4
           npm run build
 
       - name: Install drag-and-drop example dependencies
         working-directory: projects/examples/react-redux/drag-and-drop-redux/drag-and-drop-redux-with-devtools
-        run: npm install
+        run: npm install --package-lock=false
 
       - name: Install sciblog dependencies
         working-directory: projects/examples/sciblog
