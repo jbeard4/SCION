@@ -65,7 +65,6 @@ jobs:
           cache-dependency-path: |
             projects/libraries/scxml/package-lock.json
             projects/libraries/schviz/package-lock.json
-            projects/examples/react-redux/drag-and-drop-redux/drag-and-drop-redux-with-devtools/package-lock.json
             projects/examples/sciblog/package-lock.json
 
       - name: Build scxml browser bundle
@@ -80,10 +79,6 @@ jobs:
           npm install --package-lock=false
           npm install --package-lock=false --no-save typescript@4.2.4 react@15.6.2 react-dom@15.6.2
           npm run build
-
-      - name: Install drag-and-drop example dependencies
-        working-directory: projects/examples/react-redux/drag-and-drop-redux/drag-and-drop-redux-with-devtools
-        run: npm install --package-lock=false
 
       - name: Install sciblog dependencies
         working-directory: projects/examples/sciblog
