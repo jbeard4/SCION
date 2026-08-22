@@ -62,7 +62,27 @@ jobs:
         with:
           node-version: 18
           cache: npm
-          cache-dependency-path: projects/examples/sciblog/package-lock.json
+          cache-dependency-path: |
+            projects/libraries/scxml/package-lock.json
+            projects/libraries/schviz/package-lock.json
+            projects/examples/react-redux/drag-and-drop-redux/drag-and-drop-redux-with-devtools/package-lock.json
+            projects/examples/sciblog/package-lock.json
+
+      - name: Build scxml browser bundle
+        working-directory: projects/libraries/scxml
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build schviz browser bundle
+        working-directory: projects/libraries/schviz
+        run: |
+          npm install
+          npm run build
+
+      - name: Install drag-and-drop example dependencies
+        working-directory: projects/examples/react-redux/drag-and-drop-redux/drag-and-drop-redux-with-devtools
+        run: npm install
 
       - name: Install sciblog dependencies
         working-directory: projects/examples/sciblog
