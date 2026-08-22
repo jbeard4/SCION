@@ -35,6 +35,14 @@ class Template extends React.Component {
     );
     return (
       <div>
+        <a
+          className="github-ribbon"
+          href="https://github.com/jbeard4/SCION"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Fork me on GitHub
+        </a>
         {header}
         <div className="content">
           <div> 

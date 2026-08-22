@@ -2,6 +2,41 @@
   margin-bottom: 1em;
 }
 
+.github-ribbon {
+  background: #24292e;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 9px 0;
+  position: fixed;
+  right: -42px;
+  text-align: center;
+  text-decoration: none;
+  top: 42px;
+  transform: rotate(45deg);
+  width: 180px;
+  z-index: 1031;
+}
+
+.github-ribbon:hover,
+.github-ribbon:focus {
+  background: #0366d6;
+  color: #fff;
+  text-decoration: none;
+}
+
 footer {
   text-align: center;
+}
+
+@media (max-width: 575.98px) {
+  .github-ribbon {
+    font-size: 11px;
+    padding: 7px 0;
+    right: -48px;
+    top: 36px;
+    width: 170px;
+  }
 }
