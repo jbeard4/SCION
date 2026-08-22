@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  library-tests:
+    name: Library tests (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version:
+          - 18
+          - 20
+          - 22
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            projects/libraries/core/package-lock.json
+            projects/libraries/scxml/package-lock.json
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Test core
+        working-directory: projects/libraries/core
+        run: |
+          npm ci
+          npm test
+
+      - name: Test scxml
+        working-directory: projects/libraries/scxml
+        run: |
+          npm ci
+          npm test
+
+  sciblog-build:
+    name: Build sciblog
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: projects/examples/sciblog/package-lock.json
+
+      - name: Install sciblog dependencies
+        working-directory: projects/examples/sciblog
+        run: npm ci
+
+      - name: Build sciblog
+        working-directory: projects/examples/sciblog
+        run: npm run build
