@@ -2,7 +2,7 @@
   "name": "@scion-scxml/eslint-plugin",
   "version": "4.0.25",
   "description": "A ESLint plugin to lint and fix inline scripts contained in SCXML files.",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jbeard4/scion.git",

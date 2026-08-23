@@ -17,16 +17,10 @@
     "w3c",
     "javascript"
   ],
-  "licenses": [
-    {
-      "type": "Apache-2.0",
-      "url": "https://github.com/jbeard4/SCION/blob/master/LICENSE.txt"
-    }
-  ],
+  "license": "Apache-2.0",
   "ignore": [
     "CHANGES.md",
     "Gruntfile.js",
-    "LICENSE.txt",
     "README.md",
     "bin/*",
     "grunt/*",

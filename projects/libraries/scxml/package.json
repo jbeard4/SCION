@@ -20,12 +20,7 @@
     "email": "jake@jacobeanrnd.com",
     "url": "https://github.com/jbeard4/scion/issues"
   },
-  "licenses": [
-    {
-      "type": "Apache-2.0",
-      "url": "https://github.com/jbeard4/scion/blob/master/LICENSE.txt"
-    }
-  ],
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jbeard4/scion.git",

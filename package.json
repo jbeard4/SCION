@@ -9,7 +9,7 @@
     "copy-dist": "mkdir -p dist && cp projects/libraries/scxml/dist/scxml*.js dist/ && cp projects/devtools/debug/dist/scxml.debug.js dist/ && cp projects/libraries/core/dist/core.* dist/ && cp projects/libraries/schviz/dist/schviz.* dist/"
   },
   "author": "",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "Apache-2.0",
   "devDependencies": {
     "lerna": "^3.22.1",
     "playwright": "^1.61.0"

@@ -35,7 +35,7 @@
   "contributors": [
     "Jacob Beard <jake@jacobeanrnd.com> (http://jacobeanrnd.com)"
   ],
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/jbeard4/scion/issues"
   },

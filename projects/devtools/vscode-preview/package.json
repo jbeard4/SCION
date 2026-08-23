@@ -6,7 +6,7 @@
     "vscode": "^1.47.0"
   },
   "homepage": "https://github.com/jbeard4/scion/tree/master/projects/devtools/vscode-preview#readme",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "Apache-2.0",
   "displayName": "SCXML Preview",
   "description": "Preview SCXML files.",
   "categories": [

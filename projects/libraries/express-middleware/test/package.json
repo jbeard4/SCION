@@ -2,6 +2,7 @@
   "name": "@scion-scxml/express-middleware-test",
   "version": "0.0.1",
   "private": true,
+  "license": "Apache-2.0",
   "scripts": {
     "start": "node ./bin/www"
   },

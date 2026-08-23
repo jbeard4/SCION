@@ -3,7 +3,7 @@
   "version": "1.0.25",
   "description": "",
   "main": "index.js",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "scripts": {
     "test": "eslint tests/*.scxml"
   },

@@ -6,7 +6,7 @@
     "start": "node app.js"
   },
   "author": "Jacob Beard <jake@jacobeanrnd.com>",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "keywords": [
     "botbuilder",
     "bots",
