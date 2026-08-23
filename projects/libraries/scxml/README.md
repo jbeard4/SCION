@@ -66,9 +66,8 @@ See the API docs [here](https://scion.scxml.io/modules/_workspace_scion_scxml_pl
 
 # Backwards-compatibility with `SCION@3.x`
 
-See the note [here](https://gitlab.com/scion-scxml/core#backwards-compatibility-semantics).
+See the note [here](https://github.com/jbeard4/scion/tree/main/projects/libraries/core#backwards-compatibility-semantics).
 
 # Build Status
 
-[![Build status](https://gitlab.com/scion-scxml/scxml/badges/master/build.svg)](https://gitlab.com/scion-scxml/scxml)
-
+[![Build status](https://github.com/jbeard4/scion/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jbeard4/scion/actions/workflows/ci.yml)

@@ -485,5 +485,4 @@ You can then perform the following steps to script web content:
 
 # Build Status
 
-[![Build status](https://gitlab.com/scion-scxml/core/badges/master/build.svg)](https://gitlab.com/scion-scxml/core)
-
+[![Build status](https://github.com/jbeard4/scion/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jbeard4/scion/actions/workflows/ci.yml)

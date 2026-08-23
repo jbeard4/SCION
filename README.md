@@ -7,19 +7,19 @@ This module is the lerna mono-repo for the SCION SCXML System (SCION). SCION pro
 
 This package (`scion`) is published to npm so that the bundled modules can be consumed and published by [[cdnjs]](https://cdnjs.com/) for use in the browser. The bundled modules are in the `dist/` directory: 
 
-[core](https://gitlab.com/scion-scxml/scion/-/tree/main/projects/libraries/core) (Statecharts interpreter):
+[core](https://github.com/jbeard4/scion/tree/main/projects/libraries/core) (Statecharts interpreter):
 
 * core.js
 * core.js.map
 * core.min.js
 
-[scxml](https://gitlab.com/scion-scxml/scion/-/tree/main/projects/libraries/scxml) (SCXML compiler and runtime):
+[scxml](https://github.com/jbeard4/scion/tree/main/projects/libraries/scxml) (SCXML compiler and runtime):
 
 * scxml.js
 * scxml.min.js
 * scxml.debug.js (SCXML compiler with sourcemaps enabled)
 
-[schviz](https://gitlab.com/scion-scxml/scion/-/tree/main/projects/libraries/schviz) (visualization):
+[schviz](https://github.com/jbeard4/scion/tree/main/projects/libraries/schviz) (visualization):
 
 * dist/schviz.js
 * dist/schviz.js.map
@@ -79,8 +79,7 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 
 # Support
 
-To report a bug: [file an issue on GitLab](https://gitlab.com/scion-scxml/scion/issues).
+To report a bug: [file an issue on GitHub](https://github.com/jbeard4/scion/issues).
 
 For general questions: [![Join the chat at https://gitter.im/SCION-SCXML/Lobby](https://badges.gitter.im/SCION-SCXML/Lobby.svg)](https://gitter.im/SCION-SCXML/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 
