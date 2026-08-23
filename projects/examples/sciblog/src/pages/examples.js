@@ -150,37 +150,37 @@ const sections = [
       },
       {
         title: 'vi Everywhere',
-        href: 'https://gitlab.com/scion-scxml/example-vi',
+        href: 'https://github.com/jbeard4/scion/tree/main/projects/examples/vi',
         sourcePath: 'projects/examples/vi',
         description: 'An executable model of vi editor behavior using Statecharts and an SVG-based editing environment.'
       },
       {
         title: 'React Redux Drag and Drop',
-        href: 'https://gitlab.com/scion-scxml/example-react-redux',
+        href: 'https://github.com/jbeard4/scion/tree/main/projects/examples/react-redux/drag-and-drop-redux',
         sourcePath: 'projects/examples/react-redux/drag-and-drop-redux/drag-and-drop-redux',
         description: 'A Redux integration example where SCXML drives drag-and-drop behavior.'
       },
       {
         title: 'React Redux Drag and Drop with DevTools',
-        href: 'https://gitlab.com/scion-scxml/drag-and-drop-redux-with-devtools',
+        href: 'https://github.com/jbeard4/scion/tree/main/projects/examples/react-redux/drag-and-drop-redux/drag-and-drop-redux-with-devtools',
         sourcePath: 'projects/examples/react-redux/drag-and-drop-redux/drag-and-drop-redux-with-devtools',
         description: 'The Redux drag-and-drop example with Redux DevTools and the SCION monitor integration.'
       },
       {
         title: 'BotBuilder First Run',
-        href: 'https://gitlab.com/scion-scxml/example-botbuilder/tree/master/examples/basics-firstRun',
+        href: 'https://github.com/jbeard4/scion/tree/main/projects/examples/botbuilder/examples/basics-firstRun',
         sourcePath: 'projects/examples/botbuilder/examples/basics-firstRun',
         description: 'A Microsoft BotBuilder sample implemented with SCION and SCXML.'
       },
       {
         title: 'BotBuilder Menus',
-        href: 'https://gitlab.com/scion-scxml/example-botbuilder/tree/master/examples/basics-menus',
+        href: 'https://github.com/jbeard4/scion/tree/main/projects/examples/botbuilder/examples/basics-menus',
         sourcePath: 'projects/examples/botbuilder/examples/basics-menus',
         description: 'A BotBuilder menu flow implemented with SCION common bot components.'
       },
       {
         title: 'BotBuilder Multi-turn',
-        href: 'https://gitlab.com/scion-scxml/example-botbuilder/tree/master/examples/basics-multiTurn',
+        href: 'https://github.com/jbeard4/scion/tree/main/projects/examples/botbuilder/examples/basics-multiTurn',
         sourcePath: 'projects/examples/botbuilder/examples/basics-multiTurn',
         description: 'A multi-turn BotBuilder conversation modeled with SCXML.'
       },
@@ -191,7 +191,7 @@ const sections = [
       },
       {
         title: 'BotBuilder Hello ChatConnector',
-        href: 'https://gitlab.com/scion-scxml/example-botbuilder/tree/master/examples/hello-chatConnector',
+        href: 'https://github.com/jbeard4/scion/tree/main/projects/examples/botbuilder/examples/hello-chatConnector',
         sourcePath: 'projects/examples/botbuilder/examples/hello-chatConnector',
         description: 'A Hello ChatConnector BotBuilder sample powered by SCXML.'
       },

@@ -67,7 +67,7 @@ function iterateESLintModules(fn) {
       oneLine`
         @scion-scxml/eslint-plugin error: It seems that eslint is not loaded.
         If you think it is a bug, please file a report at
-        https://gitlab.com/scion-scxml/eslint-plugin/issues
+        https://github.com/jbeard4/scion/issues
       `
     )
   }
